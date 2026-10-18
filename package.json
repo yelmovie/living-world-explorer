@@ -1,0 +1,26 @@
+{
+  "name": "life-code-lab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node node_modules/vite/bin/vite.js --host 127.0.0.1",
+    "build": "node node_modules/typescript/bin/tsc --noEmit && node node_modules/vite/bin/vite.js build",
+    "test": "node node_modules/vitest/vitest.mjs run",
+    "test:browser": "node tests/browser-check.mjs",
+    "test:flow": "node tests/full-flow.mjs",
+    "preview": "node node_modules/vite/bin/vite.js preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "phaser": "3.90.0",
+    "three": "0.181.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1",
+    "@types/three": "0.181.0",
+    "sharp": "0.34.4",
+    "typescript": "5.9.3",
+    "vite": "7.2.2",
+    "vitest": "3.2.4"
+  }
+}

@@ -1,0 +1,742 @@
+{
+  "schema_version": "1.0.0",
+  "project": {
+    "title_ko": "생명 코드 연구소",
+    "title_en": "Life Code Lab",
+    "repository": "life-code-lab",
+    "github_description": "An interactive Grade 4 science game for exploring fungi, protists, bacteria, their impacts on daily life, and applications of life science through observation, evidence analysis, and problem-solving.",
+    "topic_id": "topic-12-microorganisms",
+    "grade": 4,
+    "subject": "과학",
+    "semester": "4학년 1학기",
+    "unit": "다양한 생물과 우리 생활",
+    "stage_count": 5,
+    "page_count": 10,
+    "platform": "Tablet-first Web / PWA",
+    "orientation": "16:9 landscape",
+    "three_d_pages": [
+      1,
+      9,
+      10
+    ],
+    "curriculum": [
+      {
+        "code": "4과12-01",
+        "text": "균류·원생생물·세균을 관찰하여 특징과 사는 곳을 설명할 수 있다."
+      },
+      {
+        "code": "4과12-02",
+        "text": "균류·원생생물·세균이 우리 생활에 미치는 영향을 조사하여 발표할 수 있다."
+      },
+      {
+        "code": "4과12-03",
+        "text": "우리 생활에 생명과학이 이용되는 사례를 소개하는 자료를 만들어 공유할 수 있다."
+      }
+    ],
+    "global_design_rules": {
+      "learning_loop": [
+        "관찰/조사",
+        "직접 조작",
+        "증거 확보",
+        "비교/판단",
+        "설명/적용",
+        "필요 시 수정"
+      ],
+      "difficulty": "초등 4학년 수준. 문장은 짧고 명확하게 쓰되 관찰, 증거 선별, 비교, 추론, 설명, 수정의 사고 난도는 낮추지 않는다.",
+      "tablet_value": "단순 클릭 퀴즈가 아니라 다이얼, 스캔, 촬영, 주석, 추적, 표본 제작, 자료 선별, 사건 조사, 3D 조립, RUN과 수정이 핵심 입력이 되게 한다.",
+      "three_d_policy": "3D는 연구소 공간 이해, 모듈 관계 조립, 최종 코어 결합에만 사용한다. 실제 생물 관찰 화면은 검수 가능한 2D/영상/2.5D 자료를 우선한다.",
+      "science_policy": [
+        "세균을 모두 해로운 존재로 표현하지 않는다.",
+        "균류를 모두 해로운 존재로 표현하지 않는다.",
+        "생물군 자체가 아니라 상황 속 영향을 판단하게 한다.",
+        "과학 관찰 자료와 판타지 미술 자산을 분리한다.",
+        "5학년·6학년 자료의 전문 원리와 세부 종명은 4학년 필수 평가로 사용하지 않는다.",
+        "생명과학 활용 사례는 검수된 데이터만 사용한다.",
+        "실제 관찰과 실험을 완전히 대체한다고 표현하지 않는다."
+      ],
+      "ui_rules": [
+        "한글 제목과 버튼은 HTML/CSS/SVG로 분리한다.",
+        "이미지와 3D 텍스처에 한글을 굽지 않는다.",
+        "최소 터치 타깃 44px, 권장 48px.",
+        "hover 전용 기능 금지.",
+        "색만으로 상태를 전달하지 않는다.",
+        "Undo/Reset을 필요한 화면에 제공한다.",
+        "이모지 중심 UI와 유아용 스티커북 분위기를 피한다.",
+        "동일한 카드 분류 레이아웃을 반복하지 않는다."
+      ],
+      "performance": [
+        "저사양 학교 태블릿 30fps 우선.",
+        "Three.js와 Phaser를 동시에 지속 렌더링하지 않는다.",
+        "Page별 자산 lazy load.",
+        "3D Scene 이탈 시 WebGL 리소스 dispose.",
+        "pixel ratio: low 1.0 / medium 1.25 / high max 1.5."
+      ]
+    },
+    "reward_system": {
+      "codes": [
+        "균류 코드",
+        "원생생물 코드",
+        "세균 코드",
+        "생활 영향 코드",
+        "생명과학 활용 코드"
+      ],
+      "final": "다섯 생명 코드를 중앙 BIO CORE에 결합하여 연구소를 재가동하고 BIO 연구 카드를 완성한다."
+    }
+  },
+  "pages": [
+    {
+      "page": 1,
+      "stage": "MAIN",
+      "stage_title": "연구소 메인",
+      "name": "생명 코드 연구소",
+      "route": "/life-code-lab/01",
+      "render_mode": "fixed-diorama-3d",
+      "engine": [
+        "Three.js",
+        "HTML/CSS/SVG"
+      ],
+      "standards": [
+        "4과12-01",
+        "4과12-02",
+        "4과12-03"
+      ],
+      "objective": "5개 연구 구역의 진행 상태를 공간으로 이해하고 다음 연구 임무를 선택한다.",
+      "learning_action": "진행 확인과 연구 구역 선택",
+      "why_digital": "Stage 완료 상태가 연구소 공간의 조명, 장치, 중앙 BIO CORE에 누적 반영되어 이전 학습 결과를 공간적으로 다시 확인할 수 있다.",
+      "why_3d": "중앙 BIO CORE와 5개 연구 구역의 관계를 제한 회전형 디오라마로 확인하기 위해 사용한다.",
+      "layout": {
+        "center": "비활성 BIO CORE와 5개의 빈 코드 슬롯",
+        "zones": [
+          "균류 표본실",
+          "수중 관찰실",
+          "세균 데이터실",
+          "생활 분석실",
+          "BIO 솔루션 연구소"
+        ],
+        "hud": "상단 진행도, 코드 5칸, 설정, Science World 복귀. 텍스트는 DOM."
+      },
+      "interactions": [
+        "한 손가락 제한 3D 회전",
+        "핀치 제한 확대",
+        "연구 구역 탭",
+        "BIO CORE 탭"
+      ],
+      "logic": [
+        "처음에는 Stage 1만 해금한다.",
+        "Stage 완료 시 해당 연구 구역의 조명과 장치가 복구된다.",
+        "완료 Stage는 재진입 가능하다.",
+        "이 화면에서 새로운 과학 개념을 평가하지 않는다."
+      ],
+      "success_criteria": "해금된 Stage를 선택해 진입한다.",
+      "feedback": {
+        "locked": "이 구역은 앞 연구 코드가 복구되면 열려.",
+        "restored": "이 연구 구역의 생명 코드가 복구됐어."
+      },
+      "visualPrompt": "태블릿 가로형 16:9, 밝은 프리미엄 교육용 생명과학 연구소 3D 디오라마. 중앙에는 청록빛이 꺼진 구형 BIO CORE와 5개의 빈 코드 슬롯, 주변에는 균류 표본실, 투명 수중 관찰실, 파란 세균 데이터실, 생활 사건 분석실, 유리 작업대가 있는 BIO 솔루션 연구소가 원형으로 배치된다. 흰색, 청록, 에메랄드, 과학 블루, 부드러운 금색. 공포 병원 분위기, 미생물 얼굴 캐릭터 남발, 배경 속 한글 텍스트 없음.",
+      "implementationPrompt": "Three.js fixed diorama scene. PerspectiveCamera 3/4 기본 시점, 수평 ±50도 제한 orbit, pan off, zoom 제한. Raycaster로 zone hotspot을 선택하고 DOM mirror button을 제공한다. stage state에 따라 zone emissive와 BIO CORE code slot을 활성화한다. low profile에서 shadow와 postprocess off.",
+      "assetsNeeded": [
+        "env_life_code_lab.glb",
+        "prop_bio_core_inactive.glb",
+        "prop_code_slot_ring.glb",
+        "zone_fungi_lab.glb",
+        "zone_protist_lab.glb",
+        "zone_bacteria_lab.glb",
+        "zone_impact_lab.glb",
+        "zone_application_lab.glb"
+      ],
+      "nonGoals": [
+        "자유 이동 오픈월드",
+        "NPC 긴 대사",
+        "모든 GLB 첫 화면 선로딩",
+        "한글이 박힌 3D 텍스처"
+      ]
+    },
+    {
+      "page": 2,
+      "stage": "STAGE 1",
+      "stage_title": "균류 코드",
+      "name": "균류 표본실",
+      "route": "/life-code-lab/02",
+      "render_mode": "2.5d-specimen-investigation",
+      "engine": [
+        "Phaser 3",
+        "HTML/CSS/SVG"
+      ],
+      "standards": [
+        "4과12-01"
+      ],
+      "objective": "버섯과 곰팡이 표본이 발견되는 환경과 변화를 조사하고 설명에 필요한 관찰 증거를 직접 선택한다.",
+      "learning_action": "환경 조사 → 시간 비교 → 증거 저장",
+      "why_digital": "한 표본의 환경 정보와 시간 변화를 반복 확인하고 학생이 선택한 관찰 증거만 다음 현미경 분석에 전달할 수 있다.",
+      "layout": {
+        "left": "표본 보관대",
+        "center": "표본과 BIO-LENS 스캔 영역",
+        "right": "연구 노트",
+        "bottom": "시간 슬라이더·스캔·관찰핀"
+      },
+      "interactions": [
+        "표본 탭",
+        "BIO-LENS 이동",
+        "환경 hotspot 스캔",
+        "시간 슬라이더",
+        "관찰핀",
+        "증거 저장"
+      ],
+      "logic": [
+        "표본 이름을 맞히는 것만으로는 완료되지 않는다.",
+        "최소 2종류 이상의 증거 타입을 확보한다.",
+        "관찰하지 않은 특징은 자동 해금하지 않는다.",
+        "현재 검수 표본에서 관찰한 사실을 우선하고 모든 균류를 동일 환경으로 일반화하지 않는다."
+      ],
+      "success_criteria": "환경/위치/모습/시간 변화 중 서로 다른 유형의 유효 증거 2개 이상을 저장한다.",
+      "feedback": {
+        "weak": "이 정보만으로 충분할까? 다른 종류의 증거도 찾아보자.",
+        "complete": "현미경으로 더 자세히 볼 표본 증거가 준비됐어."
+      },
+      "visualPrompt": "밝은 유리 생명과학 표본실. 버섯 표본, 안전하게 밀폐된 곰팡이 표본, 비교용 식물과 돌이 분리된 관찰 트레이에 놓여 있다. 중앙에는 투명한 BIO-LENS 스캔 UI가 움직이고 오른쪽에는 깔끔한 연구 노트. 실제 곰팡이를 손으로 만지는 연출과 유아용 얼굴 캐릭터 없음.",
+      "implementationPrompt": "Phaser scene에서 specimen hotspot과 scan radius를 관리한다. time scrub은 검수된 state image sequence를 전환한다. EvidenceRecord를 저장하고 Page 03에 전달한다. scan 결과는 DOM tooltip로 표시하며 자동 수집을 금지한다.",
+      "assetsNeeded": [
+        "bg_life_code_02_fungi_lab.webp",
+        "fungi_specimen_*.webp",
+        "bio_lens.svg",
+        "observation_pin.svg"
+      ],
+      "nonGoals": [
+        "곰팡이 직접 만지기",
+        "표본 이름 맞히기 퀴즈",
+        "모든 균류 환경 일반화",
+        "기존 PPT 화면 복제"
+      ]
+    },
+    {
+      "page": 3,
+      "stage": "STAGE 1",
+      "stage_title": "균류 코드",
+      "name": "현미경 분석실",
+      "route": "/life-code-lab/03",
+      "render_mode": "interactive-microscope-simulator",
+      "engine": [
+        "Phaser 3",
+        "Canvas 2D",
+        "HTML/CSS/SVG"
+      ],
+      "standards": [
+        "4과12-01"
+      ],
+      "objective": "배율, 밝기, 초점을 직접 조절해 버섯과 곰팡이의 관찰 특징을 확인하고 촬영·주석으로 증거를 남긴다.",
+      "learning_action": "장비 조작 → 선명한 관찰 → 촬영 → 특징 표시 → 근거 설명",
+      "why_digital": "다이얼 값에 따라 흐림·밝기·관찰 범위가 즉시 바뀌며 촬영과 주석 기록을 저장해 이후 판단에 재사용할 수 있다.",
+      "layout": {
+        "center": "큰 현미경 관찰 뷰포트",
+        "left": "표본 선택·재물대 미니맵",
+        "right": "배율·밝기·초점 다이얼",
+        "bottom": "촬영·주석·Undo·연구 노트"
+      },
+      "interactions": [
+        "표본 재물대 배치",
+        "낮은 배율 선택",
+        "밝기 다이얼",
+        "초점 다이얼",
+        "표본 위치 이동",
+        "촬영",
+        "원/선/자유 주석",
+        "촬영본 비교"
+      ],
+      "logic": [
+        "낮은 배율 관찰을 먼저 수행한다.",
+        "밝기와 초점이 유효 범위에 들어와야 유효 관찰 증거로 인정한다.",
+        "핀치 화면 확대와 현미경 배율 변경을 구분한다.",
+        "최소 2개의 특징 주석이 필요하다.",
+        "빨간 X 대신 관찰을 방해하는 상태를 피드백한다."
+      ],
+      "success_criteria": "유효 관찰 캡처 2개 이상 + 특징 주석 2개 이상 + 공통 관찰 증거 설명 1개",
+      "feedback": {
+        "focus": "아직 흐릿해. 초점 다이얼을 조금씩 돌려 가장 선명한 지점을 찾아보자.",
+        "brightness": "너무 밝거나 어두우면 특징이 잘 보이지 않아.",
+        "complete": "관찰 사진에 근거가 남았어. 균류 코드가 복구됐어."
+      },
+      "visualPrompt": "화면 중앙 대부분을 차지하는 디지털 실체현미경 뷰포트와 큰 조절 다이얼. 흐린 관찰 화면이 초점을 맞추면 검수된 실제 관찰 자료처럼 선명해진다. 청록·크림·과학 블루. 관찰 대상은 캐릭터가 아니라 과학 자료 모습.",
+      "implementationPrompt": "MicroscopeStateModel로 magnification/brightness/focus/stageOffset을 관리한다. focus는 Canvas blur, brightness는 exposure overlay, magnification은 검수 asset variant로 표현한다. Capture 시 viewport와 annotation JSON을 저장한다. DOM dial은 Pointer Events로 구현한다.",
+      "assetsNeeded": [
+        "bg_life_code_03_microscope.webp",
+        "obs_fungi_*.webp",
+        "obs_mold_*.webp",
+        "icon_focus.svg",
+        "icon_brightness.svg",
+        "icon_magnification.svg"
+      ],
+      "nonGoals": [
+        "3D 균사 판타지 모델",
+        "현미경 부품 이름 암기 시험",
+        "자동 초점 한 번 탭",
+        "정답 특징 자동 강조"
+      ]
+    },
+    {
+      "page": 4,
+      "stage": "STAGE 2",
+      "stage_title": "원생생물 코드",
+      "name": "한 방울 채집실",
+      "route": "/life-code-lab/04",
+      "render_mode": "2.5d-water-sampling-simulation",
+      "engine": [
+        "Phaser 3",
+        "HTML/CSS/SVG"
+      ],
+      "standards": [
+        "4과12-01"
+      ],
+      "objective": "물 표본을 채집하고 받침 유리에 적정량을 옮겨 관찰 준비를 수행한다.",
+      "learning_action": "채집 위치 선택 → 스포이드 조작 → 표본 제작 → 상태 확인",
+      "why_digital": "실제 표본 제작을 대신하지 않고 채집·스포이드·표본 준비 절차를 여러 번 안전하게 연습하고 다음 관찰 화면과 연결한다.",
+      "layout": {
+        "left": "연못 채집 지점",
+        "center": "스포이드와 물 표본",
+        "right": "받침 유리 작업대",
+        "bottom": "채집 기록·다시 하기·관찰실 이동"
+      },
+      "interactions": [
+        "채집 위치 탭",
+        "스포이드 이동",
+        "스포이드 눌러 공기 빼기",
+        "물속에서 놓아 채집",
+        "받침 유리에 물방울 떨어뜨리기",
+        "물방울 양 확인"
+      ],
+      "logic": [
+        "물방울 양을 너무 적음/적당함/너무 많음 상태로 보여 준다.",
+        "실패는 점수 감점보다 관찰 가독성 차이로 피드백한다.",
+        "검수 표본 세트에서 다음 화면 관찰 자료가 결정된다."
+      ],
+      "success_criteria": "관찰 가능한 상태의 물 표본 1개를 제작한다.",
+      "feedback": {
+        "tooSmall": "물방울이 너무 적어서 관찰 범위가 좁아.",
+        "tooLarge": "물방울이 너무 많아 표본이 움직이기 어려워.",
+        "complete": "관찰할 물 한 방울이 준비됐어."
+      },
+      "visualPrompt": "밝은 연구실과 작은 인공 연못이 이어진 2.5D 화면. 수초 주변과 물가가 구분되고 중앙에는 큰 투명 스포이드, 오른쪽에는 받침 유리 작업대. 깨끗하고 안전한 과학 실습 분위기.",
+      "implementationPrompt": "Phaser pointer state machine으로 dropper squeeze/pickup/release를 구현한다. sample location과 dropAmountBand를 저장하고 Page 05 observation dataset seed에 연결한다. 물방울은 안정적인 sprite/mesh tween으로 표현한다.",
+      "assetsNeeded": [
+        "bg_life_code_04_sampling.webp",
+        "pond_sampling_points.webp",
+        "dropper.webp",
+        "slide_glass.webp"
+      ],
+      "nonGoals": [
+        "실제 오염수 취급 안내",
+        "스포이드 장난 연출",
+        "채집 위치 하나만 무조건 정답으로 고정"
+      ]
+    },
+    {
+      "page": 5,
+      "stage": "STAGE 2",
+      "stage_title": "원생생물 코드",
+      "name": "원생생물 추적실",
+      "route": "/life-code-lab/05",
+      "render_mode": "microscope-tracking-and-compare",
+      "engine": [
+        "Phaser 3",
+        "Canvas 2D",
+        "HTML/CSS/SVG"
+      ],
+      "standards": [
+        "4과12-01"
+      ],
+      "objective": "해캄과 짚신벌레 관찰 자료를 탐색·추적·촬영하고 서로 다른 특징을 근거로 비교한다.",
+      "learning_action": "시야 탐색 → 관찰/추적 → 촬영 → 비교 증거 연결",
+      "why_digital": "움직이는 관찰 대상을 직접 추적하고 여러 촬영본을 나란히 비교해 관찰 증거를 저장할 수 있다.",
+      "layout": {
+        "center": "넓은 현미경 시야",
+        "left": "표본/관찰 대상 전환",
+        "right": "촬영본·증거 태그",
+        "bottom": "시야 이동·촬영·비교·관찰 노트"
+      },
+      "interactions": [
+        "현미경 시야 드래그",
+        "해캄 관찰 지점 찾기",
+        "짚신벌레 이동 추적",
+        "촬영",
+        "관찰 위치 표시",
+        "A/B split compare",
+        "생김새/움직임/사는 곳 증거 연결"
+      ],
+      "logic": [
+        "짚신벌레 경로는 검수된 애니메이션 경로 세트에서 선택한다.",
+        "해캄은 형태 관찰, 짚신벌레는 움직임 추적이라는 서로 다른 조작을 요구한다.",
+        "촬영하지 않은 정보는 비교 증거로 사용할 수 없다.",
+        "실제 속도·세포 구조의 정량 값을 평가하지 않는다."
+      ],
+      "success_criteria": "해캄과 짚신벌레 각각 유효 관찰 기록 1개 + 비교 증거 3개 이상",
+      "feedback": {
+        "lost": "관찰 대상이 시야 밖으로 나갔어. 이동 방향을 보고 다시 따라가 보자.",
+        "evidence": "그 판단을 촬영한 화면에서 확인할 수 있을까?",
+        "complete": "두 생물의 차이를 관찰 증거로 설명했어. 원생생물 코드가 복구됐어."
+      },
+      "visualPrompt": "청록과 물빛의 깨끗한 디지털 현미경 화면. 해캄은 검수 관찰 자료 기반의 길게 이어진 초록색 형태, 짚신벌레는 검수 관찰 자료 기반의 모습과 이동. 미생물에 얼굴이나 의인화 표정 없음.",
+      "implementationPrompt": "ProtistTrackingSystem에서 viewport position과 target path를 분리한다. Paramecium target은 seeded curated path set을 따르고 student viewport가 일정 시간 target을 포함하면 capture readiness를 활성화한다. Spirogyra는 fixed hotspot 관찰. CaptureRecord 저장 후 split compare 패널에서 증거를 선택한다.",
+      "assetsNeeded": [
+        "bg_life_code_05_protist_lab.webp",
+        "obs_spirogyra_*.webp",
+        "obs_paramecium_*.webp",
+        "track_indicator.svg",
+        "compare_split.svg"
+      ],
+      "nonGoals": [
+        "무작위 움직임을 실제 운동 법칙처럼 제시",
+        "세포 소기관 암기",
+        "캐릭터 포획 게임",
+        "정답 위치 자동 추적"
+      ]
+    },
+    {
+      "page": 6,
+      "stage": "STAGE 3",
+      "stage_title": "세균 코드",
+      "name": "세균 데이터실",
+      "route": "/life-code-lab/06",
+      "render_mode": "evidence-data-wall",
+      "engine": [
+        "HTML/CSS/SVG",
+        "Phaser 3"
+      ],
+      "standards": [
+        "4과12-01"
+      ],
+      "objective": "세균의 확대 자료, 영상 프레임, 발견 장소 기록 중 설명에 필요한 근거를 골라 특징과 사는 곳 프로필을 완성한다.",
+      "learning_action": "질문 확인 → 자료 선별 → 관련성 판단 → 근거 연결 → 프로필 설명",
+      "why_digital": "여러 형식의 자료를 한 화면에서 비교하고 학생이 선택한 근거와 제외한 자료를 기록하여 자료 선별 과정을 학습에 활용한다.",
+      "layout": {
+        "left": "조사 질문",
+        "center": "DATA WALL",
+        "right": "세균 프로필 보드",
+        "bottom": "근거함·제외함·다시 검토"
+      },
+      "interactions": [
+        "자료 확대",
+        "영상 프레임 넘기기",
+        "근거함/제외함 드래그",
+        "두 자료 비교",
+        "특징/사는 곳 슬롯에 근거 연결",
+        "짧은 설명"
+      ],
+      "logic": [
+        "근거 없는 추측 메모와 질문과 무관한 자료를 포함한다.",
+        "최소 3개 관련 근거가 필요하다.",
+        "동일 유형 자료만 선택해 통과할 수 없게 한다.",
+        "세균을 모두 병원균으로 묘사하지 않는다.",
+        "전문 종명·병리 지식 암기를 요구하지 않는다."
+      ],
+      "success_criteria": "서로 다른 자료 유형의 근거 3개 이상 + 특징 설명 1개 + 사는 곳 설명 1개",
+      "feedback": {
+        "irrelevant": "이 자료가 지금 질문을 직접 설명해 주는지 다시 살펴보자.",
+        "insufficient": "한 종류의 자료만으로 충분할까? 다른 근거도 확인해 보자.",
+        "complete": "근거 있는 프로필을 만들었어. 세균 코드가 복구됐어."
+      },
+      "visualPrompt": "밝은 파란색 데이터 연구실. 중앙 벽에 확대 사진, 영상 프레임, 장소 기록, 연구 메모가 서로 다른 크기의 패널로 떠 있고 오른쪽에는 세균 프로필 보드. 병원균 공포 캐릭터 없음. 카드만 반복하지 않고 데이터 월과 분석 슬롯을 공간적으로 구성.",
+      "implementationPrompt": "EvidenceRelevanceEngine은 content JSON의 relevance metadata로 판정한다. Student selection은 즉시 정답 표시하지 않고 profile submit 시 평가한다. DOM/SVG로 data cards와 profile을 만들고 Phaser는 배경 효과와 drag hit area를 담당할 수 있다. 선택 이력과 revision count를 저장한다.",
+      "assetsNeeded": [
+        "bg_life_code_06_data_room.webp",
+        "obs_bacteria_*.webp",
+        "bacteria_place_*.webp",
+        "evidence_icons.svg"
+      ],
+      "nonGoals": [
+        "세균 종명 암기",
+        "세균=질병",
+        "OX",
+        "정답 카드 자동 강조"
+      ]
+    },
+    {
+      "page": 7,
+      "stage": "STAGE 4",
+      "stage_title": "생활 영향 코드",
+      "name": "생활 사건실",
+      "route": "/life-code-lab/07",
+      "render_mode": "2.5d-case-investigation",
+      "engine": [
+        "Phaser 3",
+        "HTML/CSS/SVG"
+      ],
+      "standards": [
+        "4과12-02"
+      ],
+      "objective": "생활 속 여러 사건을 직접 조사해 균류·원생생물·세균과 관련된 단서를 수집한다.",
+      "learning_action": "사건 선택 → 현장 스캔 → 단서 수집 → 기록 비교",
+      "why_digital": "같은 사건의 시간, 확대 관찰, 환경 정보, 관련 자료를 겹쳐 조사하고 학생이 조사한 단서만 다음 영향 판단 화면으로 넘길 수 있다.",
+      "layout": {
+        "top": "사건 탭 3~4개",
+        "center": "현재 사건 2.5D 현장",
+        "left": "BIO-LENS·확대 도구",
+        "right": "수집 단서 보드",
+        "bottom": "시간/환경 정보·관련 자료"
+      },
+      "interactions": [
+        "사건 전환",
+        "현장 스캔",
+        "확대 관찰",
+        "시간 정보 확인",
+        "환경 정보 확인",
+        "관련 자료 열기",
+        "단서 저장"
+      ],
+      "logic": [
+        "각 사건에 최소 3개 조사 단서를 둔다.",
+        "도움을 주는 영향과 문제를 일으키는 영향 사례를 모두 포함한다.",
+        "생물 이름만 보고 영향까지 맞히는 방식으로 만들지 않는다.",
+        "실제 탑재 사건은 curriculumApproved=true인 데이터만 사용한다."
+      ],
+      "success_criteria": "서로 다른 사건 3개 이상에서 각 2개 이상의 관련 단서를 저장한다.",
+      "feedback": {
+        "more": "지금 단서만으로 영향까지 판단하기 충분할까? 시간이나 환경 정보도 확인해 보자.",
+        "complete": "사건별 조사 기록이 모였어. 이제 영향을 분석할 수 있어."
+      },
+      "visualPrompt": "밝은 생활 과학 조사실. 발효 음식, 오래 둔 음식의 변화, 낙엽 분해, 건강 문제 등 검수 사례가 미니 장면으로 준비되고 선택하면 중앙에 크게 열린다. 범죄 탐정이나 병원 공포 분위기 없음.",
+      "implementationPrompt": "ImpactCaseEngine은 case JSON을 로드하고 Phaser hotspot scan으로 evidence를 수집한다. time/environment overlay는 DOM. evidence는 조사 전 locked. 각 case의 collectedEvidenceIds를 저장해 Page 08에서만 사용한다.",
+      "assetsNeeded": [
+        "bg_life_code_07_impact_scene.webp",
+        "impact_case_*.webp",
+        "scan_overlay.svg",
+        "evidence_dock.svg"
+      ],
+      "nonGoals": [
+        "세균 잡기 게임",
+        "좋음/나쁨 2칸 드래그만으로 완료",
+        "공포 질병 연출",
+        "기존 미션 PPT 규칙 복제"
+      ]
+    },
+    {
+      "page": 8,
+      "stage": "STAGE 4",
+      "stage_title": "생활 영향 코드",
+      "name": "영향 분석실",
+      "route": "/life-code-lab/08",
+      "render_mode": "evidence-claim-analysis-board",
+      "engine": [
+        "HTML/CSS/SVG",
+        "Phaser 3"
+      ],
+      "standards": [
+        "4과12-02"
+      ],
+      "objective": "앞에서 조사한 증거로 어떤 생물이 어떤 상황에서 우리 생활에 어떤 영향을 주었는지 근거와 함께 설명한다.",
+      "learning_action": "사건 → 관련 생물/자료 → 영향 → 근거 → 설명",
+      "why_digital": "앞 화면에서 실제로 수집한 증거만 재사용하고 여러 사건을 비교해 같은 생물군도 상황에 따라 영향이 달라질 수 있음을 확인한다.",
+      "layout": {
+        "left": "사건 기록 목록",
+        "center": "사건-생물/자료-영향-근거 연결 보드",
+        "right": "발표형 사건 보고서 미리보기",
+        "bottom": "근거 다시 보기·수정·보고서 생성"
+      },
+      "interactions": [
+        "사건 선택",
+        "관련 자료 연결",
+        "영향 판단",
+        "근거 연결",
+        "근거 원본 열기",
+        "설명 문장 편집",
+        "사건 보고서 생성"
+      ],
+      "logic": [
+        "생물군 자체를 좋음/나쁨으로 분류하면 피드백한다.",
+        "각 사건마다 근거가 1개 이상 필요하다.",
+        "최소 1개의 도움 사례와 1개의 문제 사례를 비교한다.",
+        "앞에서 조사하지 않은 증거는 사용할 수 없다."
+      ],
+      "success_criteria": "사건 3개 이상을 근거와 함께 분석하고 도움/문제 사례를 모두 포함한 사건 보고서를 완성한다.",
+      "feedback": {
+        "generalize": "생물의 종류 전체가 아니라 이 사건에서 어떤 영향을 주었는지 생각해 보자.",
+        "noEvidence": "왜 그렇게 판단했는지 보여 주는 조사 단서를 연결해 보자.",
+        "complete": "조사 결과를 근거로 설명했어. 생활 영향 코드가 복구됐어."
+      },
+      "visualPrompt": "밝은 분석실의 넓은 연결 보드. 왼쪽에는 학생이 조사한 사건 기록, 중앙에는 선과 노드로 사건-생물/자료-영향-근거가 연결되고 오른쪽에는 발표 자료가 실시간 생성된다. 빨강/초록만으로 판단하지 않고 아이콘과 텍스트를 함께 사용.",
+      "implementationPrompt": "ImpactEvaluator는 collected evidence와 case metadata를 비교한다. misconception flag GROUP_EQUALS_IMPACT가 발생하면 정답을 공개하지 않고 사건별 비교 패널을 연다. 보고서는 DOM에서 생성하고 Stage complete 시 snapshot을 저장한다.",
+      "assetsNeeded": [
+        "bg_life_code_08_analysis.webp",
+        "impact_link_nodes.svg",
+        "report_frame.svg"
+      ],
+      "nonGoals": [
+        "이로운/해로운 단순 양분류",
+        "속도 점수",
+        "정답 문장 자동 완성",
+        "근거 없는 주장 통과"
+      ]
+    },
+    {
+      "page": 9,
+      "stage": "STAGE 5",
+      "stage_title": "생명과학 활용 코드",
+      "name": "BIO 솔루션 연구소",
+      "route": "/life-code-lab/09",
+      "render_mode": "interactive-3d-module-workbench",
+      "engine": [
+        "Three.js",
+        "HTML/CSS/SVG"
+      ],
+      "standards": [
+        "4과12-03"
+      ],
+      "objective": "우리 생활에 생명과학이 이용되는 검수 사례를 조사하고 생활 문제와 생물의 특징/작용을 연결해 3D 연구 모듈로 구성·시험·수정한다.",
+      "learning_action": "문제 선택 → 사례 조사 → 모듈 조립 → RUN → 결과 관찰 → 수정",
+      "why_digital": "여러 자료를 재조합하고 학생이 구성한 관계를 실제로 실행한 뒤 결과를 보고 수정하는 반복 설계를 지원한다.",
+      "why_3d": "입력-처리-결과 모듈의 공간적 관계와 흐름을 직접 조립하고 작동 상태를 확인하기 위해 사용한다.",
+      "layout": {
+        "left": "생활 문제·검수 사례 자료",
+        "center": "3D BIO 작업대와 snap anchor",
+        "right": "선택 생물/특징/작용·근거",
+        "bottom": "모듈 트레이·회전·연결·Undo/Redo·RUN"
+      },
+      "interactions": [
+        "문제 선택",
+        "사례 자료 열기",
+        "3D 모듈 탭/드래그",
+        "anchor snap",
+        "90도 회전",
+        "흐름 연결",
+        "RUN",
+        "결과 관찰",
+        "설계 수정",
+        "재실행"
+      ],
+      "logic": [
+        "완전 자유 CAD가 아니라 anchor/snap 기반이다.",
+        "최대 모듈 6개.",
+        "문제-사례-특징/작용의 관련성이 있어야 실행 결과가 완성된다.",
+        "실패 시 정답 위치가 아니라 작동하지 않은 관계만 알려 준다.",
+        "실제 산업 공정의 수치 효율을 계산하지 않는다.",
+        "4학년을 벗어나는 생명공학 원리 암기를 요구하지 않는다."
+      ],
+      "success_criteria": "검수된 사례 1개를 근거로 유효한 솔루션 흐름을 구성하고 RUN 결과를 확인한다. 실패했다면 수정 후 재실행한다.",
+      "feedback": {
+        "missingRelation": "이 문제와 선택한 생물의 특징이 어떻게 이어지는지 다시 확인해 보자.",
+        "flowBreak": "처리 흐름 중 한 단계가 연결되지 않았어.",
+        "complete": "생활 문제와 생명과학 활용을 근거 있게 연결했어."
+      },
+      "visualPrompt": "밝고 고급스러운 3D 생명과학 작업대. 흰색과 청록 유리 작업대에 입력, 생물/작용, 처리, 결과를 뜻하는 추상 모듈이 놓이고 얇은 빛의 흐름 선으로 연결된다. 실제 공장이나 병원 장비를 정밀 재현하지 않는 교육용 형태. 금색 포인트, 투명 청록 챔버. 텍스트는 3D에 없음.",
+      "implementationPrompt": "Three.js workbench. Camera fixed 3/4 + 제한 orbit. Raycaster + SnapPoint3D. PlacedBioModule은 anchorId와 rotationStep으로 직렬화한다. BioSolutionEngine은 JSON rule로 관계를 검증하고 ResultChamber animation을 실행한다. object drag 중 orbit off. draft는 debounce 저장한다.",
+      "assetsNeeded": [
+        "env_bio_solution_workbench.glb",
+        "prop_bio_module_input.glb",
+        "prop_bio_module_process.glb",
+        "prop_bio_module_output.glb",
+        "prop_result_chamber.glb",
+        "prop_flow_connector.glb"
+      ],
+      "nonGoals": [
+        "정밀 생명공학 공정 시뮬레이터",
+        "유전자 편집 수업",
+        "자유형 CAD",
+        "복잡한 물리엔진 조립",
+        "한 가지 정답 장치만 허용"
+      ]
+    },
+    {
+      "page": 10,
+      "stage": "STAGE 5 / FINAL",
+      "stage_title": "생명과학 활용 코드",
+      "name": "생명 코드 완성",
+      "route": "/life-code-lab/10",
+      "render_mode": "3d-bio-core-final-and-artifact",
+      "engine": [
+        "Three.js",
+        "HTML/CSS/SVG",
+        "Canvas 2D"
+      ],
+      "standards": [
+        "4과12-03"
+      ],
+      "objective": "다섯 생명 코드를 BIO CORE에 결합하고 앞에서 모은 자료로 생명과학 활용 사례 소개 카드를 완성해 저장한다.",
+      "learning_action": "코드 결합 → 기록 확인 → 자료 편집 → PNG 저장 → 허브 복귀",
+      "why_digital": "5개 Stage의 누적 기록을 자동으로 불러와 하나의 소개 자료로 재구성하고 즉시 미리보기·저장할 수 있다.",
+      "why_3d": "학습 결과가 중앙 BIO CORE의 물리적 복구로 보이게 하여 5개 Stage의 누적성과 엔딩 성취감을 시각화한다.",
+      "layout": {
+        "background": "복구되는 중앙 연구실 3D 장면",
+        "center": "BIO CORE와 5개 코드 결합",
+        "overlay": "BIO 연구 카드 편집기",
+        "bottom": "미리보기·저장·다시 보기·Science World 복귀"
+      },
+      "interactions": [
+        "5개 코드 대표 기록 확인",
+        "코드 결합",
+        "연구 카드 제목 편집",
+        "활용 사례/관련 생물/특징/작용/근거 확인",
+        "대표 관찰 이미지 선택",
+        "선택적 이름 직접 입력",
+        "PNG 저장",
+        "허브 복귀"
+      ],
+      "logic": [
+        "Page 09의 솔루션 결과를 그대로 불러온다.",
+        "앞 Stage의 실제 수집 기록만 카드 후보로 제공한다.",
+        "최소 1개의 근거가 필요하다.",
+        "이 화면에서는 새로운 과학 개념을 추가 평가하지 않는다.",
+        "학생 이름을 자동 삽입하지 않는다."
+      ],
+      "success_criteria": "5개 코드 복구 + 필수 항목이 채워진 BIO 연구 카드 1개 완성 + MissionResult 생성",
+      "feedback": {
+        "complete": "다섯 생명 코드가 연결됐어. 연구소가 다시 가동됐어.",
+        "review": "원하는 연구 구역을 다시 열어 관찰 기록을 보완할 수 있어."
+      },
+      "visualPrompt": "프리미엄 교육용 3D 엔딩. 중앙의 청록 구형 BIO CORE 주변으로 균류, 원생생물, 세균, 생활 영향, 생명과학 활용을 상징하는 5개의 추상 코드 조각이 공중에서 천천히 회전한 뒤 순차 결합한다. 연구소 각 구역에 청록과 금빛이 퍼지며 복구된다. 과도한 폭발/파티클 없음. 오른쪽에는 흰색 연구 카드 편집 패널이 DOM으로 올라온다.",
+      "implementationPrompt": "Three.js BioCoreFinal scene에서 restoredCodes 순서로 5 mesh를 tween 결합하고 core emissive를 활성화한다. high profile에서만 약한 bloom 가능. DOM artifact editor는 state에서 evidence와 Page 09 draft를 읽는다. Canvas 2D로 PNG export. MissionResultAdapter가 결과를 생성하고 Hub resume 이벤트를 정확히 한 번 emit한다.",
+      "assetsNeeded": [
+        "env_life_code_final.glb",
+        "prop_bio_core_final.glb",
+        "prop_code_fungi.glb",
+        "prop_code_protists.glb",
+        "prop_code_bacteria.glb",
+        "prop_code_impact.glb",
+        "prop_code_application.glb",
+        "research_card_frame.svg"
+      ],
+      "nonGoals": [
+        "고정 20문항 단원평가",
+        "새 개념 시험",
+        "개인정보 자동 삽입",
+        "과도한 파티클",
+        "영상 파일 필수 내보내기"
+      ]
+    }
+  ],
+  "sourceBenchmarkNotes": [
+    {
+      "source": "초등학교_교과별_성취기준_2025.pdf",
+      "usedFor": "4학년 다양한 생물과 우리 생활 성취기준 [4과12-01]~[4과12-03]",
+      "transformedInto": "전체 5 Stage의 관찰→조사→자료 제작 구조",
+      "notCopied": "해당 없음"
+    },
+    {
+      "source": "아이스크림_4-1-4_다양한생물과우리생활_2,3차시_버섯과곰팡이의정체를밝혀라_나무쌤이_콩순추가.pptx",
+      "usedFor": "버섯·곰팡이 특징과 사는 곳, 균사 관찰, 실체현미경의 낮은 배율·밝기·초점 조절 학습 요소",
+      "transformedInto": "Page 02 환경 증거 조사 + Page 03 현미경 조작·촬영·주석",
+      "notCopied": "슬라이드 디자인, 문구, 퀴즈, 이미지 배치"
+    },
+    {
+      "source": "미션! 다양한 생물이 우리 생활에 주는 영향을 찾아라 규칙.pptx",
+      "usedFor": "학생이 여러 정보를 수집해 전체 정보를 완성하는 능동적 조사 구조",
+      "transformedInto": "Page 07 사건별 단서 수집 + Page 08 근거 기반 보고서",
+      "notCopied": "원본 미션 규칙, 가위바위보, 게임판, 문구"
+    },
+    {
+      "source": "5학년1학기-과학-5단원-다양한생물과우리생활-7,8차시-108~111쪽-미생물이우리생활에미치는영향(첨단생명과학)(인디용).pptx",
+      "usedFor": "균류·원생생물·세균의 생활 영향 및 생명과학 활용 사례의 아이디어 후보",
+      "transformedInto": "Page 07~09의 4학년 검수 사례 데이터 후보",
+      "notCopied": "5학년 수준의 세부 종명, 전문 설명, 영상 구성, 슬라이드 레이아웃"
+    },
+    {
+      "source": "5학년1학기-과학-4단원-다양한생물과우리생활-9~10차시-108~109쪽-캐릭터만들기.pptx",
+      "usedFor": "생물의 특징과 생활 영향을 표현물에 반영하는 사고 과정",
+      "transformedInto": "Page 10 BIO 연구 카드의 특징·영향·근거 구성",
+      "notCopied": "캐릭터 도안, 예시 캐릭터, 작품 화면"
+    },
+    {
+      "source": "4-1_과학_4단원 교수학습과정안 및 관련 활동지",
+      "usedFor": "4학년 차시의 관찰·조사·발표 흐름과 학습 수준 확인",
+      "transformedInto": "5 Stage의 관찰→증거→조사→설계 흐름",
+      "notCopied": "활동지 문항, 수업안 문구, 원본 레이아웃"
+    }
+  ]
+}

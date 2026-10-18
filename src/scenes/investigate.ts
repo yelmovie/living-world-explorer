@@ -1,0 +1,42 @@
+import {el,button,heading,paragraph,choices,slider,select,notice,modelBadge,modal,type Context} from '../ui';
+import {layout,footer} from './observe';
+import {canvas,draw} from '../draw';
+import {sources,cases} from '../content';
+import {claimStatus} from '../evaluate';
+import {temporalValid} from '../model';
+const claimPages=new Map<string,'trait'|'habitat'>();
+const analysisPages=new Map<string,string>();
+
+export function sourceRoom(ctx:Context){
+ const d=ctx.attempt.draft.m3;const {work,side}=layout(ctx,'03 · 세균의 단서','관찰 자료와 추측을 구별해봐.');const grid=el('div','source-grid');work.append(grid);const pages=el('div','page-controls');work.append(pages);
+ const show=(page:number)=>{grid.replaceChildren();for(const source of sources.slice(page*3,page*3+3)){const card=el('article','source-card');const pic=canvas(300,160);draw(pic,source.diagram);card.append(pic,el('span','eyebrow',source.type),heading(source.title),button('원문 보기',()=>{side.replaceChildren(heading(source.title),paragraph(source.text),modelBadge(),button(d.sources.includes(source.id)?'기록에서 빼기':'자료 담기',()=>{d.sources=d.sources.includes(source.id)?d.sources.filter(v=>v!==source.id):[...d.sources,source.id];ctx.save();ctx.render();},'primary'));}));if(d.sources.includes(source.id))card.append(el('span','status-pill','기록함'));grid.append(card);}pages.replaceChildren(button('이전 자료',()=>show(0),'secondary',page===0),el('span','',`${page+1} / 2`),button('다음 자료',()=>show(1),'secondary',page===1));};show(0);
+ side.append(heading('자료 가방'),paragraph('원문을 읽고 설명에 쓸 근거를 담아봐.'),el('span','status-pill',`담은 자료 ${d.sources.length}개`));footer(ctx,button('설명 만들기',()=>ctx.go('bacteria-profile'),'primary',d.sources.length<3));
+}
+export function profile(ctx:Context){
+ const d=ctx.attempt.draft.m3;const claim=claimPages.get(ctx.attempt.id)||'trait';const {work,side}=layout(ctx,'03 · 세균의 단서','원문을 연결하면 설명이 달라질까?');
+ const tabs=choices([{id:'trait',label:'세균의 특징'},{id:'habitat',label:'세균이 사는 곳'}],claim,v=>{claimPages.set(ctx.attempt.id,v as 'trait'|'habitat');ctx.render();});work.append(tabs);
+ const card=el('section','claim-card');card.append(heading(claim==='trait'?'세균의 특징':'세균이 사는 곳'),select('내 설명',[{id:'',label:'설명을 골라요'},{id:'correct',label:claim==='trait'?'작고 여러 모양의 세균이 있어요.':'흙·물·생물의 몸 등에서 발견돼요.'},{id:'wrong',label:claim==='trait'?'모든 세균은 맨눈으로 보여요.':'세균은 물에서 살지 못해요.'}],d[claim],v=>{d[claim]=v;ctx.save();ctx.render();}),el('span','status-pill',claimStatus(claim,d[claim],d.bindings[claim])));work.append(card);
+ const open=(id:string)=>{const source=sources.find(s=>s.id===id)!;const linked=d.bindings[claim].includes(id);side.replaceChildren(heading(source.title),paragraph(source.text),paragraph(`연결할 구간: ${source.segment}`,'muted'),button(linked?'연결 해제':'이 구간 연결',()=>{d.bindings[claim]=linked?d.bindings[claim].filter(x=>x!==id):[...d.bindings[claim],id];ctx.save();ctx.render();},'primary'));};
+ const list=el('div','evidence-links');for(const id of d.sources){const source=sources.find(s=>s.id===id)!;list.append(button(`${d.bindings[claim].includes(id)?'연결됨 · ':''}${source.title}`,()=>open(id),d.bindings[claim].includes(id)?'selected':'secondary'));}card.append(list);
+ const board=el('div','link-host');work.append(board);let disposed=false;ctx.cleanup(()=>disposed=true);void import('../renderers/exploration').then(({mountLinks})=>{if(!disposed)ctx.cleanup(mountLinks(board,d.sources.slice(0,4).map(id=>sources.find(s=>s.id===id)!.title),d.sources.slice(0,4).map(id=>d.bindings[claim].includes(id)),i=>open(d.sources[i])));});
+ side.append(heading('근거 연결'),paragraph('자료를 눌러 원문을 확인하고 연결해봐.'),button('자료 다시 찾기',()=>ctx.go('bacteria-sources')));footer(ctx,button('설명 마침',()=>ctx.complete('M3'),'primary'));
+}
+export function impact(ctx:Context){
+ const d=ctx.attempt.draft.m4;const item=cases.find(c=>c.id===d.caseId)||cases[0];const {work,side}=layout(ctx,'04 · 생활 속 사건','무엇이 달라졌는지 찾아요.');
+ const tabs=choices(cases.map(c=>({id:c.id,label:c.name})),item.id,v=>{d.caseId=v;ctx.save();ctx.render();});ctx.host.insertBefore(tabs,ctx.host.querySelector('.workspace'));
+ const c=canvas();const live=el('div','timeline-host');let timeline:{update:(t:number)=>void;dispose:()=>void}|undefined;let disposed=false;ctx.cleanup(()=>{disposed=true;timeline?.dispose();});if(item.id==='bread'){work.append(live,modelBadge());void import('../renderers/exploration').then(({mountTimeline})=>{if(!disposed)timeline=mountTimeline(live,d.time,t=>{d.time=t;ctx.save();ctx.render();});});}else work.append(c,modelBadge());const paint=()=>{draw(c,item.id,{time:d.time});timeline?.update(d.time);};paint();let pair:HTMLElement|undefined;
+ const showLive=()=>{if(item.id==='bread')live.style.display='block';else c.style.display='block';if(pair)pair.style.display='none';};
+ if(item.id==='bread'){
+  side.append(slider('관찰 순서',0,3,1,d.time,v=>{d.time=v;showLive();paint();ctx.save();}));
+  const pins=el('div','pair-controls');pins.append(button(`이전 ${d.a===null?'고정':d.a+1}`,()=>{d.a=d.time;d.marks=[];ctx.save();ctx.render();}),button(`이후 ${d.b===null?'고정':d.b+1}`,()=>{d.b=d.time;d.marks=[];ctx.save();ctx.render();}));side.append(pins);
+  if(d.a!==null&&d.b!==null){pair=el('div','comparison-pair');for(const [label,t] of [['이전',d.a],['이후',d.b]] as [string,number][]){const box=el('div');const shot=canvas(360,225);draw(shot,'bread',{time:t,marks:label==='이후'?d.marks:[]});if(label==='이후'){shot.onpointerup=e=>{const r=shot.getBoundingClientRect();d.marks.push({x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height});ctx.save();ctx.render();};shot.setAttribute('aria-label','이후 모습. 달라진 부분을 누르세요.');}box.append(el('strong','',`${label} · 관찰 ${t+1}`),shot);pair.append(box);}c.style.display='none';live.style.display='none';work.prepend(pair);work.append(paragraph('이후 모습에서 달라진 곳을 눌러요.','caption'));side.append(button('두 장면 비교',()=>{c.style.display='none';live.style.display='none';pair!.style.display='grid';}),button('표시 되돌리기',()=>{d.marks.pop();ctx.save();ctx.render();}),button('위치로 표시',()=>{let x=.5,y=.5;const dialog=modal('달라진 곳 표시',[slider('표시 가로',0,1,.02,x,v=>x=v),slider('표시 세로',0,1,.02,y,v=>y=v),button('표시 확정',()=>{d.marks.push({x,y});dialog.close();ctx.save();ctx.render();},'primary')]);}));}
+ }else side.append(heading(item.name),paragraph('두 단서를 확인하고 어떤 영향인지 생각해요.'));
+ const openClues=()=>{const cards=item.clues.map((clue,i)=>{const card=el('section','source-detail');const id=`${item.id}-${i}`;card.append(heading(clue),paragraph(i===0?item.explain:item.action),button((d.clues[item.id]||[]).includes(id)?'기록했어요 ✓':'단서 기록',()=>{if(item.id==='bread'&&i===0&&(!temporalValid(d.a,d.b)||!d.marks.length))return notice('먼저 전후를 고정하고 달라진 곳을 표시해요.');d.clues[item.id]=[...new Set([...(d.clues[item.id]||[]),id])];ctx.save();const b=card.querySelector('button')!;b.textContent='기록했어요 ✓';},'primary'));return card;});const dialog=modal('사건의 두 단서',cards);dialog.addEventListener('close',()=>ctx.render(),{once:true});};
+ footer(ctx,paragraph(`${cases.filter(c=>(d.clues[c.id]||[]).length>=2).length}/4 사건 기록`,'muted'),button('단서 보기',openClues,'primary'),button('영향 비교',()=>ctx.go('impact-analysis')));
+}
+export function analysis(ctx:Context){
+ const d=ctx.attempt.draft.m4;const {work,side}=layout(ctx,'04 · 생활 속 사건','같은 생물도 상황에 따라 다를까?');const item=cases.find(c=>c.id===analysisPages.get(ctx.attempt.id))||cases[0];
+ const tabs=choices(cases.map(c=>({id:c.id,label:`${d.answers[c.id]?'✓ ':''}${c.name}`})),item.id,v=>{analysisPages.set(ctx.attempt.id,v);ctx.render();});ctx.host.insertBefore(tabs,ctx.host.querySelector('.workspace'));
+ const card=el('section','impact-card');const picture=canvas(600,240);draw(picture,item.id,{time:3});card.append(picture,heading(item.name),paragraph(item.action),choices([{id:'help',label:'도움이 돼요'},{id:'problem',label:'문제가 돼요'}],d.answers[item.id]||'',v=>{d.answers[item.id]=v;ctx.save();ctx.render();}),button('근거 다시 보기',()=>{d.caseId=item.id;ctx.go('impact-investigation');}));if(d.answers[item.id])card.append(paragraph(d.answers[item.id]===item.answer?item.explain:'이 사건의 단서를 다시 확인해 보세요.','feedback'));work.append(card);
+ side.append(heading('빵과 낙엽 비교'),paragraph('두 사건을 조사하고 설명을 연결해봐.'),select('두 사건에서 알게 된 점',[{id:'',label:'근거를 보고 골라요'},{id:'correct',label:'먹을 빵의 변질은 문제지만, 낙엽 분해는 자연에 도움이 돼요.'},{id:'wrong',label:'균류는 어떤 상황에서나 해로워요.'}],d.context,v=>{d.context=v;ctx.save();}),el('span','status-pill',`${Object.keys(d.answers).length}/4 영향 기록`));footer(ctx,button('조사 마침',()=>ctx.complete('M4'),'primary'));
+}

@@ -1,0 +1,16 @@
+export function el<K extends keyof HTMLElementTagNameMap>(tag:K,cls='',text=''):HTMLElementTagNameMap[K]{const n=document.createElement(tag);n.className=cls;if(text)n.textContent=text;return n;}
+export function button(text:string,fn:()=>void,cls='secondary',disabled=false){const b=el('button',`button ${cls}`,text);b.type='button';b.disabled=disabled;b.onclick=fn;return b;}
+export function heading(text:string){return el('h2','',text);}
+export function paragraph(text:string,cls=''){return el('p',cls,text);}
+export function panel(title:string,...children:Node[]){const n=el('section','panel');n.append(heading(title),...children);return n;}
+export function choices(options:{id:string;label:string}[],value:string,change:(id:string)=>void){const box=el('div','choices');for(const o of options){const b=button(o.label,()=>change(o.id),'choice'+(value===o.id?' selected':''));b.setAttribute('aria-pressed',String(value===o.id));box.append(b);}return box;}
+export function select(label:string,options:{id:string;label:string}[],value:string,change:(id:string)=>void){const wrap=el('div','field');wrap.append(el('span','field-label',label));const pick=button(options.find(o=>o.id===value)?.label||'골라요',()=>{const dialog=modal(label,options.filter(o=>o.id).map(o=>button(o.label,()=>{pick.textContent=o.label;dialog.close();change(o.id);},o.id===value?'selected':'secondary')));},'choice pick');pick.setAttribute('aria-label',label);wrap.append(pick);return wrap;}
+export function slider(label:string,min:number,max:number,step:number,value:number,change:(v:number)=>void){const wrap=el('label','field slider');const name=el('span','field-label',label);const row=el('div','range-row');const input=el('input');input.type='range';input.min=String(min);input.max=String(max);input.step=String(step);input.value=String(value);input.setAttribute('aria-label',label);const update=(v:number)=>{input.value=String(Math.min(max,Math.max(min,v)));change(+input.value);};input.oninput=()=>change(+input.value);row.append(button('−',()=>update(+input.value-step),'step'),input,button('+',()=>update(+input.value+step),'step'));wrap.append(name,row);return wrap;}
+export function modal(title:string,children:Node[]){
+ const dialog=el('dialog','modal');const previous=document.activeElement as HTMLElement|null;
+ dialog.append(heading(title),...children,button('닫기',()=>dialog.close(),'primary'));
+ dialog.addEventListener('close',()=>{dialog.remove();previous?.focus();});document.body.append(dialog);dialog.showModal();return dialog;
+}
+export function notice(text:string){const old=document.querySelector('.toast');old?.remove();const n=el('div','toast',text);n.setAttribute('role','status');document.body.append(n);setTimeout(()=>n.remove(),6500);}
+export function modelBadge(){return el('span','model-badge','설명용 모형');}
+export type Context={host:HTMLElement;save:()=>void;render:()=>void;go:(route:string)=>void;complete:(stage:import('./model').Stage)=>void;state:import('./model').State;attempt:import('./model').Attempt;cleanup:(f:()=>void)=>void};

@@ -1,0 +1,497 @@
+{
+  "schemaVersion": 1,
+  "designVersion": "1.2",
+  "designDate": "2026-10-18",
+  "project": {
+    "name": "생명 코드 연구소",
+    "englishName": "Life Code Lab",
+    "audience": "초등학교 4학년",
+    "platform": "태블릿 가로형 웹",
+    "targetPlayMinutes": [
+      35,
+      45
+    ]
+  },
+  "renderPolicy": {
+    "main": "2d",
+    "map": "phaser-2d",
+    "defaultActivity": "2d",
+    "threeDDecision": "superseded-by-2d-request-2026-10-18",
+    "threeDRoutes": [],
+    "fallback": "dom-equivalent-controls",
+    "threeDAssetCount": 0
+  },
+  "navigation": {
+    "home": "main",
+    "defaultStart": "nature-map",
+    "globalControls": [
+      "home",
+      "back",
+      "sound",
+      "settings"
+    ],
+    "adminUnlock": "all-routes-single-toggle"
+  },
+  "routes": [
+    {
+      "id": "main",
+      "title": "생명 코드 연구소",
+      "kind": "main",
+      "render": "dom-2d",
+      "back": null,
+      "stageId": null
+    },
+    {
+      "id": "nature-map",
+      "title": "자연 탐험 지도",
+      "kind": "map",
+      "render": "phaser-2d",
+      "back": "main",
+      "stageId": null
+    },
+    {
+      "id": "fungi-field",
+      "title": "균류 표본실",
+      "kind": "activity",
+      "render": "phaser-2d",
+      "back": "nature-map",
+      "stageId": "M1"
+    },
+    {
+      "id": "fungi-microscope",
+      "title": "현미경 분석실",
+      "kind": "activity",
+      "render": "canvas-2d",
+      "back": "fungi-field",
+      "stageId": "M1"
+    },
+    {
+      "id": "water-sampling",
+      "title": "한 방울 채집실",
+      "kind": "activity",
+      "render": "phaser-2d",
+      "back": "nature-map",
+      "stageId": "M2"
+    },
+    {
+      "id": "protist-observation",
+      "title": "원생생물 추적실",
+      "kind": "activity",
+      "render": "canvas-2d",
+      "back": "water-sampling",
+      "stageId": "M2"
+    },
+    {
+      "id": "bacteria-sources",
+      "title": "세균 자료 탐색실",
+      "kind": "activity",
+      "render": "dom-2d",
+      "back": "nature-map",
+      "stageId": "M3"
+    },
+    {
+      "id": "bacteria-profile",
+      "title": "세균 프로필 분석실",
+      "kind": "activity",
+      "render": "dom-2d",
+      "back": "bacteria-sources",
+      "stageId": "M3"
+    },
+    {
+      "id": "impact-investigation",
+      "title": "생활 사건실",
+      "kind": "activity",
+      "render": "phaser-2d",
+      "back": "nature-map",
+      "stageId": "M4"
+    },
+    {
+      "id": "impact-analysis",
+      "title": "영향 분석실",
+      "kind": "activity",
+      "render": "dom-2d",
+      "back": "impact-investigation",
+      "stageId": "M4"
+    },
+    {
+      "id": "solution-assembly",
+      "title": "BIO 솔루션 연구소",
+      "kind": "activity",
+      "render": "phaser-2d",
+      "back": "nature-map",
+      "stageId": "M5"
+    },
+    {
+      "id": "solution-run",
+      "title": "BIO 솔루션 가동실",
+      "kind": "activity",
+      "render": "phaser-2d",
+      "back": "solution-assembly",
+      "stageId": "M5"
+    },
+    {
+      "id": "final-report",
+      "title": "최종 연구 보고",
+      "kind": "final",
+      "render": "dom-2d",
+      "back": "nature-map",
+      "stageId": null
+    },
+    {
+      "id": "core-restoration",
+      "title": "BIO CORE 복구",
+      "kind": "final",
+      "render": "phaser-2d",
+      "back": "final-report",
+      "stageId": null
+    },
+    {
+      "id": "results",
+      "title": "연구소 복구 완료",
+      "kind": "result",
+      "render": "dom-2d",
+      "back": "core-restoration",
+      "stageId": null
+    }
+  ],
+  "stages": [
+    {
+      "id": "M1",
+      "title": "균류의 흔적을 복원하라",
+      "entry": "fungi-field",
+      "exit": "fungi-microscope",
+      "requires": [],
+      "evidenceId": "E1",
+      "evidenceName": "균류 관찰 패킷",
+      "worldChange": "균류 표본실 조명과 관찰 안내 복구",
+      "minutes": 6,
+      "criteria": [
+        "fungi.environment.two-types",
+        "fungi.mushroom.valid-capture",
+        "fungi.mold.valid-capture",
+        "fungi.annotations.two-targets",
+        "fungi.claim.supported"
+      ],
+      "interaction": {
+        "requiredAdditionalCriteria": [],
+        "acceptanceIds": [
+          "AC-13",
+          "AC-19"
+        ],
+        "features": [
+          "baseline-capture-compare",
+          "specimen-centered-zoom",
+          "offset-magnifier"
+        ],
+        "paperLoss": "관찰 조건 변경으로 실제 시야가 달라지고 촬영 근거가 남음",
+        "primary": "adjust-capture-annotate"
+      }
+    },
+    {
+      "id": "M2",
+      "title": "한 방울 속 생물을 찾아라",
+      "entry": "water-sampling",
+      "exit": "protist-observation",
+      "requires": [
+        "M1"
+      ],
+      "evidenceId": "E2",
+      "evidenceName": "원생생물 비교 기록",
+      "worldChange": "수중 관찰 시설 순환 장치 복구",
+      "minutes": 6,
+      "criteria": [
+        "water.sample.ready",
+        "protist.spirogyra.capture",
+        "protist.paramecium.capture",
+        "protist.comparison.three-dimensions",
+        "protist.motion.two-times"
+      ],
+      "interaction": {
+        "requiredAdditionalCriteria": [
+          "protist.motion.two-times"
+        ],
+        "acceptanceIds": [
+          "AC-14",
+          "AC-19"
+        ],
+        "features": [
+          "playback-seek",
+          "same-track-a-b",
+          "specimen-space-trail",
+          "stationary-assist"
+        ],
+        "paperLoss": "같은 대상의 움직임을 되돌려 보고 두 시점의 위치를 비교",
+        "primary": "track-replay-compare"
+      }
+    },
+    {
+      "id": "M3",
+      "title": "진짜 근거를 찾아라",
+      "entry": "bacteria-sources",
+      "exit": "bacteria-profile",
+      "requires": [
+        "M2"
+      ],
+      "evidenceId": "E3",
+      "evidenceName": "세균 증거 프로필",
+      "worldChange": "자료실 정보판 재정렬",
+      "minutes": 5,
+      "criteria": [
+        "bacteria.sources.three-types",
+        "bacteria.trait.supported",
+        "bacteria.habitat.supported",
+        "bacteria.claims.source-segments"
+      ],
+      "interaction": {
+        "requiredAdditionalCriteria": [
+          "bacteria.claims.source-segments"
+        ],
+        "acceptanceIds": [
+          "AC-15",
+          "AC-19"
+        ],
+        "features": [
+          "source-segment-binding",
+          "claim-support-state",
+          "unlink-and-recheck"
+        ],
+        "paperLoss": "자료 연결을 바꾸면 주장별 근거 상태와 원문 표시가 즉시 갱신",
+        "primary": "bind-review-revise"
+      }
+    },
+    {
+      "id": "M4",
+      "title": "생활 속 사건을 해결하라",
+      "entry": "impact-investigation",
+      "exit": "impact-analysis",
+      "requires": [
+        "M3"
+      ],
+      "evidenceId": "E4",
+      "evidenceName": "생활 영향 사건 보고서",
+      "worldChange": "생활마을 안내와 영향 분석 오류 수정",
+      "minutes": 8,
+      "criteria": [
+        "impact.reports.four-cases",
+        "impact.evidence.two-per-case",
+        "impact.fungi.context-comparison",
+        "impact.bread.temporal-evidence"
+      ],
+      "interaction": {
+        "minutesByActivity": {
+          "contextComparison": 2,
+          "otherCases": 3,
+          "representative": 3
+        },
+        "features": [
+          "bread-sequence-four-frames",
+          "valid-temporal-pair",
+          "change-annotation",
+          "bread-leaf-context"
+        ],
+        "primary": "scrub-pin-context-compare",
+        "paperLoss": "같은 표본의 시간 기록을 탐색하고 변화 전후를 고정해 근거화",
+        "requiredAdditionalCriteria": [
+          "impact.bread.temporal-evidence"
+        ],
+        "acceptanceIds": [
+          "AC-16",
+          "AC-19"
+        ]
+      }
+    },
+    {
+      "id": "M5",
+      "title": "생명과학으로 해결하라",
+      "entry": "solution-assembly",
+      "exit": "solution-run",
+      "requires": [
+        "M4"
+      ],
+      "evidenceId": "E5",
+      "evidenceName": "BIO 솔루션 설계도",
+      "worldChange": "작업실 가동 및 코어 입력 5개 준비",
+      "minutes": 6,
+      "criteria": [
+        "solution.source.reviewed",
+        "solution.graph.connected",
+        "solution.biological-action.matches",
+        "solution.run.passed",
+        "solution.explanation.supported",
+        "solution.prediction.before-run",
+        "solution.reflection.supported",
+        "solution.run.current-revision"
+      ],
+      "interaction": {
+        "requiredAdditionalCriteria": [
+          "solution.prediction.before-run",
+          "solution.reflection.supported",
+          "solution.run.current-revision"
+        ],
+        "acceptanceIds": [
+          "AC-17",
+          "AC-19"
+        ],
+        "features": [
+          "prediction-before-run",
+          "revision-bound-run",
+          "run-history-compare",
+          "first-success-allowed"
+        ],
+        "paperLoss": "자기 설계를 실행하고 예상 및 이전 실행과 결과를 비교",
+        "primary": "predict-build-run-reflect"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "id": "yogurt",
+      "title": "요구르트가 만들어졌어",
+      "groups": [
+        "bacteria"
+      ],
+      "impact": "helpful",
+      "status": "draft"
+    },
+    {
+      "id": "bread-mold",
+      "title": "빵에 곰팡이가 생겼어",
+      "groups": [
+        "fungi"
+      ],
+      "impact": "harmful",
+      "status": "draft"
+    },
+    {
+      "id": "leaf-decomposition",
+      "title": "낙엽이 분해되고 있어",
+      "groups": [
+        "fungi",
+        "bacteria"
+      ],
+      "impact": "helpful",
+      "status": "draft"
+    },
+    {
+      "id": "aquatic-food-web",
+      "title": "작은 생물이 물속 먹이 관계를 이어 줘",
+      "groups": [
+        "protists"
+      ],
+      "impact": "helpful",
+      "status": "draft"
+    }
+  ],
+  "contentStatus": {
+    "review": "pending",
+    "scientificImages": "missing",
+    "runtimeAssets": "not-produced",
+    "temporalSequences": "missing-review-required",
+    "sourceSegmentRelations": "missing-review-required"
+  },
+  "acceptanceIds": [
+    "AC-01",
+    "AC-02",
+    "AC-03",
+    "AC-04",
+    "AC-05",
+    "AC-06",
+    "AC-07",
+    "AC-08",
+    "AC-09",
+    "AC-10",
+    "AC-11",
+    "AC-12",
+    "AC-13",
+    "AC-14",
+    "AC-15",
+    "AC-16",
+    "AC-17",
+    "AC-18",
+    "AC-19"
+  ],
+  "promptPage": "https://chatgpt.com/space/page_6535bcc0d86481919b5c5615cb8cfa9d",
+  "interactionDesignRef": "INTERACTION_DESIGN.md",
+  "implementationStatus": "design-only",
+  "targetViewports": [
+    {
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "width": 1280,
+      "height": 720
+    }
+  ],
+  "criteriaDefinitions": {
+    "solution.run.current-revision": "현재 설계 버전과 성공 RUN 스냅샷의 버전 일치; 중단 실행 및 수정 전 성공은 거부",
+    "solution.reflection.supported": "해당 RUN의 예상과 관찰 결과를 대조하고 근거 설명 확인",
+    "protist.motion.two-times": "같은 source/recording/track의 서로 다른 유효 시점 A/B를 움직임 설명에 연결; 보조 관찰 동일 조건",
+    "impact.bread.temporal-evidence": "같은 표본의 검수된 전후 쌍과 유효 변화 표시; 시점 쌍은 하나의 사건 근거로 계산",
+    "bacteria.claims.source-segments": "특징/사는 곳 주장에 해당 원문 구간 연결; 지원 근거 존재 및 미해결 불일치 없음",
+    "solution.prediction.before-run": "해당 designRevision에 연결한 예상/이유를 RUN 전에 고정; 예상 오답은 감점하지 않음"
+  },
+  "finalRecall": {
+    "source": "learner-attempt-records",
+    "skippable": true,
+    "contents": [
+      "E1-capture-annotations",
+      "E2-temporal-pair",
+      "E3-source-bindings",
+      "E4-change-comparison",
+      "E5-run-reflection"
+    ],
+    "extraAssessment": false,
+    "reducedMotion": "static-cards",
+    "acceptanceId": "AC-18"
+  },
+  "legacyThreeDAssets": [
+    {
+      "id": "bio-workbench",
+      "name": "BIO 작업대",
+      "reference": "ref3d_bio_workbench.png",
+      "model": "prop_bio_workbench.glb"
+    },
+    {
+      "id": "input-module",
+      "name": "입력 모듈",
+      "reference": "ref3d_input_module.png",
+      "model": "prop_input_module.glb"
+    },
+    {
+      "id": "bioprocess-module",
+      "name": "생물 작용 모듈",
+      "reference": "ref3d_bioprocess_module.png",
+      "model": "prop_bioprocess_module.glb"
+    },
+    {
+      "id": "output-module",
+      "name": "결과 모듈",
+      "reference": "ref3d_output_module.png",
+      "model": "prop_output_module.glb"
+    },
+    {
+      "id": "bio-core",
+      "name": "BIO CORE 본체",
+      "reference": "ref3d_bio_core.png",
+      "model": "prop_bio_core.glb"
+    },
+    {
+      "id": "activation-lever",
+      "name": "가동 레버",
+      "reference": "ref3d_activation_lever.png",
+      "model": "prop_activation_lever.glb"
+    },
+    {
+      "id": "evidence-cartridge",
+      "name": "연구 기록 카트리지",
+      "reference": "ref3d_evidence_cartridge.png",
+      "model": "prop_evidence_cartridge.glb"
+    }
+  ],
+  "threeDAssets": []
+}
