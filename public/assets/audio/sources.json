@@ -1,0 +1,10 @@
+{
+  "author": "Kenney",
+  "pack": "Interface Sounds 1.0",
+  "license": "CC0-1.0",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "download": "https://opengameart.org/sites/default/files/kenney_interfaceSounds.zip",
+  "retrieved": "2026-10-22",
+  "processing": "Mono WAV 44.1kHz; maximum 0.55 seconds; tail fade; amplitude limiter.",
+  "mapping": {"click":"click_003.ogg","success":"confirmation_002.ogg","retry":"back_002.ogg","snap":"drop_003.ogg","capture":"switch_001.ogg","water":"drop_001.ogg","hint":"select_002.ogg","run":"confirmation_004.ogg"}
+}

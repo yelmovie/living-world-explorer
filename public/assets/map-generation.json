@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-21",
+  "tool": "image_gen built-in",
+  "purpose": "Fictional 2.5D pixel RPG environment and character illustrations; not scientific observation evidence",
+  "terrain": {"path":"map-terrain-v2.webp","width":1280,"height":720},
+  "characters": {
+    "moa": {"identity":"brown high ponytail, leaf tie, round spectacles, cream shirt, moss-green vest, khaki shorts, brown boots, cross-body satchel","directions":{"down":"map-moa-down.webp","right":"map-moa-right.webp","up":"map-moa-up.webp","left":"map-moa-left-v2.webp"},"displayHeight":92,"pivot":"bottom center"},
+    "companion": {"identity":"pink rabbit, forehead goggles, white lab coat with pink trim, satchel","directions":{"down":"map-companion-down.webp","right":"map-companion-right.webp","up":"map-companion-up.webp","left":"map-companion-left.webp"},"displayHeight":65,"pivot":"bottom center"}
+  },
+  "portraits": ["moa-portrait.webp","companion-portrait.webp"],
+  "generationPrompts": {
+    "terrain": "Landscape 16:9 coherent isometric nature science village, professional crisp pixel art, warm sage forest, muted teal water and roofs, warm stone and cream stucco. No text, UI, markers or characters. Five distinct small facilities around a central domed BIO observatory: mushroom specimen cottage upper-left, pond observatory upper-right, archive cottage middle-right, village life investigation workshop lower-right, glass greenhouse workshop lower-left. Broad visible tan walking paths connect all six south-facing doorsteps around an open ring; spawning area bottom-center. Trees, flowers, rocks and bridges frame the borders without blocking paths. 2.5D top-down camera, no vanishing point, fine pixel clusters, no smooth plastic 3D rendering.",
+    "sprites": "Transparent eight-character sprite atlas in an even four-column two-row grid. Row one the same Moa in front/right/rear/left directions; brown high ponytail tied with green leaf, spectacles, cream shirt, moss-green field vest, khaki shorts, brown boots, satchel. Row two the same small pink rabbit research assistant, forehead goggles, white pink-trim lab coat, satchel. Crisp hand-crafted pixel RPG style, consistent silhouettes, aligned feet, isolated full bodies, generous transparent gutters, no labels, floor, UI or background. The generated human left pose matched right; the right pose was mirrored for the final left-facing asset.",
+    "portraits": "Two separate mentor portrait cutouts on transparent alpha, two equal square cells, no UI or text. Left: smiling researcher Moa chest-up, brown ponytail, green leaf, thin round spectacles, warm brown eyes, cream shirt, moss-green research vest, satchel strap, open guiding palm. Right: curious pink rabbit assistant chest-up including long ears, forehead protective goggles, white pink-trim lab coat, satchel, tiny raised paw. Polished painterly educational-game characters, readable faces, full hair/ears/hands within cells, no checkerboard or ground shadows."
+  },
+  "processing": "Workspace-local Sharp crops, alpha-preserving WebP compression and required left-pose mirror. Originals retained non-destructively by the generation tool.",
+  "verification": "Terrain composition and derivative portraits/sprites viewed. TypeScript compilation passed after renderer integration. Final runtime/device and map-camera interaction verification belongs to the main integration audit.",
+  "unusedCandidates": ["map-moa-left.webp"]
+}

@@ -3,7 +3,7 @@ import {layout,footer} from './observe';
 import {modules,stages} from '../content';
 import {evaluateSolution} from '../evaluate';
 import {stageIds,type Stage} from '../model';
-import {evidenceView} from '../evidence-view';
+import {inquiryEvidenceView as evidenceView} from './inquiry';
 const label=(id:string)=>modules.find(m=>m.id===id)?.label||'빈 자리';
 export const runFeedback:Record<string,string>={'connection-missing':'이어지지 않은 곳이 있어요. 연결을 확인해요.','action-unsupported':'이 재료와 생물의 작용이 사례와 맞는지 확인해요.','outcome-unsupported':'이 작용으로 소개할 결과를 다시 골라요.','supported':'입력한 재료와 생물의 작용이 요구르트 사례로 이어졌어요.'};
 async function scene(ctx:Context,host:HTMLElement,labels:string[],enabled:boolean[],onPick:(i:number)=>void,core=false){

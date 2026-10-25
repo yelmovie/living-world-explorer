@@ -5,3 +5,6 @@ dist/
 test-results/
 playwright-report/
 *.log
+
+.wrangler/
+graphify-out/

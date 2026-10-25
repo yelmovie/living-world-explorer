@@ -1,12 +1,14 @@
 import {position,breadSpots,type Point} from './model';
 export function canvas(w=720,h=450){const c=document.createElement('canvas');c.width=w;c.height=h;c.className='observation';c.setAttribute('role','img');return c;}
-export function draw(c:HTMLCanvasElement,kind:string,opts:{focus?:number;light?:number;zoom?:number;pan?:Point;time?:number;marks?:Point[];trail?:boolean}={}){
+export type DrawOptions={focus?:number;light?:number;zoom?:number;pan?:Point;time?:number;marks?:Point[];trail?:boolean;image?:CanvasImageSource;markerSpace?:'world'};
+export function draw(c:HTMLCanvasElement,kind:string,opts:DrawOptions={}){
  const g=c.getContext('2d')!;const w=c.width,h=c.height;g.clearRect(0,0,w,h);g.fillStyle='#eef5df';g.fillRect(0,0,w,h);
  g.save();g.translate(w/2,h/2);g.scale(opts.zoom??1,opts.zoom??1);g.translate(-w/2+(opts.pan?.x||0)*w,-h/2+(opts.pan?.y||0)*h);
  const sx=(x:number)=>x*w,sy=(y:number)=>y*h;
  g.filter=`blur(${Math.abs((opts.focus??65)-65)/7}px) brightness(${(opts.light??65)/65})`;
  const circle=(x:number,y:number,r:number,color:string)=>{g.beginPath();g.fillStyle=color;g.arc(sx(x),sy(y),r*w,0,Math.PI*2);g.fill();};
- if(kind==='mushroom'){
+ if(opts.image){g.drawImage(opts.image,0,0,w,h);
+ }else if(kind==='mushroom'){
   g.fillStyle='#d2b595';g.beginPath();g.roundRect(sx(.45),sy(.42),sx(.1),sy(.4),18);g.fill();
   g.fillStyle='#8e513b';g.beginPath();g.ellipse(sx(.5),sy(.43),sx(.24),sy(.18),0,Math.PI,Math.PI*2);g.lineTo(sx(.74),sy(.45));g.quadraticCurveTo(sx(.5),sy(.55),sx(.26),sy(.45));g.fill();
   g.strokeStyle='#e3c19c';g.lineWidth=3;for(let i=0;i<13;i++){g.beginPath();g.moveTo(sx(.5),sy(.5));g.lineTo(sx(.27+i*.038),sy(.44));g.stroke();}
@@ -20,15 +22,27 @@ export function draw(c:HTMLCanvasElement,kind:string,opts:{focus?:number;light?:
  }else if(kind==='bread'){
   g.fillStyle='#b9804d';g.beginPath();g.roundRect(sx(.2),sy(.2),sx(.6),sy(.62),40);g.fill();g.fillStyle='#ecd2a2';g.beginPath();g.roundRect(sx(.23),sy(.23),sx(.54),sy(.55),30);g.fill();
   for(let i=0;i<30;i++)circle(.28+(i*.097)% .42,.3+(i*.073)% .36,.006,'#cfb080');
-  breadSpots(opts.time??0).forEach((p,i)=>circle(p.x,p.y,p.r,i%2?'#69825a':'#8e9a70'));
  }else if(kind==='bacteria'){
   for(let i=0;i<15;i++){g.save();g.translate(sx(.15+(i*.137)% .7),sy(.15+(i*.23)% .7));g.rotate(i);g.fillStyle=i%2?'#78a67e':'#5d866c';g.beginPath();g.roundRect(-20,-9,i%3?48:20,18,10);g.fill();g.restore();}
  }else if(kind==='leaf'){
-  for(let i=0;i<7;i++){g.save();g.translate(sx(.2+(i*.11)% .6),sy(.3+(i*.17)% .4));g.rotate(i);g.fillStyle=i%2?'#ad864b':'#a8a45d';g.beginPath();g.ellipse(0,0,55-(opts.time??0)*7,23,0,0,7);g.fill();g.restore();}
+  for(let i=0;i<7;i++){g.save();g.translate(sx(.2+(i*.11)% .6),sy(.3+(i*.17)% .4));g.rotate(i);g.fillStyle=i%2?'#ad864b':'#a8a45d';g.beginPath();g.ellipse(0,0,55,23,0,0,7);g.fill();g.restore();}
  }else if(kind==='yogurt'){
   g.fillStyle='#fffdf6';g.strokeStyle='#b3c5b6';g.lineWidth=6;g.beginPath();g.roundRect(sx(.35),sy(.2),sx(.3),sy(.6),24);g.fill();g.stroke();g.fillStyle='#437c64';g.fillRect(sx(.35),sy(.45),sx(.3),sy(.2));
+ }else if(kind==='question'){
+  g.fillStyle='#fff9e9';g.strokeStyle='#8a9e79';g.lineWidth=4;g.beginPath();g.roundRect(sx(.19),sy(.12),sx(.62),sy(.72),18);g.fill();g.stroke();
+  g.font=`bold ${Math.round(h*.51)}px sans-serif`;g.textAlign='center';g.textBaseline='middle';g.fillStyle='#bc8b3d';g.fillText('?',sx(.5),sy(.5));
  }else{g.fillStyle='#bdd9cf';g.fillRect(sx(.1),sy(.25),sx(.8),sy(.5));for(let i=0;i<7;i++)circle(.2+i*.1,.4+Math.sin(i)*.1,.025,'#4d8b7a');}
+ // Every frame reuses the same base image and coordinates. Only the observed
+ // change grows; the specimen, camera and scale remain fixed for comparison.
+ if(kind==='bread')breadSpots(opts.time??0).forEach((p,i)=>{
+  const x=sx(p.x),y=sy(p.y),r=p.r*w;const edge=g.createRadialGradient(x,y,r*.3,x,y,r);edge.addColorStop(0,i%2?'#59794d':'#75835d');edge.addColorStop(.72,'#8b9b71');edge.addColorStop(1,'#a2aa7d33');g.fillStyle=edge;g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fill();
+  circle(p.x,p.y,p.r*.3,i%2?'#536944':'#6e7a55');
+ });
+ if(kind==='leaf')for(let i=0;i<Math.floor(opts.time??0)*6;i++){
+  const a=i*2.4,x=sx(.52+Math.cos(a)*.025*Math.sqrt(i)),y=sy(.48+Math.sin(a)*.034*Math.sqrt(i)),r=w*(.027+(opts.time??0)*.007);
+  const soil=g.createRadialGradient(x,y,0,x,y,r);soil.addColorStop(0,'#63533a');soil.addColorStop(.6,'#7d6948e6');soil.addColorStop(1,'#8a754c00');g.fillStyle=soil;g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fill();
+ }
  g.filter='none';g.restore();
- for(const p of opts.marks||[]){g.strokeStyle='#db6e35';g.lineWidth=4;g.beginPath();g.arc(sx(p.x),sy(p.y),18,0,7);g.stroke();}
+ for(const p of opts.marks||[]){const zoom=opts.zoom??1;const x=opts.markerSpace==='world'?(p.x+(opts.pan?.x??0)-.5)*zoom+.5:p.x,y=opts.markerSpace==='world'?(p.y+(opts.pan?.y??0)-.5)*zoom+.5:p.y;g.strokeStyle='#fff9e9';g.lineWidth=7;g.beginPath();g.arc(sx(x),sy(y),14,0,7);g.stroke();g.strokeStyle='#be652d';g.lineWidth=4;g.stroke();}
  c.setAttribute('aria-label',`${kind} 설명용 관찰 모형`);
 }
