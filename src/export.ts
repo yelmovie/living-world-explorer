@@ -1,13 +1,14 @@
 import {active,type State,stageIds} from './model';
 import {inquiryTasks} from './curriculum';
-import {artFor} from './artAssets';
+import {artFor,artKey,artTime} from './artAssets';
 
 /** Export the selected case from the learner or the isolated classroom preview. */
 export function cardContent(s:State){
  const a=active(s),record=a.inquiry.records['M5-4'];
  const task=inquiryTasks.find(t=>t.id==='M5-4')!;
  const item=task.items.find(it=>it.id===record?.assignments.case);
- return {caseId:item?.id||'',caseLabel:item?.label||'내가 조사한 생물의 작용',action:task.targets.find(t=>t.id===item?.target)?.label||'아직 소개할 사례를 고르지 않았어요.',description:item?.detail||'발견 도감에서 내 탐구 기록을 살펴봐요.',note:a.cardNote||record?.note||'',art:artFor(item?.art)?.src};
+ const kind=item?artKey(item):undefined;
+ return {caseId:item?.id||'',caseLabel:item?.label||'내가 조사한 생물의 작용',action:task.targets.find(t=>t.id===item?.target)?.label||'아직 소개할 사례를 고르지 않았어요.',description:item?.detail||'발견 도감에서 내 탐구 기록을 살펴봐요.',note:a.cardNote||record?.note||'',art:artFor(kind,artTime(kind,item?.detail||'',item?.id))?.src};
 }
 
 function lines(g:CanvasRenderingContext2D,text:string,x:number,y:number,width:number,lineHeight:number,limit:number){

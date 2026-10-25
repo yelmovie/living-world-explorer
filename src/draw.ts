@@ -1,13 +1,21 @@
 import {position,breadSpots,type Point} from './model';
 export function canvas(w=720,h=450){const c=document.createElement('canvas');c.width=w;c.height=h;c.className='observation';c.setAttribute('role','img');return c;}
 export type DrawOptions={focus?:number;light?:number;zoom?:number;pan?:Point;time?:number;marks?:Point[];trail?:boolean;image?:CanvasImageSource;markerSpace?:'world'};
+const motionImages=new WeakMap<object,HTMLCanvasElement>();
+function motionImage(source:CanvasImageSource){
+ const cached=motionImages.get(source);if(cached)return cached;
+ const sprite=canvas(640,400),ctx=sprite.getContext('2d')!;ctx.drawImage(source,0,0,640,400);
+ ctx.globalCompositeOperation='destination-in';
+ for(const horizontal of [true,false]){const fade=ctx.createLinearGradient(0,0,horizontal?640:0,horizontal?0:400);fade.addColorStop(0,'transparent');fade.addColorStop(.1,'white');fade.addColorStop(.9,'white');fade.addColorStop(1,'transparent');ctx.fillStyle=fade;ctx.fillRect(0,0,640,400);}
+ motionImages.set(source,sprite);return sprite;
+}
 export function draw(c:HTMLCanvasElement,kind:string,opts:DrawOptions={}){
  const g=c.getContext('2d')!;const w=c.width,h=c.height;g.clearRect(0,0,w,h);g.fillStyle='#eef5df';g.fillRect(0,0,w,h);
  g.save();g.translate(w/2,h/2);g.scale(opts.zoom??1,opts.zoom??1);g.translate(-w/2+(opts.pan?.x||0)*w,-h/2+(opts.pan?.y||0)*h);
  const sx=(x:number)=>x*w,sy=(y:number)=>y*h;
  g.filter=`blur(${Math.abs((opts.focus??65)-65)/7}px) brightness(${(opts.light??65)/65})`;
  const circle=(x:number,y:number,r:number,color:string)=>{g.beginPath();g.fillStyle=color;g.arc(sx(x),sy(y),r*w,0,Math.PI*2);g.fill();};
- if(opts.image){g.drawImage(opts.image,0,0,w,h);
+ if(opts.image&&!(kind==='paramecium'&&opts.trail)){g.drawImage(opts.image,0,0,w,h);
  }else if(kind==='mushroom'){
   g.fillStyle='#d2b595';g.beginPath();g.roundRect(sx(.45),sy(.42),sx(.1),sy(.4),18);g.fill();
   g.fillStyle='#8e513b';g.beginPath();g.ellipse(sx(.5),sy(.43),sx(.24),sy(.18),0,Math.PI,Math.PI*2);g.lineTo(sx(.74),sy(.45));g.quadraticCurveTo(sx(.5),sy(.55),sx(.26),sy(.45));g.fill();
@@ -18,7 +26,8 @@ export function draw(c:HTMLCanvasElement,kind:string,opts:DrawOptions={}){
   g.strokeStyle='#699a53';g.lineWidth=34;for(let k=0;k<3;k++){g.beginPath();g.moveTo(sx(.2+k*.22),sy(.1));g.lineTo(sx(.35+k*.22),sy(.9));g.stroke();g.strokeStyle='#d5e6a9';g.lineWidth=3;for(let i=0;i<8;i++){g.beginPath();g.moveTo(sx(.18+k*.22+i*.019),sy(.16+i*.09));g.lineTo(sx(.24+k*.22+i*.019),sy(.16+i*.09));g.stroke();}g.strokeStyle='#699a53';g.lineWidth=34;}
  }else if(kind==='paramecium'){
   const p=position(opts.time??0);if(opts.trail){g.strokeStyle='#9fa78c';g.lineWidth=3;g.setLineDash([7,7]);g.beginPath();for(let i=0;i<=10;i++){const q=position(i);i?g.lineTo(sx(q.x),sy(q.y)):g.moveTo(sx(q.x),sy(q.y));}g.stroke();g.setLineDash([]);}
-  g.save();g.translate(sx(p.x),sy(p.y));g.rotate(-.25);g.fillStyle='#c9bd83';g.strokeStyle='#7c8152';g.lineWidth=3;g.beginPath();g.ellipse(0,0,sx(.11),sy(.07),0,0,Math.PI*2);g.fill();g.stroke();for(let i=0;i<22;i++){const a=i*Math.PI/11;g.beginPath();g.moveTo(Math.cos(a)*sx(.11),Math.sin(a)*sy(.07));g.lineTo(Math.cos(a)*sx(.125),Math.sin(a)*sy(.095));g.stroke();}g.fillStyle='#7d8055';g.beginPath();g.ellipse(-8,0,12,8,0,0,7);g.fill();g.restore();
+  if(opts.image){const sprite=motionImage(opts.image),width=w*.28,height=width*sprite.height/sprite.width;g.drawImage(sprite,sx(p.x)-width/2,sy(p.y)-height/2,width,height);}
+  else{g.save();g.translate(sx(p.x),sy(p.y));g.rotate(-.25);g.fillStyle='#c9bd83';g.strokeStyle='#7c8152';g.lineWidth=3;g.beginPath();g.ellipse(0,0,sx(.11),sy(.07),0,0,Math.PI*2);g.fill();g.stroke();for(let i=0;i<22;i++){const a=i*Math.PI/11;g.beginPath();g.moveTo(Math.cos(a)*sx(.11),Math.sin(a)*sy(.07));g.lineTo(Math.cos(a)*sx(.125),Math.sin(a)*sy(.095));g.stroke();}g.fillStyle='#7d8055';g.beginPath();g.ellipse(-8,0,12,8,0,0,7);g.fill();g.restore();}
  }else if(kind==='bread'){
   g.fillStyle='#b9804d';g.beginPath();g.roundRect(sx(.2),sy(.2),sx(.6),sy(.62),40);g.fill();g.fillStyle='#ecd2a2';g.beginPath();g.roundRect(sx(.23),sy(.23),sx(.54),sy(.55),30);g.fill();
   for(let i=0;i<30;i++)circle(.28+(i*.097)% .42,.3+(i*.073)% .36,.006,'#cfb080');
@@ -32,13 +41,13 @@ export function draw(c:HTMLCanvasElement,kind:string,opts:DrawOptions={}){
   g.fillStyle='#fff9e9';g.strokeStyle='#8a9e79';g.lineWidth=4;g.beginPath();g.roundRect(sx(.19),sy(.12),sx(.62),sy(.72),18);g.fill();g.stroke();
   g.font=`bold ${Math.round(h*.51)}px sans-serif`;g.textAlign='center';g.textBaseline='middle';g.fillStyle='#bc8b3d';g.fillText('?',sx(.5),sy(.5));
  }else{g.fillStyle='#bdd9cf';g.fillRect(sx(.1),sy(.25),sx(.8),sy(.5));for(let i=0;i<7;i++)circle(.2+i*.1,.4+Math.sin(i)*.1,.025,'#4d8b7a');}
- // Every frame reuses the same base image and coordinates. Only the observed
- // change grows; the specimen, camera and scale remain fixed for comparison.
- if(kind==='bread')breadSpots(opts.time??0).forEach((p,i)=>{
+ // Generated comparison frames already contain the change. Use these fallback
+ // overlays only while no image is available, keeping the specimen coordinates.
+ if(kind==='bread'&&!opts.image)breadSpots(opts.time??0).forEach((p,i)=>{
   const x=sx(p.x),y=sy(p.y),r=p.r*w;const edge=g.createRadialGradient(x,y,r*.3,x,y,r);edge.addColorStop(0,i%2?'#59794d':'#75835d');edge.addColorStop(.72,'#8b9b71');edge.addColorStop(1,'#a2aa7d33');g.fillStyle=edge;g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fill();
   circle(p.x,p.y,p.r*.3,i%2?'#536944':'#6e7a55');
  });
- if(kind==='leaf')for(let i=0;i<Math.floor(opts.time??0)*6;i++){
+ if(kind==='leaf'&&!opts.image)for(let i=0;i<Math.floor(opts.time??0)*6;i++){
   const a=i*2.4,x=sx(.52+Math.cos(a)*.025*Math.sqrt(i)),y=sy(.48+Math.sin(a)*.034*Math.sqrt(i)),r=w*(.027+(opts.time??0)*.007);
   const soil=g.createRadialGradient(x,y,0,x,y,r);soil.addColorStop(0,'#63533a');soil.addColorStop(.6,'#7d6948e6');soil.addColorStop(1,'#8a754c00');g.fillStyle=soil;g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fill();
  }

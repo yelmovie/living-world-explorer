@@ -30,6 +30,7 @@
 | public/assets/map-terrain-v2.webp | 2026-10-21 기본 image_gen 자체 생성, 1280×720 | 2.5D 픽셀 RPG 지도, 과학 관찰 근거 아님 |
 | public/assets/map-terrain-v3.webp | 2026-10-24 기본 image_gen, v2의 건물·보행 경로를 보존한 새 지도 | 현재 지도·로딩 중 풍경, 1280×720 |
 | public/assets/study-{pond,core,bacteria,bread,leaf,yogurt,soil,milk,yeast}.webp | 2026-10-24 기본 image_gen으로 각각 생성, docs/ART_GENERATION_20261024.md | 학습용 설명 그림·채집 장면·복구 연출, 실제 현미경 사진 아님 |
+| public/assets/specimen-deadwood-v2.webp, specimen-moldy-fruit.webp, specimen-dough-{before,after}.webp, specimen-{bread,leaf}-time-{1,2,3}-v2.webp | 2026-10-25 기본 image_gen 생성·편집 10개. assets/generated/specimens-20261025.json에 전체 프롬프트와 파일별 기록 | 학습용 관찰 모형. 같은 식빵·낙엽·반죽의 전후 비교, 실제 실험 사진·측정 원자료 아님 |
 | public/assets/map-moa-{down,right,up,left-v2}.webp | 2026-10-21 기본 image_gen 자체 생성 | 갈색 묶은 머리·안경·연구 조끼의 모아, 투명 2.5D 픽셀 캐릭터 |
 | public/assets/map-companion-{down,right,up,left}.webp | 2026-10-21 기본 image_gen 자체 생성 | 분홍 토끼 보조 캐릭터, 투명 2.5D 픽셀 캐릭터 |
 | public/assets/moa-portrait.webp, companion-portrait.webp | 2026-10-21 기본 image_gen 자체 생성, 320×320 투명 | 시설 안내 초상, 과학 관찰 근거 아님 |
@@ -39,7 +40,7 @@
 | src/experience.ts의 SVG 아이콘 | 프로젝트 자체 제작 선형 아이콘 | 공통 홈·이전·음소거·설정·탐구 도구 |
 | src/audio.ts | 프로젝트 자체 제작 Web Audio 합성 | 외부 음원·샘플 없음 |
 
-지도·캐릭터 생성 PNG 원본은 이미지 도구의 기본 생성 위치에 보존하고, 실제 사용하는 최적화 WebP는 D: 프로젝트의 public/assets에 둔다. 새 시설 배경의 파일별 생성 기록은 제작 담당자가 추가한다. references 아래의 이미지 시안은 원본 보관 자료이며, 복사해서 사용하기 전 경위를 확인한다.
+지도·캐릭터 생성 PNG 원본은 이미지 도구의 기본 생성 위치에 보존하고, 실제 사용하는 최적화 WebP는 D: 프로젝트의 public/assets에 둔다. 2026-10-25 표본 개선의 생성 PNG 원본은 D: 프로젝트의 assets/generated/specimens-20261025에 보관한다. 새 시설 배경의 파일별 생성 기록은 제작 담당자가 추가한다. references 아래의 이미지 시안은 원본 보관 자료이며, 복사해서 사용하기 전 경위를 확인한다.
 
 ## 교육 내용 근거
 

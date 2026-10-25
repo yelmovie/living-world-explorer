@@ -23,7 +23,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
  const updateStatus=()=>{const g=guidance(task,r);counter.textContent=g.ready?'✓ 기록 준비 완료':`탐구 중 · ${g.done} / ${g.total}`;action.textContent=g.action;status.classList.toggle('ready',g.ready);};
  const save=()=>{r.submitted=false;ctx.save();updateStatus();};const paint=()=>{view?.refresh();save();};
  const info=(text:string)=>{feedback.textContent=text;const portrait=side.querySelector('.mentor-card');portrait?.classList.add('has-feedback');};
- const source=(id:string)=>{const it=task.items.find(i=>i.id===id);if(!it)return;const detail=el('div','source-detail');detail.append(paragraph(it.detail));if(it.art){const pic=canvas(640,360);pic.classList.add('source-picture');const kind=artKey(it)!;const art=artFor(kind);const paint=(image?:CanvasImageSource)=>{draw(pic,kind,{time:artTime(it.art,it.detail),image});pic.setAttribute('aria-label',art?.label||'확인하기 전의 생각을 나타낸 물음표');};paint();if(art){const image=new Image();image.onload=()=>paint(image);image.src=art.src;}detail.prepend(pic);}if(!r.opened.includes(id))r.opened.push(id);save();const dialog=modal(it.label,[detail,button(task.kind==='build'?'이 재료 선택':'이 단서 선택',()=>{view?.arm(id);dialog.close();},'primary')]);dialog.classList.add('source-dialog');dialog.addEventListener('close',()=>{view?.refresh();updateStatus();},{once:true});};
+ const source=(id:string)=>{const it=task.items.find(i=>i.id===id);if(!it)return;const detail=el('div','source-detail');detail.append(paragraph(it.detail));if(it.art){const pic=canvas(640,360);pic.classList.add('source-picture');const kind=artKey(it)!;const art=artFor(kind,artTime(kind,it.detail,it.id));const paint=(image?:CanvasImageSource)=>{if(image){const source=image as HTMLImageElement;pic.height=Math.round(pic.width*source.height/source.width);}draw(pic,kind,{time:artTime(kind,it.detail,it.id),image});pic.setAttribute('aria-label',art?.label||'확인하기 전의 생각을 나타낸 물음표');};paint();if(art){const image=new Image();image.onload=()=>paint(image);image.src=art.src;}detail.prepend(pic);}if(!r.opened.includes(id))r.opened.push(id);save();const dialog=modal(it.label,[detail,button(task.kind==='build'?'이 재료 선택':'이 단서 선택',()=>{view?.arm(id);dialog.close();},'primary')]);dialog.classList.add('source-dialog');dialog.addEventListener('close',()=>{view?.refresh();updateStatus();},{once:true});};
  void import('../renderers/inquiry2d').then(async({mountInquiry})=>{await document.fonts.ready;if(disposed)return;view=mountInquiry(host,task,r,{changed:()=>{save();feedback.textContent='';controls();},open:source,feedback:info},ctx.state.settings.reduced);ctx.cleanup(view.dispose);}).catch(()=>{info('장면을 열지 못했어요. 버튼으로 조작을 눌러 탐구를 이어갈 수 있어요.');});
  const controls=()=>{tools.replaceChildren();
   if(task.kind==='microscope'){
@@ -78,7 +78,7 @@ export function inquiryEvidenceView(evidence:Evidence|undefined){
  for(const task of tasksFor(evidence.stage)){
   const record=evidence.inquiry.records[task.id];if(!record?.completedAt)continue;
   const row=el('div','album-tile');const selected=task.items.find(it=>it.id===record.assignments.case);
-  const kind=task.organism||((selected||task.items[0])?artKey(selected||task.items[0]):undefined);const art=artFor(kind);
+  const kind=task.organism||((selected||task.items[0])?artKey(selected||task.items[0]):undefined);const art=artFor(kind,task.organism?(Number.isFinite(record.pins[1])?record.pins[1]:record.time):artTime(kind,(selected||task.items[0])?.detail||'',(selected||task.items[0])?.id));
   if(kind&&['microscope','track','timeline'].includes(task.kind)){
    const picture=canvas(640,360);picture.classList.add('saved-observation');
    const time=Number.isFinite(record.pins[1])?record.pins[1]:record.time;
@@ -88,8 +88,8 @@ export function inquiryEvidenceView(evidence:Evidence|undefined){
    };
    paint();
    // The moving specimen uses the same deterministic drawing as the activity.
-   if(art&&task.kind!=='track'){const image=new Image();image.onload=()=>paint(image);image.src=art.src;}
-   const preview=button('',()=>{const full=canvas(640,360);full.getContext('2d')!.drawImage(picture,0,0);full.setAttribute('aria-label',picture.getAttribute('aria-label')!);const dialog=modal('내 관찰 사진',[full,paragraph(task.kind==='microscope'?`내가 남긴 특징 표시 ${record.marks.length}곳`:'고정한 이후 시점과 내가 남긴 관찰 표시예요.')]);dialog.classList.add('observation-preview-dialog');},'observation-preview');preview.setAttribute('aria-label',task.title+' · 내 관찰 사진 크게 보기');preview.append(picture);row.append(preview);
+   if(art){const image=new Image();image.onload=()=>{if(task.kind!=='track')picture.height=Math.round(picture.width*image.height/image.width);paint(image);};image.src=art.src;}
+   const preview=button('',()=>{const full=canvas(picture.width,picture.height);full.getContext('2d')!.drawImage(picture,0,0);full.setAttribute('aria-label',picture.getAttribute('aria-label')!);const dialog=modal('내 관찰 사진',[full,paragraph(task.kind==='microscope'?`내가 남긴 특징 표시 ${record.marks.length}곳`:'고정한 이후 시점과 내가 남긴 관찰 표시예요.')]);dialog.classList.add('observation-preview-dialog');},'observation-preview');preview.setAttribute('aria-label',task.title+' · 내 관찰 사진 크게 보기');preview.append(picture);row.append(preview);
   }else if(art){const image=el('img');image.src=art.src;image.alt=art.label;row.append(image);}
   row.append(el('strong','',task.title),paragraph(task.success));
   if(task.kind==='microscope')row.append(paragraph(`내 촬영 · 초점 ${record.focus} · 밝기 ${record.light} · ${record.zoom}배 · 특징 표시 ${record.marks.length}곳`));

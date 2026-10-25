@@ -829,9 +829,10 @@ button.settings-switch[aria-pressed="true"]{background:#3f7550;color:white;borde
 .expedition-secondary{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .activity-stepper>.button{min-width:48px;min-height:48px;padding:8px 12px;font-size:22px}
 .activity-stepper>.button:disabled{opacity:.75}
-.source-detail{display:grid;grid-template-columns:160px minmax(0,1fr);align-items:center;gap:20px}
+.source-dialog{width:min(840px,calc(100vw - 32px));max-width:840px}
+.source-detail{display:grid;grid-template-columns:minmax(0,1fr);align-items:center;gap:16px;min-width:0}
 .source-detail>p:only-child{grid-column:1/-1}
-.source-picture{width:160px;height:160px;object-fit:contain;border-radius:16px}
+.source-picture{display:block;width:100%;height:auto;aspect-ratio:16/9;max-height:min(36dvh,300px);object-fit:contain;border-radius:16px;background:#f1f0e4;border:1px solid #b7c7a1}
 .story-controls,.concept-actions{display:flex;justify-content:space-between;gap:16px}
 .concept-dialog{width:min(980px,calc(100vw - 48px));max-width:980px;padding:20px;gap:12px}
 .concept-dialog>h2{text-align:center;font-size:28px}
@@ -1389,15 +1390,11 @@ button.settings-switch[aria-pressed="true"]{background:#3f7550;color:white;borde
  .settings-dialog[open]{width:960px;padding:0;gap:0}
  .settings-tabs>.button{font-size:26px;min-height:64px}
  .settings-sound-row,.settings-dialog details p{font-size:26px}
- .source-detail{grid-template-columns:220px minmax(0,1fr)}
- .source-picture{width:220px;height:220px}
 }
 @media(max-width:850px){
  .expedition-work{height:380px;flex:none}
  .expedition-canvas-host{height:330px;min-height:0}
  .expedition-tools{display:flex}
- .source-detail{grid-template-columns:100px minmax(0,1fr);gap:12px}
- .source-picture{width:100px;height:120px}
  .story-page{grid-template-columns:90px minmax(0,1fr);min-height:160px;gap:12px}
  .story-page img{height:160px}
  .story-page h2{font-size:26px}

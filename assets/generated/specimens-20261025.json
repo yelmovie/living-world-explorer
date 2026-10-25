@@ -1,0 +1,96 @@
+{
+  "tool": "image_gen built-in",
+  "date": "2026-10-25",
+  "assets": [
+    {
+      "key": "deadwood",
+      "original": "assets/generated/specimens-20261025/deadwood.png",
+      "path": "public/assets/specimen-deadwood-v2.webp",
+      "width": 1024,
+      "height": 576,
+      "bytes": 270982,
+      "prompt": "Use case: scientific-educational. One standalone landscape 16:9 educational specimen observation image. Premium naturalistic macro-photo realism with carefully readable tactile detail, not a cartoon. A classroom explanatory illustration, not claimed measured evidence. No people, no text, no labels, no arrows, no borders, no UI, no collage. A decaying fallen hardwood log lying on the forest floor, viewed close enough to study cracked peeling bark, pale exposed rotten wood grain and damp moss. The actual DEAD LOG occupies 70 percent of the frame, recognizable from its broken end and horizontal trunk. Several small natural tan-brown mushrooms emerge from the rotting wood near the right third, minor secondary detail. Soft forest light, background gently blurred, no fantasy red mushrooms, no stumps of living trees, no isolated mushroom on blank paper."
+    },
+    {
+      "key": "fruit",
+      "original": "assets/generated/specimens-20261025/fruit.png",
+      "path": "public/assets/specimen-moldy-fruit.webp",
+      "width": 1024,
+      "height": 576,
+      "bytes": 94206,
+      "prompt": "Use case: scientific-educational. One standalone landscape 16:9 educational specimen observation image. Premium naturalistic macro-photo realism with carefully readable tactile detail, not a cartoon. A classroom explanatory illustration, not claimed measured evidence. No people, no text, no labels, no arrows, no borders, no UI, no collage. One apple with a clearly localized realistic gray-green fuzzy mold colony growing from a damaged sunken brown area on its upper-right side, resting on a pale neutral specimen tray. Real cottony irregular fungal texture with soft white edges and muted blue-gray green center. The rest of the apple remains recognizable, whole fruit is visible. Clean quiet warm cream laboratory background, scientific specimen context, no hands, no horror, no wet slime, no painted circles."
+    },
+    {
+      "key": "dough-before",
+      "original": "assets/generated/specimens-20261025/dough-before.png",
+      "path": "public/assets/specimen-dough-before.webp",
+      "width": 1024,
+      "height": 576,
+      "bytes": 94588,
+      "prompt": "Use case: scientific-educational. One standalone landscape 16:9 educational specimen observation image. Premium naturalistic macro-photo realism with carefully readable tactile detail, not a cartoon. A classroom explanatory illustration, not claimed measured evidence. No people, no text, no labels, no arrows, no borders, no UI, no collage. One clear round glass mixing bowl with a SMALL fresh pale bread dough ball in its bottom, viewed from a fixed elevated three-quarter camera, bowl centered. Dough is compact, smooth, slightly irregular, occupies about one third of the bowl interior height. Fine realistic flour dust and dough surface. Whole bowl fits within central 70 percent of image. Pale warm cream tabletop and quiet soft sage background. NO baked bread, NO yeast package, NO text or measuring marks. This is the BEFORE frame of a fixed-camera dough rising explanation; clear empty space above dough inside bowl."
+    },
+    {
+      "key": "bread-1",
+      "original": "assets/generated/specimens-20261025/bread-1.png",
+      "path": "public/assets/specimen-bread-time-1-v2.webp",
+      "width": 1024,
+      "height": 576,
+      "bytes": 139152,
+      "prompt": "Use case: scientific-educational. One standalone landscape 16:9 educational specimen observation image. Premium naturalistic macro-photo realism with carefully readable tactile detail, not a cartoon. A classroom explanatory illustration, not claimed measured evidence. No people, no text, no labels, no arrows, no borders, no UI, no collage. EDIT TARGET is the supplied fresh bread photo. Preserve the exact same bread slice silhouette, position, size, crust, pores, linen background, lighting, and directly overhead camera. Change ONLY mold growth on the bread crumb, centered at normalized x=0.52 y=0.48. Stage 1 of a four-observation sequence: a very small early patch: one irregular fuzzy white and pale blue-green mold colony centered near (52%,48%), diameter about 7% of image width. Delicate cottony filaments, tiny dusty blue-green center. Outside this small central patch bread remains fresh."
+    },
+    {
+      "key": "bread-2",
+      "original": "assets/generated/specimens-20261025/bread-2.png",
+      "path": "public/assets/specimen-bread-time-2-v2.webp",
+      "width": 1024,
+      "height": 576,
+      "bytes": 132254,
+      "prompt": "Use case: scientific-educational. One standalone landscape 16:9 educational specimen observation image. Premium naturalistic macro-photo realism with carefully readable tactile detail, not a cartoon. A classroom explanatory illustration, not claimed measured evidence. No people, no text, no labels, no arrows, no borders, no UI, no collage. EDIT TARGET is the supplied fresh bread photo. Preserve the exact same bread slice silhouette, position, size, crust, pores, linen background, lighting, and directly overhead camera. Change ONLY mold growth on the bread crumb, centered at normalized x=0.52 y=0.48. Stage 2 of a four-observation sequence: moderate visible growth: several connected irregular fuzzy colonies confined to the CENTRAL region x=43%..63%, y=34%..62%. Soft cottony white spreading margins, mottled blue-gray/green velvety centers, realistic uneven thickness. No identical repeated round dots."
+    },
+    {
+      "key": "bread-3",
+      "original": "assets/generated/specimens-20261025/bread-3.png",
+      "path": "public/assets/specimen-bread-time-3-v2.webp",
+      "width": 1024,
+      "height": 576,
+      "bytes": 142864,
+      "prompt": "Use case: scientific-educational. One standalone landscape 16:9 educational specimen observation image. Premium naturalistic macro-photo realism with carefully readable tactile detail, not a cartoon. A classroom explanatory illustration, not claimed measured evidence. No people, no text, no labels, no arrows, no borders, no UI, no collage. EDIT TARGET is the supplied fresh bread photo. Preserve the exact same bread slice silhouette, position, size, crust, pores, linen background, lighting, and directly overhead camera. Change ONLY mold growth on the bread crumb, centered at normalized x=0.52 y=0.48. Stage 3 of a four-observation sequence: advanced visible growth: a connected irregular cluster of realistic fuzzy white, blue-green and gray mold across the bread center, within x=33%..72%, y=26%..70%. Colonies merge with organic feathery edges and varied mottled centers. Preserve outer crust and unaffected bread around it. This must look like actual mold on bread, NOT green peas, polka dots, painted circles, solid green balls, foam or moss."
+    },
+    {
+      "key": "leaf-1",
+      "original": "assets/generated/specimens-20261025/leaf-1.png",
+      "path": "public/assets/specimen-leaf-time-1-v2.webp",
+      "width": 1024,
+      "height": 576,
+      "bytes": 87228,
+      "prompt": "Use case: scientific-educational. One standalone landscape 16:9 educational specimen observation image. Premium naturalistic macro-photo realism with carefully readable tactile detail, not a cartoon. A classroom explanatory illustration, not claimed measured evidence. No people, no text, no labels, no arrows, no borders, no UI, no collage. EDIT TARGET is the supplied single dry brown leaf. Preserve the exact camera, cream paper background, lighting, full original leaf outer position, main stem and prominent central vein. This is observation stage 1 in a fixed-camera decomposition explanation. A small initial area of decomposition near normalized (52%,48%) has delicate irregular holes and brittle missing tissue between veins, covering about 5% of the leaf. The cream background is visible through tiny torn gaps. Fine natural ragged edges, no added paint or circles."
+    },
+    {
+      "key": "leaf-2",
+      "original": "assets/generated/specimens-20261025/leaf-2.png",
+      "path": "public/assets/specimen-leaf-time-2-v2.webp",
+      "width": 1024,
+      "height": 576,
+      "bytes": 105766,
+      "prompt": "Use case: scientific-educational. One standalone landscape 16:9 educational specimen observation image. Premium naturalistic macro-photo realism with carefully readable tactile detail, not a cartoon. A classroom explanatory illustration, not claimed measured evidence. No people, no text, no labels, no arrows, no borders, no UI, no collage. EDIT TARGET is the supplied single dry brown leaf. Preserve the exact camera, cream paper background, lighting, full original leaf outer position, main stem and prominent central vein. This is observation stage 2 in a fixed-camera decomposition explanation. Moderate tissue decomposition confined mostly to the leaf's CENTRAL region x=40%..65%, y=30%..65%. Natural irregular holes, missing patches between veins, weakened fine leaf skeleton, a few little curled fragments resting immediately nearby. About 20% of leaf tissue missing. Keep the overall original leaf contour recognizable."
+    },
+    {
+      "key": "leaf-3",
+      "original": "assets/generated/specimens-20261025/leaf-3.png",
+      "path": "public/assets/specimen-leaf-time-3-v2.webp",
+      "width": 1024,
+      "height": 576,
+      "bytes": 107128,
+      "prompt": "Use case: scientific-educational. One standalone landscape 16:9 educational specimen observation image. Premium naturalistic macro-photo realism with carefully readable tactile detail, not a cartoon. A classroom explanatory illustration, not claimed measured evidence. No people, no text, no labels, no arrows, no borders, no UI, no collage. EDIT TARGET is the supplied single dry brown leaf. Preserve the exact camera, cream paper background, lighting, full original leaf outer position, main stem and prominent central vein. This is observation stage 3 in a fixed-camera decomposition explanation. Further decomposition of central leaf tissue: irregular lace-like missing regions and torn gaps within x=28%..76%, y=20%..75%, exposing the SAME cream background, leaving branching veins and some brown tissue and tiny organic fragments. About 40% tissue missing. Overall original stem, leaf location and outer tips remain aligned with reference. Depict physical loss and fragmentation, not dark paint blobs, burned spots, dirt brushed over an unchanged leaf, insects or caterpillar bite marks."
+    },
+    {
+      "key": "dough-after",
+      "original": "assets/generated/specimens-20261025/dough-after.png",
+      "path": "public/assets/specimen-dough-after.webp",
+      "width": 1024,
+      "height": 576,
+      "bytes": 96600,
+      "prompt": "Use case: scientific-educational. EDIT TARGET is the supplied BEFORE photo of dough in a clear glass bowl. Create the AFTER observation for the same bread dough rising explanation. Keep the EXACT bowl shape, rim ellipse, position, camera framing, tabletop, background horizon, light direction, flour dust locations, and overall 16:9 composition. Change ONLY the pale unbaked dough: it is now noticeably expanded to roughly twice its original apparent volume, forming a soft airy gently domed mass higher in the SAME bowl, about two-thirds of the bowl interior height. Subtle fine surface bubbles, natural irregular flour-dusted dough texture, NOT baked bread, no browned crust, no toppings, no foam. Premium naturalistic tactile specimen-photo realism. Classroom explanatory illustration, no asserted real experiment or numerical labels. No text, arrows, UI, split screen, collage, or people."
+    }
+  ]
+}
