@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-25",
+  "tool": "Higgsfield MCP · gpt_image_2_5 (quality high, 1k, 16:9, opaque), style references = existing study pictures",
+  "purpose": "개념 보강 — 확대 단계의 돋보기·현미경 그림, 균류의 공통점(균사)",
+  "credits_spent": "6 (1.5 × 4, retries 0)",
+  "files": [
+    {"deploy": "public/assets/study/mushroom-spores.webp", "source": "mushroom-spores.png", "job": "6ca96ea8-d490-41e1-a2ee-6f7a778e8484", "use": "M1-2 현미경 단계 · 포자 표시 (판정 영역 src/observation-masks.json mushroomSpores:spore)", "prompt": "Same scientific-illustration style as the reference mushroom. Microscope view of mushroom gills: thin parallel gill plates close up; along the gill edges tiny smooth oval brown spores in small clusters of four, a few loose spores between gills. No lens frame, no text, no labels."},
+    {"deploy": "public/assets/study/mold-lens.webp", "source": "mold-lens.png", "job": "81e5ba83-b339-4054-bf57-09a996045a99", "use": "M1-3 돋보기 단계", "prompt": "Hand-lens view at about 10x of mold on bread: white cottony threads over the crumb with tiny round black dots on short stalks. No lens frame, no text."},
+    {"deploy": "public/assets/study/spirogyra-lens.webp", "source": "spirogyra-lens.png", "job": "30c54c84-28ab-4902-a4aa-2ead6de7fd2b", "use": "M2-2 돋보기 단계", "prompt": "Hand-lens view at about 10x of pond water: very thin bright green hair-like threads tangled in clear water, too thin to show inner detail, a few bubbles. No lens frame, no text."},
+    {"deploy": "public/assets/study/mushroom-mycelium.webp", "source": "mushroom-mycelium.png", "job": "89af1671-a732-4a7e-982a-ca1762498150", "use": "M1-4 '둘 다 · 균류의 공통점' 카드 (균사)", "prompt": "Educational cutaway: a mushroom growing from a decaying log; the log cut open to show white branching threads (mycelium) spreading through the wood and joining the stem base. No text, no labels."}
+  ],
+  "derived": [
+    {"deploy": "public/assets/study/bacteria.webp", "from": "assets/generated/study-20261025b/bacteria.png", "how": "scripts/recolor-bacteria.mjs — 채도 있는 부분만 색상 180° 회전(보라·자주 염색 느낌), 바탕 유지. 이전 초록 그림: _unused/public-assets-20261025/bacteria-green-20261025.webp"},
+    {"deploy": "public/assets/study/bacteria-{round,rod,spiral}.webp", "from": "public/assets/study/bacteria.webp", "how": "공(사슬 3개)·막대·나선 부분을 잘라 360px로 저장 — M3-2 세 모양 카드"}
+  ],
+  "notes": "모두 설명용 모형이며 실제 현미경 사진이 아니다."
+}

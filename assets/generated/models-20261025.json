@@ -1,0 +1,165 @@
+{
+ "date": "2026-10-25",
+ "tool": "Higgsfield MCP · gpt_image_2_5 (quality high, 1k, 1:1, white background)",
+ "purpose": "Meshy image-to-3D input images. Prompts and usage: docs/3D_MODEL_PROMPTS.md",
+ "credits_spent": "7.5 (1.5 x 5; one rate-limited submission was not charged and was resubmitted)",
+ "files": [
+  {
+   "source": "mushroom-3d-base.png",
+   "job": "670e1cc4-b80a-498f-a57a-2fb5958ba9c1",
+   "model": "mushroom.glb"
+  },
+  {
+   "source": "mold-3d-base.png",
+   "job": "530732b0-8d43-4b4c-950b-bb3a999f381c",
+   "model": "bread-mold.glb"
+  },
+  {
+   "source": "paramecium-3d-base.png",
+   "job": "329ea3e8-3458-4509-ad13-e4289add8ecb",
+   "model": "paramecium.glb"
+  },
+  {
+   "source": "yeast-3d-base.png",
+   "job": "650f7e40-6367-4367-8c25-f1e0cbe33a08",
+   "model": "yeast.glb"
+  },
+  {
+   "source": "bio-core-3d-base.png",
+   "job": "9c4c5247-3064-4c65-a2b9-2cdbe6fca533",
+   "model": "bio-core.glb"
+  },
+  {
+   "source": "moa-3d-base.png",
+   "job": null,
+   "model": "moa.glb",
+   "note": "PNG conversion of public/assets/characters/moa-full.webp"
+  },
+  {
+   "source": "companion-3d-base.png",
+   "job": null,
+   "model": "companion.glb",
+   "note": "PNG conversion of public/assets/characters/companion-full.webp"
+  }
+ ],
+ "notes": "Explanatory models, not real micrographs.",
+ "meshy": {
+  "date": "2026-10-25",
+  "tool": "Meshy image-to-3D (사용자 계정, 웹에서 받은 텍스처 GLB). 원본은 assets/generated/models-20261025/*-meshy.glb (Git 제외, 수십~수백 MB)",
+  "pipeline": "scripts/shrink-glb.py (Blender 5.2: 정점 병합 후 Decimate collapse, 텍스처 1024·금속/거칠기 512) → 단계별 원본 대조 렌더(scripts/glb-sheet.mjs) → 깨끗한 최소 단계 선택 → scripts/pack-glb.py (Draco, 형태 변화 없음)",
+  "models": [
+   {
+    "receivedAs": "Meshy_AI_Handpainted_Mushroom__1025142258_image-to-3d-texture.glb",
+    "original": "assets/generated/models-20261025/mushroom-meshy.glb",
+    "originalTriangles": 4716012,
+    "chosenTriangles": 60000,
+    "tried": [
+     {
+      "target": 120000,
+      "tris": 120000,
+      "bytes": 5686944
+     },
+     {
+      "target": 60000,
+      "tris": 60000,
+      "bytes": 3486200
+     },
+     {
+      "target": 30000,
+      "tris": 30000,
+      "bytes": 2030616
+     },
+     {
+      "target": 15000,
+      "tris": 25630,
+      "bytes": 1798956
+     }
+    ],
+    "output": "public/assets/models/mushroom.glb"
+   },
+   {
+    "receivedAs": "Meshy_AI_Bread_Mold_Educationa_1025142453_image-to-3d-texture.glb",
+    "original": "assets/generated/models-20261025/bread-mold-meshy.glb",
+    "originalTriangles": 2202332,
+    "chosenTriangles": 60000,
+    "tried": [
+     {
+      "target": 120000,
+      "tris": 120000,
+      "bytes": 4641376
+     },
+     {
+      "target": 60000,
+      "tris": 60000,
+      "bytes": 2359676
+     },
+     {
+      "target": 30000,
+      "tris": 30000,
+      "bytes": 1528536
+     },
+     {
+      "target": 15000,
+      "tris": 15000,
+      "bytes": 1078564
+     }
+    ],
+    "output": "public/assets/models/bread-mold.glb"
+   },
+   {
+    "receivedAs": "Meshy_AI_Paramecium_Educationa_1025142537_image-to-3d-texture.glb",
+    "original": "assets/generated/models-20261025/paramecium-meshy.glb",
+    "originalTriangles": 940308,
+    "chosenTriangles": 15000,
+    "tried": [
+     {
+      "target": 60000,
+      "tris": 60000,
+      "bytes": 2291248
+     },
+     {
+      "target": 30000,
+      "tris": 30000,
+      "bytes": 1483312
+     },
+     {
+      "target": 15000,
+      "tris": 15000,
+      "bytes": 1046364
+     },
+     {
+      "target": 10000,
+      "tris": 10000,
+      "bytes": 886824
+     }
+    ],
+    "output": "public/assets/models/paramecium.glb"
+   },
+   {
+    "receivedAs": "Meshy_AI_Budding_Yeast_Educati_1025142927_image-to-3d-texture.glb",
+    "original": "assets/generated/models-20261025/yeast-meshy.glb",
+    "originalTriangles": 78968,
+    "chosenTriangles": 10000,
+    "tried": [
+     {
+      "target": 40000,
+      "tris": 40000,
+      "bytes": 1164816
+     },
+     {
+      "target": 20000,
+      "tris": 20000,
+      "bytes": 695212
+     },
+     {
+      "target": 10000,
+      "tris": 10000,
+      "bytes": 451844
+     }
+    ],
+    "output": "public/assets/models/yeast.glb"
+   }
+  ],
+  "rejected": "버섯 3만: 갓 아래 주름 텍스처 번짐·찢어짐, 버섯 1.5만: 갓이 고깔처럼 무너지고 외곽 치수 변함(1.90→2.23), 곰팡이 3만 이하: 빵 밑면 접힘선"
+ }
+}

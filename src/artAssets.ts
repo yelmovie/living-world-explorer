@@ -19,7 +19,15 @@ export const inquiryArt:Record<string,InquiryArt>={
  yeast:{src:'assets/study/yeast.webp',label:'효모의 확대 관찰 모형'},
  water:{src:'assets/study/pond.webp',label:'물풀과 물가가 보이는 연못 조사 그림'},
  pond:{src:'assets/study/pond.webp',label:'물풀과 물가가 보이는 연못 조사 그림'},
- soil:{src:'assets/study/soil.webp',label:'채집한 흙 표본의 조사 그림'}
+ soil:{src:'assets/study/soil.webp',label:'채집한 흙 표본의 조사 그림'},
+ // 2026-10-25: magnification steps, fungal common features and the three bacteria shapes (assets/generated/study-20261025c).
+ mushroomSpores:{src:'assets/study/mushroom-spores.webp',label:'현미경으로 본 버섯 주름 가장자리와 포자'},
+ mushroomMycelium:{src:'assets/study/mushroom-mycelium.webp',label:'죽은 나무 속으로 퍼진 버섯의 균사 단면 모형'},
+ moldLens:{src:'assets/study/mold-lens.webp',label:'돋보기로 본 빵 위의 곰팡이'},
+ spirogyraLens:{src:'assets/study/spirogyra-lens.webp',label:'돋보기로 본 연못물 속 초록 실'},
+ bacteriaRound:{src:'assets/study/bacteria-round.webp',label:'공 모양 세균 확대 모형'},
+ bacteriaRod:{src:'assets/study/bacteria-rod.webp',label:'막대 모양 세균 확대 모형'},
+ bacteriaSpiral:{src:'assets/study/bacteria-spiral.webp',label:'나선 모양 세균 확대 모형'}
 };
 export const artFrame=(time=0)=>Math.max(0,Math.min(3,Math.floor(Number.isFinite(time)?time:0)));
 export function artFor(kind:string|undefined,time=0){const art=kind?inquiryArt[kind]:undefined;return art?{...art,src:art.frames?.[artFrame(time)]||art.src}:undefined;}
@@ -39,10 +47,16 @@ export function artKey(item:{id:string;art?:string;label?:string;detail?:string}
  return item.art;
 }
 
-/** 맨눈 → 돋보기 → 현미경 steps of the microscope tasks. context is the naked-eye picture, focus is where the magnifier looks (0–1). */
-export const magnify:Record<string,{context:string;time:number;focus:{x:number;y:number};captions:[string,string,string]}>={
- mushroom:{context:'deadwood',time:0,focus:{x:.74,y:.47},captions:['맨눈 · 죽은 나무에 작은 버섯들이 자라요','돋보기 · 버섯의 갓과 자루가 크게 보여요','현미경 · 갓 아래 주름이 자세히 보여요']},
- mold:{context:'bread',time:3,focus:{x:.5,y:.5},captions:['맨눈 · 빵 위에 거뭇한 얼룩이 보여요','돋보기 · 솜털처럼 퍼진 곰팡이가 보여요','현미경 · 가는 실(균사)과 둥근 부분이 보여요']},
- spirogyra:{context:'pond',time:0,focus:{x:.45,y:.62},captions:['맨눈 · 연못 물풀 사이의 물을 살펴봐요','돋보기 · 초록색 덩어리는 보이지만 자세한 모양은 알기 어려워요','현미경 · 실처럼 길게 이어진 해캄이 보여요']}
+/** 맨눈 → 돋보기 → 현미경 steps of the microscope tasks. context is the naked-eye picture, focus is where the magnifier looks (0–1).
+ * lens: own picture for the 돋보기 step (new structure appears instead of a blurry enlargement). gate: the 돋보기 picture must be tapped on this feature to open the microscope. */
+export type MagnifyView={context:string;time:number;focus:{x:number;y:number};lens?:string;gate?:string;captions:[string,string,string]};
+export const magnify:Record<string,MagnifyView>={
+ mushroom:{context:'deadwood',time:0,focus:{x:.74,y:.47},lens:'mushroom',gate:'gills',captions:['맨눈 · 죽은 나무에 작은 버섯들이 자라요','돋보기 · 갓 아래 줄무늬(주름)를 찾아 눌러요','현미경 · 주름 가장자리에 작은 알갱이가 보여요']},
+ mold:{context:'bread',time:3,focus:{x:.5,y:.5},lens:'moldLens',captions:['맨눈 · 빵 위에 거뭇한 얼룩이 보여요','돋보기 · 솜털 같은 실 위에 검은 점이 보여요','현미경 · 가는 실(균사)과 둥근 부분이 보여요']},
+ spirogyra:{context:'pond',time:0,focus:{x:.45,y:.62},lens:'spirogyraLens',captions:['맨눈 · 연못 물풀 사이의 물을 살펴봐요','돋보기 · 가는 초록 실이 보이지만 속은 아직 안 보여요','현미경 · 실처럼 길게 이어진 해캄이 보여요']}
 };
+/** Older records (before 2026-10-25) keep the original 돋보기 enlargement and no gate. */
+export function magnifyFor(organism:string|undefined,current:boolean):MagnifyView|undefined{const view=magnify[organism||''];return view&&!current?{...view,lens:undefined,gate:undefined,captions:[view.captions[0],'돋보기 · 크게 보면 모양이 더 잘 보여요','현미경 · 특징이 자세히 보여요']}:view;}
 export const levelNames=['맨눈','돋보기','현미경'] as const;
+/** Smallest detail each step can show (size ladder chip in the microscope tools). */
+export const levelReach=['머리카락 굵기(약 0.1mm)까지 보여요','머리카락 굵기의 10분의 1(약 0.01mm)까지 보여요','머리카락 굵기의 100분의 1(약 0.001mm)까지 보여요'] as const;

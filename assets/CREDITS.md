@@ -8,7 +8,8 @@
 |---|---|---|---|---|
 | Phaser 3.90.0 | 지도·탐구 장면의 2D 렌더링 | MIT, node_modules/phaser/LICENSE.md | PASS | 아래 저작권·허가문 보존 |
 | EventEmitter3 5.0.4 | Phaser 의존성 | MIT, node_modules/eventemitter3/LICENSE | PASS | 아래 저작권·허가문 보존 |
-| Three.js 0.181.1 | 현재 빌드에 포함되지 않음. 이후 3D 작업을 위해 의존성만 유지 | MIT, node_modules/three/LICENSE | PASS | 유일한 사용 파일 lab3d.ts는 2026-10-25 _unused/src-20261025/로 이동. 의존성을 남겨 두는 동안 아래 허가문 보존 |
+| Three.js 0.181.1 | 선택해서 여는 3D 설명 모형 보기(src/model-viewer.ts, 열 때만 따로 불러오는 묶음) | MIT, node_modules/three/LICENSE | PASS | 옛 3D 장면 lab3d.ts는 _unused/src-20261025/에 보관 |
+| Draco 디코더 | 3D 모형 압축 해제(public/assets/libs/draco) | Apache-2.0, three.js 배포본 examples/jsm/libs/draco | PASS | 원문 안내: public/assets/libs/draco/LICENSE-NOTE.md |
 | Vite 7.2.2 | 개발·빌드 | MIT, 로컬 package.json | PASS | 개발 도구 |
 | TypeScript 5.9.3 | 타입 검사 | Apache-2.0, 로컬 package.json | PASS | 개발 도구 |
 | sharp 0.34.4 | 이미지 최적화 | Apache-2.0, 로컬 package.json | PASS | 개발 도구, 기존 이미지 최적화에 사용 |
@@ -37,6 +38,10 @@
 | public/assets/map/companion-{down,right,up,left}.webp | 2026-10-21 기본 image_gen 자체 생성 | 분홍 토끼 보조 캐릭터, 투명 2.5D 픽셀 캐릭터 |
 | public/assets/ui/icon-{192,512}.png | 2026-10-25 companion-portrait.webp(위 자체 생성 토토 초상)를 #315f46 바탕에 sharp로 합성한 2차 이미지 | 홈 화면 앱 아이콘(manifest.webmanifest) |
 | public/assets/characters/{moa,companion}-portrait.webp | 2026-10-21 기본 image_gen 자체 생성, 320×320 투명 | 시설 안내 초상, 과학 관찰 근거 아님 |
+| public/assets/study/{mushroom-spores,mold-lens,spirogyra-lens,mushroom-mycelium}.webp | 2026-10-25 Higgsfield gpt_image_2_5(기존 학습 그림을 화풍 참고로 사용) 생성 4장, 6크레딧. 기록: assets/generated/study-20261025c.json | 확대 단계(돋보기·현미경)와 균사 단면 설명 모형. 실제 현미경 사진 아님 |
+| public/assets/study/bacteria.webp, bacteria-{round,rod,spiral}.webp | assets/generated/study-20261025b/bacteria.png(자체 생성)을 scripts/recolor-bacteria.mjs로 염색 색(보라·자주)으로 바꾸고 세 모양을 잘라 냄 | 세균 모양 설명 모형. 이전 초록 그림은 _unused/로 이동 |
+| public/assets/models/{mushroom,bread-mold,paramecium,yeast}.glb | 2026-10-25 사용자 Meshy 계정 image-to-3D(입력: 자체 생성 기본 그림 assets/generated/models-20261025/*-3d-base.png). Blender로 줄이고 Draco 압축. 기록: assets/generated/models-20261025.json | 선택해서 여는 3D 설명 모형. Meshy 생성물의 상업 이용 조건은 생성 당시 계정 플랜 기준 — 납품 전 확인 |
+| public/assets/libs/draco/* | three.js 0.181.1 배포본의 Draco 디코더(examples/jsm/libs/draco/gltf), Apache-2.0 | 3D 모형 압축 해제 |
 | public/assets/audio/bgm-{main,ending}-theme.m4a | 2026-10-25 Suno Premier 플랜 생성(제작자 계정). 받은 파일명 Morning Lab Discovery.mp3, Living Laboratory (1).mp3 | 배경 음악. 원본은 assets/generated/bgm-20261025/ |
 | public/assets/fonts/jua-korean-400.woff2 | Google Fonts Jua, 제목용 한국어 웹폰트 | SIL OFL 1.1 |
 | public/assets/fonts/jua-latin-400.woff2 | Google Fonts Jua, 제목용 라틴 웹폰트 | SIL OFL 1.1 |

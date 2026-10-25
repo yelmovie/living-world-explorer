@@ -10,7 +10,7 @@ async function task(route,order){await navigate(page,base,route);await page.getB
 async function mark(x,y){await btn('버튼으로 조작').click();await setRange(page,'표시 가로 위치',x);await setRange(page,'표시 세로 위치',y);await btn('이 위치 표시').click();await close();}
 async function tapImage(x,y,zoom=1,pan={x:0,y:0},kind='microscope'){
  const canvas=page.locator('.expedition-canvas-host canvas');await canvas.scrollIntoViewIfNeeded();const box=await canvas.boundingBox();
- const h=kind==='microscope'?435:410/(16/9),w=kind==='microscope'?435*793/496:410,cx=kind==='microscope'?480:700,cy=kind==='microscope'?270:265;
+ const h=kind==='microscope'?750*573/1024:410/(16/9),w=kind==='microscope'?750:410,cx=kind==='microscope'?480:700,cy=kind==='microscope'?270:265;
  const vx=(x+pan.x-.5)*zoom+.5,vy=(y+pan.y-.5)*zoom+.5;
  await page.touchscreen.tap(box.x+(cx-w/2+vx*w)/960*box.width,box.y+(cy-h/2+vy*h)/540*box.height);
 }
@@ -20,9 +20,9 @@ try{
  await navigate(page,base,'nature-map');const initial=await waitSaved(page,s=>Object.keys(s.learner.evidence).length===5),rewards=initial.learner.inquiry.rewards.length;
  for(const size of [{width:1024,height:768},{width:768,height:1024}]){
   await page.setViewportSize(size);await task('fungi-microscope',2);await btn('다시 관찰').click();await btn('사진 촬영').click();
-  await tapImage(.5,.24);let s=await waitSaved(page,s=>s.learner.inquiry.records['M1-2'].marks.length===1);assert.ok(Math.abs(s.learner.inquiry.records['M1-2'].marks[0].y-.24)<.005);
-  await tapImage(.2,.35);assert.match(await page.locator('.inquiry-feedback').innerText(),/특징 밖/);assert.equal((await readSaved(page)).learner.inquiry.records['M1-2'].marks.length,1);
-  await btn('확대해서 보기').click();await tapImage(.67,.42,1.5);s=await waitSaved(page,s=>s.learner.inquiry.records['M1-2'].marks.length===2);assert.ok(Math.abs(s.learner.inquiry.records['M1-2'].marks[1].x-.67)<.005);
+  await tapImage(.5,.2);let s=await waitSaved(page,s=>s.learner.inquiry.records['M1-2'].marks.length===1);assert.ok(Math.abs(s.learner.inquiry.records['M1-2'].marks[0].y-.2)<.005);
+  await tapImage(.2,.35);assert.match(await page.locator('.inquiry-feedback').innerText(),/밖이에요/);assert.equal((await readSaved(page)).learner.inquiry.records['M1-2'].marks.length,1);
+  await btn('확대해서 보기').click();await tapImage(.67,.54,1.5);s=await waitSaved(page,s=>s.learner.inquiry.records['M1-2'].marks.length===2);assert.ok(Math.abs(s.learner.inquiry.records['M1-2'].marks[1].x-.67)<.005);
   await page.screenshot({path:`.tmp/review-after/${size.width}-gills.png`,fullPage:true});await submit();await task('fungi-microscope',2);await btn('확대해서 보기').click();
   await task('impact-investigation',1);await pin(0,3);await tapImage(.35,.48,1,{x:0,y:0},'timeline');assert.match(await page.locator('.inquiry-feedback').innerText(),/변화|표시/);await tapImage(.49,.4,1,{x:0,y:0},'timeline');await waitSaved(page,s=>s.learner.inquiry.records['M4-1'].marks.length===1);await submit();
   checks.push(`${size.width}x${size.height}: actual touch; gills/background; zoom; bread changed/clean`);

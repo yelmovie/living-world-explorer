@@ -11,8 +11,17 @@
 | `fonts/` | Jua 웹폰트와 OFL 원문 |
 | `map/` | 탐험 지도(`terrain.webp`), 지도 위 걷는 캐릭터 4방향 |
 | `places/` | 연구 시설 배경(`fungi`·`water`·`archive`·`village`·`workshop`), 연구소(`greenhouse`), 복구된 코어(`core`) |
-| `study/` | 학습용 관찰 모형·조사 그림. 시간 비교는 `bread-0~3`, `leaf-0~3` |
-| `ui/` | 로고 |
+| `study/` | 학습용 관찰 모형·조사 그림. 시간 비교는 `bread-0~3`, `leaf-0~3`. 확대 단계는 `*-lens`(돋보기)·`mushroom-spores`(현미경), 세균 세 모양 카드는 `bacteria-{round,rod,spiral}` |
+| `models/` | 선택해서 여는 3D 설명 모형(GLB, Draco 압축). 원본·줄인 단계 기록은 `assets/generated/models-20261025.json` |
+| `libs/draco/` | 3D 모형 압축 해제용 Draco 디코더(three.js 배포본) |
+| `ui/` | 로고, 앱 아이콘, 탐구 장면 소품 |
+
+## 3D 모형 넣는 순서 (2026-10-25 정함)
+
+1. 받은 Meshy GLB는 루트가 아니라 `assets/generated/models-<날짜>/<이름>-meshy.glb`로 옮긴다(Git 제외).
+2. `blender -b --python scripts/shrink-glb.py -- <원본> .tmp/models <이름> 1024 <단계…>`로 여러 단계로 줄이고, `node scripts/glb-sheet.mjs`로 원본과 같은 각도 비교 시트를 만든다.
+3. 갓 아래·바닥처럼 잘 안 보이는 면까지 시트에서 확인하고, 찢어짐·접힘·외곽 치수 변화가 없는 **가장 작은 단계**를 고른다. 숫자 예산보다 눈으로 본 결과가 우선이다.
+4. `blender -b --python scripts/pack-glb.py -- <고른 단계>.glb public/assets/models/<이름>.glb`로 Draco 압축한다(형태는 그대로).
 
 ## 2026-10-25 이름 대조표
 

@@ -53,7 +53,7 @@ export const settingsContent = {
   creditsTitle: '이미지·소리·저작권 고지',
   credits: [
     '캐릭터·배경·장식에는 프로젝트 자체 AI 생성 이미지가 사용돼요.',
-    '관찰 화면의 그림은 실제 현미경 사진이 아닌 학습용 설명 모형이에요. 게임 배경과 캐릭터는 생물의 특징을 판단하는 근거로 쓰지 않아요.',
+    '관찰 화면의 그림과 3D 모형(버섯·곰팡이·짚신벌레·효모)은 실제 현미경 사진이 아닌 AI로 만든 학습용 설명 모형이에요. 게임 배경과 캐릭터는 생물의 특징을 판단하는 근거로 쓰지 않아요.',
     '배경 음악 2곡(탐험 메인테마·복구 엔딩테마)은 프로젝트 자체 AI 생성 음원이에요.',
     '효과음은 Kenney의 Interface Sounds(CC0)를 사용해요. 개념 영상의 짧은 음은 프로젝트 자체 합성이에요.',
     '스테이지 개념 영상은 프로젝트의 설명 모형으로 만든 12초 모션 그래픽이에요. 내 발견 도감에서 다시 볼 수 있어요.',
@@ -69,7 +69,7 @@ export const settingsContent = {
     {title: '글꼴', text: 'Jua · Woowahan Brothers · Google Fonts 배포 · SIL Open Font License 1.1. 원문을 프로젝트에 함께 보관해요.'},
     {title: '배경 음악', text: '탐험 메인테마·복구 엔딩테마 2곡 · 프로젝트 자체 AI 생성 음원(Suno 유료 플랜) · 가사 없음.'},
     {title: '효과음', text: 'Kenney · Interface Sounds 1.0 · CC0 1.0. 출처: kenney.nl/assets/interface-sounds. 라이선스 원문: assets/audio/KENNEY-LICENSE.txt.'},
-    {title: '프로그램', text: 'Phaser 3 · MIT. Vite · MIT. TypeScript · Apache-2.0. Three.js · MIT는 이후 3D 작업을 위해 의존성만 남겨 두었고, 현재 빌드에는 들어 있지 않아요.'},
+    {title: '프로그램', text: 'Phaser 3 · MIT. Vite · MIT. TypeScript · Apache-2.0. Three.js · MIT(3D 모형 보기, 열 때만 불러와요). Draco 디코더 · Apache-2.0.'},
     {title: '교육 내용 참고 문헌', text: 'OpenStax Biology 2e(openstax.org) · CC BY 4.0 · 균류·원생생물·세균의 특징을 설명할 때 참고했고, 본문과 그림은 옮겨 싣지 않았어요. FAO(fao.org) · 발효유 자료 부록 VII · 요구르트 속 세균을 설명할 때 참고했어요. 참고한 장은 아래와 같아요.'}
   ],
   copyright: [

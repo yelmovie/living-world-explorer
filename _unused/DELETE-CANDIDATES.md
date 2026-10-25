@@ -8,6 +8,7 @@
 |---|---:|---|
 | exploration-map.webp | 547,360 bytes | 현재 지도는 `public/assets/map/terrain.webp`(옛 v3). 코드 참조 없음 |
 | map-terrain-v2.webp | 487,130 bytes | v3의 생성 참조 원본. 코드 참조 없음 |
+| bacteria-green-20261025.webp | 29,698 bytes | 2026-10-26 염색 색(보라·자주)으로 바꾼 새 `study/bacteria.webp`의 이전 초록 그림. 원본 PNG는 assets/generated/study-20261025b/bacteria.png에 그대로 있음 |
 | bacteria-20261024.webp | 35,596 bytes | 저녁에 공·막대·나선·꼬리 모양이 들어간 새 `study/bacteria.webp`로 교체한 이전 세균 그림. 코드 참조 없음 |
 | map-moa-left.webp | 11,136 bytes | `map-moa-right.webp`와 SHA-256 동일. 현재 왼쪽은 옛 left-v2(`map/moa-left.webp`) |
 
