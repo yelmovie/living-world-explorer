@@ -8,7 +8,7 @@
 |---|---|---|---|---|
 | Phaser 3.90.0 | 지도·탐구 장면의 2D 렌더링 | MIT, node_modules/phaser/LICENSE.md | PASS | 아래 저작권·허가문 보존 |
 | EventEmitter3 5.0.4 | Phaser 의존성 | MIT, node_modules/eventemitter3/LICENSE | PASS | 아래 저작권·허가문 보존 |
-| Three.js 0.181.1 | 이전 3D 코드 보존 | MIT, node_modules/three/LICENSE | PASS | 현재 실행 경로에서 사용하지 않아도 고지 보존 |
+| Three.js 0.181.1 | 현재 빌드에 포함되지 않음. 이후 3D 작업을 위해 의존성만 유지 | MIT, node_modules/three/LICENSE | PASS | 유일한 사용 파일 lab3d.ts는 2026-10-25 _unused/src-20261025/로 이동. 의존성을 남겨 두는 동안 아래 허가문 보존 |
 | Vite 7.2.2 | 개발·빌드 | MIT, 로컬 package.json | PASS | 개발 도구 |
 | TypeScript 5.9.3 | 타입 검사 | Apache-2.0, 로컬 package.json | PASS | 개발 도구 |
 | sharp 0.34.4 | 이미지 최적화 | Apache-2.0, 로컬 package.json | PASS | 개발 도구, 기존 이미지 최적화에 사용 |
@@ -33,6 +33,7 @@
 | public/assets/study/{deadwood,moldy-fruit,dough-before,dough-after,bread-1~3,leaf-1~3}.webp | 2026-10-25 기본 image_gen 생성·편집 10개. assets/generated/specimens-20261025.json에 전체 프롬프트와 파일별 기록 | 학습용 관찰 모형. 같은 식빵·낙엽·반죽의 전후 비교, 실제 실험 사진·측정 원자료 아님 |
 | public/assets/map/moa-{down,right,up,left}.webp | 2026-10-21 기본 image_gen 자체 생성 | 갈색 묶은 머리·안경·연구 조끼의 모아, 투명 2.5D 픽셀 캐릭터 |
 | public/assets/map/companion-{down,right,up,left}.webp | 2026-10-21 기본 image_gen 자체 생성 | 분홍 토끼 보조 캐릭터, 투명 2.5D 픽셀 캐릭터 |
+| public/assets/ui/icon-{192,512}.png | 2026-10-25 companion-portrait.webp(위 자체 생성 토토 초상)를 #315f46 바탕에 sharp로 합성한 2차 이미지 | 홈 화면 앱 아이콘(manifest.webmanifest) |
 | public/assets/characters/{moa,companion}-portrait.webp | 2026-10-21 기본 image_gen 자체 생성, 320×320 투명 | 시설 안내 초상, 과학 관찰 근거 아님 |
 | public/assets/audio/bgm-{main,ending}-theme.m4a | 2026-10-25 Suno Premier 플랜 생성(제작자 계정). 받은 파일명 Morning Lab Discovery.mp3, Living Laboratory (1).mp3 | 배경 음악. 원본은 assets/generated/bgm-20261025/ |
 | public/assets/fonts/jua-korean-400.woff2 | Google Fonts Jua, 제목용 한국어 웹폰트 | SIL OFL 1.1 |
@@ -47,6 +48,7 @@
 
 - 교육부 2022 개정 과학과 교육과정: [4과12-01], [4과12-02], [4과12-03].
 - 대조 자료: 경기도교육청 교육과정 PDF, https://www.goe.go.kr/resource/goe/na/bbs_2675/2025/11/b05e123f-8c12-4929-9914-319dea9b2099.pdf .
+- 설명 참고 문헌(2026-10-25 리뷰 수정 때 읽고 연결, 본문·그림은 옮겨 싣지 않음): OpenStax Biology 2e(CC BY 4.0) 24.1 균류의 특징, 22.2 원핵생물의 구조, 23.3 원생생물의 무리 · FAO 발효유 자료 부록 VII(x4888e). 앱에서는 이름과 누리집(openstax.org, fao.org)을 링크 없이 글자로만 표시한다.
 - 게임 안의 서식지·움직임·생활 영향·생명과학 활용 사례는 학습용으로 구성한다. 실제 생물 관찰 자료의 출처·동일 표본 여부·시간 조건은 교과 검수 대상이다.
 
 ## 프로그램 허가문

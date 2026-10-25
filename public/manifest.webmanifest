@@ -1,0 +1,15 @@
+{
+  "name": "생명 코드 연구소",
+  "short_name": "생명 코드 연구소",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#dde6d2",
+  "theme_color": "#315f46",
+  "icons": [
+    {"src": "assets/ui/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "assets/ui/icon-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+}

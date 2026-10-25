@@ -1,36 +1,13 @@
-import {el,button,heading,paragraph,choices,select,notice,modelBadge,modal,type Context} from '../ui';
+import {el,button,heading,paragraph,notice,modelBadge,modal,type Context} from '../ui';
 import {layout,footer} from './observe';
-import {modules,stages} from '../content';
-import {evaluateSolution} from '../evaluate';
+import {stages} from '../content';
 import {stageIds,type Stage} from '../model';
 import {inquiryEvidenceView as evidenceView} from './inquiry';
-const label=(id:string)=>modules.find(m=>m.id===id)?.label||'빈 자리';
-export const runFeedback:Record<string,string>={'connection-missing':'이어지지 않은 곳이 있어요. 연결을 확인해요.','action-unsupported':'이 재료와 생물의 작용이 사례와 맞는지 확인해요.','outcome-unsupported':'이 작용으로 소개할 결과를 다시 골라요.','supported':'입력한 재료와 생물의 작용이 요구르트 사례로 이어졌어요.'};
 async function scene(ctx:Context,host:HTMLElement,labels:string[],enabled:boolean[],onPick:(i:number)=>void,core=false,onReady:()=>void=()=>{}){
  let disposed=false;let lab:ReturnType<typeof import('../renderers/lab2d').mountLab2d>|undefined;
  const progress=(event:Event)=>{const {step,failed}=(event as CustomEvent<{step:number;failed:boolean}>).detail;lab?.progress(step,failed);};host.addEventListener('lab-progress',progress);ctx.cleanup(()=>{disposed=true;host.removeEventListener('lab-progress',progress);lab?.dispose();});
  const loading=el('div','scene-loading','연구 장면을 준비하고 있어요…');loading.setAttribute('role','status');host.append(loading);
  try{const {mountLab2d}=await import('../renderers/lab2d');if(disposed)return;lab=mountLab2d(host,labels,enabled,onPick,ctx.attempt.draft.m5.edges,core,ctx.state.settings.reduced,ok=>{if(disposed)return;if(ok){loading.remove();onReady();}else loading.replaceChildren(paragraph('장면을 준비하지 못했어요.'),button('다시 준비',ctx.render));});}catch{if(disposed)return;loading.remove();const grid=el('div','flat-lab');labels.forEach((l,i)=>grid.append(button(l,()=>onPick(i),'module')));host.append(grid);onReady();}
-}
-export function assembly(ctx:Context){
- const d=ctx.attempt.draft.m5;const {work,side}=layout(ctx,'05 · 생명과학 작업실','재료 → 생물의 작용 → 결과를 연결해요.');
- const change=()=>{d.revision++;d.prediction='';d.reason='';d.explanation='';ctx.save();ctx.render();};
- const put=(i:number)=>{if(!d.selected)return notice('먼저 아래에서 넣을 내용을 골라요.');d.slots[i]=d.selected;change();};
- const host=el('div','three-host');work.append(host,modelBadge());void scene(ctx,host,d.slots.map(label),d.slots.map(Boolean),put);
- const slots=el('div','slot-row');['재료','생물의 작용','결과'].forEach((name,i)=>slots.append(button(`${name}: ${label(d.slots[i])}`,()=>put(i),'slot')));work.append(slots);
- const tray=el('div','module-tray');for(const m of modules)tray.append(button(m.label,()=>{d.selected=m.id;ctx.save();ctx.render();},d.selected===m.id?'selected':'secondary'));work.append(tray);
- side.append(heading('두 곳을 이어요'));d.edges.forEach((edge,i)=>side.append(button(`${i===0?'재료 → 작용':'작용 → 결과'} ${edge?'✓':''}`,()=>{d.edges[i]=!edge;change();},edge?'selected':'secondary')));
- const evidence=ctx.attempt.evidence.M4;side.append(button('발효 기록 보기',()=>{modal('발효 기록',[evidenceView(evidence)]);}));
- side.append(button('마지막 배치 빼기',()=>{const i=d.slots.findLastIndex(Boolean);if(i>=0){d.slots[i]='';change();}}));footer(ctx,paragraph('내용 선택 → 넣을 자리 선택','muted'),button('예상하고 가동',()=>ctx.go('solution-run'),'primary',!d.slots.every(Boolean)));
-}
-export function runScene(ctx:Context){
- const d=ctx.attempt.draft.m5;const {work,side}=layout(ctx,'05 · 생명과학 작업실','내 예상과 결과를 비교해요.');const host=el('div','three-host');work.append(host,modelBadge());void scene(ctx,host,d.slots.map(label),d.slots.map(Boolean),()=>notice('설계를 바꾸려면 아래의 설계 수정으로 돌아가요.'));
- side.append(select('어떤 결과가 나올까요?',[{id:'',label:'가동 전에 예상해요'},{id:'yogurt',label:'요구르트를 소개할 수 있어요.'},{id:'other',label:'요구르트로 이어지지 않을 것 같아요.'}],d.prediction,v=>{d.prediction=v;ctx.save();}),select('그렇게 생각한 이유',[{id:'',label:'이유를 골라요'},{id:'evidence',label:'발효 기록과 같은 재료·작용을 골랐어요.'},{id:'uncertain',label:'연결한 내용이 사례와 다른 것 같아요.'}],d.reason,v=>{d.reason=v;ctx.save();}));
- const last=d.runs.at(-1);if(last){const result=el('section','run-result');result.append(el('span','eyebrow',`실행 ${d.runs.length} · 설계 ${last.revision+1}`),heading(last.passed?'결과를 확인했어요':'다시 살펴봐요'),paragraph(runFeedback[last.code]),paragraph(`나의 예상: ${last.prediction==='yogurt'?'요구르트로 이어질 거예요.':'이어지지 않을 것 같아요.'}`));work.append(result);side.append(choices([{id:'matches',label:'예상과 같아요'},{id:'differs',label:'예상과 달라요'}],last.reflection,v=>{last.reflection=v;ctx.save();ctx.render();}));if(d.runs.length>1){const previous=d.runs.at(-2)!;work.append(paragraph(`이전: ${previous.choices.map(label).join(' → ')} · ${previous.passed?'연결됨':'다시 확인'} / 이번: ${last.choices.map(label).join(' → ')}`,'history'));}}
- side.append(select('소개할 내용',[{id:'',label:'내 자료에 넣을 설명'},{id:'correct',label:'특정 세균의 작용을 음식 만들기에 이용해요.'},{id:'wrong',label:'모든 세균으로 요구르트를 만들 수 있어요.'}],d.explanation,v=>{d.explanation=v;ctx.save();}));
- let running=false;let timer=0;let stopped=false;ctx.cleanup(()=>{stopped=true;cancelAnimationFrame(timer);const pending=d.runs.findLast(r=>r.status==='running');if(pending){pending.status='interrupted';ctx.save();}});
- const run=()=>{if(running)return;if(!d.prediction||!d.reason)return notice('가동 전에 예상과 이유를 골라요.');running=true;side.inert=true;const code=evaluateSolution(d);const record={id:crypto.randomUUID(),revision:d.revision,choices:[...d.slots],prediction:d.prediction,reason:d.reason,passed:false,code,reflection:'',status:'running' as 'running'|'completed'|'interrupted'};d.runs.push(record);ctx.save();const flow=el('div','run-flow');work.append(flow);let step=0;let elapsed=0;let previous=performance.now();const stopAt=code==='connection-missing'?Math.max(0,d.edges.findIndex(e=>!e)):code==='action-unsupported'?1:2;
- const tick=(now:number)=>{if(stopped)return;if(!document.hidden&&!document.querySelector('dialog[open]'))elapsed+=now-previous;previous=now;const next=Math.min(stopAt,Math.floor(elapsed/(ctx.state.settings.reduced?1:800)));if(next!==step||!flow.textContent){step=next;flow.textContent=`${['재료를 확인해요','생물의 작용을 확인해요','결과를 살펴봐요'][step]}${step===stopAt&&code!=='supported'?' · 여기서 다시 확인해요':''}`;host.dispatchEvent(new CustomEvent('lab-progress',{detail:{step,failed:step===stopAt&&code!=='supported'}}));}if(elapsed>=(stopAt+1)*(ctx.state.settings.reduced?1:800)){record.status='completed';record.passed=code==='supported';side.inert=false;ctx.save();ctx.render();return;}timer=requestAnimationFrame(tick);};timer=requestAnimationFrame(tick);};footer(ctx,button('설계 수정',()=>ctx.go('solution-assembly')),button('가동하기',run,'primary'),button('설계 마침',()=>ctx.complete('M5')));
 }
 export function core(ctx:Context){const a=ctx.attempt;const {work,side}=layout(ctx,'마지막 임무','내 연구 기록으로 코어를 복구해요.');let selected:Stage|undefined,coreReady=false;const host=el('div','three-host');work.append(host,modelBadge());const put=(i:number)=>{if(!selected)return notice('연결할 연구 기록을 먼저 골라요.');if(stageIds[i]!==selected)return notice('기록과 같은 이름의 포트를 골라요.');a.ports=[...new Set([...a.ports,selected])];ctx.save();ctx.render();};void scene(ctx,host,stages.map(s=>s.title),stageIds.map(s=>a.ports.includes(s)),put,true,()=>{coreReady=true;activateButton.disabled=a.ports.length<5;});
  stages.forEach(s=>{const recordButton=button(`${a.ports.includes(s.id)?'✓ ':''}${s.title}`,()=>{selected=s.id;side.querySelectorAll('.selected').forEach(n=>n.classList.remove('selected'));recordButton.classList.add('selected');modal(s.title+' 기록',[evidenceView(a.evidence[s.id])]);});side.append(recordButton);});const sockets=el('div','slot-row');stages.forEach((s,i)=>sockets.append(button(`${s.title} 포트`,()=>put(i))));work.append(sockets);

@@ -60,7 +60,7 @@ export const settingsContent = {
     '출처와 라이선스 상세 내용은 프로젝트의 assets/CREDITS.md에서 확인할 수 있어요.'
   ],
   sourcesTitle: '자료 출처 모아 보기',
-  sourcesIntro: '이미지는 학습용 생성 모형이고, 채집·조사 메모는 수업용 가상 사례예요. 활동의 자료·관찰 조건에서도 실제 참고 문헌을 열 수 있어요.',
+  sourcesIntro: '이미지는 학습용 생성 모형이고, 채집·조사 메모는 수업용 가상 사례예요. 활동의 자료·관찰 조건에서도 실제 참고 문헌의 이름과 출처 누리집을 글자로 확인할 수 있어요.',
   sources: [
     {title: '공통 배경·캐릭터', text: '프로젝트 자체 제작 AI 생성 이미지 · 기존 프로젝트 자료와 새 제작 자료. 생성 경위와 배포 전 확인 사항은 CREDITS.md에 기록해요.'},
     {title: '관찰·비교·연결·설계 활동', text: '프로젝트 자체 제작 Canvas·Phaser 설명 모형 · 관찰 및 생물 작용의 관계를 설명하기 위한 모형이에요.'},
@@ -68,13 +68,14 @@ export const settingsContent = {
     {title: '글꼴', text: 'Jua · Woowahan Brothers · Google Fonts 배포 · SIL Open Font License 1.1. 원문을 프로젝트에 함께 보관해요.'},
     {title: '배경 음악', text: '탐험 메인테마·복구 엔딩테마 2곡 · 프로젝트 자체 AI 생성 음원(Suno 유료 플랜) · 가사 없음.'},
     {title: '효과음', text: 'Kenney · Interface Sounds 1.0 · CC0 1.0. 출처: kenney.nl/assets/interface-sounds. 라이선스 원문: assets/audio/KENNEY-LICENSE.txt.'},
-    {title: '프로그램', text: 'Phaser 3 · MIT. Three.js · MIT(기존 코드 보존). Vite · MIT. TypeScript · Apache-2.0.'}
+    {title: '프로그램', text: 'Phaser 3 · MIT. Vite · MIT. TypeScript · Apache-2.0. Three.js · MIT는 이후 3D 작업을 위해 의존성만 남겨 두었고, 현재 빌드에는 들어 있지 않아요.'},
+    {title: '교육 내용 참고 문헌', text: 'OpenStax Biology 2e(openstax.org) · CC BY 4.0 · 균류·원생생물·세균의 특징을 설명할 때 참고했고, 본문과 그림은 옮겨 싣지 않았어요. FAO(fao.org) · 발효유 자료 부록 VII · 요구르트 속 세균을 설명할 때 참고했어요. 참고한 장은 아래와 같아요.'}
   ],
   copyright: [
     'ⓒ 2026 옐샘 & 아이스크림미디어. All rights reserved.',
     '앱 화면 캡처·자체 제작 일러스트·자체 제작 음원은 무단 복제·재배포·전용·상업적 이용을 금지해요.',
     '외부 공개 사진·효과음·폰트의 저작권은 각 원저작자와 소장 기관에 있으며, 각 자료의 공개 라이선스와 이용 조건을 따라요.',
-    '교육 내용 구성 참고: 교육부(moe.go.kr), 경기도교육청(goe.go.kr).'
+    '교육 내용 구성 참고: 교육부(moe.go.kr), 경기도교육청(goe.go.kr), OpenStax(openstax.org), FAO(fao.org).'
   ],
   previewReset: '시연 기록 초기화',
   previewResetTitle: '시연 기록을 초기화할까요?',
