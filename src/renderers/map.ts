@@ -27,8 +27,8 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
   preload(){
    this.load.image('village',mapAssets.terrain);
    for(const d of ['down','right','up','left']){
-    this.load.image(`moa-${d}`,`assets/map-moa-${d==='left'?'left-v2':d}.webp`);
-    this.load.image(`friend-${d}`,`assets/map-companion-${d}.webp`);
+    this.load.image(`moa-${d}`,`assets/map/moa-${d}.webp`);
+    this.load.image(`friend-${d}`,`assets/map/companion-${d}.webp`);
    }
   }
   create(){

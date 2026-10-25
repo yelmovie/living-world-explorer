@@ -1,5 +1,6 @@
 import type {InquiryTask,InquiryRecord} from './inquiry-model';
 import {taskIssues} from './inquiry-evaluate';
+import {markValid} from './observation';
 
 /** Guidance follows the saved learning evidence rather than click counts. */
 export function guidance(task:InquiryTask,r:InquiryRecord){
@@ -17,12 +18,14 @@ export function guidance(task:InquiryTask,r:InquiryRecord){
  }else if(task.kind==='track'){
   total=2;done=Number(Number.isFinite(r.pins[0]))+Number(!issues.length);action=!Number.isFinite(r.pins[0])?'관찰 시점을 고른 뒤 A 고정을 눌러요.':issues.length?'시간을 움직여 다른 시점을 B로 고정해요.':action;
  }else if(task.kind==='timeline'){
-  total=3;done=Number(r.pins.length===2&&r.pins[0]<r.pins[1])+Number(r.marks.length>0)+Number(r.opened.includes('process'));action=r.pins.length<2?'이전과 이후를 서로 다른 시간에 고정해요.':!r.marks.length?'비교 화면에서 실제 달라진 부분을 눌러 표시해요.':action;
+  total=3;done=Number(r.pins.length===2&&r.pins[0]<r.pins[1])+Number(r.marks.length>0&&r.marks.every(p=>markValid(task,r,p)))+Number(r.opened.includes('process'));action=r.pins.length<2?'이전과 이후를 서로 다른 시간에 고정해요.':!r.marks.length?'비교 화면에서 실제 달라진 부분을 눌러 표시해요.':action;
  }else if(task.kind==='build'){
   total=5;done=task.targets.filter(t=>!!r.assignments[t.id]).length+Number(r.assignments.edge1==='linked'&&r.assignments.edge2==='linked')+Number(!issues.length);
   action=done<3?'아래 재료를 끌어 설계도의 세 자리를 채워요.':!r.assignments.edge1||!r.assignments.edge2?'설계도 사이의 +를 눌러 흐름을 연결해요.':!r.prediction?'나의 예상에서 실행 결과를 먼저 골라요.':!r.runResult?'설계 가동을 눌러 흐름을 시험해요.':!r.reflection?'예상과 실제 결과가 같은지 비교해요.':action;
+ }else if(task.kind==='review'){
+  total=4;done=Number(!!r.assignments.initial)+Number(task.items.every(it=>r.opened.includes(it.id)))+Number(!!r.assignments.claim&&!!r.assignments.evidence)+Number(!issues.length);action=issues[0]||action;
  }else if(task.kind==='publish'){
-  total=3;done=Number(!!r.assignments.case)+Number(!!r.assignments.action)+Number(r.note.trim().length>=5);action=!r.assignments.case?'그림에서 친구에게 소개할 사례를 골라요.':!r.assignments.action?'이 사례에 쓰인 생물의 작용을 골라요.':r.note.trim().length<5?'소개할 내용을 한 문장으로 적어요.':action;
+  total=3;done=Number(!!r.assignments.case)+Number(!!r.assignments.action)+Number(!!r.assignments.case&&r.assignments.evidence===r.assignments.case);action=!r.assignments.case?'그림에서 친구에게 소개할 사례를 골라요.':!r.assignments.action?'이 사례에 쓰인 생물의 작용을 골라요.':!r.assignments.evidence?'소개할 근거를 골라요. 소개 문장은 짧게 쓰거나 문장틀을 써도 돼요.':action;
  }
  return {action,done:issues.length?Math.min(done,total-1):total,total,ready:!issues.length};
 }

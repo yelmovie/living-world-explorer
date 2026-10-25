@@ -2,7 +2,7 @@
 
 기본 `image_gen`으로 10장을 각각 생성했다. 여러 화면을 합친 이미지나 글자가 포함된 버튼 이미지는 만들지 않았다. 실제 UI·정답·시간 변화·드래그 판정은 DOM/Phaser/Canvas에서 처리한다.
 
-최종 WebP는 `public/assets/`, PNG 원본은 `assets/generated/originals/`, 크기·용량 목록은 `assets/generated/manifest-20261024.json`에 있다. 지도 원본 v2와 기존 캐릭터·배경은 보존했다.
+최종 WebP는 `public/assets/`, PNG 원본은 `assets/generated/study-20261024/`, 크기·용량 목록은 `assets/generated/study-20261024.json`에 있다. 지도 원본 v2와 기존 캐릭터·배경은 보존했다.
 
 ## 생성 프롬프트
 

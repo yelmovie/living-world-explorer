@@ -36,7 +36,7 @@ export const pathGraph:{id:string;point:Point;neighbors:string[]}[]=[
 export const destinationNodeIds=['door0','door1','door2','door3','door4','core'];
 export const pathWaypoints=pathGraph.map(n=>({...n.point}));
 export const pathSegments=pathGraph.flatMap(n=>n.neighbors.filter(id=>id>n.id).map(id=>[n.point,pathGraph.find(p=>p.id===id)!.point] as [Point,Point]));
-export const mapAssets={terrain:'assets/map-terrain-v3.webp',moaPortrait:'assets/moa-portrait.webp',companionPortrait:'assets/companion-portrait.webp'};
+export const mapAssets={terrain:'assets/map/terrain.webp',moaPortrait:'assets/characters/moa-portrait.webp',companionPortrait:'assets/characters/companion-portrait.webp'};
 
 export function nearestRoadPoint(point:Point):Point{
  let best={...mapSpawn};let distance=Infinity;

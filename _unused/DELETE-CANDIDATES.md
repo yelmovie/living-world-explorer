@@ -1,11 +1,22 @@
-# 삭제 전 확인할 후보 — 2026-10-24
+# 삭제 전 확인할 후보
 
-실제 파일은 삭제하거나 이동하지 않았어요. 정적 경로 검색과 현재 실행 경로에 근거한 후보이며, 이전 버전의 자료 보존 목적을 먼저 확인해야 해요.
+실제로 지운 파일은 없어요. 아래 파일은 배포 폴더(`public/`)에서 빼서 여기로 옮겼어요. 필요 없다고 확인되면 사용자가 직접 지워요.
 
-| 경로 | 크기 | 근거 | 주의 |
-|---|---:|---|---|
-| public/assets/exploration-map.webp | 547,360 bytes | 현재 mapAssets.terrain은 map-terrain-v3.webp를 참조 | 이전 지도 원본·생성이력 보존 |
-| public/assets/map-terrain-v2.webp | 487,130 bytes | 현재 지도는 v3; v2는 생성 참조·문서에만 남음 | v3의 수정 참조 원본 |
-| public/assets/map-moa-left.webp | 11,136 bytes | 현재 left-v2.webp 사용; right와 동일 SHA-256 | 방향 에셋 이력 확인 후 보관 위치 결정 |
+## 2026-10-25 — `_unused/public-assets-20261025/`
 
-관찰·생활 소재·개념 영상은 문자열 조합으로 동적 로딩하므로 정적 검색만으로 미사용 판정을 하지 않아요. 원본 이미지 및 기존 3D·Scene 코드는 사용자 자료로 보존했어요. public 바깥 references와 생성 원본은 배포 에셋과 구분해요.
+| 파일 | 크기 | 옮긴 근거 |
+|---|---:|---|
+| exploration-map.webp | 547,360 bytes | 현재 지도는 `public/assets/map/terrain.webp`(옛 v3). 코드 참조 없음 |
+| map-terrain-v2.webp | 487,130 bytes | v3의 생성 참조 원본. 코드 참조 없음 |
+| map-moa-left.webp | 11,136 bytes | `map-moa-right.webp`와 SHA-256 동일. 현재 왼쪽은 옛 left-v2(`map/moa-left.webp`) |
+
+## 코드 쪽 후보 (옮기지 않음)
+
+아무 데서도 import하지 않는 옛 흐름 파일이에요. 빌드에는 안 들어가요. 정리할지 사용자 확인이 필요해요.
+
+| 파일 | 근거 |
+|---|---|
+| src/scenes/investigate.ts | main.ts·다른 모듈에서 import 0 |
+| src/evidence-view.ts | import 0 |
+| src/demo.ts | import 0 |
+| src/renderers/lab3d.ts | import 0. Three.js 의존성은 이 파일만 사용 |

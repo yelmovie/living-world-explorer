@@ -502,7 +502,7 @@ button>svg{pointer-events:none}
 
 .feedback,.impact-card p,.run-result p{font-size:20px}
 
-.screen-main{position:relative;background:linear-gradient(90deg,#edf0d42e,#fff8df26,#e4edd52e),url('/assets/greenhouse.webp') center/cover;padding:var(--hud-top) 6% 24px;justify-content:center;isolation:isolate}
+.screen-main{position:relative;background:linear-gradient(90deg,#edf0d42e,#fff8df26,#e4edd52e),url('/assets/places/greenhouse.webp') center/cover;padding:var(--hud-top) 6% 24px;justify-content:center;isolation:isolate}
 
 .hero{display:flex;flex-direction:column;align-items:center;gap:24px;max-width:780px;margin:auto;position:relative;z-index:2;text-align:center;width:min(650px,62%)}
 
@@ -589,17 +589,17 @@ button>svg{pointer-events:none}
 
 .quest-prize{display:flex;align-items:center;gap:10px;padding-top:16px;border-top:1px solid #dbe3cf;font-size:18px;color:#41624e}
 
-.expedition-shell{position:relative;isolation:isolate;display:flex;flex-direction:column;flex:1;width:100%;height:100%;min-height:0;padding:var(--hud-top) var(--screen-inset) 12px;gap:14px;overflow:hidden;background:var(--facility-image,url('/assets/greenhouse.webp')) center/cover}
+.expedition-shell{position:relative;isolation:isolate;display:flex;flex-direction:column;flex:1;width:100%;height:100%;min-height:0;padding:var(--hud-top) var(--screen-inset) 12px;gap:14px;overflow:hidden;background:var(--facility-image,url('/assets/places/greenhouse.webp')) center/cover}
 
-.expedition-shell[data-stage="M1"],.expedition-shell.stage-M1{--facility-image:url('/assets/facility-fungi.webp')}
+.expedition-shell[data-stage="M1"],.expedition-shell.stage-M1{--facility-image:url('/assets/places/fungi.webp')}
 
-.expedition-shell[data-stage="M2"],.expedition-shell.stage-M2{--facility-image:url('/assets/facility-water.webp')}
+.expedition-shell[data-stage="M2"],.expedition-shell.stage-M2{--facility-image:url('/assets/places/water.webp')}
 
-.expedition-shell[data-stage="M3"],.expedition-shell.stage-M3{--facility-image:url('/assets/facility-archive.webp')}
+.expedition-shell[data-stage="M3"],.expedition-shell.stage-M3{--facility-image:url('/assets/places/archive.webp')}
 
-.expedition-shell[data-stage="M4"],.expedition-shell.stage-M4{--facility-image:url('/assets/facility-village.webp')}
+.expedition-shell[data-stage="M4"],.expedition-shell.stage-M4{--facility-image:url('/assets/places/village.webp')}
 
-.expedition-shell[data-stage="M5"],.expedition-shell.stage-M5{--facility-image:url('/assets/facility-workshop.webp')}
+.expedition-shell[data-stage="M5"],.expedition-shell.stage-M5{--facility-image:url('/assets/places/workshop.webp')}
 
 .expedition-header{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;flex:none;min-height:60px;padding:0 100px;border:0;background:none;text-align:center}
 
@@ -854,7 +854,7 @@ button.settings-switch[aria-pressed="true"]{background:#3f7550;color:white;borde
 .settings-scroll>*{flex-shrink:0}
 
 /* The research notebook is shared by the story, final report and collected records. */
-.screen-final-report,.screen-core-restoration{background:url('/assets/facility-archive.webp') center/cover}
+.screen-final-report,.screen-core-restoration{background:url('/assets/places/archive.webp') center/cover}
 .screen-final-report>.activity-heading h2,.screen-core-restoration>.activity-heading h2{align-self:center;max-width:900px;padding:8px 24px;border:1px solid #c3d0ad;border-radius:16px;background:#fff8e9ed;box-shadow:0 3px 0 #8b9f6e45}
 .screen-final-report .workspace{grid-template-columns:minmax(0,1fr) minmax(250px,28%);align-items:center}
 .screen-final-report .workbench{height:auto;max-height:100%;padding:18px;background:#fffaf0f2;border-color:#a6ba88;box-shadow:0 5px 0 #7d956b66,0 12px 30px #213f3020}
@@ -879,7 +879,7 @@ button.settings-switch[aria-pressed="true"]{background:#3f7550;color:white;borde
 .records-dialog .album-tile{min-height:140px;background:#fffdf3;padding:16px;text-align:left;align-items:flex-start}
 .records-dialog .album-tile img{align-self:center}
 .records-dialog .album-tile p{font-size:20px}
-.story-dialog{width:min(920px,calc(100vw - 48px));max-width:920px;background:#f8f7e8 url('/assets/greenhouse.webp') center/cover;border-color:#607a4d}
+.story-dialog{width:min(920px,calc(100vw - 48px));max-width:920px;background:#f8f7e8 url('/assets/places/greenhouse.webp') center/cover;border-color:#607a4d}
 .story-dialog>h2{align-self:flex-start;padding:8px 16px;border:1px solid #aabc8d;border-radius:12px;background:#fff9eaf2;font-size:26px}
 .story-dialog>.modal-close{background:#fff9edfa}
 .story-page{grid-template-columns:190px minmax(0,1fr);align-items:end;min-height:280px}
@@ -894,7 +894,7 @@ button.settings-switch[aria-pressed="true"]{background:#3f7550;color:white;borde
 .discovery-dialog>h2{padding-bottom:14px;border-bottom:1px solid #cad7b5;text-align:center}
 .discovery-dialog .discovery-card{padding:20px;border-color:#9eb77a;background:#eef3dd;box-shadow:inset 0 3px 0 #fff9df}
 .discovery-dialog>.button.primary{align-self:flex-end;min-width:200px}
-.screen-results{background:linear-gradient(90deg,#ecf2d524,#fff8e914),url('/assets/study-core.webp'),url('/assets/greenhouse.webp');background-position:center;background-size:cover;justify-content:center}
+.screen-results{background:linear-gradient(90deg,#ecf2d524,#fff8e914),url('/assets/places/core.webp'),url('/assets/places/greenhouse.webp');background-position:center;background-size:cover;justify-content:center}
 .results-layout{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(430px,1fr);align-items:center;gap:32px;min-height:0;width:100%;height:100%;max-height:800px;max-width:1460px;margin:auto}
 .result-celebration{position:relative;display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center;min-width:0;max-height:100%}
 .completion-seal{padding:10px 24px;border:2px solid #8f783d;border-radius:999px;background:#fff1c8;color:#574323;font-family:var(--font-display);font-size:24px;box-shadow:0 4px 0 #a18c50}
@@ -1422,3 +1422,33 @@ button.settings-switch[aria-pressed="true"]{background:#3f7550;color:white;borde
 /* Captions are burned into the clips; keep their DOM equivalent for assistive reading. */
 .concept-caption{position:absolute;width:1px;height:1px;min-height:0;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 @media(min-width:1500px) and (min-height:850px){.expedition-tools .pick,.expedition-tools textarea{font-size:24px}.expedition-tools .field-label{font-size:26px}}
+
+/* Submitted research remains readable at tablet widths and in the core sidebar. */
+.expedition-panel{height:100%;align-self:stretch;justify-content:flex-start}
+.expedition-panel>*{flex-shrink:0}
+.expedition-tools{flex-shrink:0}
+.inquiry-feedback,.inquiry-feedback:empty{display:block;position:static;min-height:2.8em;flex:none;margin:0;padding:8px 12px;overflow-wrap:break-word}
+.inquiry-feedback:empty{border-color:transparent}
+.inquiry-loading{position:absolute;inset:45% 8% auto;padding:18px;border:2px solid #8daa8b;border-radius:16px;background:#fff9e9;text-align:center;z-index:3}
+.inquiry-loading .button{margin-top:12px}
+.source-notes{font-size:18px;line-height:1.45;text-align:left;grid-column:1/-1}
+.source-notes>*{margin-top:10px}
+.source-notes a{display:block;overflow-wrap:anywhere}
+.source-notes summary{cursor:pointer;min-height:44px;padding-block:10px}
+.record-version{grid-column:1/-1;font-size:18px}
+.screen-final-report .research-album,.screen-core-restoration .research-album{grid-template-columns:minmax(0,1fr)}
+.screen-final-report .album-tile:has(img),.screen-final-report .album-tile:has(.observation-preview){grid-template-columns:96px minmax(0,1fr)}
+.screen-final-report .album-tile p{grid-column:1/-1}
+.screen-final-report .album-tile .observation-preview,.screen-final-report .album-tile img{grid-row:auto;width:96px}
+.screen-final-report .workbench,.screen-core-restoration .tool-panel{align-self:stretch;max-height:100%;min-height:0;overflow:auto}
+.screen-core-restoration .tool-panel>*{flex-shrink:0}
+.screen-core-restoration .album-tile{min-height:0;text-align:left;align-items:stretch}
+.screen-core-restoration .workbench{overflow:auto;min-height:0}
+.screen-core-restoration .action-bar{position:relative;z-index:1}
+.presentation-form{display:flex;flex-direction:column;gap:14px}
+.presentation-form textarea{min-height:80px;scroll-margin-block:40px}
+.run-snapshot{padding:10px;border:1px solid #a9bd8d;border-radius:12px;background:#edf2df}
+.three-host{position:relative}
+.scene-loading{position:absolute;inset:35% 8% auto;padding:18px;z-index:2;background:#fff9e9;border:2px solid #a9bd8d;border-radius:14px;text-align:center}
+@media(max-width:850px){.expedition-panel{height:auto}.screen-final-report .workbench,.screen-core-restoration .tool-panel{max-height:none}.expedition-footer{position:sticky;bottom:0;background:#fff9e9f5;border-radius:14px;padding:8px;z-index:4}.expedition-secondary{gap:8px}.screen-core-restoration .slot-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media print{.expedition-footer{display:none}}

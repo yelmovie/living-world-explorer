@@ -2,6 +2,7 @@ import {active,makeAttempt,type State} from './model';
 import {el,button,paragraph,notice} from './ui';
 import {settingsContent as copy} from './settingsContent';
 import {syncAudio,playEffect} from './audio';
+import {inquiryReferences} from './inquiry-sources';
 
 export type SettingsHooks = {
   save: () => void;
@@ -67,6 +68,7 @@ export function openSettings(state: State, hooks: SettingsHooks) {
   },'secondary settings-wide'),paragraph(copy.sampleInfo,'muted'));
   body.append(details(copy.teacherTitle,[...textRows(copy.teacher),curriculum,details(copy.toolsTitle,teacherTools)]));
   const sources = details(copy.sourcesTitle,[paragraph(copy.sourcesIntro),...copy.sources.map(source=>{const article=el('section','settings-source');article.append(el('h3','',source.title),paragraph(source.text));return article;})]);
+  for(const reference of inquiryReferences){const link=el('a','',reference.title);link.href=reference.url;link.target='_blank';link.rel='noopener noreferrer';sources.append(link);}
   body.append(details(copy.creditsTitle,[...textRows(copy.credits),sources,...textRows(copy.copyright)]));
   const footer=el('div','settings-footer');
   const reset=button(prefs.admin?copy.previewReset:copy.reset,()=>{

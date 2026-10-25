@@ -1,4 +1,5 @@
 import {position,breadSpots,type Point} from './model';
+import {imageToView} from './observation';
 export function canvas(w=720,h=450){const c=document.createElement('canvas');c.width=w;c.height=h;c.className='observation';c.setAttribute('role','img');return c;}
 export type DrawOptions={focus?:number;light?:number;zoom?:number;pan?:Point;time?:number;marks?:Point[];trail?:boolean;image?:CanvasImageSource;markerSpace?:'world'};
 const motionImages=new WeakMap<object,HTMLCanvasElement>();
@@ -52,6 +53,6 @@ export function draw(c:HTMLCanvasElement,kind:string,opts:DrawOptions={}){
   const soil=g.createRadialGradient(x,y,0,x,y,r);soil.addColorStop(0,'#63533a');soil.addColorStop(.6,'#7d6948e6');soil.addColorStop(1,'#8a754c00');g.fillStyle=soil;g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fill();
  }
  g.filter='none';g.restore();
- for(const p of opts.marks||[]){const zoom=opts.zoom??1;const x=opts.markerSpace==='world'?(p.x+(opts.pan?.x??0)-.5)*zoom+.5:p.x,y=opts.markerSpace==='world'?(p.y+(opts.pan?.y??0)-.5)*zoom+.5:p.y;g.strokeStyle='#fff9e9';g.lineWidth=7;g.beginPath();g.arc(sx(x),sy(y),14,0,7);g.stroke();g.strokeStyle='#be652d';g.lineWidth=4;g.stroke();}
+ for(const p of opts.marks||[]){const {x,y}=opts.markerSpace==='world'?imageToView(p,{zoom:opts.zoom??1,pan:opts.pan??{x:0,y:0}}):p;g.strokeStyle='#fff9e9';g.lineWidth=7;g.beginPath();g.arc(sx(x),sy(y),14,0,7);g.stroke();g.strokeStyle='#be652d';g.lineWidth=4;g.stroke();}
  c.setAttribute('aria-label',`${kind} 설명용 관찰 모형`);
 }

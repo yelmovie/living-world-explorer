@@ -18,7 +18,7 @@ def txt(d,xy,t,s=28,fill=INK,anchor='mm'): d.text(xy,t,font=font(s),fill=fill,an
 def card(d,box): d.rounded_rectangle(box,22,fill=CREAM,outline='#b0c39c',width=3)
 def smooth(p): return (1-math.cos(math.pi*max(0,min(1,p))))/2
 def art(im,name,box):
-    p=ROOT/f'public/assets/specimen-{name}.webp'
+    p=ROOT/f'public/assets/study/{name}.webp'
     with Image.open(p) as source:a=source.convert('RGBA')
     a.thumbnail((box[2]-box[0],box[3]-box[1]))
     im.paste(a,(int((box[0]+box[2]-a.width)/2),int((box[1]+box[3]-a.height)/2)),a)

@@ -4,7 +4,8 @@ import {canvas,draw} from '../draw';
 import {invalidateRun} from '../inquiry-evaluate';
 import {playEffect} from '../audio';
 import {inquiryArt,artTime,artKey,artFrame} from '../artAssets';
-type Hooks={changed:()=>void;open:(id:string)=>void;feedback:(text:string)=>void};
+import {addMark,markHint,viewToImage} from '../observation';
+type Hooks={changed:()=>void;open:(id:string)=>void;feedback:(text:string)=>void;ready:(ok:boolean)=>void};
 const WIDTH=960,HEIGHT=540;
 export function mountInquiry(host:HTMLElement,task:InquiryTask,record:InquiryRecord,hooks:Hooks,reduced:boolean){
  let refresh=()=>{};let play=false;let disposed=false;let armed='';let reveal:number|undefined;let simulating=false;let scene:Phaser.Scene|undefined;let inputObjects:Phaser.GameObjects.GameObject[]=[];
@@ -12,8 +13,9 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,record:InquiryRec
  class Inquiry extends Phaser.Scene{
   trackSurface?:{canvas:HTMLCanvasElement;texture:Phaser.Textures.CanvasTexture};
   trackElapsed=0;
-  preload(){const needed=new Set([...task.items.map(artKey),task.organism,task.kind==='sample'?'water':undefined]);for(const art of needed)if(art&&inquiryArt[art]){const asset=inquiryArt[art];if(asset.frames)asset.frames.forEach((src,i)=>this.load.image(`art-${art}-${i}`,src));else this.load.image(`art-${art}`,asset.src);}}
-  create(){scene=this;refresh=()=>this.paint();this.paint();}
+  failed=false;
+  preload(){this.load.on('loaderror',()=>{this.failed=true;});const needed=new Set([...task.items.map(artKey),task.organism,task.kind==='sample'?'water':undefined]);for(const art of needed)if(art&&inquiryArt[art]){const asset=inquiryArt[art];if(asset.frames)asset.frames.forEach((src,i)=>this.load.image(`art-${art}-${i}`,src));else this.load.image(`art-${art}`,asset.src);}}
+  create(){scene=this;if(this.failed){hooks.ready(false);return;}refresh=()=>this.paint();this.paint();hooks.ready(true);}
   wipe(){this.trackSurface=undefined;this.trackElapsed=0;inputObjects=[];this.children.removeAll(true);for(const name of this.textures.getTextureKeys())if(name.startsWith('plate-'))this.textures.remove(name);}
   text(x:number,y:number,text:string,size=23,color='#234b3c',width=330){return this.add.text(x,y,text,{fontFamily:'Lab Display, Malgun Gothic',fontSize:`${Math.max(28,size)}px`,color,align:'center',wordWrap:{width,useAdvancedWrap:true},lineSpacing:4}).setOrigin(.5);}
   caption(x:number,y:number,label:string,size=28,color='#234b3c',width=850){return this.text(x,y,label,size,color,width).setBackgroundColor('#fff9e9').setPadding(12,7);}
@@ -31,6 +33,7 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,record:InquiryRec
    if(task.kind==='microscope'||task.kind==='track'||task.kind==='timeline'){this.paintObservation();return;}
    if(task.kind==='sample'){this.paintSampling();return;}
    if(task.kind==='build'){this.paintBuild();return;}
+   if(task.kind==='review'){this.paintReview();return;}
    this.paintPublish();
   }
   paintConnections(){
@@ -54,7 +57,7 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,record:InquiryRec
     const {w,h}=this.specimenSize(750,360,kind,record.pins[0]);const left=480-w/2,top=275-h/2;this.drawSpecimen(480,275,w,h,kind,record.pins[0],false);
     const after=this.art(480,275,w,h,kind,{time:record.pins[1],focus:65,light:65,trail:isTrack,marks:record.marks});
     const split=left+w*reveal;const mask=this.add.graphics().fillStyle(0xffffff).fillRect(split,top,left+w-split,h);mask.setVisible(false);after.setMask(mask.createGeometryMask());
-    if(isTimeline)this.add.zone(480,275,w,h).setInteractive({useHandCursor:true}).on('pointerup',(p:Phaser.Input.Pointer)=>{if(this.pauseGuard())return;if(p.x<left+w*(reveal??.5)){hooks.feedback('이후 쪽에서 달라진 부분을 표시해요.');return;}record.marks.push({x:((p.x-left)/w-.5)/record.zoom+.5-record.pan.x,y:((p.y-top)/h-.5)/record.zoom+.5-record.pan.y});record.marks=record.marks.slice(-8);record.submitted=false;this.commit();});
+    if(isTimeline)this.add.zone(480,275,w,h).setInteractive({useHandCursor:true}).on('pointerup',(p:Phaser.Input.Pointer)=>{if(this.pauseGuard())return;if(p.x<left+w*(reveal??.5)){hooks.feedback('이후 쪽에서 달라진 부분을 표시해요.');return;}if(!addMark(task,record,viewToImage({x:(p.x-left)/w,y:(p.y-top)/h},record)))return hooks.feedback(markHint(task));record.submitted=false;this.commit();});
     const line=this.add.rectangle(split,275,5,h,0xd6a64a);const handle=this.add.rectangle(split,275,88,70,0xfff9df).setStrokeStyle(3,0x8a703c);const label=this.text(split,275,'↔',36);handle.setInteractive({useHandCursor:true});this.input.setDraggable(handle);
     handle.on('drag',(_p:Phaser.Input.Pointer,x:number)=>{if(this.pauseGuard())return;const clamped=Phaser.Math.Clamp(x,left,left+w);reveal=(clamped-left)/w;mask.clear().fillStyle(0xffffff).fillRect(clamped,top,left+w-clamped,h);line.x=handle.x=label.x=clamped;});
     this.caption(250,60,'A · 이전');this.caption(710,60,'B · 이후');this.caption(480,500,'손잡이를 밀어 같은 위치의 변화를 비교해요',28,'#3e6651',860);
@@ -78,7 +81,7 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,record:InquiryRec
    zone.on('pointerup',(p:Phaser.Input.Pointer)=>{if(!down)return;const start=down;down=undefined;if(this.pauseGuard())return;const dx=p.x-start.x,dy=p.y-start.y;
     if(task.kind==='microscope'&&!record.capture&&Math.hypot(dx,dy)>20){record.pan={x:Math.max(-.35,Math.min(.35,old.x+dx/w)),y:Math.max(-.3,Math.min(.3,old.y+dy/h))};this.commit();return;}
     if(markable&&(task.kind==='microscope'&&record.capture||task.kind==='timeline'&&record.pins.length===2)){
-     const px=(p.x-x+w/2)/w,py=(p.y-y+h/2)/h;record.marks.push({x:(px-.5)/record.zoom+.5-record.pan.x,y:(py-.5)/record.zoom+.5-record.pan.y});record.marks=record.marks.slice(-8);record.submitted=false;playEffect('snap');this.commit();}
+     const point=viewToImage({x:(p.x-x+w/2)/w,y:(p.y-y+h/2)/h},record);if(!addMark(task,record,point))return hooks.feedback(markHint(task));record.submitted=false;playEffect('snap');this.commit();}
    });zone.on('pointerout',()=>{down=undefined;});zone.on('pointercancel',()=>{down=undefined;});
   }
   paintSampling(){
@@ -104,6 +107,11 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,record:InquiryRec
    const signal=this.add.circle(185,200,18,0xffde7a).setStrokeStyle(4,0x547b51).setDepth(30);
    const end=valid?775:!record.assignments.edge1||record.assignments.input!==task.items.find(i=>i.target==='input')?.id?310:605;
    this.tweens.add({targets:signal,x:end,duration:1400,ease:'Sine.easeInOut',onComplete:()=>{simulating=false;signal.destroy();if(!disposed)finish();}});
+  }
+  paintReview(){
+   this.caption(480,45,'새 자료를 보고 내 생각을 다시 살펴봐요',30);
+   task.items.forEach((it,i)=>{const x=260+i*440;this.plate(x,265,390,325,'',0xfffbee);this.art(x,230,350,200,artKey(it)||'bacteria',{fit:'contain'});this.text(x,375,(record.opened.includes(it.id)?'✓ ':'')+it.label,28,'#234b3c',350);this.add.zone(x,265,390,325).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard())return;if(!record.assignments.initial)return hooks.feedback('새 자료를 보기 전 생각을 먼저 골라요.');hooks.open(it.id);});});
+   this.caption(480,485,'처음 생각 → 새 근거 → 유지하거나 수정한 주장',26);
   }
   paintPublish(){
    task.items.forEach((it,i)=>{const x=180+i*300;const selected=record.assignments.case===it.id;this.plate(x,170,260,245,'',selected?0xe1edcf:0xfffbee);this.art(x,135,230,140,artKey(it)||'yogurt',{time:artTime(artKey(it),it.detail,it.id),fit:'contain'});this.text(x,248,it.label,30);this.add.zone(x,170,260,245).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard())return;record.assignments.case=it.id;record.assignments.action='';playEffect('snap');this.commit();});});

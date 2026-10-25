@@ -1,10 +1,11 @@
 import {active,type State,stageIds} from './model';
 import {inquiryTasks} from './curriculum';
 import {artFor,artKey,artTime} from './artAssets';
+import {acceptedRecord} from './inquiry-records';
 
 /** Export the selected case from the learner or the isolated classroom preview. */
 export function cardContent(s:State){
- const a=active(s),record=a.inquiry.records['M5-4'];
+ const a=active(s),record=acceptedRecord(a,'M5-4');
  const task=inquiryTasks.find(t=>t.id==='M5-4')!;
  const item=task.items.find(it=>it.id===record?.assignments.case);
  const kind=item?artKey(item):undefined;

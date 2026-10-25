@@ -1,0 +1,4 @@
+import type {InquiryRecord,InquiryTask} from './inquiry-model';
+export function designCorrect(task:InquiryTask,r:Pick<InquiryRecord,'assignments'>){return task.items.filter(i=>i.target).every(i=>r.assignments[i.target]===i.id)&&r.assignments.edge1==='linked'&&r.assignments.edge2==='linked';}
+export function startRun(r:InquiryRecord){const run={id:crypto.randomUUID(),startedAt:new Date().toISOString(),prediction:r.prediction,assignments:{...r.assignments},status:'running' as const,result:'',reflection:''};r.runs.push(run);r.runResult='';r.reflection='';return r.runs.at(-1)!;}
+export function currentRun(r:InquiryRecord){const run=r.runs.at(-1);if(!run||run.status!=='completed'||run.prediction!==r.prediction)return;const keys=new Set([...Object.keys(run.assignments),...Object.keys(r.assignments)]);return [...keys].every(k=>(run.assignments[k]||'')===(r.assignments[k]||''))?run:undefined;}

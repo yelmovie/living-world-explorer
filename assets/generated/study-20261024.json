@@ -1,0 +1,86 @@
+{
+  "date": "2026-10-24",
+  "tool": "image_gen built-in",
+  "assets": [
+    {
+      "key": "map",
+      "original": "assets/generated/study-20261024/map-20261024.png",
+      "output": "public/assets/map/terrain.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 440574
+    },
+    {
+      "key": "pond",
+      "original": "assets/generated/study-20261024/pond-20261024.png",
+      "output": "public/assets/study/pond.webp",
+      "width": 960,
+      "height": 540,
+      "bytes": 182818
+    },
+    {
+      "key": "core",
+      "original": "assets/generated/study-20261024/core-20261024.png",
+      "output": "public/assets/places/core.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 249994
+    },
+    {
+      "key": "bacteria",
+      "original": "assets/generated/study-20261024/bacteria-20261024.png",
+      "output": "public/assets/study/bacteria.webp",
+      "width": 640,
+      "height": 360,
+      "bytes": 35596
+    },
+    {
+      "key": "bread",
+      "original": "assets/generated/study-20261024/bread-20261024.png",
+      "output": "public/assets/study/bread-0.webp",
+      "width": 640,
+      "height": 360,
+      "bytes": 51778
+    },
+    {
+      "key": "leaf",
+      "original": "assets/generated/study-20261024/leaf-20261024.png",
+      "output": "public/assets/study/leaf-0.webp",
+      "width": 640,
+      "height": 360,
+      "bytes": 35424
+    },
+    {
+      "key": "yogurt",
+      "original": "assets/generated/study-20261024/yogurt-20261024.png",
+      "output": "public/assets/study/yogurt.webp",
+      "width": 640,
+      "height": 360,
+      "bytes": 30864
+    },
+    {
+      "key": "soil",
+      "original": "assets/generated/study-20261024/soil-20261024.png",
+      "output": "public/assets/study/soil.webp",
+      "width": 640,
+      "height": 360,
+      "bytes": 49314
+    },
+    {
+      "key": "milk",
+      "original": "assets/generated/study-20261024/milk-20261024.png",
+      "output": "public/assets/study/milk.webp",
+      "width": 640,
+      "height": 360,
+      "bytes": 9616
+    },
+    {
+      "key": "yeast",
+      "original": "assets/generated/study-20261024/yeast-20261024.png",
+      "output": "public/assets/study/yeast.webp",
+      "width": 640,
+      "height": 360,
+      "bytes": 27776
+    }
+  ]
+}

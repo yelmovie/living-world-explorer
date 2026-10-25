@@ -1,5 +1,5 @@
 import {recoverInquiry} from './inquiry-model';
-import {inquiryComplete} from './inquiry-evaluate';
+import {tasksFor} from './curriculum';
 import {makeState,makeAttempt,type State,type Attempt,stageIds,captureValid} from './model';
 import {routes} from './content';
 import {validDraft,recoverDraft} from './validate';
@@ -20,12 +20,15 @@ export function restoreAttempt(raw:unknown):Attempt{
  // Invalid records never become completed missions. Keep only records from this attempt.
  const a={...base,...v,draft:recoverDraft(v.draft),inquiry:recoverInquiry(v.inquiry)};
  a.route=routes.includes(v.route)?v.route:'nature-map';
- a.evidence=Object.fromEntries(Object.entries(v.evidence||{}).filter(([key,e])=>stageIds.includes(key as typeof stageIds[number])&&e?.stage===key&&e.attemptId===a.id&&['learner','demo'].includes(e.origin)&&(e.inquiry?inquiryComplete(recoverInquiry(e.inquiry),e.stage):validDraft(e.draft)&&missing(e.stage,e.draft).length===0)));
+ // Historical accepted snapshots keep their original validation policy. A stricter
+ // image mask must never erase an older student's completed lab or rewards.
+ a.evidence=Object.fromEntries(Object.entries(v.evidence||{}).filter(([key,e])=>stageIds.includes(key as typeof stageIds[number])&&e?.stage===key&&e.attemptId===a.id&&['learner','demo'].includes(e.origin)&&(e.inquiry?tasksFor(e.stage).every(t=>!!recoverInquiry(e.inquiry).records[t.id]?.completedAt):validDraft(e.draft)&&missing(e.stage,e.draft).length===0)).map(([key,e])=>[key,{...e,...(e.inquiry?{inquiry:recoverInquiry(e.inquiry)}:{})}]));
  a.report=[...new Set((Array.isArray(v.report)?v.report:[]).filter(s=>stageIds.includes(s)&&a.evidence[s]))];
  a.ports=[...new Set((Array.isArray(v.ports)?v.ports:[]).filter(s=>stageIds.includes(s)&&a.evidence[s]))];
  a.activated=v.activated===true&&a.report.length===5&&a.ports.length===5;
  a.cardTitle=typeof v.cardTitle==='string'?v.cardTitle.slice(0,36):base.cardTitle;
  a.cardNote=typeof v.cardNote==='string'?v.cardNote.slice(0,100):'';
+ if(v.presentation&&typeof v.presentation==='object')a.presentation={observation:typeof v.presentation.observation==='string'?v.presentation.observation.slice(0,140):'',evidence:typeof v.presentation.evidence==='string'?v.presentation.evidence.slice(0,140):'',life:typeof v.presentation.life==='string'?v.presentation.life.slice(0,140):''};
  if(!v.mapPosition||!Number.isFinite(v.mapPosition.x)||!Number.isFinite(v.mapPosition.y)||v.mapPosition.x<0||v.mapPosition.x>1280||v.mapPosition.y<0||v.mapPosition.y>720)a.mapPosition=base.mapPosition;
  if(!Array.isArray(a.draft.m1.captures)||!Array.isArray(a.draft.m5.runs))return base;
  return a;

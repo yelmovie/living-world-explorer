@@ -5,7 +5,7 @@
     {
       "key": "deadwood",
       "original": "assets/generated/specimens-20261025/deadwood.png",
-      "path": "public/assets/specimen-deadwood-v2.webp",
+      "path": "public/assets/study/deadwood.webp",
       "width": 1024,
       "height": 576,
       "bytes": 270982,
@@ -14,7 +14,7 @@
     {
       "key": "fruit",
       "original": "assets/generated/specimens-20261025/fruit.png",
-      "path": "public/assets/specimen-moldy-fruit.webp",
+      "path": "public/assets/study/moldy-fruit.webp",
       "width": 1024,
       "height": 576,
       "bytes": 94206,
@@ -23,7 +23,7 @@
     {
       "key": "dough-before",
       "original": "assets/generated/specimens-20261025/dough-before.png",
-      "path": "public/assets/specimen-dough-before.webp",
+      "path": "public/assets/study/dough-before.webp",
       "width": 1024,
       "height": 576,
       "bytes": 94588,
@@ -32,7 +32,7 @@
     {
       "key": "bread-1",
       "original": "assets/generated/specimens-20261025/bread-1.png",
-      "path": "public/assets/specimen-bread-time-1-v2.webp",
+      "path": "public/assets/study/bread-1.webp",
       "width": 1024,
       "height": 576,
       "bytes": 139152,
@@ -41,7 +41,7 @@
     {
       "key": "bread-2",
       "original": "assets/generated/specimens-20261025/bread-2.png",
-      "path": "public/assets/specimen-bread-time-2-v2.webp",
+      "path": "public/assets/study/bread-2.webp",
       "width": 1024,
       "height": 576,
       "bytes": 132254,
@@ -50,7 +50,7 @@
     {
       "key": "bread-3",
       "original": "assets/generated/specimens-20261025/bread-3.png",
-      "path": "public/assets/specimen-bread-time-3-v2.webp",
+      "path": "public/assets/study/bread-3.webp",
       "width": 1024,
       "height": 576,
       "bytes": 142864,
@@ -59,7 +59,7 @@
     {
       "key": "leaf-1",
       "original": "assets/generated/specimens-20261025/leaf-1.png",
-      "path": "public/assets/specimen-leaf-time-1-v2.webp",
+      "path": "public/assets/study/leaf-1.webp",
       "width": 1024,
       "height": 576,
       "bytes": 87228,
@@ -68,7 +68,7 @@
     {
       "key": "leaf-2",
       "original": "assets/generated/specimens-20261025/leaf-2.png",
-      "path": "public/assets/specimen-leaf-time-2-v2.webp",
+      "path": "public/assets/study/leaf-2.webp",
       "width": 1024,
       "height": 576,
       "bytes": 105766,
@@ -77,7 +77,7 @@
     {
       "key": "leaf-3",
       "original": "assets/generated/specimens-20261025/leaf-3.png",
-      "path": "public/assets/specimen-leaf-time-3-v2.webp",
+      "path": "public/assets/study/leaf-3.webp",
       "width": 1024,
       "height": 576,
       "bytes": 107128,
@@ -86,7 +86,7 @@
     {
       "key": "dough-after",
       "original": "assets/generated/specimens-20261025/dough-after.png",
-      "path": "public/assets/specimen-dough-after.webp",
+      "path": "public/assets/study/dough-after.webp",
       "width": 1024,
       "height": 576,
       "bytes": 96600,

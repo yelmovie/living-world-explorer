@@ -53,18 +53,20 @@ export const settingsContent = {
   credits: [
     '캐릭터·배경·장식에는 프로젝트 자체 AI 생성 이미지가 사용돼요.',
     '관찰 화면의 그림은 실제 현미경 사진이 아닌 학습용 설명 모형이에요. 게임 배경과 캐릭터는 생물의 특징을 판단하는 근거로 쓰지 않아요.',
-    '효과음은 Kenney의 Interface Sounds(CC0)를 사용해요. 배경 음악과 개념 영상의 짧은 음은 프로젝트 자체 합성이에요.',
+    '배경 음악 2곡(탐험 메인테마·복구 엔딩테마)은 프로젝트 자체 AI 생성 음원이에요.',
+    '효과음은 Kenney의 Interface Sounds(CC0)를 사용해요. 개념 영상의 짧은 음은 프로젝트 자체 합성이에요.',
     '스테이지 개념 영상은 프로젝트의 설명 모형으로 만든 12초 모션 그래픽이에요. 내 발견 도감에서 다시 볼 수 있어요.',
     '제목에는 Google Fonts Jua를 SIL Open Font License 1.1에 따라 자체 제공하고, 본문에는 기기에 설치된 시스템 글꼴을 사용해요.',
     '출처와 라이선스 상세 내용은 프로젝트의 assets/CREDITS.md에서 확인할 수 있어요.'
   ],
   sourcesTitle: '자료 출처 모아 보기',
-  sourcesIntro: '미션 화면에는 출처를 표시하지 않고 이곳에 모아 두었어요.',
+  sourcesIntro: '이미지는 학습용 생성 모형이고, 채집·조사 메모는 수업용 가상 사례예요. 활동의 자료·관찰 조건에서도 실제 참고 문헌을 열 수 있어요.',
   sources: [
     {title: '공통 배경·캐릭터', text: '프로젝트 자체 제작 AI 생성 이미지 · 기존 프로젝트 자료와 새 제작 자료. 생성 경위와 배포 전 확인 사항은 CREDITS.md에 기록해요.'},
     {title: '관찰·비교·연결·설계 활동', text: '프로젝트 자체 제작 Canvas·Phaser 설명 모형 · 관찰 및 생물 작용의 관계를 설명하기 위한 모형이에요.'},
     {title: '교육과정', text: '교육부 2022 개정 과학과 교육과정 · 성취기준 원문과 교사용 활동 연결.'},
     {title: '글꼴', text: 'Jua · Woowahan Brothers · Google Fonts 배포 · SIL Open Font License 1.1. 원문을 프로젝트에 함께 보관해요.'},
+    {title: '배경 음악', text: '탐험 메인테마·복구 엔딩테마 2곡 · 프로젝트 자체 AI 생성 음원(Suno 유료 플랜) · 가사 없음.'},
     {title: '효과음', text: 'Kenney · Interface Sounds 1.0 · CC0 1.0. 출처: kenney.nl/assets/interface-sounds. 라이선스 원문: assets/audio/KENNEY-LICENSE.txt.'},
     {title: '프로그램', text: 'Phaser 3 · MIT. Three.js · MIT(기존 코드 보존). Vite · MIT. TypeScript · Apache-2.0.'}
   ],

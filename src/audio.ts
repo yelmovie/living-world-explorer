@@ -1,6 +1,10 @@
-/** Quiet original BGM + locally hosted Kenney CC0 interaction sounds. */
+/** Project BGM (main loop, ending loop) + locally hosted Kenney CC0 interaction sounds. */
 export type AudioSettings = {sound: boolean; bgm?: boolean; bgmVolume?: number};
 export type EffectName = 'click'|'success'|'retry'|'snap'|'capture'|'water'|'hint'|'run';
+export type MusicTrack = 'main'|'ending';
+const tracks: Record<MusicTrack, string> = {main: 'assets/audio/bgm-main-theme.m4a', ending: 'assets/audio/bgm-ending-theme.m4a'};
+// Files are normalized to -16 LUFS. 100% BGM ≈ -36 LUFS, just under the effects (≈ -34 LUFS at .06). Tune by ear here.
+const MUSIC_MAX_GAIN = .1;
 let settings: AudioSettings = {sound: false, bgm: false, bgmVolume: 35};
 let context: AudioContext | undefined;
 let musicGain: GainNode | undefined;
@@ -8,14 +12,13 @@ let effectGain: GainNode | undefined;
 let unlocked = false;
 let explicitQuiet = false;
 let installed = false;
-let timer: ReturnType<typeof setTimeout> | undefined;
-let noteIndex = 0;
-const musicVoices = new Set<OscillatorNode>();
+let track: MusicTrack = 'main';
+let music: HTMLAudioElement | undefined;
+let musicTrack: MusicTrack | undefined;
 const effectVoices = new Set<AudioScheduledSourceNode>();
 const samples=new Map<EffectName,AudioBuffer>();
 let samplesRequested=false;let lastEffect=0;
 let observer: MutationObserver | undefined;
-const melody = [261.63, 329.63, 392, 329.63, 293.66, 349.23, 440, 349.23, 329.63, 392, 493.88, 392, 293.66, 349.23, 392, 0];
 
 function engine() {
   if (!context) {
@@ -37,8 +40,9 @@ function stopVoices(voices: Set<AudioScheduledSourceNode>) {
   for (const voice of voices) {try { voice.stop(); } catch { /* Already stopped. */ }}
   voices.clear();
 }
-function quiet() {return explicitQuiet || document.hidden || !!document.querySelector('dialog[open]');}
-function stopMusic() {clearTimeout(timer); timer = undefined;stopVoices(musicVoices);}
+// Only a playing video silences BGM; settings and story dialogs keep it so the volume slider can be heard.
+function quiet() {return explicitQuiet || document.hidden || !!document.querySelector('dialog[open] video');}
+function stopMusic() {music?.pause();}
 function voice(frequency: number, duration: number, destination: GainNode, voices: Set<AudioScheduledSourceNode>, start: number, type: OscillatorType = 'sine') {
   const ctx = context;
   if (!ctx || !frequency) return;
@@ -54,16 +58,17 @@ function voice(frequency: number, duration: number, destination: GainNode, voice
   oscillator.onended = () => {voices.delete(oscillator);oscillator.disconnect();envelope.disconnect();};
   oscillator.start(start);oscillator.stop(start + duration + .02);
 }
-function schedule() {
-  timer = undefined;
-  const ctx = context;
-  if (!ctx || !musicGain || !settings.bgm || !unlocked || quiet()) return;
-  const frequency = melody[noteIndex++ % melody.length];
-  if (frequency) {
-    voice(frequency, .7, musicGain, musicVoices, ctx.currentTime);
-    if (noteIndex % 4 === 1) voice(frequency / 2, 1.3, musicGain, musicVoices, ctx.currentTime);
+// Routed through musicGain because iPad Safari ignores HTMLMediaElement.volume.
+function musicElement(ctx: AudioContext) {
+  if (!music && musicGain) {
+    try {
+      const element = new Audio();
+      element.loop = true;element.preload = 'none';
+      ctx.createMediaElementSource(element).connect(musicGain);
+      music = element;
+    } catch { /* No BGM; effects still work. */ }
   }
-  timer = setTimeout(schedule, 900);
+  return music;
 }
 function sync() {
   if (!settings.sound || document.hidden || explicitQuiet) stopVoices(effectVoices);
@@ -71,10 +76,12 @@ function sync() {
   const ctx = engine();
   if (!ctx || !musicGain) return;
   const volume = Number.isFinite(settings.bgmVolume) ? Math.max(0, Math.min(100, settings.bgmVolume!)) / 100 : .35;
-  // BGM maximum sits under the fixed effect level (.06 × .7).
-  musicGain.gain.setTargetAtTime(volume * .042, ctx.currentTime, .05);
-  if (ctx.state === 'suspended') void ctx.resume().then(() => {if (!timer) schedule();}).catch(() => {});
-  else if (!timer) schedule();
+  musicGain.gain.setTargetAtTime(volume * MUSIC_MAX_GAIN, ctx.currentTime, .05);
+  const element = musicElement(ctx);
+  if (!element) return;
+  if (musicTrack !== track) {element.src = tracks[track];musicTrack = track;}
+  const start = () => {if (element.paused && settings.bgm && !quiet()) void element.play().catch(() => {});};
+  if (ctx.state === 'suspended') void ctx.resume().then(start).catch(() => {});else start();
 }
 function preloadEffects(){
  if(samplesRequested)return;const ctx=engine();if(!ctx)return;samplesRequested=true;
@@ -93,6 +100,7 @@ function install() {
 }
 export function syncAudio(value: AudioSettings) {settings = value;install();sync();}
 export function setAudioQuiet(value: boolean) {explicitQuiet = value;sync();}
+export function setMusicTrack(value: MusicTrack) {if (track === value) return;track = value;sync();}
 export function anySound(value: AudioSettings) {return !!(value.sound || value.bgm);}
 export function toggleMasterSound(value: AudioSettings) {const enabled = !anySound(value);value.sound = enabled;value.bgm = enabled;syncAudio(value);}
 export function playEffect(name: EffectName = 'click') {
@@ -119,5 +127,5 @@ export function disposeAudio() {
   document.removeEventListener('visibilitychange', visibility);
   installed = false;unlocked = false;samplesRequested=false;samples.clear();
   if (context) void context.close().catch(() => {});
-  context = undefined;musicGain = undefined;effectGain = undefined;
+  context = undefined;musicGain = undefined;effectGain = undefined;music = undefined;musicTrack = undefined;
 }

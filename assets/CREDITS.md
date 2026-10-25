@@ -16,7 +16,8 @@
 | Google Fonts Jua | 제목 | SIL Open Font License 1.1, public/assets/fonts/Jua-OFL.txt | PASS | 웹폰트 자체 제공, OFL 원문 동봉 |
 | 기존 생성 배경·캐릭터 | 연구소 장식·지도·NPC | 기존 프로젝트 AI 생성 자료, 일부 생성 날짜·도구만 기록됨 | 확인 필요 | 납품 담당자가 생성 당시 계정·계약·상업 이용 조건을 대조해야 함 |
 | 이번 제작 AI 이미지 | 새 지도·캐릭터·시설 이미지 | 기본 image_gen으로 프로젝트용 생성, 제작 담당자 기록과 연결 | 확인 필요 | 최종 파일 목록·생성 날짜·계정 이용 조건 기록을 납품 때 보존 |
-| 배경 음악·개념 영상 소리 | 설정에서 켜는 로컬 사운드 | 프로젝트 Web Audio 자체 합성 | PASS | 외부 음악 서비스·샘플 없음 |
+| 배경 음악 2곡 (2026-10-25) | 지도·탐구 메인테마, 결과 화면 엔딩테마 | 제작자가 본인 Suno Premier 플랜 계정으로 직접 생성(가사 없음). Premier 플랜 생성물은 상업 이용 가능. 생성 기록: assets/generated/bgm-20261025.json | PASS | 원본 MP3 보관, 배포본은 AAC 96kbps로 변환 |
+| 개념 영상 소리 | 개념 영상의 짧은 음 | 프로젝트 자체 합성 | PASS | 외부 음악 서비스·샘플 없음 |
 | 효과음 | 클릭·채집·촬영·성공 등 | Kenney Interface Sounds 1.0 · CC0-1.0, public/assets/audio/KENNEY-LICENSE.txt | PASS | 파일별 매핑과 경위: public/assets/audio/sources.json |
 
 앱 외 하위 프로젝트 package.json은 현재 검색에서 발견되지 않았다. 현재 프로젝트 package.json에서 Remotion, Highcharts, ag-Grid Enterprise, Handsontable, Font Awesome Pro, Spine 런타임 의존성은 발견되지 않았다. 외부 유료 도구로 제작한 영상 파일도 현재 사용하지 않는다. AI 이미지의 원본 경위·계약 확인이 남으므로 이 문서만으로 상업 납품 검수를 완료했다고 보지 않는다.
@@ -25,22 +26,22 @@
 
 | 파일·범위 | 출처·제작 경위 | 표시·사용 범위 |
 |---|---|---|
-| public/assets/greenhouse.webp | 기존 프로젝트의 연구소 배경 AI 생성 이미지 | 게임 배경, 과학 관찰 근거 아님 |
-| public/assets/exploration-map.webp | 2026-10-18 기본 image_gen 생성. docs/MAP_ASSET_PROMPT.md에 프롬프트 기록 | 이전 탐험 지도 배경, 과학 관찰 근거 아님 |
-| public/assets/map-terrain-v2.webp | 2026-10-21 기본 image_gen 자체 생성, 1280×720 | 2.5D 픽셀 RPG 지도, 과학 관찰 근거 아님 |
-| public/assets/map-terrain-v3.webp | 2026-10-24 기본 image_gen, v2의 건물·보행 경로를 보존한 새 지도 | 현재 지도·로딩 중 풍경, 1280×720 |
-| public/assets/study-{pond,core,bacteria,bread,leaf,yogurt,soil,milk,yeast}.webp | 2026-10-24 기본 image_gen으로 각각 생성, docs/ART_GENERATION_20261024.md | 학습용 설명 그림·채집 장면·복구 연출, 실제 현미경 사진 아님 |
-| public/assets/specimen-deadwood-v2.webp, specimen-moldy-fruit.webp, specimen-dough-{before,after}.webp, specimen-{bread,leaf}-time-{1,2,3}-v2.webp | 2026-10-25 기본 image_gen 생성·편집 10개. assets/generated/specimens-20261025.json에 전체 프롬프트와 파일별 기록 | 학습용 관찰 모형. 같은 식빵·낙엽·반죽의 전후 비교, 실제 실험 사진·측정 원자료 아님 |
-| public/assets/map-moa-{down,right,up,left-v2}.webp | 2026-10-21 기본 image_gen 자체 생성 | 갈색 묶은 머리·안경·연구 조끼의 모아, 투명 2.5D 픽셀 캐릭터 |
-| public/assets/map-companion-{down,right,up,left}.webp | 2026-10-21 기본 image_gen 자체 생성 | 분홍 토끼 보조 캐릭터, 투명 2.5D 픽셀 캐릭터 |
-| public/assets/moa-portrait.webp, companion-portrait.webp | 2026-10-21 기본 image_gen 자체 생성, 320×320 투명 | 시설 안내 초상, 과학 관찰 근거 아님 |
+| public/assets/places/greenhouse.webp | 기존 프로젝트의 연구소 배경 AI 생성 이미지 | 게임 배경, 과학 관찰 근거 아님 |
+| _unused/public-assets-20261025/exploration-map.webp, map-terrain-v2.webp | 2026-10-18·10-21 기본 image_gen 생성. docs/MAP_ASSET_PROMPT.md에 프롬프트 기록 | 이전 탐험 지도. 현재 쓰지 않아 배포 폴더에서 뺌 |
+| public/assets/map/terrain.webp | 2026-10-24 기본 image_gen, v2의 건물·보행 경로를 보존한 새 지도 | 현재 지도·로딩 중 풍경, 1280×720 |
+| public/assets/study/{pond,bacteria,bread-0,leaf-0,yogurt,soil,milk,yeast}.webp, places/core.webp | 2026-10-24 기본 image_gen으로 각각 생성, docs/ART_GENERATION_20261024.md, assets/generated/study-20261024.json | 학습용 설명 그림·채집 장면·복구 연출, 실제 현미경 사진 아님 |
+| public/assets/study/{deadwood,moldy-fruit,dough-before,dough-after,bread-1~3,leaf-1~3}.webp | 2026-10-25 기본 image_gen 생성·편집 10개. assets/generated/specimens-20261025.json에 전체 프롬프트와 파일별 기록 | 학습용 관찰 모형. 같은 식빵·낙엽·반죽의 전후 비교, 실제 실험 사진·측정 원자료 아님 |
+| public/assets/map/moa-{down,right,up,left}.webp | 2026-10-21 기본 image_gen 자체 생성 | 갈색 묶은 머리·안경·연구 조끼의 모아, 투명 2.5D 픽셀 캐릭터 |
+| public/assets/map/companion-{down,right,up,left}.webp | 2026-10-21 기본 image_gen 자체 생성 | 분홍 토끼 보조 캐릭터, 투명 2.5D 픽셀 캐릭터 |
+| public/assets/characters/{moa,companion}-portrait.webp | 2026-10-21 기본 image_gen 자체 생성, 320×320 투명 | 시설 안내 초상, 과학 관찰 근거 아님 |
+| public/assets/audio/bgm-{main,ending}-theme.m4a | 2026-10-25 Suno Premier 플랜 생성(제작자 계정). 받은 파일명 Morning Lab Discovery.mp3, Living Laboratory (1).mp3 | 배경 음악. 원본은 assets/generated/bgm-20261025/ |
 | public/assets/fonts/jua-korean-400.woff2 | Google Fonts Jua, 제목용 한국어 웹폰트 | SIL OFL 1.1 |
 | public/assets/fonts/jua-latin-400.woff2 | Google Fonts Jua, 제목용 라틴 웹폰트 | SIL OFL 1.1 |
 | src/draw.ts 및 Phaser 탐구 도식 | 프로젝트 자체 제작 설명 모형 | 현미경 사진이나 실험 측정 원자료로 소개하지 않음 |
 | src/experience.ts의 SVG 아이콘 | 프로젝트 자체 제작 선형 아이콘 | 공통 홈·이전·음소거·설정·탐구 도구 |
-| src/audio.ts | 프로젝트 자체 제작 Web Audio 합성 | 외부 음원·샘플 없음 |
+| src/audio.ts | 프로젝트 자체 제작 재생 코드. 효과음 파일이 없을 때만 짧은 음을 합성 | 배경 음악은 위 Suno 2곡 |
 
-지도·캐릭터 생성 PNG 원본은 이미지 도구의 기본 생성 위치에 보존하고, 실제 사용하는 최적화 WebP는 D: 프로젝트의 public/assets에 둔다. 2026-10-25 표본 개선의 생성 PNG 원본은 D: 프로젝트의 assets/generated/specimens-20261025에 보관한다. 새 시설 배경의 파일별 생성 기록은 제작 담당자가 추가한다. references 아래의 이미지 시안은 원본 보관 자료이며, 복사해서 사용하기 전 경위를 확인한다.
+지도·캐릭터 생성 PNG 원본은 이미지 도구의 기본 생성 위치에 보존하고, 실제 사용하는 최적화 WebP는 D: 프로젝트의 public/assets 종류별 폴더에 둔다(규칙과 옛 이름 대조표: assets/README.md). 2026-10-24 학습 그림 원본은 assets/generated/study-20261024, 2026-10-25 표본 개선 원본은 assets/generated/specimens-20261025, 배경 음악 원본은 assets/generated/bgm-20261025에 보관한다. 새 시설 배경의 파일별 생성 기록은 제작 담당자가 추가한다. references 아래의 이미지 시안은 원본 보관 자료이며, 복사해서 사용하기 전 경위를 확인한다.
 
 ## 교육 내용 근거
 
