@@ -1,6 +1,8 @@
 import {el,button,heading,paragraph,modal,type Context} from './ui';
 import {stages} from './content';
-import {validEvidence} from './model';
+import {validEvidence,stageIds,type Attempt} from './model';
+import {tasksFor} from './curriculum';
+import {taskIssues} from './inquiry-evaluate';
 
 export const missions=[
  {icon:'lens',quest:'숲의 관찰 기록이 사라졌어. 표본의 특징을 다시 찾아줘.',reward:'표본실 조명 복구',kit:'균류 관찰 패킷',action:'초점 조절 · 촬영 · 특징 표시'},
@@ -12,6 +14,17 @@ export const missions=[
 const paths:Record<string,string>={home:'M3 11 12 3l9 8M5 10v11h5v-7h4v7h5V10',back:'m15 5-7 7 7 7',map:'m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2Zm6-2v16m6-14v16',sound:'m11 4-6 5H2v6h3l6 5Zm4 4a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14',mute:'m11 4-6 5H2v6h3l6 5Zm5 5 6 6m0-6-6 6',settings:'M9 3h6l1 4 4 2v6l-4 2-1 4H9l-1-4-4-2V9l4-2ZM9 12a3 3 0 1 0 6 0 3 3 0 1 0-6 0',bag:'M5 7h14v14H5ZM9 7V3h6v4M5 12h14',lens:'M15 15l6 6M3 10a7 7 0 1 0 14 0 7 7 0 1 0-14 0',drop:'M12 2S4 11 4 15a8 8 0 0 0 16 0c0-4-8-13-8-13Z',link:'m9 15 6-6M7 13 4 16a3 3 0 0 0 4 4l5-5m-2-6 5-5a3 3 0 0 1 4 4l-3 3',clock:'M12 7v6l4 2M2 12a10 10 0 1 0 20 0 10 10 0 1 0-20 0',flask:'M9 3h6m-5 0v7L4 20h16l-6-10V3M7 15h10',lock:'M7 11h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2Zm1 0V7a4 4 0 0 1 8 0v4m-4 4v2',unlock:'M7 11h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2Zm1 0V6a4 4 0 0 1 7.75-1.4M12 15v2',star:'m12 2 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z',check:'m4 12 5 5L20 6',help:'M9 8a3 3 0 1 1 5 2c-2 1-2 2-2 4m0 3v1M2 12a10 10 0 1 0 20 0 10 10 0 1 0-20 0'};
 export function icon(name:string){const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');svg.classList.add('ui-icon');const path=document.createElementNS(svg.namespaceURI,'path');path.setAttribute('d',paths[name]||paths.star);svg.append(path);return svg;}
 export function iconButton(name:string,label:string,fn:()=>void,cls='icon-button',disabled=false){const b=button('',fn,cls,disabled);b.append(icon(name),el('span','',label));b.setAttribute('aria-label',label);b.title=label;return b;}
+/** One habit badge per stage and the matching "나는 이제 … 할 수 있어요" sentence for the certificate. */
+export const habits=[
+ {name:'꼼꼼한 관찰자',can:'버섯과 곰팡이를 크게 보며 균사와 포자 같은 특징을 찾을 수 있어요.'},
+ {name:'한 방울 탐정',can:'연못 물 한 방울에서 해캄과 짚신벌레를 찾아 생김새와 움직임을 비교할 수 있어요.'},
+ {name:'근거 수사관',can:'믿을 만한 자료를 근거로 세균의 모양과 사는 곳을 설명할 수 있어요.'},
+ {name:'상황 판단가',can:'같은 생물도 상황에 따라 이롭거나 해로울 수 있음을 사례로 설명할 수 있어요.'},
+ {name:'설계 검증가',can:'생물의 작용을 이용하는 방법을 재료 → 작용 → 결과로 설명할 수 있어요.'}
+];
+/** Earned when all four tasks of the stage were accepted without a failed submission since the stage was last (re)started. */
+export function habitEarned(a:Attempt,stage:typeof stageIds[number]){return tasksFor(stage).every(t=>{const r=a.inquiry.records[t.id];return !!r?.completedAt&&r.clean===true&&!taskIssues(t,r).length;});}
+export function canDoLines(a:Attempt){return [...habits.filter((_,i)=>a.canDo?.includes(stageIds[i])).map(h=>'나는 이제 '+h.can),...(a.canDoNote?.trim()?[`나는 이제 ${a.canDoNote.trim()} 수 있어요.`]:[])];}
 /** Painted research badge for stage index 0–4 (public/assets/ui/badge-M*.webp); decorative, so alt is empty. */
 export function stageBadge(index:number,cls='stage-badge'){const img=el('img',cls);img.src=`assets/ui/badge-M${index+1}.webp`;img.alt='';img.draggable=false;return img;}
 export function reward(ctx:Context,index:number){const m=missions[index];const card=el('div','reward-body');const art=el('img','reward-image');art.src=`assets/places/${['fungi','water','archive','village','workshop'][index]}.webp`;art.alt=stages[index].place+'의 복구된 모습';const label=el('span','reward-check');label.append(icon('check'),document.createTextNode('발견 기록 연결 완료'));const scene=el('div','reward-scene');scene.append(art,stageBadge(index,'reward-stamp'));card.append(scene,label,heading(m.kit),el('strong','reward-world',m.reward));const dialog=modal('발견이 연구소를 바꿨어!',[card,button('다음 장소 탐험',()=>dialog.close(),'primary')],{showClose:false});dialog.classList.add('reward-modal');}

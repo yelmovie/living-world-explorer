@@ -2,12 +2,13 @@ import type {Stage,Point} from './model';
 
 export type TaskKind='collect'|'microscope'|'sample'|'track'|'connect'|'timeline'|'sort'|'build'|'publish'|'review';
 export type InquiryItem={id:string;label:string;detail:string;target:string;art?:string};
-export type InquiryTask={id:string;stage:Stage;order:number;title:string;instruction:string;mentor:string;kind:TaskKind;organism?:string;items:InquiryItem[];targets:{id:string;label:string}[];success:string;feedback:string;standard:string;caseName?:string};
+export type InquiryTask={id:string;stage:Stage;order:number;title:string;instruction:string;mentor:string;kind:TaskKind;organism?:string;items:InquiryItem[];targets:{id:string;label:string}[];success:string;feedback:string;standard:string;caseName?:string;terms?:string[]};
 export type InquiryRun={id:string;startedAt:string;prediction:string;assignments:Record<string,string>;status:'running'|'completed'|'interrupted';result:string;reflection:string};
-export type InquiryRecord={assignments:Record<string,string>;opened:string[];marks:Point[];focus:number;light:number;zoom:number;pan:Point;time:number;pins:number[];sequence:number;prediction:string;runResult:string;reflection:string;runs:InquiryRun[];afterThought:string;note:string;capture:boolean;submitted:boolean;tries:number;completedAt?:string};
+export type InquiryRecord={assignments:Record<string,string>;opened:string[];marks:Point[];focus:number;light:number;zoom:number;pan:Point;time:number;pins:number[];sequence:number;prediction:string;runResult:string;reflection:string;runs:InquiryRun[];afterThought:string;note:string;capture:boolean;submitted:boolean;tries:number;completedAt?:string;level:number;misses:number;clean?:boolean};
+/** level: magnification step of microscope tasks (0 맨눈 · 1 돋보기 · 2 현미경). misses: failed submissions since the last accepted one; clean: the last accepted submission had none. */
 export type InquiryProgress={version:1;current:Partial<Record<Stage,number>>;records:Record<string,InquiryRecord>;rewards:string[]};
 export function emptyInquiry():InquiryProgress{return {version:1,current:{},records:{},rewards:[]};}
-export function emptyRecord():InquiryRecord{return {assignments:{},opened:[],marks:[],focus:25,light:65,zoom:1,pan:{x:0,y:0},time:0,pins:[],sequence:0,prediction:'',runResult:'',reflection:'',runs:[],afterThought:'',note:'',capture:false,submitted:false,tries:0};}
+export function emptyRecord():InquiryRecord{return {assignments:{},opened:[],marks:[],focus:25,light:65,zoom:1,pan:{x:0,y:0},time:0,pins:[],sequence:0,prediction:'',runResult:'',reflection:'',runs:[],afterThought:'',note:'',capture:false,submitted:false,tries:0,level:0,misses:0};}
 export function recoverInquiry(raw:unknown):InquiryProgress{
  const base=emptyInquiry();if(!raw||typeof raw!=='object')return base;const x=raw as Partial<InquiryProgress>;
  if(x.version!==1||!x.records||typeof x.records!=='object')return base;
@@ -19,7 +20,10 @@ export function recoverInquiry(raw:unknown):InquiryProgress{
   for(const key of ['prediction','runResult','reflection','note'] as const)r[key]=typeof r[key]==='string'?r[key].slice(0,key==='note'?100:80):'';
   r.afterThought=typeof r.afterThought==='string'?r.afterThought.slice(0,80):'';
   r.runs=Array.isArray(r.runs)?r.runs.filter(run=>run&&typeof run.id==='string'&&typeof run.startedAt==='string'&&['supported','stopped'].includes(run.prediction)&&run.assignments&&typeof run.assignments==='object'&&['running','completed','interrupted'].includes(run.status)).slice(-40).map(run=>({...run,assignments:Object.fromEntries(Object.entries(run.assignments).filter(([k,v])=>k.length<80&&typeof v==='string'&&v.length<80)),status:run.status==='running'?'interrupted':run.status,result:['supported','stopped'].includes(run.result)?run.result:'',reflection:['matches','differs'].includes(run.reflection)?run.reflection:''})):[];
-  r.capture=r.capture===true;r.submitted=r.submitted===true;r.completedAt=typeof r.completedAt==='string'?r.completedAt:undefined;base.records[id]=r;
+  r.capture=r.capture===true;r.submitted=r.submitted===true;r.completedAt=typeof r.completedAt==='string'?r.completedAt:undefined;
+  // Records saved before 2026-10-25 had no magnification step or miss count: a photo already taken means the microscope was reached, and one try means a clean pass.
+  const raw=value as Partial<InquiryRecord>;r.level=Number.isFinite(raw.level)?Math.max(0,Math.min(2,Math.floor(raw.level!))):r.capture||r.completedAt?2:0;r.misses=Number.isFinite(raw.misses)?Math.max(0,Math.min(99,Math.floor(raw.misses!))):0;r.clean=typeof raw.clean==='boolean'?raw.clean:r.completedAt?r.tries===1:undefined;
+  base.records[id]=r;
  }
  for(const stage of ['M1','M2','M3','M4','M5'] as Stage[]){const n=x.current?.[stage];if(typeof n==='number'&&n>=0&&n<=3)base.current[stage]=Math.floor(n);}
  base.rewards=Array.isArray(x.rewards)?[...new Set(x.rewards.filter(id=>/^M[1-5]-[24]$/.test(id)))]:[];return base;

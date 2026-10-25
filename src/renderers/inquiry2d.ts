@@ -3,7 +3,7 @@ import type {InquiryTask,InquiryRecord} from '../inquiry-model';
 import {canvas,draw} from '../draw';
 import {invalidateRun} from '../inquiry-evaluate';
 import {playEffect} from '../audio';
-import {inquiryArt,artTime,artKey,artFrame} from '../artAssets';
+import {inquiryArt,artTime,artKey,artFrame,magnify} from '../artAssets';
 import {addMark,markHint,viewToImage} from '../observation';
 type Hooks={changed:()=>void;open:(id:string)=>void;feedback:(text:string)=>void;ready:(ok:boolean)=>void};
 const WIDTH=960,HEIGHT=540;
@@ -18,7 +18,7 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,record:InquiryRec
   trackSurface?:{canvas:HTMLCanvasElement;texture:Phaser.Textures.CanvasTexture};
   trackElapsed=0;
   failed=false;
-  preload(){this.load.on('loaderror',(file:Phaser.Loader.File)=>{if(!file.key.startsWith('ui-'))this.failed=true;});const needed=new Set([...task.items.map(artKey),task.organism,task.kind==='sample'?'water':undefined]);for(const art of needed)if(art&&inquiryArt[art]){const asset=inquiryArt[art];if(asset.frames)asset.frames.forEach((src,i)=>this.load.image(`art-${art}-${i}`,src));else this.load.image(`art-${art}`,asset.src);}
+  preload(){this.load.on('loaderror',(file:Phaser.Loader.File)=>{if(!file.key.startsWith('ui-'))this.failed=true;});const needed=new Set([...task.items.map(artKey),task.organism,task.kind==='sample'?'water':undefined,task.kind==='microscope'?magnify[task.organism||'']?.context:undefined]);for(const art of needed)if(art&&inquiryArt[art]){const asset=inquiryArt[art];if(asset.frames)asset.frames.forEach((src,i)=>this.load.image(`art-${art}-${i}`,src));else this.load.image(`art-${art}`,asset.src);}
    // Decorative props are optional: a missing prop falls back to the drawn card, never blocks the activity.
    const props=['tape',...task.kind==='microscope'?['microscope-frame']:[],...task.kind==='sample'?['dropper','slide','water-drop']:[],...['collect','connect','sort'].includes(task.kind)?['notebook']:[]];for(const p of props)this.load.image(`ui-${p}`,`assets/ui/${p}.webp`);}
   create(){scene=this;if(this.failed){hooks.ready(false);return;}refresh=()=>this.paint();this.paint();hooks.ready(true);}
@@ -98,6 +98,8 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,record:InquiryRec
   }
   drawSpecimen(x:number,y:number,w:number,h:number,kind:string,time:number,markable:boolean){
    const marks=markable?record.marks:[];const opts={time,focus:task.kind==='microscope'?record.focus:65,light:task.kind==='microscope'?record.light:65,zoom:record.zoom,pan:record.pan,marks,trail:task.kind==='track'};
+   // 맨눈 and 돋보기 show the place the specimen came from; only the microscope step can be focused and photographed.
+   const view=magnify[kind];if(task.kind==='microscope'&&markable&&!record.capture&&view&&record.level<2){this.drawContext(x,view,record.level);return;}
    if(task.kind==='microscope'&&markable&&!record.capture&&this.textures.exists('ui-microscope-frame')){
     const r=172;({w,h}=this.specimenSize(r*2.6,r*2.6,kind,time));y=262;
     const glass=this.add.graphics();glass.fillStyle(tone.shade,.25).fillCircle(x+4,y+10,r+40);glass.fillStyle(0xf6f3e6,1).fillCircle(x,y,r+4);
@@ -115,6 +117,20 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,record:InquiryRec
     if(markable&&(task.kind==='microscope'&&record.capture||task.kind==='timeline'&&record.pins.length===2)){
      const point=viewToImage({x:(p.x-x+w/2)/w,y:(p.y-y+h/2)/h},record);if(!addMark(task,record,point))return hooks.feedback(markHint(task));record.submitted=false;playEffect('snap');this.commit();}
    });zone.on('pointerout',()=>{down=undefined;});zone.on('pointercancel',()=>{down=undefined;});
+  }
+  drawContext(x:number,view:typeof magnify[string],level:number){
+   const key=inquiryArt[view.context]?.frames?`art-${view.context}-${artFrame(view.time)}`:`art-${view.context}`;if(!this.textures.exists(key))return;
+   const source=this.textures.get(key).getSourceImage() as {width:number;height:number};const y=282,scale=Math.min(720/source.width,405/source.height),w=source.width*scale,h=source.height*scale;
+   this.card(x,y,w+20,h+20,{fill:0xffffff,radius:12});this.add.image(x,y,key).setScale(scale);
+   const fx=x-w/2+view.focus.x*w,fy=y-h/2+view.focus.y*h,r=124;
+   if(level===0){const ring=this.add.graphics();ring.lineStyle(5,0xffffff,.95).strokeCircle(fx,fy,62);ring.lineStyle(3,tone.accent,.9).strokeCircle(fx,fy,67);if(!reduced)this.tweens.add({targets:ring,alpha:.35,duration:900,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});}
+   else{
+    this.add.graphics().fillStyle(tone.shade,.3).fillRect(x-w/2,y-h/2,w,h);
+    const big=this.add.image(fx,fy,key).setOrigin(view.focus.x,view.focus.y).setScale(scale*2.6);big.setMask(this.make.graphics({},false).fillStyle(0xffffff).fillCircle(fx,fy,r).createGeometryMask());
+    const lens=this.add.graphics();lens.lineStyle(24,0x7a4f2a,1).lineBetween(fx+r*.78,fy+r*.78,fx+r*1.32,fy+r*1.32);lens.lineStyle(16,tone.brass,1).strokeCircle(fx,fy,r+7);lens.lineStyle(3,0xffffff,.75).strokeCircle(fx,fy,r-1);lens.fillStyle(0xffffff,.16).fillEllipse(fx-r*.34,fy-r*.46,r*.72,r*.32);
+   }
+   this.add.zone(fx,fy,r*2,r*2).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard())return;record.level=level+1;this.commit();});
+   this.caption(x,30,view.captions[level],22);
   }
   paintSampling(){
    this.card(325,315,620,370,{fill:0xffffff,radius:14});this.art(325,315,600,350,'water');
@@ -171,5 +187,7 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,record:InquiryRec
   }
  }
  const game=new Phaser.Game({type:Phaser.CANVAS,parent:host,width:WIDTH,height:HEIGHT,transparent:true,scene:Inquiry,scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},audio:{noAudio:true},banner:false,render:{antialias:true}});
- return {refresh:()=>{if(!simulating)refresh();},setReveal:(value:number|undefined)=>{reveal=value===undefined?undefined:Phaser.Math.Clamp(value,0,1);refresh();},animateRun:(valid:boolean,finish:()=>void)=>{if(scene instanceof Inquiry)scene.animateRun(valid,finish);else finish();},setPlaying:(value:boolean)=>{if(value&&blocked())return;if(play!==value){play=value;refresh();}},arm:(id:string)=>{if(disposed||simulating)return;armed=id;refresh();},assign:(id:string,target:string)=>{if(blocked()||simulating)return;if(!record.opened.includes(id)){hooks.feedback('먼저 자료 내용을 살펴봐요.');return;}record.assignments[id]=target;record.submitted=false;playEffect('snap');hooks.changed();refresh();},place:(id:string,target:string)=>{if(blocked()||simulating)return;record.assignments[target]=id;invalidateRun(record);playEffect('snap');hooks.changed();refresh();},dispose:()=>{disposed=true;play=false;game.destroy(true);}};
+ // Narrow layouts scroll inside the screen, not the window; Phaser only re-reads the canvas position on resize, so taps drifted after scrolling.
+ const rebound=()=>game.scale?.updateBounds();document.addEventListener('scroll',rebound,{capture:true,passive:true});
+ return {refresh:()=>{if(!simulating)refresh();},setReveal:(value:number|undefined)=>{reveal=value===undefined?undefined:Phaser.Math.Clamp(value,0,1);refresh();},animateRun:(valid:boolean,finish:()=>void)=>{if(scene instanceof Inquiry)scene.animateRun(valid,finish);else finish();},setPlaying:(value:boolean)=>{if(value&&blocked())return;if(play!==value){play=value;refresh();}},arm:(id:string)=>{if(disposed||simulating)return;armed=id;refresh();},assign:(id:string,target:string)=>{if(blocked()||simulating)return;if(!record.opened.includes(id)){hooks.feedback('먼저 자료 내용을 살펴봐요.');return;}record.assignments[id]=target;record.submitted=false;playEffect('snap');hooks.changed();refresh();},place:(id:string,target:string)=>{if(blocked()||simulating)return;record.assignments[target]=id;invalidateRun(record);playEffect('snap');hooks.changed();refresh();},dispose:()=>{disposed=true;play=false;document.removeEventListener('scroll',rebound,{capture:true});game.destroy(true);}};
 }

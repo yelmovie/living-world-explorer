@@ -28,6 +28,7 @@
 |---|---|---|
 | public/assets/places/greenhouse.webp | 기존 프로젝트의 연구소 배경 AI 생성 이미지 | 게임 배경, 과학 관찰 근거 아님 |
 | _unused/public-assets-20261025/exploration-map.webp, map-terrain-v2.webp | 2026-10-18·10-21 기본 image_gen 생성. docs/MAP_ASSET_PROMPT.md에 프롬프트 기록 | 이전 탐험 지도. 현재 쓰지 않아 배포 폴더에서 뺌 |
+| public/assets/study/{spoiled-milk,tooth,bacteria}.webp | 2026-10-25 Higgsfield MCP gpt_image_2_5로 프로젝트용 자체 생성(세균 그림은 기존 그림을 화풍 참고로 다시 그림). 원본 assets/generated/study-20261025b/, 기록 assets/generated/study-20261025b.json | 학습용 설명 모형. 실제 현미경·임상 사진 아님 |
 | public/assets/ui/{microscope-frame,dropper,slide,water-drop,notebook,tape,badge-M1~M5}.webp | 2026-10-25 Higgsfield MCP gpt_image_2_5(고화질·투명 배경)로 프로젝트용 자체 생성. 원본 PNG는 assets/generated/props-20261025/, 프롬프트·작업 ID는 assets/generated/props-20261025.json, 변환은 scripts/ui-props.mjs | 탐구 소품·스테이지 배지. 장식·조작 소품이며 과학 관찰 근거 아님 |
 | public/assets/map/terrain.webp | 2026-10-24 기본 image_gen, v2의 건물·보행 경로를 보존한 새 지도 | 현재 지도·로딩 중 풍경, 1280×720 |
 | public/assets/study/{pond,bacteria,bread-0,leaf-0,yogurt,soil,milk,yeast}.webp, places/core.webp | 2026-10-24 기본 image_gen으로 각각 생성, docs/ART_GENERATION_20261024.md, assets/generated/study-20261024.json | 학습용 설명 그림·채집 장면·복구 연출, 실제 현미경 사진 아님 |

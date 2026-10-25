@@ -11,7 +11,7 @@ export type Draft = {
   m5:{slots:string[];selected:string;edges:boolean[];revision:number;prediction:string;reason:string;runs:Run[];explanation:string};
 };
 export type Evidence = {stage:Stage;attemptId:string;origin:'learner'|'demo';created:string;updated?:string;validationVersion?:2;summary:string;draft:Draft;inquiry?:InquiryProgress};
-export type Attempt={id:string;route:string;mapPosition:Point;draft:Draft;evidence:Partial<Record<Stage,Evidence>>;report:Stage[];ports:Stage[];activated:boolean;cardTitle:string;cardNote:string;inquiry:InquiryProgress;presentation?:{observation:string;evidence:string;life:string}};
+export type Attempt={id:string;route:string;mapPosition:Point;draft:Draft;evidence:Partial<Record<Stage,Evidence>>;report:Stage[];ports:Stage[];activated:boolean;cardTitle:string;cardNote:string;canDo?:Stage[];canDoNote?:string;inquiry:InquiryProgress;presentation?:{observation:string;evidence:string;life:string}};
 export type State={version:1;settings:{sound:boolean;bgm:boolean;bgmVolume:number;large:boolean;reduced:boolean;flat:boolean;admin:boolean};learner:Attempt;preview:Attempt};
 export const stageIds:Stage[]=['M1','M2','M3','M4','M5'];
 export function makeAttempt():Attempt {return {id:crypto.randomUUID(),route:'main',mapPosition:{x:480,y:380},evidence:{},report:[],ports:[],activated:false,cardTitle:'작은 생물이 만드는 변화',cardNote:'',inquiry:emptyInquiry(),draft:{

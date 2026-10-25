@@ -11,8 +11,8 @@ export function guidance(task:InquiryTask,r:InquiryRecord){
   const unread=task.items.find(it=>!r.opened.includes(it.id));
   action=unread?`${unread.label} 자료를 눌러 살펴봐요.`:done<total?'살펴본 자료를 알맞은 칸으로 끌어 이어요.':action;
  }else if(task.kind==='microscope'){
-  total=3;const sharp=Math.abs(r.focus-65)<=12&&r.light>=40&&r.light<=85;done=Number(sharp)+Number(r.capture)+Number(!issues.length);
-  action=!r.capture?(sharp?'선명해졌어요. 사진 촬영을 눌러요.':'초점과 밝기를 움직여 특징이 선명한 곳을 찾아요.'):action;
+  total=4;const sharp=Math.abs(r.focus-65)<=12&&r.light>=40&&r.light<=85;const reached=r.capture||r.level>=2;done=Number(reached)+Number(reached&&sharp)+Number(r.capture)+Number(!issues.length);
+  action=!r.capture?(!reached?(r.level===0?'맨눈으로 본 뒤 돋보기로 크게 보기를 눌러요.':'돋보기로도 자세한 모양은 보이지 않아요. 현미경으로 크게 보기를 눌러요.'):sharp?'선명해졌어요. 사진 촬영을 눌러요.':'초점과 밝기를 움직여 특징이 선명한 곳을 찾아요.'):action;
  }else if(task.kind==='sample'){
   total=4;done=Number(!!r.assignments.site)+r.sequence;action=!r.assignments.site?'물가나 물풀 가까이를 눌러 채집 장소를 골라요.':['스포이드를 눌러 공기를 빼요.','물속에서 스포이드를 놓아 물을 담아요.','스포이드를 유리판까지 끌어 한 방울을 옮겨요.',action][r.sequence];
  }else if(task.kind==='track'){

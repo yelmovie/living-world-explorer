@@ -1618,3 +1618,53 @@ textarea,input{word-break:keep-all;overflow-wrap:break-word}
 }
 /* The model disclaimer sits in the free bottom-left corner so it never covers scene captions. */
 @media(min-width:851px){.expedition-work>.model-badge{top:auto;bottom:6px;left:2px;z-index:2}}
+
+/* 2026-10-25 교육 항목 — 배율 단계, 새 낱말, 탐구 습관 배지, 능력 문장. */
+:root{--habit-gold:#d9a93a;--habit-gold-soft:#fbefcf}
+.level-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:4px;border-radius:var(--radius-pill);background:var(--stage-soft)}
+.level-steps>.button{min-height:44px;padding:4px 6px;border-radius:var(--radius-pill);font-size:var(--font-size-label)}
+.level-steps>.button.selected{background:var(--stage-accent);border-color:var(--stage-accent);color:var(--ink-on-accent);box-shadow:none}
+.level-steps>.button:disabled{opacity:.55}
+.level-caption{padding:8px 12px;border-left:5px solid var(--stage-accent);border-radius:var(--radius-sm);background:var(--paper-face);font-size:var(--font-size-label);line-height:1.4}
+.term-chips{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.term-label{font-size:var(--font-size-small);color:var(--color-text-muted);font-weight:800}
+.term-chip{padding:3px 12px;border:2px solid var(--stage-accent,var(--forest-551));border-radius:var(--radius-pill);background:var(--paper-face);font-family:var(--font-display);font-size:var(--font-size-label);color:var(--ink-strong)}
+.discovery-card .term-chips{margin-top:2px}
+.habit-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border:2px dashed var(--paper-line);border-radius:var(--radius-md);background:var(--paper-face)}
+.habit-row.earned{border-style:solid;border-color:var(--habit-gold);background:var(--habit-gold-soft)}
+.habit-badge{width:52px;height:52px;flex:none;filter:grayscale(1) opacity(.6)}
+.habit-row.earned .habit-badge{filter:drop-shadow(0 0 6px var(--habit-gold))}
+.habit-text{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.habit-text strong{font-family:var(--font-display);font-weight:400;font-size:var(--font-size-button);color:var(--ink-strong)}
+.habit-note{font-size:var(--font-size-label);color:var(--color-text-muted)}
+.habit-row>.button{flex:none}
+.result-badge.habit{filter:drop-shadow(0 0 8px var(--habit-gold)) drop-shadow(0 2px 2px var(--shade-a30))}
+.habit-summary{padding:4px 14px;border-radius:var(--radius-pill);background:var(--paper-face);font-family:var(--font-display);font-size:var(--font-size-label);color:var(--ink-strong)}
+.can-do{display:flex;flex-direction:column;gap:6px;padding:10px 12px;border:2px solid var(--paper-line);border-radius:var(--radius-md);background:var(--white)}
+.can-do-lines{font-size:var(--font-size-label);line-height:1.45;color:var(--ink-strong)}
+.can-do-lines.empty{color:var(--color-text-muted)}
+.can-do>.button{align-self:flex-start;min-height:48px}
+.can-do-choices{display:flex;flex-direction:column;gap:8px}
+.can-do-choices>.button{justify-content:flex-start;gap:12px;text-align:left;font-family:var(--font-body);font-weight:600;line-height:1.35}
+.can-do-choices>.button.selected{background:var(--habit-gold-soft);border-color:var(--habit-gold);box-shadow:0 3px 0 var(--habit-gold)}
+.can-do-own{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.can-do-own .field-label{flex-basis:100%}
+.can-do-own input{flex:1;min-width:200px;min-height:48px;padding:6px 12px;border:2px solid var(--input-border);border-radius:var(--radius-md);background:var(--input-face)}
+.can-do-frame{font-family:var(--font-display);font-size:var(--font-size-label)}
+.certificate-can{font-size:20px}
+@media(min-width:851px) and (max-height:800px){.result-card{gap:8px}.result-card .can-do{padding:8px 10px}}
+.can-do-own{flex-direction:row;align-items:center;text-align:left}
+.can-do-choices>.button{position:relative;padding-right:52px}
+.can-do-choices>.button.selected::after{content:'✓';position:absolute;right:14px;top:50%;width:28px;height:28px;margin-top:-14px;border-radius:50%;background:var(--habit-gold);color:var(--white);font-size:18px;line-height:28px;text-align:center}
+/* Narrow (stacked) layout: the step track sits under the scene instead of spilling over the tool panel. */
+@media(max-width:850px){.expedition-work{height:auto}.expedition-work>.activity-stepper{margin-top:6px}}
+/* Result card on 16:9 boards ≤800px tall: the can-do block shares a row with its button so the card buttons stay in view. */
+@media(min-width:851px) and (max-height:800px){
+ .screen-results .result-card{padding:16px 18px;gap:6px}
+ .screen-results .result-card textarea{min-height:60px}
+ .screen-results .result-card .field-label{font-size:var(--font-size-label)}
+ .screen-results .result-case{padding:8px 10px;font-size:var(--font-size-label)}
+ .screen-results .result-card .can-do{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 10px}
+ .screen-results .result-card .can-do>.button{grid-column:2;grid-row:1;min-height:44px}
+ .screen-results .result-card .can-do-lines{grid-column:1/-1}
+}

@@ -28,6 +28,9 @@ export function restoreAttempt(raw:unknown):Attempt{
  a.activated=v.activated===true&&a.report.length===5&&a.ports.length===5;
  a.cardTitle=typeof v.cardTitle==='string'?v.cardTitle.slice(0,36):base.cardTitle;
  a.cardNote=typeof v.cardNote==='string'?v.cardNote.slice(0,100):'';
+ // Only touch these when the saved attempt has them, so restoring never rewrites an untouched original.
+ if('canDo' in v)a.canDo=Array.isArray(v.canDo)?[...new Set(v.canDo.filter(s=>stageIds.includes(s)))]:[];
+ if('canDoNote' in v)a.canDoNote=typeof v.canDoNote==='string'?v.canDoNote.slice(0,40):'';
  if(v.presentation&&typeof v.presentation==='object')a.presentation={observation:typeof v.presentation.observation==='string'?v.presentation.observation.slice(0,140):'',evidence:typeof v.presentation.evidence==='string'?v.presentation.evidence.slice(0,140):'',life:typeof v.presentation.life==='string'?v.presentation.life.slice(0,140):''};
  if(!v.mapPosition||!Number.isFinite(v.mapPosition.x)||!Number.isFinite(v.mapPosition.y)||v.mapPosition.x<0||v.mapPosition.x>1280||v.mapPosition.y<0||v.mapPosition.y>720)a.mapPosition=base.mapPosition;
  if(!Array.isArray(a.draft.m1.captures)||!Array.isArray(a.draft.m5.runs))return base;

@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-25",
+  "tool": "Higgsfield MCP · gpt_image_2_5 (quality high, 1k, 16:9, opaque)",
+  "purpose": "교육 항목 보완 — M3-4 세균 사례 근거 그림, M4-4 질병(충치) 사례, 공·막대·나선·꼬리 세균 모양",
+  "credits_spent": "6 (1.5 × 4, 상한 우유 1회 다시 생성)",
+  "files": [
+    {"deploy": "public/assets/study/spoiled-milk.webp", "source": "spoiled-milk.png (첫 시도는 spoiled-milk-try1.png, 덩어리가 별무늬처럼 보여 사용하지 않음)", "job": "3101eebc-2d24-41cb-a421-f01dc85cf6ea", "use": "M3-4 새 자료: 상한 우유(해로운 세균 사례)", "prompt": "plain clear glass of spoiled milk, lumpy curdled clumps in cloudy watery pale yellow liquid, small unbranded milk bottle beside it, pale cream background, no mold, no text"},
+    {"deploy": "public/assets/study/tooth.webp", "source": "tooth.png", "job": "6da06d1b-fa16-4a98-98dd-1ded2f56c0be", "use": "M4-4 충치가 생긴 이(질병 사례)", "prompt": "clean educational model of a single molar tooth with a small dark cavity on top, small toothbrush beside it, no gums, no blood, no text"},
+    {"deploy": "public/assets/study/bacteria.webp", "source": "bacteria.png", "job": "bc689971-a136-4f71-bb7a-3ede98769409", "use": "세균 확대 모형(M3 자료·설계·개념 영상). 이전 그림은 _unused/public-assets-20261025/bacteria-20261024.webp", "prompt": "same style as previous bacteria model; spherical (single, pair, chain), rod-shaped, two spiral and one rod with a long thin tail, no faces, no text"}
+  ],
+  "notes": "모두 설명용 모형이며 실제 현미경 사진이 아니다."
+}

@@ -8,6 +8,7 @@
 |---|---:|---|
 | exploration-map.webp | 547,360 bytes | 현재 지도는 `public/assets/map/terrain.webp`(옛 v3). 코드 참조 없음 |
 | map-terrain-v2.webp | 487,130 bytes | v3의 생성 참조 원본. 코드 참조 없음 |
+| bacteria-20261024.webp | 35,596 bytes | 저녁에 공·막대·나선·꼬리 모양이 들어간 새 `study/bacteria.webp`로 교체한 이전 세균 그림. 코드 참조 없음 |
 | map-moa-left.webp | 11,136 bytes | `map-moa-right.webp`와 SHA-256 동일. 현재 왼쪽은 옛 left-v2(`map/moa-left.webp`) |
 
 ## 2026-10-25 — `_unused/src-20261025/` (옛 화면 흐름 코드)
@@ -21,3 +22,4 @@
 | scenes/observe.ts, scenes/solution.ts (원본 통째) | `src/`에는 지금 쓰는 `layout`·`footer`·`core`만 남김. 옛 `field`·`microscope`·`sampling`·`protists`·`assembly`·`runScene`은 여기 원본에 있음 |
 
 판단 보류: `src/evaluate.ts`의 옛 draft 판정과 `src/storage.ts`의 draft 복구는 `tests/domain.test.ts`가 쓰고, 예전 저장 기록을 읽을 때 필요할 수 있어서 남겼어요.
+
