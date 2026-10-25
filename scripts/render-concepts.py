@@ -17,8 +17,8 @@ def font(s): return ImageFont.truetype(str(FONT),s)
 def txt(d,xy,t,s=28,fill=INK,anchor='mm'): d.text(xy,t,font=font(s),fill=fill,anchor=anchor)
 def card(d,box): d.rounded_rectangle(box,22,fill=CREAM,outline='#b0c39c',width=3)
 def smooth(p): return (1-math.cos(math.pi*max(0,min(1,p))))/2
-def art(im,name,box):
-    p=ROOT/f'public/assets/study/{name}.webp'
+def art(im,name,box,folder='study'):
+    p=ROOT/f'public/assets/{folder}/{name}.webp'
     with Image.open(p) as source:a=source.convert('RGBA')
     a.thumbnail((box[2]-box[0],box[3]-box[1]))
     im.paste(a,(int((box[0]+box[2]-a.width)/2),int((box[1]+box[3]-a.height)/2)),a)
@@ -66,9 +66,8 @@ def frame(stage,t):
             txt(d,(255,411),'모양 + 발견 장소',24);txt(d,(705,411),'함께 기록해요',24)
     elif stage=='M2':
         if cut==0:
-            d.ellipse((270,147,690,389),fill='#b8d9d0',outline=GREEN,width=4)
-            for i in range(3):d.line((320+i*45,320,340+i*45,215,365+i*45,285),fill=GREEN,width=7)
-            x=655-110*p;d.ellipse((x-18,220+100*p,x+18,256+100*p),fill='#75aaa5');txt(d,(480,410),'채집 → 확대 관찰',25)
+            card(d,(230,139,730,392));art(im,'pond',(246,150,714,382))
+            x=655-110*p;art(im,'water-drop',(int(x-26),int(205+100*p),int(x+26),int(245+100*p)),'ui');txt(d,(480,412),'채집 → 확대 관찰',25)
         else:
             for j in range(2):
                 x=255+j*450;card(d,(x-185,141,x+185,395))
@@ -76,42 +75,30 @@ def frame(stage,t):
                     art(im,'spirogyra' if j==0 else 'paramecium',(x-162,153,x+162,340));txt(d,(x,368),'해캄' if j==0 else '짚신벌레',25)
                 else:
                     d.line((x-148,289,x+148,289),fill='#d3ddc7',width=2)
-                    xx=x-90+j*150;d.ellipse((xx-24,240,xx+24,276),fill='#86b2a2',outline=GREEN,width=3);txt(d,(x,368),'A · 이전' if j==0 else 'B · 이후',25)
+                    xx=x-90+j*150;art(im,'paramecium',(xx-70,215,xx+70,300));txt(d,(x,368),'A · 이전' if j==0 else 'B · 이후',25)
             if cut==2:arrow(d,418,250,545,250,p)
     elif stage=='M3':
         if cut==0:
-            card(d,(220,139,740,390));bacteria(d,480,250,t);txt(d,(480,363),'둥근 모양 · 막대 모양',26)
+            card(d,(220,139,740,390));art(im,'bacteria',(240,150,720,335));txt(d,(480,363),'둥근 모양 · 막대 모양',26)
         elif cut==1:
             for j,label in enumerate(['흙','물','생물의 몸']):
-                x=190+j*290;card(d,(x-120,156,x+120,380));bacteria(d,x,251,t+j);txt(d,(x,351),label,26)
+                x=190+j*290;card(d,(x-120,156,x+120,380));art(im,['soil','pond','bacteria'][j],(x-108,166,x+108,322));txt(d,(x,351),label,26)
         else:
             card(d,(70,155,360,388));txt(d,(215,211),'장소 조사 자료',26);txt(d,(215,280),'흙 · 물 · 몸',27);txt(d,(215,327),'발견 기록',25)
             arrow(d,380,270,561,270,p);card(d,(585,155,889,388));txt(d,(737,218),'근거 있는 설명',26);txt(d,(737,292),'여러 곳에 살아요',25)
     elif stage=='M4':
         for j,label in enumerate(['먹으려던 빵','숲의 낙엽']):
             x=255+j*450;card(d,(x-183,145,x+183,392));txt(d,(x,175),label,25)
-            if j==0:
-                bread(d,x,280)
-                if cut in [0,2]:
-                    for k in range(6):
-                        xx=x-65+(k%3)*48;yy=255+(k//3)*36;r=4+p*12;d.ellipse((xx-r,yy-r,xx+r,yy+r),fill='#6a8b68')
-            else:leaves(d,x,280,p if cut>0 else 0)
+            if j==0:art(im,'bread-0' if cut==1 else 'bread-3',(x-160,195,x+160,345))
+            else:art(im,'leaf-3' if cut>0 else 'leaf-0',(x-160,195,x+160,345))
             txt(d,(x,368),'변질 · 먹지 않아요' if j==0 else '분해 · 물질의 변화',23)
         if cut==2:txt(d,(480,413),'같은 이름만으로 좋고 나쁨을 정하지 않아요',23)
     else:
         labels=['우유','특정 세균의 작용','요구르트'] if cut!=1 else ['빵 반죽','효모의 작용','부푼 반죽']
         for j,label in enumerate(labels):
             x=175+j*305;card(d,(x-128,150,x+128,391));txt(d,(x,364),label,22)
-            if j==0:
-                if cut==1:bread(d,x,264,.05)
-                else:
-                    d.rounded_rectangle((x-42,196,x+42,316),8,fill='#fffdf8',outline=GREEN,width=3);txt(d,(x,265),'우유',23)
-            elif j==1:
-                if cut==1:
-                    for k in range(3):d.ellipse((x-51+k*30,230,x-12+k*30,287),fill='#c6b8a1',outline=GREEN,width=2)
-                else:bacteria(d,x,265,t)
-            elif cut==1:bread(d,x,264,p)
-            else:yogurt(d,x,265,p)
+            names=['dough-before','yeast','dough-after'] if cut==1 else ['milk','bacteria','yogurt']
+            art(im,names[j],(x-116,162,x+116,336))
         arrow(d,309,264,345,264,p);arrow(d,614,264,651,264,p)
         if cut==2:txt(d,(480,412),'재료 → 생물의 작용 → 결과',24)
     d.rounded_rectangle((46,440,914,501),16,fill=INK);txt(d,(480,471),DATA[stage][1][cut],25,'#fffbed')

@@ -64,7 +64,7 @@ export function openSettings(state: State, hooks: SettingsHooks) {
   },'secondary settings-wide');unlock.setAttribute('aria-pressed',String(prefs.admin));unlock.setAttribute('aria-label','관리자 전체 해금');
   const teacherTools:Node[]=[paragraph(copy.unlockInfo),unlock,paragraph(copy.previewInfo,'muted')];
   if (hooks.loadExample) teacherTools.push(button(copy.sample,()=>{
-    const load=async()=>{await hooks.loadExample!();hooks.save();hooks.render();hooks.go('nature-map');};void load().catch(()=>notice('예시 기록을 열지 못했어요. 다시 시도해 주세요.'));
+    const load=async()=>{await hooks.loadExample!();hooks.save();dialog.close();hooks.render();hooks.go('nature-map');};void load().catch(()=>notice('예시 기록을 열지 못했어요. 다시 시도해 주세요.'));
   },'secondary settings-wide'),paragraph(copy.sampleInfo,'muted'));
   body.append(details(copy.teacherTitle,[...textRows(copy.teacher),curriculum,details(copy.toolsTitle,teacherTools)]));
   const sources = details(copy.sourcesTitle,[paragraph(copy.sourcesIntro),...copy.sources.map(source=>{const article=el('section','settings-source');article.append(el('h3','',source.title),paragraph(source.text));return article;})]);

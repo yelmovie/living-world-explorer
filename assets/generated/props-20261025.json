@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-25",
+  "tool": "Higgsfield MCP · gpt_image_2_5 (quality high, transparent background)",
+  "purpose": "CSS·Phaser 단색 도형으로 그리던 탐구 소품과 스테이지 표시를 화풍이 맞는 그림 소품으로 교체",
+  "style_references": ["public/assets/places/fungi.webp", "public/assets/study/mushroom.webp", "badge-M1 (M2~M5 배지의 디자인 기준)"],
+  "pipeline": "scripts/ui-props.mjs — 원본 PNG(assets/generated/props-20261025/) → 투명 여백 정리·크기 조정 → public/assets/ui/*.webp. 현미경 테는 안쪽 금색 테를 측정해 원형 구멍(반지름/폭 0.30)을 뚫는다.",
+  "credits_spent": "약 19.75 (2k 1장 2.75 + 1k 고화질 13장 × 1.5, 요청 한도로 실패한 제출은 과금 없음)",
+  "files": [
+    {"deploy": "public/assets/ui/microscope-frame.webp", "source": "microscope-frame.png", "job": "7a0c935d-3136-4591-9d50-5a5dfe1fdef2", "use": "현미경 활동의 둥근 관찰 창(촬영 전)", "prompt": "round microscope viewing porthole frame, polished brass ring, teal enamel bezel, rivets, focus knob, leaf ornament, empty white circular opening, transparent outside, no text"},
+    {"deploy": "public/assets/ui/dropper.webp", "source": "dropper.png", "job": "2bb6d235-805a-474c-b0e5-23ea0d8172cc", "use": "연못 한 방울 채집의 스포이드", "prompt": "glass dropper pipette, sage-green rubber bulb, brass collar, vertical, transparent background, no text"},
+    {"deploy": "public/assets/ui/slide.webp", "source": "slide.png", "job": "5fdd73e4-cc68-4130-aa6f-bf71a2077d67", "use": "받침 유리판", "prompt": "empty rectangular clear glass microscope slide, gentle three-quarter top view, faint teal tint, transparent background, no text"},
+    {"deploy": "public/assets/ui/water-drop.webp", "source": "water-drop.png", "job": "e9b34175-ce82-4be2-9d14-17c386eebb00", "use": "유리판 위 한 방울·스포이드 끝 물방울", "prompt": "single clear pond water droplet, pale aqua tint, tiny green speck, transparent background"},
+    {"deploy": "public/assets/ui/notebook.webp", "source": "notebook.png", "job": "b15623c6-4c72-4b34-a2e9-79d4e684bae6", "use": "자료 연결 활동의 놓을 칸(관찰 노트)", "prompt": "open field-research notebook from above, cream ruled pages mostly blank, leaf sketch corner, sage cover, brass clip, teal ribbon, no writing"},
+    {"deploy": "public/assets/ui/tape.webp", "source": "tape.png", "job": "d752bc86-cb0a-4a5b-b7f3-0a004de47a0e", "use": "표본 카드·사진을 붙인 마스킹테이프", "prompt": "short strip of semi-translucent mint washi tape with cream dots, torn ends, transparent background"},
+    {"deploy": "public/assets/ui/badge-M1.webp", "source": "badge-M1.png", "job": "fcbc372a-9185-4b2b-be33-992b81d5a82c", "use": "M1 균류 관찰 배지(미션 머리표·지도·발표·코어·보상 도장)", "prompt": "round brass-rimmed research badge, cream disc, painted forest mushroom with visible gills and a leaf, no text"},
+    {"deploy": "public/assets/ui/badge-M2.webp", "source": "badge-M2.png", "job": "2b69dffd-e6d1-4b65-a97e-aa4e093b4512", "use": "M2 한 방울 탐구 배지", "prompt": "same badge design, pale aqua disc, water droplet with green algae filament, lily pad"},
+    {"deploy": "public/assets/ui/badge-M3.webp", "source": "badge-M3.png", "job": "f7760c50-9ef5-4647-9273-c3dd684f9a09", "use": "M3 세균의 단서 배지", "prompt": "same badge design, sage disc, brass magnifier over simple sphere and rod microbe shapes, no faces"},
+    {"deploy": "public/assets/ui/badge-M4.webp", "source": "badge-M4.png", "job": "4fc3fb82-1f82-49f6-92ae-65074913e074", "use": "M4 생활 속 사건 배지", "prompt": "same badge design, peach disc, teal-roof cottage, yogurt jar, oak leaf"},
+    {"deploy": "public/assets/ui/badge-M5.webp", "source": "badge-M5.png", "job": "f66d4865-4f11-4d70-a30b-3c8cd4a7215a", "use": "M5 생명과학 작업실 배지", "prompt": "same badge design, lavender disc, flask with green liquid and sprout, sparkles"}
+  ],
+  "notes": "모든 파일은 장식·조작 소품이며 과학 관찰 근거가 아니다. 글자·숫자가 들어간 그림은 만들지 않았고 버튼·패널은 CSS/Phaser로 그린다."
+}
