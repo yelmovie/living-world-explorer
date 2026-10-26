@@ -46,7 +46,19 @@
  "meshy": {
   "date": "2026-10-25",
   "tool": "Meshy image-to-3D (사용자 계정, 웹에서 받은 텍스처 GLB). 원본은 assets/generated/models-20261025/*-meshy.glb (Git 제외, 수십~수백 MB)",
-  "pipeline": "scripts/shrink-glb.py (Blender 5.2: 정점 병합 후 Decimate collapse, 텍스처 1024·금속/거칠기 512) → 단계별 원본 대조 렌더(scripts/glb-sheet.mjs) → 깨끗한 최소 단계 선택 → scripts/pack-glb.py (Draco, 형태 변화 없음)",
+  "current": {
+   "date": "2026-10-26",
+   "why": "2026-10-25 판(아래 pipeline)은 확대하면 버섯 갓·주름·밑동에 삼각형 텍스처 조각이 보였다. Draco 전 단계에서도 같아 원인은 블렌더 정점 병합 + Decimate collapse가 UV 이음매를 가로지른 것.",
+   "pipeline": "scripts/pack-models.mjs: sharp로 텍스처 축소(JPEG 90) → gltfpack 1.3.0 (-si 0.01 -se <error> -cc -vt 14, UV 이음매 고정 단순화 + meshopt 압축). three.js MeshoptDecoder로 읽음.",
+   "check": "원본과 같은 4각도 + 1.6~2.2배 확대(갓 아래·빵 밑면·옆면) 렌더 대조. 오차 한도가 느슨하면 이음매 가장자리가 잘려 검은 선이 보여 모형마다 낮춤(효모 0.005→0.0015, 짚신벌레 0.005→0.002→0.001).",
+   "models": [
+    {"name": "mushroom", "textures": "색 2048·법선 2048·금속/거칠기 512", "error": 0.005, "triangles": 131650, "bytes": 2786976},
+    {"name": "bread-mold", "textures": "2048·2048·512", "error": 0.002, "triangles": 101356, "bytes": 2365812},
+    {"name": "paramecium", "textures": "2048·2048·512", "error": 0.001, "triangles": 54316, "bytes": 1532360},
+    {"name": "yeast", "textures": "2048·2048·256", "error": 0.0015, "triangles": 7712, "bytes": 394612}
+   ]
+  },
+  "pipeline": "(2026-10-25 옛 판, 스크립트는 _unused/scripts-20261026/) scripts/shrink-glb.py (Blender 5.2: 정점 병합 후 Decimate collapse, 텍스처 1024·금속/거칠기 512) → 단계별 원본 대조 렌더(scripts/glb-sheet.mjs) → 깨끗한 최소 단계 선택 → scripts/pack-glb.py (Draco, 형태 변화 없음)",
   "models": [
    {
     "receivedAs": "Meshy_AI_Handpainted_Mushroom__1025142258_image-to-3d-texture.glb",

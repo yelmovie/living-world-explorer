@@ -12,16 +12,15 @@
 | `map/` | 탐험 지도(`terrain.webp`), 지도 위 걷는 캐릭터 4방향 |
 | `places/` | 연구 시설 배경(`fungi`·`water`·`archive`·`village`·`workshop`), 연구소(`greenhouse`), 복구된 코어(`core`) |
 | `study/` | 학습용 관찰 모형·조사 그림. 시간 비교는 `bread-0~3`, `leaf-0~3`. 확대 단계는 `*-lens`(돋보기)·`mushroom-spores`(현미경), 세균 세 모양 카드는 `bacteria-{round,rod,spiral}` |
-| `models/` | 선택해서 여는 3D 설명 모형(GLB, Draco 압축). 원본·줄인 단계 기록은 `assets/generated/models-20261025.json` |
-| `libs/draco/` | 3D 모형 압축 해제용 Draco 디코더(three.js 배포본) |
+| `models/` | 선택해서 여는 3D 설명 모형(GLB, meshopt 압축 — 디코더는 three.js 묶음에 들어 있음). 원본·설정 기록은 `assets/generated/models-20261025.json` |
 | `ui/` | 로고, 앱 아이콘, 탐구 장면 소품 |
 
-## 3D 모형 넣는 순서 (2026-10-25 정함)
+## 3D 모형 넣는 순서 (2026-10-26 고침)
 
-1. 받은 Meshy GLB는 루트가 아니라 `assets/generated/models-<날짜>/<이름>-meshy.glb`로 옮긴다(Git 제외).
-2. `blender -b --python scripts/shrink-glb.py -- <원본> .tmp/models <이름> 1024 <단계…>`로 여러 단계로 줄이고, `node scripts/glb-sheet.mjs`로 원본과 같은 각도 비교 시트를 만든다.
-3. 갓 아래·바닥처럼 잘 안 보이는 면까지 시트에서 확인하고, 찢어짐·접힘·외곽 치수 변화가 없는 **가장 작은 단계**를 고른다. 숫자 예산보다 눈으로 본 결과가 우선이다.
-4. `blender -b --python scripts/pack-glb.py -- <고른 단계>.glb public/assets/models/<이름>.glb`로 Draco 압축한다(형태는 그대로).
+1. 받은 Meshy GLB는 루트가 아니라 `assets/generated/models-<날짜>/<이름>-meshy.glb`로 옮긴다(Git 제외). 같은 파일을 다시 받았으면 SHA-256을 비교해 중복은 지운다.
+2. `scripts/pack-models.mjs`의 `models` 표에 이름·텍스처 크기·오차 한도를 넣고 `node scripts/pack-models.mjs <이름>`을 실행한다. 텍스처를 줄인 뒤 gltfpack이 **UV 이음매를 고정한 채** 줄이고 meshopt로 압축해 `public/assets/models/<이름>.glb`에 쓴다.
+3. 원본과 같은 각도로, **확대해서**(갓 아래·바닥·옆면) 비교한다. 전체 크기에서는 안 보이던 텍스처 조각·검은 선이 확대하면 보인다. 검은 선이 보이면 오차 한도(`error`)를 낮춘다.
+4. 블렌더 Decimate(정점 병합 + collapse)는 쓰지 않는다. UV 이음매를 가로질러 줄여 텍스처가 조각나 보였다(2026-10-25 판, 옛 스크립트는 `_unused/scripts-20261026/`).
 
 ## 2026-10-25 이름 대조표
 

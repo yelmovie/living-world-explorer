@@ -2,6 +2,15 @@
 
 실제로 지운 파일은 없어요. 아래 파일은 배포 폴더(`public/`)나 빌드 대상(`src/`)에서 빼서 여기로 옮겼어요. 필요 없다고 확인되면 사용자가 직접 지워요.
 
+## 2026-10-26 — 3D 모형 줄이기 방식 교체
+
+| 파일 | 옮긴 근거 |
+|---|---|
+| public-assets-20261026/libs-draco/ (디코더 3개 + LICENSE-NOTE) | 모형을 meshopt 압축으로 바꿔 Draco 디코더를 더 이상 불러오지 않음. 코드 참조 없음 |
+| scripts-20261026/shrink-glb.py, pack-glb.py, glb-sheet.mjs | 블렌더 정점 병합 + Decimate가 UV 이음매를 가로질러 텍스처가 조각나 보인 옛 방식. 지금은 scripts/pack-models.mjs |
+
+루트에 다시 들어온 `Meshy_AI_*.glb` 4개(약 320MB)는 `assets/generated/models-20261025/*-meshy.glb`와 SHA-256이 같아서 휴지통으로 보냈어요(복원 가능).
+
 ## 2026-10-25 — `_unused/public-assets-20261025/`
 
 | 파일 | 크기 | 옮긴 근거 |

@@ -1,15 +1,14 @@
 // three.js lives only in this lazily imported chunk (model-viewer-*.js), so the first screen never downloads it.
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
-import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader.js';
+import {MeshoptDecoder} from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 
 export type Viewer={rotate:(dx:number,dy:number)=>void;reset:()=>void;dispose:()=>void};
 
 /** Drag (or the buttons) turns the specimen; it idles with a slow spin unless motion is reduced. */
 export async function mountViewer(host:HTMLElement,src:string,reduced:boolean,start:[number,number]=[0,0]):Promise<Viewer>{
- // Models are Draco-compressed (scripts/pack-glb.py); the decoder ships with the app so it also works offline once cached.
- const draco=new DRACOLoader().setDecoderPath('assets/libs/draco/');
- const gltf=await new GLTFLoader().setDRACOLoader(draco).loadAsync(src).finally(()=>draco.dispose());
+ // Models are meshopt-compressed (scripts/pack-models.mjs); the decoder is bundled into this chunk, so no extra files to fetch.
+ const gltf=await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(src);
  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});renderer.setPixelRatio(Math.min(2,devicePixelRatio));renderer.outputColorSpace=THREE.SRGBColorSpace;
  const scene=new THREE.Scene();scene.add(new THREE.HemisphereLight(0xfffdf4,0x7d8a6a,1.3));const sun=new THREE.DirectionalLight(0xffffff,1.1);sun.position.set(2,3,4);scene.add(sun);
  const model=gltf.scene,box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),radius=size.length()/2;
