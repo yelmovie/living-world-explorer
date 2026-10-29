@@ -10,7 +10,8 @@ function offlinePrecache(): Plugin {
   return { name: 'offline-precache', apply: 'build', async writeBundle({ dir }) {
     if (!dir) return;
     const walk = async (sub: string): Promise<string[]> => (await Promise.all((await this.fs.readdir(`${dir}/${sub}`, { withFileTypes: true })).map(e => e.isDirectory() ? walk(`${sub}${e.name}/`) : [sub + e.name]))).flat();
-    const names = (await walk('')).filter(f => !['sw.js', '_headers'].includes(f)).sort();
+    // macOS writes ._* metadata files next to every file on exFAT drives; they are not part of the build.
+    const names = (await walk('')).filter(f => !['sw.js', '_headers'].includes(f) && !f.split('/').some(p => p.startsWith('._'))).sort();
     const files = await Promise.all(names.map(async f => [f, await hash(await this.fs.readFile(`${dir}/${f}`), 10), ...(/^assets\/(audio\/bgm-[^/]+\.m4a|models\/[^/]+\.glb|model-viewer-[^/]+\.js)$/.test(f) ? [1] : [])]));
     if (!names.includes('index.html')) throw Error('offline-precache: index.html missing');
     const sw = `${dir}/sw.js`, source = await this.fs.readFile(sw, { encoding: 'utf8' });
