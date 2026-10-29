@@ -6,8 +6,8 @@ describe('학습 자료의 의미와 표본 이미지 연결',()=>{
  const item=(task:string,id:string)=>inquiryTasks.find(t=>t.id===task)!.items.find(i=>i.id===id)!;
  it('죽은 나무와 버섯의 관찰 특징을 서로 다른 그림으로 표시한다',()=>{
   expect(artKey(item('M1-1','log'))).toBe('deadwood');
-  expect(artKey(item('M1-1','gills'))).toBe('mushroom');
-  expect(artKey(item('M1-4','env1'))).toBe('deadwood');
+  expect(artKey(item('M1-4','cap'))).toBe('mushroom');
+  expect(artKey(item('M1-4','mycelium'))).toBe('mushroomMycelium');
  });
  it('곰팡이 핀 빵은 시간 비교의 마지막 표본과 같은 그림이다',()=>{
   const bread=item('M1-1','bread'),kind=artKey(bread);
@@ -15,11 +15,15 @@ describe('학습 자료의 의미와 표본 이미지 연결',()=>{
   expect(artFor('bread',0)?.src).not.toBe(artFor('bread',3)?.src);
   expect(new Set([0,1,2,3].map(t=>artFor('bread',t)?.src)).size).toBe(4);
  });
- it('반죽의 재료·결과와 곰팡이가 핀 과일을 구분한다',()=>{
+ it('반죽의 재료·결과와 먹으려던 빵의 곰팡이를 구분한다',()=>{
   expect(artKey(item('M5-2','dough'))).toBe('dough');
   expect(artKey(item('M5-2','risen'))).toBe('risenDough');
   expect(artKey(item('M5-4','bread'))).toBe('risenDough');
-  expect(artKey(item('M4-4','fruit-case'))).toBe('moldyFruit');
+  expect(artKey(item('M4-4','yeast-case'))).toBe('risenDough');
+  const spoiled=item('M4-3','bread-case'),kind=artKey(spoiled);
+  expect(kind).toBe('bread');
+  expect(artFor(kind,artTime(kind,spoiled.detail,spoiled.id))?.src).toBe(artFor('bread',3)?.src);
+  expect(artFor(kind,3)?.src).not.toBe(artFor('risenDough')?.src);
  });
  it('모든 활동 자료가 명확한 그림과 시간 단계로 연결된다',()=>{
   for(const task of inquiryTasks)for(const it of task.items){const kind=artKey(it);if(kind==='question')continue;const art=artFor(kind,artTime(kind,it.detail,it.id));expect(art,it.id).toBeDefined();expect(art!.src,it.id).toMatch(/^assets\/.+\.webp$/);}

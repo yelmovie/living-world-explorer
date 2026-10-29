@@ -1,7 +1,7 @@
 import {el,button,paragraph} from './ui';
 import {inquiryArt} from './artAssets';
 
-/** Size ladder: each rung is about ten times smaller than the one above. Sizes are approximate, comparisons come first. */
+/** Size ladder: examples ordered from larger to smaller, not equally spaced ratios. Sizes are approximate. */
 export type Rung={id:string;label:string;size:string;art?:string;stage?:string};
 export const rungs:Rung[]=[
  {id:'mushroom',label:'버섯 갓',size:'약 5cm',art:'mushroom',stage:'M1'},
@@ -23,7 +23,7 @@ const limitLine=()=>{const li=el('li','ladder-limit');li.append(el('span','','�
 
 /** Read-only ladder (발견 도감). lit: stages whose organisms are already discovered. */
 export function sizeLadder(lit:Set<string>){
- const list=el('ol','size-ladder');list.setAttribute('aria-label','크기 사다리 · 위에서 아래로 갈수록 약 10배씩 작아져요');
+ const list=el('ol','size-ladder');list.setAttribute('aria-label','크기 사다리 · 위에서 아래로 갈수록 작아져요. 칸마다 크기 차이는 달라요');
  for(const r of rungs){list.append(rungRow(r,!r.stage||lit.has(r.stage)));if(r.id===NAKED_EYE_LAST)list.append(limitLine());}
  return list;
 }
@@ -41,5 +41,5 @@ export function ladderPlacement(done:boolean,onPlaced:()=>void){
  list.append(slot(0));known.forEach((r,i)=>{list.append(rungRow(r,true));if(r.id===NAKED_EYE_LAST)list.append(limitLine());list.append(slot(i+1));});
  // Reopened after placing: show where the bacteria went.
  if(done)requestAnimationFrame(()=>list.querySelector('.ladder-slot.placed')?.scrollIntoView({block:'nearest'}));
- box.append(paragraph('크기 사다리 · 위에서 아래로 갈수록 약 10배씩 작아져요.','muted'),list,say);return box;
+ box.append(paragraph('크기 사다리 · 위에서 아래로 갈수록 작아져요. 칸마다 크기 차이는 달라요.','muted'),list,say);return box;
 }

@@ -3,6 +3,7 @@ import type {Stage} from './model';
 import {tasksFor} from './curriculum';
 import {markValid,observedKind} from './observation';
 import {currentRun,designCorrect} from './inquiry-runs';
+import {validTrackPair,validTimelinePair} from './inquiry-preparation';
 export function taskIssues(task:InquiryTask,r:InquiryRecord):string[]{
  // Records started before 2026-10-25 (no v) are judged by the rules they were finished under.
  const current=r.v===2,items=task.items.filter(i=>current||i.since!==2);
@@ -17,10 +18,10 @@ export function taskIssues(task:InquiryTask,r:InquiryRecord):string[]{
   if(task.organism==='mold'&&!marks.some((p,i)=>marks.slice(i+1).some(q=>Math.hypot((p.x-q.x)*793,(p.y-q.y)*496)>=24)))issues.push('둥근 부분이나 가는 실이 보이는 서로 다른 두 곳을 표시해요. 같은 곳을 반복해 세지는 않아요.');
  }
  if(task.kind==='sample'&&(r.sequence!==3||!['edge','plant'].includes(r.assignments.site)))issues.push(task.feedback);
- if(task.kind==='track'&&(r.pins.length!==2||!Number.isFinite(r.pins[0])||!Number.isFinite(r.pins[1])||Math.abs(r.pins[1]-r.pins[0])<3))issues.push(task.feedback);
+ if(task.kind==='track'&&!validTrackPair(r))issues.push(task.feedback);
  if(task.kind==='track'&&current&&!r.marks.some(p=>markValid(task,r,p)))issues.push('현미경으로 크게 보고, 짚신벌레를 움직이게 하는 몸 둘레의 가는 털을 표시해요.');
  if(task.kind==='timeline'){
-  if(r.pins.length!==2||!Number.isFinite(r.pins[0])||!Number.isFinite(r.pins[1])||r.pins[0]>=r.pins[1]||r.pins[1]>3)issues.push('이전과 이후를 서로 다른 순서로 고정해요.');
+  if(!validTimelinePair(r))issues.push('이전과 이후를 서로 다른 순서로 고정해요.');
   if(!r.marks.length||!r.marks.every(p=>markValid(task,r,p)))issues.push('이 두 시점 사이에 새로 생긴 곰팡이나 사라진 잎 부분을 표시해요.');
   if(!r.opened.includes('process'))issues.push('관련 생물의 작용을 알려 주는 조사 자료도 열어봐요.');
  }

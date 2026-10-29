@@ -32,12 +32,16 @@ $env:PLAYWRIGHT_BROWSERS_PATH = Join-Path $PWD '.cache/browsers'
 npm run test:browser
 npm run test:flow
 node tests/storage-safety.mjs
+node tests/interaction-review.mjs
+node tests/streamlined-browser.mjs
 npm run test:offline
 ```
 
-`test:browser`는 15개 경로를 6개 화면 크기로 검사한다. `test:flow`는 실제 학생 흐름으로 20개 탐구와 최종 보고·코어 복구를 완주하고 PNG 저장·새로고침 복원·시연 원본 분리를 확인한다. `storage-safety.mjs`는 잘못된 저장 구조와 다른 창의 동시 저장으로 원본이 덮이지 않는지 확인한다. `test:offline`은 운영 빌드를 직접 만들어 띄운 뒤 서버를 끄고도 새로고침·지도·탐구 그림이 열리는지 확인한다(서버 실행 불필요, 오프라인 동작은 [배포 안내](docs/DEPLOYMENT.md)). 결과와 스크린샷은 Git에서 제외한 `.tmp/`에 저장한다. Phaser 캔버스는 장면이 그려진 뒤 촬영한다. 다른 서버는 `APP_URL`, 브라우저 실행 파일은 `BROWSER_PATH` 환경변수로 지정할 수 있다. 기존 `.cache/browser-manual/chrome-win/chrome.exe`가 있으면 우선 사용한다.
+`test:browser`는 15개 경로를 6개 화면 크기로 검사한다. `test:flow`는 실제 학생 흐름으로 20개 탐구와 최종 보고·코어 복구를 완주하고 PNG 저장·새로고침 복원·시연 원본 분리를 확인한다. `interaction-review.mjs`와 `streamlined-browser.mjs`는 `test:flow` 이후 실행하며 직접 조작·오답 수정·중복 입력·시간 비교·회전·저장 복원을 확인한다. `storage-safety.mjs`는 잘못된 저장 구조와 다른 창의 동시 저장으로 원본이 덮이지 않는지 확인한다. `test:offline`은 운영 빌드를 직접 만들어 띄운 뒤 서버를 끄고도 새로고침·지도·탐구 그림이 열리는지 확인한다(서버 실행 불필요, 오프라인 동작은 [배포 안내](docs/DEPLOYMENT.md)). 결과와 스크린샷은 Git에서 제외한 `.tmp/`에 저장한다. Phaser 캔버스는 장면이 그려진 뒤 촬영한다. 다른 서버는 `APP_URL`, 브라우저 실행 파일은 `BROWSER_PATH` 환경변수로 지정할 수 있다. 기존 `.cache/browser-manual/chrome-win/chrome.exe`가 있으면 우선 사용한다.
 
 ## 현재 기준
+
+- [2026-10-28 스테이지 학습 흐름 개선](docs/reviews/STAGE-FLOW-20261028.md): 반복 카드 37→27장, 인라인 자료·직접 연결, 관찰 준비 단축, 핵심 작용 설계, 소개 문장 자동 생성. 20활동 터치 완주·117개 단위 검사·90화면 검증.
 
 - [2026-10-24 고도화·최종점검](docs/reviews/FINAL-CHECK-20261024.md): 현재 20개 활동·화면·저장 검증과 남은 항목. 아래 2026-10-18 문서는 초기 구현의 기록이다.
 - [새 생성 이미지 기록](docs/ART_GENERATION_20261024.md): 지도·표본·복구 장면 10장, 프롬프트와 원본 위치.

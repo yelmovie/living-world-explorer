@@ -1,14 +1,14 @@
 import Phaser from 'phaser';
 import type {InquiryTask,InquiryRecord} from '../inquiry-model';
 import {canvas,draw} from '../draw';
-import {invalidateRun} from '../inquiry-evaluate';
+import {assignCard as applyCard,syncBuildLinks,chooseCase} from '../inquiry-actions';
 import {playEffect} from '../audio';
 import {inquiryArt,artTime,artKey,artFrame,magnifyFor,type MagnifyView} from '../artAssets';
 import {addMark,markHint,viewToImage,observedKind,featureAt} from '../observation';
 type Hooks={changed:()=>void;open:(id:string)=>void;feedback:(text:string)=>void;ready:(ok:boolean)=>void};
 const WIDTH=960,HEIGHT=540;
 export function mountInquiry(host:HTMLElement,task:InquiryTask,record:InquiryRecord,hooks:Hooks,reduced:boolean){
- let refresh=()=>{};let play=false;let disposed=false;let armed='';let reveal:number|undefined;let simulating=false;let scene:Phaser.Scene|undefined;let inputObjects:Phaser.GameObjects.GameObject[]=[];
+ let refresh=()=>{};let play=false;let preview=false;let disposed=false;let armed='';let reveal:number|undefined;let simulating=false;let scene:Phaser.Scene|undefined;let inputObjects:Phaser.GameObjects.GameObject[]=[];
  const blocked=()=>disposed||document.hidden||!!document.querySelector('dialog[open]');
  // Scene colours follow the DOM tokens (styles.css stage layer), so one token edit restyles both.
  const css=(name:string,fallback:number)=>{const v=getComputedStyle(host).getPropertyValue(name).trim();return /^#[0-9a-f]{6}$/i.test(v)?parseInt(v.slice(1),16):fallback;};
@@ -22,7 +22,7 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,record:InquiryRec
    // Decorative props are optional: a missing prop falls back to the drawn card, never blocks the activity.
    const props=['tape',...task.kind==='microscope'?['microscope-frame']:[],...task.kind==='sample'?['dropper','slide','water-drop']:[],...['collect','connect','sort'].includes(task.kind)?['notebook']:[]];for(const p of props)this.load.image(`ui-${p}`,`assets/ui/${p}.webp`);}
   create(){scene=this;if(this.failed){hooks.ready(false);return;}refresh=()=>this.paint();this.paint();hooks.ready(true);}
-  wipe(){this.trackSurface=undefined;this.trackElapsed=0;inputObjects=[];this.children.removeAll(true);for(const name of this.textures.getTextureKeys())if(name.startsWith('plate-'))this.textures.remove(name);}
+  wipe(){this.tweens.killAll();this.trackSurface=undefined;this.trackElapsed=0;inputObjects=[];this.children.removeAll(true);for(const name of this.textures.getTextureKeys())if(name.startsWith('plate-'))this.textures.remove(name);}
   text(x:number,y:number,text:string,size=23,color='#234b3c',width=330){return this.add.text(x,y,text,{fontFamily:'Lab Display, Malgun Gothic',fontSize:`${Math.max(28,size)}px`,color,align:'center',wordWrap:{width,useAdvancedWrap:true},lineSpacing:4}).setOrigin(.5);}
   // Rounded pill behind short captions so they read over any photo.
   caption(x:number,y:number,label:string,size=28,color=tone.ink,width=850){const t=this.text(x,y,label,size,color,width);const w=t.width+30,h=t.height+12,r=Math.min(22,h/2),g=this.add.graphics();g.fillStyle(tone.shade,.14).fillRoundedRect(x-w/2+2,y-h/2+4,w,h,r);g.fillStyle(tone.paper,.97).fillRoundedRect(x-w/2,y-h/2,w,h,r);g.lineStyle(2,tone.line,1).strokeRoundedRect(x-w/2,y-h/2,w,h,r);this.children.bringToTop(t);return t;}
@@ -63,20 +63,20 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,record:InquiryRec
     const zone=this.add.zone(a.x,a.y,targetWidth+10,targetHeight+8).setRectangleDropZone(targetWidth+10,targetHeight+8).setInteractive({useHandCursor:true});zone.setData('target',a.id);zone.on('pointerdown',()=>{if(armed&&!this.pauseGuard())this.assign(armed,a.id);});});
    const showGlow=(id?:string)=>glows.forEach((g,key)=>g.setVisible(id===undefined?!!armed:key===id));
    for(const [i,it] of task.items.entries()){
-    const x=columns===2?165+(i%2)*280:245,y=65+(Math.floor(i/columns)+.5)*rowH;const linked=!!record.assignments[it.id];const box=this.add.container(x,y);const cardH=rowH-16;
-    const face=this.add.graphics();const style=(picked:boolean)=>this.cardShape(face,0,0,itemWidth,cardH,{fill:linked?tone.soft:tone.paper,stroke:picked?tone.pick:linked?tone.accent:tone.line,width:picked?5:2});style(armed===it.id);box.add(face);
+    const x=columns===2?165+(i%2)*280:245,y=65+(Math.floor(i/columns)+.5)*rowH;const linked=record.assignments[it.id]===it.target;const misplaced=!!record.assignments[it.id]&&!linked;const box=this.add.container(x,y);const cardH=rowH-16;
+    const face=this.add.graphics();const style=(picked:boolean)=>this.cardShape(face,0,0,itemWidth,cardH,{fill:linked?tone.soft:tone.paper,stroke:picked||misplaced?tone.pick:linked?tone.accent:tone.line,width:picked?5:2});style(armed===it.id);box.add(face);
     if(it.art)box.add(columns===2?this.art(0,-30,itemWidth-24,cardH-70,artKey(it)!,{time:artTime(artKey(it),it.detail,it.id),fit:'contain'}):this.art(-117,0,144,cardH-24,artKey(it)!,{time:artTime(artKey(it),it.detail,it.id),fit:'contain'}));
-    box.add(this.text(columns===2?0:65,it.art&&columns===2?cardH/2-30:0,(record.opened.includes(it.id)?'✓ ':'')+it.label,21,tone.ink,columns===2?itemWidth-20:216));
+    box.add(this.text(columns===2?0:65,it.art&&columns===2?cardH/2-30:0,it.label,21,tone.ink,columns===2?itemWidth-20:216));
     const tape=this.tape(0,-cardH/2+3,84,i%2?3:-4);if(tape)box.add(tape);if(linked)box.add(this.badge(itemWidth/2-10,-cardH/2+10));
     box.setSize(itemWidth,cardH).setInteractive({useHandCursor:true});this.input.setDraggable(box);inputObjects.push(box);
-    let dragged=false;box.on('pointerdown',()=>{if(this.pauseGuard())return;dragged=false;armed=it.id;style(true);showGlow();});box.on('drag',(_pointer:Phaser.Input.Pointer,dx:number,dy:number)=>{if(this.pauseGuard())return;dragged=true;box.setPosition(dx,dy);box.setDepth(10);});
+    box.on('pointerdown',()=>{if(this.pauseGuard())return;armed=it.id;style(true);showGlow();hooks.open(it.id);});box.on('drag',(_pointer:Phaser.Input.Pointer,dx:number,dy:number)=>{if(this.pauseGuard())return;box.setPosition(dx,dy);box.setDepth(10);});
     box.on('dragenter',(_p:Phaser.Input.Pointer,zone:Phaser.GameObjects.Zone)=>showGlow(String(zone.getData('target'))));box.on('dragleave',()=>showGlow());
-    box.on('pointerup',()=>{if(!dragged&&!this.pauseGuard())hooks.open(it.id);});box.on('drop',(_p:Phaser.Input.Pointer,zone:Phaser.GameObjects.Zone)=>{this.assign(it.id,String(zone.getData('target')));});box.on('dragend',()=>{if(!disposed&&box.active)box.setPosition(x,y).setDepth(0);});
+    box.on('drop',(_p:Phaser.Input.Pointer,zone:Phaser.GameObjects.Zone)=>{this.assign(it.id,String(zone.getData('target')));});box.on('dragend',()=>{if(!disposed&&box.active)box.setPosition(x,y).setDepth(0);});
    }
   }
-  assign(id:string,target:string){if(this.pauseGuard())return;if(!record.opened.includes(id)){hooks.feedback('자료를 먼저 눌러 내용을 살펴봐요.');return;}record.assignments[id]=target;record.submitted=false;armed='';playEffect('snap');this.commit();}
+  assign(id:string,target:string){if(!this.pauseGuard())assignCard(id,target);}
   paintObservation(){
-   const isTimeline=task.kind==='timeline',isTrack=task.kind==='track';const kind=observedKind(task,record)||'mushroom';const comparing=record.pins.length===2&&Number.isFinite(record.pins[0])&&Number.isFinite(record.pins[1])&&!play;
+   const isTimeline=task.kind==='timeline',isTrack=task.kind==='track';const kind=observedKind(task,record)||'mushroom';const comparing=record.pins.length===2&&Number.isFinite(record.pins[0])&&Number.isFinite(record.pins[1])&&!play&&!preview;
    // Cilia close-up: after A·B the same paramecium is shown still and large so its edge hairs can be marked.
    if(isTrack&&record.level===2){this.drawSpecimen(480,282,760,410,kind,0,true);this.caption(480,30,'현미경 · 몸 둘레의 가는 털을 찾아 눌러요',22);return;}
    if(comparing&&reveal!==undefined){
@@ -88,9 +88,9 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,record:InquiryRec
     handle.on('drag',(_p:Phaser.Input.Pointer,x:number)=>{if(this.pauseGuard())return;const clamped=Phaser.Math.Clamp(x,left,left+w);reveal=(clamped-left)/w;mask.clear().fillStyle(0xffffff).fillRect(clamped,top,left+w-clamped,h);line.x=handle.x=label.x=clamped;});
     this.caption(250,60,'A · 이전');this.caption(710,60,'B · 이후');this.caption(480,500,'손잡이를 밀어 같은 위치의 변화를 비교해요',28,'#3e6651',860);
    }else if(comparing){for(let i=0;i<2;i++){const x=260+i*440;this.drawSpecimen(x,265,410,340,kind,record.pins[i],i===1);this.caption(x,65,`${i===0?'A · 이전':'B · 이후'} ${isTimeline?'관찰 '+(record.pins[i]+1):'시점 '+record.pins[i]}`,24);}}
-   else this.drawSpecimen(480,270,750,435,kind,record.time,true);
-   if(isTrack&&reveal===undefined)this.caption(480,510,'같은 시야 · 같은 짚신벌레의 위치를 비교해요',20,'#3e6651',850);
-   if(isTimeline&&reveal===undefined){const g=this.add.graphics();g.lineStyle(6,tone.line,1).lineBetween(235,505,725,505);for(let i=0;i<4;i++){const x=235+i*163,current=i===record.time,pinned=record.pins.includes(i);g.fillStyle(tone.shade,.16).fillCircle(x+2,509,32);g.fillStyle(current?tone.accent:pinned?tone.soft:tone.paper,1).fillCircle(x,505,32);g.lineStyle(3,current||pinned?tone.accent:tone.line,1).strokeCircle(x,505,32);this.add.zone(x,505,76,76).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard())return;record.time=i;this.commit();});this.text(x,505,String(i+1),21,current?'#fffdf4':tone.ink);}}
+   else{this.drawSpecimen(480,270,750,435,kind,record.time,task.kind==='microscope');if(preview&&!play&&(isTimeline||isTrack))this.caption(480,30,isTimeline?'지금 고른 모습 · 관찰 '+(record.time+1):'지금 고른 순간 · 시점 '+Math.round(record.time),22);}
+   if(isTrack&&(!comparing||reveal===undefined))this.caption(480,510,'같은 시야 · 같은 짚신벌레의 위치를 비교해요',20,'#3e6651',850);
+   if(isTimeline&&(!comparing||reveal===undefined)){const g=this.add.graphics();g.lineStyle(6,tone.line,1).lineBetween(235,505,725,505);for(let i=0;i<4;i++){const x=235+i*163,current=i===record.time,pinned=record.pins.includes(i);g.fillStyle(tone.shade,.16).fillCircle(x+2,509,32);g.fillStyle(current?tone.accent:pinned?tone.soft:tone.paper,1).fillCircle(x,505,32);g.lineStyle(3,current||pinned?tone.accent:tone.line,1).strokeCircle(x,505,32);this.add.zone(x,505,76,76).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard())return;record.time=i;preview=true;this.commit();});this.text(x,505,String(i+1),21,current?'#fffdf4':tone.ink);}}
   }
   specimenSize(w:number,h:number,kind:string,time:number){
    const name=inquiryArt[kind]?.frames?`art-${kind}-${artFrame(time)}`:`art-${kind}`;
@@ -151,7 +151,7 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,record:InquiryRec
    for(const [id,x,y,label] of [['edge',130,360,'물가 가까이'],['plant',390,265,'물풀 가까이']] as [string,number,number,string][]){
     const chosen=record.assignments.site===id;const ring=this.add.graphics();ring.lineStyle(5,0xffffff,.95).strokeCircle(x,y,30);ring.lineStyle(3,tone.accent,.9).strokeCircle(x,y,34);const dot=this.add.graphics();dot.fillStyle(chosen?tone.accent:0xffffff,chosen?1:.6).fillCircle(x,y,chosen?20:14);
     if(!chosen&&!reduced)this.tweens.add({targets:ring,alpha:.35,duration:900,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});
-    this.add.zone(x,y,88,88).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard())return;record.assignments.site=id;this.commit();});this.caption(x,y+58,label,22);}
+    this.add.zone(x,y,88,88).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard()||record.assignments.site===id)return;record.assignments.site=id;record.sequence=0;this.commit();});this.caption(x,y+58,label,22);}
    const slideY=350;this.card(785,slideY+14,262,214,{fill:tone.paper,radius:20});this.tape(785,slideY-92,86,-3);if(this.textures.exists('ui-slide')){this.add.image(785,slideY,'ui-slide').setDisplaySize(230,97);}else this.plate(785,slideY,200,110,'',0xe8efe8);
    if(record.sequence===3&&this.textures.exists('ui-water-drop'))this.add.image(785,slideY-6,'ui-water-drop').setDisplaySize(58,45);else if(record.sequence===3)this.add.circle(785,slideY-6,20,0x73b4bd);
    this.text(785,slideY+82,record.sequence===3?'한 방울 준비 완료':'받침 유리판',22,tone.ink,240);
@@ -160,21 +160,21 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,record:InquiryRec
    else pipette.add([this.add.rectangle(0,0,28,110,0xeaf3dc).setStrokeStyle(3,0x537d6c),this.add.ellipse(0,-62,58,60,record.sequence>0?0x72b3bc:0x4d8066),this.add.triangle(0,73,0,0,20,0,10,35,0xc1d7b8)]);
    pipette.setSize(90,220).setInteractive({useHandCursor:true});this.input.setDraggable(pipette);let dragged=false;
    pipette.on('pointerdown',()=>{if(!this.pauseGuard())dragged=false;});pipette.on('drag',(_p:Phaser.Input.Pointer,x:number,y:number)=>{if(this.pauseGuard())return;dragged=true;pipette.setPosition(x,y);});pipette.on('dragend',()=>{if(this.pauseGuard()){if(pipette.active)pipette.setPosition(home.x,home.y);return;}if(record.sequence===2&&pipette.x>665&&pipette.y>180){record.sequence=3;this.commit();}else if(pipette.active)pipette.setPosition(home.x,home.y);});
-   pipette.on('pointerup',()=>{if(dragged||this.pauseGuard())return;if(!record.assignments.site){hooks.feedback('먼저 채집할 장소를 살펴봐요.');return;}if(record.sequence<2){record.sequence++;this.commit();}});
+   pipette.on('pointerup',()=>{if(dragged||this.pauseGuard())return;if(!record.assignments.site){hooks.feedback('먼저 채집할 장소를 살펴봐요.');return;}if(record.sequence<2){record.sequence=2;this.commit();}});
    if(record.sequence===3)pipette.setVisible(false);
-   this.caption(480,30,['채집할 장소를 살펴봐요','스포이드를 눌렀어요 · 물속에서 놓아요','유리판으로 옮겨요','한 방울 표본이 준비됐어요'][record.sequence],24);
+   this.caption(480,30,!record.assignments.site?'채집할 장소를 골라요':record.sequence<2?'스포이드를 눌러 한 방울을 채집해요':record.sequence===2?'유리판으로 한 방울을 옮겨요':'한 방울 표본이 준비됐어요',24);
   }
   paintBuild(){
    const slots=task.targets.map((t,i)=>({id:t.id,x:185+i*295,y:200}));const g=this.add.graphics();
-   for(let i=0;i<2;i++){const linked=record.assignments[`edge${i+1}`]==='linked';g.lineStyle(12,linked?tone.accent:tone.line,1);g.lineBetween(slots[i].x+110,200,slots[i+1].x-110,200);const knob=this.add.graphics();knob.fillStyle(tone.shade,.2).fillCircle(335+i*295,204,28);knob.fillStyle(linked?tone.accent:tone.brass,1).fillCircle(333+i*295,200,28);knob.lineStyle(3,0xffffff,.9).strokeCircle(333+i*295,200,28);this.add.zone(333+i*295,200,64,64).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard())return;const id=`edge${i+1}`;record.assignments[id]=record.assignments[id]==='linked'?'':'linked';invalidateRun(record);this.commit();});this.text(333+i*295,200,linked?'✓':'+',25,linked?'#fffdf4':tone.ink);}
+   for(let i=0;i<2;i++){const linked=record.assignments[`edge${i+1}`]==='linked',color=linked?tone.accent:tone.line;g.lineStyle(10,color,1);g.lineBetween(slots[i].x+112,200,slots[i+1].x-120,200);g.fillStyle(color,1).fillTriangle(slots[i+1].x-112,200,slots[i+1].x-130,188,slots[i+1].x-130,212);}
    slots.forEach((s,i)=>{const it=task.items.find(item=>item.id===record.assignments[s.id]);
     if(it){this.card(s.x,s.y,230,180);this.tape(s.x,s.y-88,84,i%2?3:-3);this.art(s.x,s.y-24,206,100,artKey(it)||'question',{time:artTime(artKey(it),it.detail,it.id),fit:'contain'});this.text(s.x,s.y+59,it.label,21,tone.ink,214);}
     else{this.card(s.x,s.y,230,180,{fill:tone.soft,stroke:tone.accent,alpha:.82});this.text(s.x,s.y,'여기에 놓아요',22,tone.ink,200);}
     this.caption(s.x,68,task.targets[i].label,23);const zone=this.add.zone(s.x,s.y,240,190).setRectangleDropZone(240,190).setInteractive({useHandCursor:true});zone.setData('target',s.id);zone.on('pointerdown',()=>{if(armed)this.place(armed,s.id);});});
-   task.items.forEach((it,i)=>{const x=132+i*233,y=431;const box=this.add.container(x,y);const face=this.add.graphics();this.cardShape(face,0,0,210,154,{stroke:armed===it.id?tone.pick:tone.line,width:armed===it.id?5:2});box.add(face);box.add(this.art(0,-30,188,72,artKey(it)||'question',{time:artTime(artKey(it),it.detail,it.id),fit:'contain'}));box.add(this.text(0,44,it.label,21,tone.ink,194));const tape=this.tape(0,-74,72,i%2?3:-4);if(tape)box.add(tape);box.setSize(210,154).setInteractive({useHandCursor:true});this.input.setDraggable(box);let dragged=false;box.on('pointerdown',()=>{if(this.pauseGuard())return;armed=it.id;dragged=false;this.cardShape(face,0,0,210,154,{stroke:tone.pick,width:5});});box.on('pointerup',()=>{if(!dragged&&!this.pauseGuard()){hooks.open(it.id);}});box.on('drag',(_p:Phaser.Input.Pointer,x:number,y:number)=>{if(this.pauseGuard())return;dragged=true;box.setPosition(x,y).setDepth(10);});box.on('drop',(_p:Phaser.Input.Pointer,zone:Phaser.GameObjects.Zone)=>this.place(it.id,String(zone.getData('target'))));box.on('dragend',()=>{if(box.active)box.setPosition(x,y).setDepth(0);});});
+   task.items.forEach((it,i)=>{const x=132+i*233,y=431;const box=this.add.container(x,y);const face=this.add.graphics();this.cardShape(face,0,0,210,154,{stroke:armed===it.id?tone.pick:tone.line,width:armed===it.id?5:2});box.add(face);box.add(this.art(0,-30,188,72,artKey(it)||'question',{time:artTime(artKey(it),it.detail,it.id),fit:'contain'}));box.add(this.text(0,44,it.label,21,tone.ink,194));const tape=this.tape(0,-74,72,i%2?3:-4);if(tape)box.add(tape);box.setSize(210,154).setInteractive({useHandCursor:true});this.input.setDraggable(box);box.on('pointerdown',()=>{if(this.pauseGuard())return;armed=it.id;this.cardShape(face,0,0,210,154,{stroke:tone.pick,width:5});hooks.open(it.id);});box.on('drag',(_p:Phaser.Input.Pointer,x:number,y:number)=>{if(this.pauseGuard())return;box.setPosition(x,y).setDepth(10);});box.on('drop',(_p:Phaser.Input.Pointer,zone:Phaser.GameObjects.Zone)=>this.place(it.id,String(zone.getData('target'))));box.on('dragend',()=>{if(box.active)box.setPosition(x,y).setDepth(0);});});
    if(record.runResult){const ok=record.runResult==='supported';this.caption(480,315,ok?`${task.caseName} 사례로 연결됐어요`:'흐름이 멈췄어요 · 연결과 자료를 다시 봐요',23,ok?'#286341':'#995131',850);}
   }
-  place(id:string,target:string){if(this.pauseGuard())return;record.assignments[target]=id;armed='';invalidateRun(record);playEffect('snap');this.commit();}
+  place(id:string,target:string){if(!this.pauseGuard())assignCard(id,target);}
   animateRun(valid:boolean,finish:()=>void){
    if(simulating||disposed)return;simulating=true;
    if(reduced){simulating=false;finish();return;}
@@ -188,7 +188,7 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,record:InquiryRec
    this.caption(480,485,'처음 생각 → 새 근거 → 유지하거나 수정한 주장',26);
   }
   paintPublish(){
-   task.items.forEach((it,i)=>{const x=180+i*300;const selected=record.assignments.case===it.id;this.card(x,170,260,245,{fill:selected?tone.soft:tone.paper,stroke:selected?tone.accent:tone.line,width:selected?4:2});if(selected)this.badge(x+118,58);this.art(x,135,230,140,artKey(it)||'yogurt',{time:artTime(artKey(it),it.detail,it.id),fit:'contain'});this.text(x,248,it.label,30);this.add.zone(x,170,260,245).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard())return;record.assignments.case=it.id;record.assignments.action='';playEffect('snap');this.commit();});});
+   task.items.forEach((it,i)=>{const x=180+i*300;const selected=record.assignments.case===it.id;this.card(x,170,260,245,{fill:selected?tone.soft:tone.paper,stroke:selected?tone.accent:tone.line,width:selected?4:2});if(selected)this.badge(x+118,58);this.art(x,135,230,140,artKey(it)||'yogurt',{time:artTime(artKey(it),it.detail,it.id),fit:'contain'});this.text(x,248,it.label,30);this.add.zone(x,170,260,245).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard())return;if(chooseCase(task,record,it.id)){playEffect('snap');this.commit();}});});
    this.card(480,415,850,180);this.tape(480,327,110,-2);this.text(480,345,'내 소개 카드',28);
    this.text(480,425,record.note.length>68?record.note.slice(0,68)+'…':record.note||'사례를 고르면 나만의 소개를 완성할 수 있어요.',28,'#234b3c',780);
   }
@@ -203,5 +203,17 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,record:InquiryRec
  const game=new Phaser.Game({type:Phaser.CANVAS,parent:host,width:WIDTH,height:HEIGHT,transparent:true,scene:Inquiry,scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},audio:{noAudio:true},banner:false,render:{antialias:true}});
  // Narrow layouts scroll inside the screen, not the window; Phaser only re-reads the canvas position on resize, so taps drifted after scrolling.
  const rebound=()=>game.scale?.updateBounds();document.addEventListener('scroll',rebound,{capture:true,passive:true});
- return {refresh:()=>{if(!simulating)refresh();},setReveal:(value:number|undefined)=>{reveal=value===undefined?undefined:Phaser.Math.Clamp(value,0,1);refresh();},animateRun:(valid:boolean,finish:()=>void)=>{if(scene instanceof Inquiry)scene.animateRun(valid,finish);else finish();},setPlaying:(value:boolean)=>{if(value&&blocked())return;if(play!==value){play=value;refresh();}},arm:(id:string)=>{if(disposed||simulating)return;armed=id;refresh();},assign:(id:string,target:string)=>{if(blocked()||simulating)return;if(!record.opened.includes(id)){hooks.feedback('먼저 자료 내용을 살펴봐요.');return;}record.assignments[id]=target;record.submitted=false;playEffect('snap');hooks.changed();refresh();},place:(id:string,target:string)=>{if(blocked()||simulating)return;record.assignments[target]=id;invalidateRun(record);playEffect('snap');hooks.changed();refresh();},dispose:()=>{disposed=true;play=false;document.removeEventListener('scroll',rebound,{capture:true});game.destroy(true);}};
+ // DOM alternatives intentionally work inside their own dialog; canvas handlers use pauseGuard.
+ function assignCard(id:string,target:string){
+  if(disposed||simulating||document.hidden)return false;
+  const item=task.items.find(it=>it.id===id);if(!item||!task.targets.some(t=>t.id===target))return false;
+  if(!record.opened.includes(id))hooks.open(id);
+  const changed=applyCard(task,record,id,target);if(!changed)return false;
+  armed='';playEffect('snap');hooks.changed();refresh();
+  if(task.kind!=='build')hooks.feedback(item.target===target?'단서를 알맞게 연결했어요.':task.feedback);
+  return true;
+ }
+ // Upgrade a saved unfinished design whose old manual + buttons had not been pressed.
+ if(syncBuildLinks(task,record))hooks.changed();
+ return {refresh:()=>{if(!disposed&&!simulating)refresh();},setPreview:(value:boolean)=>{if(disposed||simulating)return;preview=value;refresh();},setReveal:(value:number|undefined)=>{if(disposed||simulating)return;preview=false;reveal=value===undefined?undefined:Phaser.Math.Clamp(value,0,1);refresh();},animateRun:(valid:boolean,finish:()=>void)=>{if(scene instanceof Inquiry)scene.animateRun(valid,finish);else finish();},setPlaying:(value:boolean)=>{if(disposed||simulating||value&&blocked())return;if(play!==value){play=value;refresh();}},arm:(id:string)=>{if(disposed||simulating)return;armed=id;},assignCard,assign:assignCard,place:assignCard,dispose:()=>{disposed=true;play=false;document.removeEventListener('scroll',rebound,{capture:true});game.destroy(true);}};
 }

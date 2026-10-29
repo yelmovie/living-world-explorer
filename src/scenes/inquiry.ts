@@ -1,7 +1,7 @@
 import {el,button,heading,paragraph,slider,choices,select,modal,notice,type Context} from '../ui';
 import {stages} from '../content';
 import {tasksFor} from '../curriculum';
-import {emptyRecord,type InquiryTask,type InquiryRecord} from '../inquiry-model';
+import {type InquiryTask,type InquiryRecord} from '../inquiry-model';
 import {taskIssues,completedTasks,invalidateRun} from '../inquiry-evaluate';
 import {playEffect} from '../audio';
 import {guidance} from '../inquiry-guidance';
@@ -16,24 +16,43 @@ import {currentRun,startRun,designCorrect} from '../inquiry-runs';
 import {publishRecord} from '../inquiry-records';
 import {sourceNotes} from '../inquiry-sources';
 import {stageBadge} from '../experience';
+import {prepareInquiry,validTrackPair,validTimelinePair,reflectClaim,introduction} from '../inquiry-preparation';
+import {chooseCase} from '../inquiry-actions';
 
 const backgrounds:Record<Stage,string>={M1:'fungi',M2:'water',M3:'archive',M4:'village',M5:'workshop'};
 export function mentor(task:InquiryTask,record:InquiryRecord){const box=el('div','buddy-card');const pic=el('img');pic.src='assets/characters/companion-portrait.webp';pic.alt='토끼 길잡이 토토';const talk=el('div','buddy-speech');talk.hidden=true;let level=0;const text=paragraph('');const more=button('다른 힌트',()=>{level=(level+1)%3;draw();playEffect('hint');},'text-button');const draw=()=>{text.textContent=[task.mentor,task.instruction,guidance(task,record).action][level];};talk.append(text,more);const b=button('',()=>{talk.hidden=!talk.hidden;level=0;draw();b.setAttribute('aria-expanded',String(!talk.hidden));playEffect('hint');},'buddy-toggle');b.setAttribute('aria-label','토토의 힌트');b.setAttribute('aria-expanded','false');b.append(pic,el('span','','토토에게 힌트'));box.append(b,talk);return box;}
 export function inquiryScene(ctx:Context,stage:Stage){
- const progress=ctx.attempt.inquiry;const list=tasksFor(stage);let index=progress.current[stage]??0;index=Math.max(0,Math.min(3,index));const task=list[index];const r=progress.records[task.id]??=emptyRecord();let disposed=false;ctx.cleanup(()=>disposed=true);
+ const progress=ctx.attempt.inquiry;const list=tasksFor(stage);let index=progress.current[stage]??0;index=Math.max(0,Math.min(3,index));const task=list[index];const r=progress.records[task.id]??=prepareInquiry(task);let disposed=false;ctx.cleanup(()=>disposed=true);
  ctx.host.classList.add('expedition-shell',`stage-${stage}`);ctx.host.dataset.stage=stage;ctx.host.dataset.kind=task.kind;ctx.host.style.setProperty('--facility-image',`url('/assets/places/${backgrounds[stage]}.webp')`);
  const head=el('div','expedition-header');const emblem=stageBadge(+stage[1]-1,'mission-emblem');const titles=el('div','mission-titles');titles.append(el('span','eyebrow',`MISSION ${stage.slice(1).padStart(2,'0')} · ${stages.find(s=>s.id===stage)!.title} · ${index+1}번째 발견`),heading(task.title));head.append(emblem,titles);ctx.host.append(head);
  const grid=el('div','expedition-workspace');const work=el('section','expedition-work');const host=el('div','expedition-canvas-host');host.setAttribute('aria-label',task.title+' 탐구 장면');const badge=el('span','model-badge',task.kind==='build'?'관계 설명 모형':'관찰·조사 모형');work.append(host,badge);const side=el('aside','expedition-panel');grid.append(work,side);ctx.host.append(grid);
  let running=false,ready=false;const loading=el('div','inquiry-loading','관찰 이미지를 준비하고 있어요…');loading.setAttribute('role','status');work.append(loading);const status=el('div','inquiry-status');status.setAttribute('role','status');const counter=el('strong','inquiry-counter');const action=paragraph('','next-instruction');status.append(counter,action);side.append(status,mentor(task,r));const tools=el('div','expedition-tools');tools.inert=true;side.append(tools);
+ const sourcePreview=el('section','source-preview');sourcePreview.hidden=true;sourcePreview.setAttribute('aria-label','선택한 자료');side.insertBefore(sourcePreview,tools);
  const feedback=el('p','inquiry-feedback');feedback.setAttribute('role','status');side.append(feedback);
  ctx.cleanup(()=>{if(running){const run=r.runs.at(-1);if(run?.status==='running')run.status='interrupted';ctx.save();}});
  let view:ReturnType<typeof import('../renderers/inquiry2d').mountInquiry>|undefined;
  const updateStatus=()=>{const g=guidance(task,r);counter.textContent=g.ready?'✓ 기록 준비 완료':`탐구 중 · ${g.done} / ${g.total}`;action.textContent=g.action;status.classList.toggle('ready',g.ready);};
  const save=()=>{r.submitted=false;ctx.save();updateStatus();};const paint=()=>{view?.refresh();save();};
  const info=(text:string)=>{feedback.textContent=text;const portrait=side.querySelector('.mentor-card');portrait?.classList.add('has-feedback');};
- const source=(id:string)=>{const it=task.items.find(i=>i.id===id);if(!it)return;const detail=el('div','source-detail');detail.append(paragraph(it.detail),sourceNotes(task));if(it.art){const kind=artKey(it)!;const art=artFor(kind,artTime(kind,it.detail,it.id));if(art){const pic=el('img','source-picture');pic.src=art.src;pic.alt=art.label;detail.prepend(pic);}else{const pic=canvas(640,360);pic.classList.add('source-picture');draw(pic,kind);pic.setAttribute('aria-label','확인하기 전의 생각을 나타낸 물음표');detail.prepend(pic);}}if(!r.opened.includes(id))r.opened.push(id);save();const dialog=modal(it.label,[detail,button(task.kind==='build'?'이 재료 선택':'이 단서 선택',()=>{view?.arm(id);dialog.close();},'primary')]);dialog.classList.add('source-dialog');dialog.addEventListener('close',()=>{view?.refresh();controls();},{once:true});};
+ const source=(id:string)=>{
+  const it=task.items.find(i=>i.id===id);if(!it||running||disposed)return;
+  if(task.kind==='review'&&!r.assignments.initial)return info('새 자료를 보기 전 생각을 먼저 골라요.');
+  if(!r.opened.includes(id))r.opened.push(id);
+  sourcePreview.hidden=false;sourcePreview.replaceChildren(el('strong','',it.label),paragraph(it.detail));
+  if(['collect','connect','sort','build'].includes(task.kind)){
+   const targets=el('div','source-targets');
+   for(const t of task.targets)targets.append(button(t.label+'에 연결',()=>{
+    if(running||disposed)return;
+    view?.assignCard(id,t.id);
+    const correct=task.kind==='build'?it.target===t.id:it.target===r.assignments[id];
+    info(correct?'연결했어요! '+it.detail:task.feedback);
+   },'secondary'));
+   sourcePreview.append(targets);
+  }
+  save();
+  if(task.kind==='review')controls();
+ };
  void import('../renderers/inquiry2d').then(async({mountInquiry})=>{await document.fonts.ready;if(disposed)return;view=mountInquiry(host,task,r,{changed:()=>{save();feedback.textContent='';controls();},open:source,feedback:info,ready:(ok)=>{ready=ok;tools.inert=!ok;next.disabled=!ok;if(ok)loading.remove();else{loading.replaceChildren(paragraph('관찰 이미지를 준비하지 못했어요. 연결을 확인하고 다시 열어요.'),button('이미지 다시 준비',ctx.render));}}},ctx.state.settings.reduced);ctx.cleanup(view.dispose);}).catch(()=>{loading.replaceChildren(paragraph('장면을 열지 못했어요.'),button('다시 열기',ctx.render));});
- let ladderShown=false;
  const openLadder=()=>{const dialog=modal('세균은 얼마나 작을까요?',[ladderPlacement(r.assignments.ladder==='smallest',()=>{r.assignments.ladder='smallest';save();playEffect('success');controls();})]);dialog.classList.add('ladder-dialog');};
  const controls=()=>{tools.replaceChildren();
   if(task.kind==='microscope'){
@@ -42,61 +61,78 @@ export function inquiryScene(ctx:Context,stage:Stage){
    if(view&&!r.capture){const steps=el('div','level-steps');steps.setAttribute('aria-label','보는 도구');levelNames.forEach((name,i)=>{const b=button(name,()=>{r.level=i;paint();controls();playEffect('click');},i===r.level?'selected':'secondary',i>r.level+1||!!view.gate&&i===2&&r.level<2);b.setAttribute('aria-pressed',String(i===r.level));steps.append(b);});tools.append(steps,paragraph(view.captions[r.level],'level-caption'),paragraph(`지금 보이는 크기 · ${levelReach[r.level]}`,'level-reach'));const model=r.level===1&&modelButton(task.id);if(model)tools.append(model);}
    if(view&&!r.capture&&r.level<2){if(!(view.gate&&r.level===1))tools.append(button(r.level===0?'돋보기로 크게 보기':'현미경으로 크게 보기',()=>{r.level++;paint();controls();playEffect('capture');},'primary'));}
    else{
-   if(!r.capture){tools.append(slider('초점',0,100,5,r.focus,v=>{r.focus=v;paint();}),slider('밝기',20,100,5,r.light,v=>{r.light=v;paint();}),button('사진 촬영',()=>{r.capture=true;r.marks=[];paint();controls();playEffect('capture');},'primary'));}
-   else tools.append(paragraph(`촬영한 사진 · 특징 표시 ${r.marks.length}곳`),button('다시 관찰',()=>{r.capture=false;r.marks=[];paint();controls();}),button('표시 되돌리기',()=>{r.marks.pop();paint();controls();}),button('특징 밖의 표시만 지우기',()=>{r.marks=r.marks.filter(p=>markValid(task,r,p));paint();controls();},'text-button'));
+   if(!r.capture){tools.append(slider('초점',0,100,5,r.focus,v=>{r.focus=v;paint();}),slider('밝기',20,100,5,r.light,v=>{r.light=v;paint();}),button('사진 촬영',()=>{if(Math.abs(r.focus-65)>12||r.light<40||r.light>85)return info('아직 흐려요. 초점과 밝기를 맞추면 특징이 선명해져요.');r.capture=true;r.marks=[];paint();controls();playEffect('capture');},'primary'));}
+   else tools.append(paragraph(`촬영한 사진 · 특징 표시 ${r.marks.length}곳`),button('다시 관찰',()=>{r.capture=false;r.marks=[];paint();controls();}),button('표시 되돌리기',()=>{r.marks.pop();paint();controls();},'secondary',!r.marks.length),button('특징 밖의 표시만 지우기',()=>{r.marks=r.marks.filter(p=>markValid(task,r,p));paint();controls();},'text-button'));
    const zoomButton=button('확대해서 보기',()=>{r.zoom=r.zoom===1?1.5:1;paint();controls();});zoomButton.setAttribute('aria-pressed',String(r.zoom>1));zoomButton.title=r.zoom>1?'확대 중 · 누르면 원래 크기':'누르면 1.5배 확대';tools.append(zoomButton);
    }
   }else if(task.kind==='track'&&r.level===2){
    const found=r.marks.filter(p=>markValid(task,r,p)).length;
-   tools.append(paragraph(`현미경 · 몸 둘레 표시 ${found}곳`),paragraph(`지금 보이는 크기 · ${levelReach[2]}`,'level-reach'),button('표시 되돌리기',()=>{r.marks.pop();paint();controls();}),button('움직임 다시 보기',()=>{r.level=0;paint();controls();}));const model=modelButton(task.id,'짚신벌레 3D로 보기');if(model)tools.append(model);
+   tools.append(paragraph(`현미경 · 몸 둘레 표시 ${found}곳`),paragraph(`지금 보이는 크기 · ${levelReach[2]}`,'level-reach'),button('표시 되돌리기',()=>{r.marks.pop();paint();controls();},'secondary',!r.marks.length),button('움직임 다시 보기',()=>{r.level=0;paint();controls();}));const model=modelButton(task.id,'짚신벌레 3D로 보기');if(model)tools.append(model);
   }else if(task.kind==='track'){
-   tools.append(slider('관찰 시점',0,10,1,r.time,v=>{view?.setPlaying(false);r.time=v;paint();}),button('움직임 재생',()=>view?.setPlaying(true)),button(`A 고정${r.pins[0]===undefined?'':` · ${r.pins[0]}`}`,()=>{view?.setPlaying(false);r.pins[0]=Math.round(r.time);paint();controls();playEffect('capture');}),button(`B 고정${r.pins[1]===undefined?'':` · ${r.pins[1]}`}`,()=>{view?.setPlaying(false);r.pins[1]=Math.round(r.time);paint();controls();playEffect('capture');}));
-   if(r.pins.length===2)tools.append(slider('두 시점 겹쳐 보기',0,100,5,50,v=>view?.setReveal(v/100)),button('나란히 보기',()=>view?.setReveal(undefined),'text-button'));
-   if(r.v===2)tools.append(button('현미경으로 움직임의 비밀 찾기',()=>{view?.setPlaying(false);r.level=2;paint();controls();playEffect('capture');},'primary',r.pins.length!==2));
+   tools.append(slider('관찰 시점',0,10,1,r.time,v=>{view?.setPlaying(false);r.time=v;view?.setPreview(true);paint();}),button('움직임 재생',()=>view?.setPlaying(true)),button(`A 고정${r.pins[0]===undefined?'':` · ${r.pins[0]}`}`,()=>{view?.setPlaying(false);r.pins[0]=Math.round(r.time);view?.setPreview(false);paint();controls();playEffect('capture');}),button(`B 고정${r.pins[1]===undefined?'':` · ${r.pins[1]}`}`,()=>{view?.setPlaying(false);const time=Math.round(r.time);if(!Number.isFinite(r.pins[0])||Math.abs(time-r.pins[0])<3)return info('A와 충분히 다른 순간을 골라요. 시간을 3칸 이상 움직여 B로 고정해요.');r.pins[1]=time;view?.setPreview(false);paint();controls();playEffect('capture');}));
+   if(validTrackPair(r))tools.append(slider('두 시점 겹쳐 보기',0,100,5,50,v=>view?.setReveal(v/100)),button('나란히 보기',()=>view?.setReveal(undefined),'text-button'));
+   if(r.v===2)tools.append(button('현미경으로 움직임의 비밀 찾기',()=>{view?.setPlaying(false);r.level=2;paint();controls();playEffect('capture');},'primary',!validTrackPair(r)));
   }else if(task.kind==='timeline'){
-   tools.append(slider('관찰 순서',0,3,1,r.time,v=>{r.time=v;paint();}),button(`이전 고정${r.pins[0]===undefined?'':` · ${r.pins[0]+1}`}`,()=>{r.pins[0]=r.time;r.marks=[];paint();controls();playEffect('capture');}),button(`이후 고정${r.pins[1]===undefined?'':` · ${r.pins[1]+1}`}`,()=>{r.pins[1]=r.time;r.marks=[];paint();controls();playEffect('capture');}),button('관련 작용 자료',()=>{r.opened=[...new Set([...r.opened,'process'])];save();modal('함께 살펴볼 조사 자료',[paragraph(task.organism==='bread'?'곰팡이가 자라면서 먹을 빵이 변질되었어요. 이 빵은 먹지 않아요.':'균류와 세균은 죽은 생물의 물질을 분해하는 데 관여해요. 관찰 전후만으로 어느 생물이 관여했는지 모두 알아내지는 못해요.')]);}));
-   if(r.pins.length===2)tools.append(slider('전후 겹쳐 보기',0,100,5,50,v=>view?.setReveal(v/100)),button('나란히 보기',()=>view?.setReveal(undefined),'text-button'),button('변화 밖의 표시만 지우기',()=>{r.marks=r.marks.filter(p=>markValid(task,r,p));paint();controls();},'text-button'));
+   tools.append(slider('관찰 순서',0,3,1,r.time,v=>{r.time=v;view?.setPreview(true);paint();}),
+    button(`이전 고정${r.pins[0]===undefined?'':` · ${r.pins[0]+1}`}`,()=>{r.pins=[r.time];r.marks=[];view?.setPreview(true);paint();controls();playEffect('capture');}),
+    button(`이후 고정${r.pins[1]===undefined?'':` · ${r.pins[1]+1}`}`,()=>{if(!Number.isFinite(r.pins[0])||r.time<=r.pins[0])return info('이전보다 뒤의 관찰 순서를 골라요.');r.pins[1]=r.time;r.marks=[];view?.setPreview(false);paint();controls();playEffect('capture');}));
+   if(validTimelinePair(r)){
+    tools.append(slider('전후 겹쳐 보기',0,100,5,50,v=>view?.setReveal(v/100)),button('나란히 보기',()=>view?.setReveal(undefined),'text-button'));
+    const process=paragraph(task.organism==='bread'?'곰팡이가 자라 먹을 빵이 변질되었어요. 이 빵은 먹지 않아요.':'균류와 세균은 죽은 생물의 물질을 분해하는 데 관여해요. 전후 모습만으로 어떤 생물이 관여했는지 모두 알 수는 없어요.','process-note');
+    tools.append(process);if(!r.opened.includes('process')){r.opened.push('process');save();}
+   }
   }else if(task.kind==='sample'){
-   tools.append(choices([{id:'edge',label:'물가 가까이'},{id:'plant',label:'물풀 가까이'}],r.assignments.site||'',v=>{r.assignments.site=v;paint();controls();}),button(['스포이드 누르기','물속에서 놓기','한 방울 옮기기','준비했어요'][r.sequence],()=>{if(!r.assignments.site)return info('채집할 장소를 먼저 골라요.');if(r.sequence<3)r.sequence++;paint();controls();playEffect('water');},'secondary',r.sequence===3));
+   tools.append(choices([{id:'edge',label:'물가 가까이'},{id:'plant',label:'물풀 가까이'}],r.assignments.site||'',v=>{if(r.assignments.site===v)return;r.assignments.site=v;r.sequence=0;paint();controls();}),
+    button(r.sequence===3?'한 방울 준비 완료':r.sequence===2?'한 방울 옮기기':'한 방울 채집',()=>{if(!r.assignments.site)return info('채집할 장소를 먼저 골라요.');r.sequence=r.sequence<2?2:3;paint();controls();playEffect('water');},'primary',r.sequence===3||!r.assignments.site));
   }else if(task.kind==='build'){
    tools.append(button('사례 기록 보기',()=>modal(task.caseName+' 조사 자료',[paragraph(task.items.filter(i=>i.target).map(i=>i.detail).join('\n')),sourceNotes(task)])));
    const run=currentRun(r);
    if(run)tools.append(paragraph(`실행 ${r.runs.length}의 예상: ${run.prediction==='supported'?'사례처럼 이어질 것 같아요':'중간에 멈출 것 같아요'}`,'run-snapshot'),button('새 예상으로 다시 실험',()=>{invalidateRun(r);save();controls();view?.refresh();}));
-   else tools.append(select('나의 예상',[{id:'',label:'실행 전에 예상해요'},{id:'supported',label:'사례처럼 이어질 것 같아요'},{id:'stopped',label:'중간에 멈출 것 같아요'}],r.prediction,v=>{r.prediction=v;save();}));
+   else tools.append(paragraph('나의 예상','field-label'),choices([{id:'supported',label:'사례처럼 이어질 것 같아요'},{id:'stopped',label:'중간에 멈출 것 같아요'}],r.prediction,v=>{r.prediction=v;save();controls();}));
    tools.append(button(running?'흐름을 시험하고 있어요…':'설계 가동',()=>{if(running)return;if(!r.prediction)return info('가동하기 전에 어떤 결과일지 예상해요.');const valid=designCorrect(task,r),attempt=startRun(r);running=true;save();controls();playEffect('run');const finish=()=>{if(disposed)return;running=false;attempt.status='completed';attempt.result=valid?'supported':'stopped';r.runResult=attempt.result;r.reflection='';save();view?.refresh();info(valid?'설계가 연결됐어요. 실행 당시 예상과 비교해요.':task.feedback);controls();};view?.animateRun(valid,finish);},'primary',running));
-   if(run){tools.append(choices([{id:'matches',label:'예상과 같아요'},{id:'differs',label:'예상과 달라요'}],run.reflection,v=>{run.reflection=r.reflection=v;save();controls();}),select('관찰 후 생각',[{id:'',label:'결과를 보고 지금 생각을 남겨요'},{id:'supported',label:'이 연결은 사례처럼 이어져요'},{id:'stopped',label:'이 연결은 중간에 멈춰요'}],r.afterThought,v=>{r.afterThought=v;save();}));}
+   if(run){tools.append(choices([{id:'matches',label:'예상과 같아요'},{id:'differs',label:'예상과 달라요'}],run.reflection,v=>{run.reflection=r.reflection=v;save();controls();}));}
   }else if(task.kind==='review'){
-   if(!r.opened.length)tools.append(choices([{id:'allbad',label:'모든 세균이 해로울 것 같아요'},{id:'somehelp',label:'도움이 되는 세균도 있을 것 같아요'}],r.assignments.initial||'',v=>{r.assignments.initial=v;save();controls();}));
+   if(!['allbad','somehelp'].includes(r.assignments.initial))tools.append(choices([{id:'allbad',label:'모든 세균이 해로울 것 같아요'},{id:'somehelp',label:'도움이 되는 세균도 있을 것 같아요'}],r.assignments.initial||'',v=>{r.assignments.initial=v;reflectClaim(r);save();controls();}));
    else tools.append(paragraph(`자료를 보기 전 생각: ${r.assignments.initial==='allbad'?'모든 세균이 해로울 것 같아요':'도움이 되는 세균도 있을 것 같아요'}`));
-   task.items.forEach(it=>tools.append(button((r.opened.includes(it.id)?'✓ ':'')+it.label,()=>{if(!r.assignments.initial)return info('새 자료를 보기 전 생각을 먼저 골라요.');source(it.id);},'secondary')));
-   tools.append(select('새 자료를 보고 고른 주장',[{id:'allbad',label:'모든 세균이 해로워요'},{id:'somehelp',label:'모든 세균이 해로운 것은 아니에요'}],r.assignments.claim||'',v=>{r.assignments.claim=v;save();controls();}),select('내 주장의 근거',task.items.map(it=>({id:it.id,label:it.label})),r.assignments.evidence||'',v=>{r.assignments.evidence=v;save();}),choices([{id:'keep',label:'처음 생각을 유지했어요'},{id:'revise',label:'처음 생각을 수정했어요'}],r.assignments.decision||'',v=>{r.assignments.decision=v;save();controls();}));
+   task.items.forEach(it=>tools.append(button((r.opened.includes(it.id)?'✓ ':'')+it.label,()=>source(it.id),'secondary',!r.assignments.initial)));
+   if(task.items.every(it=>r.opened.includes(it.id))){
+    tools.append(paragraph('새 자료를 보고 고른 주장','field-label'),choices(task.targets,r.assignments.claim||'',v=>{r.assignments.claim=v;reflectClaim(r);save();controls();}),paragraph('내 주장의 근거','field-label'),choices(task.items.map(it=>({id:it.id,label:it.label+' · 근거 선택'})),r.assignments.evidence||'',v=>{r.assignments.evidence=v;save();controls();}));
+    if(r.assignments.decision)tools.append(paragraph(r.assignments.decision==='keep'?'처음 생각을 유지했어요. 새 자료가 근거가 되었네요.':'새 자료를 보고 처음 생각을 수정했어요.','process-note'));
+   }
   }else if(task.kind==='publish'){
-   tools.append(select('어떤 생물의 작용인가요?',[{id:'',label:'사례와 작용을 연결해요'},...task.targets.map(t=>({id:t.id,label:t.label}))],r.assignments.action||'',v=>{r.assignments.action=v;paint();}),select('소개할 근거',task.items.map(it=>({id:it.id,label:it.detail})),r.assignments.evidence||'',v=>{r.assignments.evidence=v;paint();}));const note=el('textarea');note.maxLength=100;note.value=r.note;note.placeholder='관찰한 것 / 근거 / 생활과의 연결 (짧게 써도 돼요)';note.setAttribute('aria-label','내 소개 문장');note.oninput=()=>{r.note=note.value;save();view?.refresh();};tools.append(button('문장틀로 소개하기',()=>{const selected=task.items.find(it=>it.id===r.assignments.case);if(!selected)return info('소개할 사례를 먼저 골라요.');r.note=`관찰한 것: ${selected.label} / 근거: ${selected.detail} / 생활: 이 작용을 이용해요.`.slice(0,100);paint();controls();}),note);
+   const selected=task.items.find(it=>it.id===r.assignments.case);
+   if(selected){
+    // The chosen case already contains its evidence; do not ask learners to choose the identical case twice.
+    if(r.assignments.evidence!==selected.id){r.assignments.evidence=selected.id;save();}
+    tools.append(paragraph(selected.detail,'process-note'),paragraph('어떤 생물의 작용인가요?','field-label'),choices(task.targets,r.assignments.action||'',v=>{
+     const previous=introduction(task,r);r.assignments.action=v;if(!r.note||r.note===previous)r.note=introduction(task,r);paint();controls();if(v!==selected.target)info('이 사례를 만든 생물이 무엇인지 설계 기록을 떠올려요.');
+    }));
+    const note=el('textarea');note.maxLength=100;note.value=r.note;note.placeholder='사례와 작용을 연결하면 소개 문장이 만들어져요.';note.setAttribute('aria-label','내 소개 문장');note.oninput=()=>{r.note=note.value;save();view?.refresh();};
+    tools.append(note,button('문장틀로 소개하기',()=>{const text=introduction(task,r);if(!text)return info('사례에 맞는 생물의 작용을 먼저 골라요.');r.note=text;paint();controls();},'text-button'));
+   }else tools.append(paragraph('그림에서 친구에게 소개할 사례를 골라요.'));
   }else{
    tools.append(button('자료 목록 보기',()=>modal('살펴볼 자료',task.items.map(it=>button(it.label,()=>{document.querySelector<HTMLDialogElement>('dialog[open]')?.close();source(it.id);})))));
    if(task.id==='M3-2'&&r.v===2){
     const placed=r.assignments.ladder==='smallest';tools.append(button(placed?'✓ 크기 사다리 다시 보기':'크기 사다리에 세균 놓기',openLadder,placed?'secondary':'primary'));
-    // Once the size card is filed, the ladder opens by itself so the comparison is actually made.
-    if(!placed&&r.assignments.small==='size'&&!ladderShown&&!document.querySelector('dialog[open]')){ladderShown=true;openLadder();}
    }
   }
-  if(running)tools.querySelectorAll<HTMLButtonElement>('button').forEach(b=>b.disabled=true);
+  sourcePreview.inert=running;if(running)tools.querySelectorAll<HTMLButtonElement>('button').forEach(b=>b.disabled=true);
   updateStatus();
  };
  controls();
  const alternative=()=>{
   if(!ready||running)return info(running?'실험 중에는 설계를 바꿀 수 없어요.':'이미지가 준비되면 조작할 수 있어요.');
+  if(task.kind==='timeline'&&validTimelinePair(r))view?.setPreview(false);
   const list:Node[]=[];let selected='';
   if(['collect','connect','sort','build'].includes(task.kind)){
    const picked=paragraph('자료를 먼저 살펴보고 선택해요.');list.push(picked);const buttons:HTMLButtonElement[]=[];task.items.forEach(it=>{const b=button(it.label,()=>{selected=it.id;if(!r.opened.includes(it.id))r.opened.push(it.id);picked.textContent=`선택한 자료: ${it.label} · ${it.detail}`;buttons.forEach(n=>n.setAttribute('aria-pressed',String(n===b)));save();});b.setAttribute('aria-pressed','false');buttons.push(b);list.push(b);});
-   for(const t of task.targets)list.push(button(t.label+'에 연결',()=>{if(!selected)return notice('먼저 자료를 골라요.');if(task.kind==='build'){r.assignments[t.id]=selected;invalidateRun(r);}else r.assignments[selected]=t.id;paint();controls();notice('선택한 연결을 기록했어요.');}));
-   if(task.kind==='build')for(const n of [1,2])list.push(button(n===1?'재료와 작용 잇기':'작용과 결과 잇기',()=>{r.assignments[`edge${n}`]='linked';invalidateRun(r);paint();controls();}));
+   for(const t of task.targets)list.push(button(t.label+'에 연결',()=>{if(!selected)return notice('먼저 자료를 골라요.');view?.assignCard(selected,t.id);const it=task.items.find(i=>i.id===selected)!;notice(it.target===t.id?'연결했어요.':task.feedback);}));
   }else if(task.kind==='microscope'||task.kind==='timeline'||task.kind==='track'&&r.level===2){
    const gate=task.kind==='microscope'&&!r.capture&&r.level===1&&magnifyFor(task.organism,r.v===2)?.gate;
    let x=.5,y=.45;list.push(paragraph('원본 그림의 왼쪽 위가 0, 오른쪽 아래가 1이에요. 확대와 이동을 해도 원본의 같은 위치에 표시돼요.'),slider('표시 가로 위치',0,1,.01,x,v=>x=v),slider('표시 세로 위치',0,1,.01,y,v=>y=v),button(gate?'이 위치의 주름 찾기':'이 위치 표시',()=>{
     if(gate){if(featureAt(task.organism||'',{x,y})===gate){r.level=2;paint();controls();notice('주름을 찾았어요. 현미경으로 크게 봐요.');}else notice('갓 아래쪽의 줄무늬(주름)를 찾아요.');return;}
     if(task.kind==='microscope'&&!r.capture)return notice('먼저 관찰 사진을 촬영해요.');if(task.kind==='timeline'&&r.pins.length!==2)return notice('먼저 이전과 이후를 고정해요.');if(!addMark(task,r,{x,y}))return notice(markHint(task,r));paint();controls();notice('선택한 위치를 표시했어요.');}));
-  }else if(task.kind==='publish')for(const it of task.items)list.push(button(it.label+' 소개하기',()=>{r.assignments.case=it.id;r.assignments.action='';paint();controls();notice('소개할 사례를 골랐어요.');}));
+  }else if(task.kind==='publish')for(const it of task.items)list.push(button(it.label+' 소개하기',()=>{if(chooseCase(task,r,it.id)){paint();controls();}notice('소개할 사례와 근거를 골랐어요.');}));
   else list.push(paragraph('오른쪽 도구의 버튼과 시간 조절을 사용할 수 있어요.'));
   modal('버튼으로 조작',list);
  };
@@ -105,6 +141,8 @@ export function inquiryScene(ctx:Context,stage:Stage){
  const links=el('div','panel-links');links.append(button('버튼으로 조작',alternative,'text-button'),button('자료·관찰 조건',()=>modal('자료와 관찰 조건',[sourceNotes(task)]),'text-button'));side.append(links);
  const next=button(r.completedAt?'기록 확인하고 계속':'발견 기록하기',()=>{
   if(!ready||running)return info('이미지와 실행 결과를 확인한 뒤 기록해요.');
+  if(document.querySelector('.discovery-dialog'))return;
+  if(task.kind==='publish'&&!r.note.trim())r.note=introduction(task,r);
   r.tries++;const issues=taskIssues(task,r);r.submitted=true;if(issues.length){r.misses++;info(issues[0]);playEffect('retry');ctx.save();return;}
   r.clean=r.clean!==false&&r.misses===0;r.misses=0;r.completedAt=new Date().toISOString();if([2,4].includes(task.order)&&!progress.rewards.includes(task.id))progress.rewards.push(task.id);publishRecord(ctx.attempt,task,r);ctx.save();playEffect('success');
   const card=el('div','discovery-card');card.append(stageBadge(+stage[1]-1,'discovery-stamp'),heading(task.success),...task.terms?.length?[termChips(task.terms)]:[],paragraph(index===3?'연구소의 이 구역을 복구할 수 있어요.':'이 발견을 다음 탐구에서 이어서 써봐요.'));const model=modelButton(task.id);if(model)card.append(model);

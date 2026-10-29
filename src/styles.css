@@ -1698,3 +1698,12 @@ textarea,input{word-break:keep-all;overflow-wrap:break-word}
 .model-controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .model-note{color:var(--color-text-sub)}
 .discovery-card .model-open,.album-tile .model-open{align-self:flex-start}
+
+/* Inline evidence keeps learners on the activity while choosing a connection. */
+.source-preview{display:flex;flex-direction:column;gap:8px;padding:12px;border:2px solid var(--stage-accent);border-radius:var(--radius-md);background:var(--paper-face);font-size:var(--font-size-label);line-height:1.45;word-break:keep-all;overflow-wrap:anywhere}
+.source-preview[hidden]{display:none}
+.source-preview p{margin:0}
+.source-targets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.source-targets .button{min-width:0;min-height:48px;padding:8px;font-size:var(--font-size-label);white-space:normal;word-break:keep-all}
+.process-note{padding:10px 12px;border-left:4px solid var(--stage-accent);border-radius:var(--radius-sm);background:var(--stage-soft);line-height:1.45}
+.expedition-tools .choices .button{min-height:48px}

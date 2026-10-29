@@ -5,6 +5,7 @@ import {routes,stages,back} from './content';
 import {canEnter} from './evaluate';
 import {el,button,heading,paragraph,modal,notice,type Context} from './ui';
 import {core} from './scenes/solution';
+import {prepareInquiry} from './inquiry-preparation';
 import {inquiryScene,inquiryEvidenceView} from './scenes/inquiry';
 import {inquiryComplete,taskIssues,completedTasks} from './inquiry-evaluate';
 import {emptyRecord} from './inquiry-model';
@@ -28,7 +29,7 @@ function allowed(route:string){const a=active(state);if(state.settings.admin||['
 function go(route:string){if(!routes.includes(route))route='main';if(!allowed(route)){notice('먼저 앞선 발견 기록을 완성해요.');route='nature-map';}active(state).route=route;history.replaceState(null,'',`#/${route}`);persist();render();}
 function complete(stage:Stage){const a=active(state),first=!validEvidence(a,stage,state.settings.admin);if(first&&!inquiryComplete(a.inquiry,stage)){notice('네 가지 발견 기록을 먼저 완성해요.');return;}if(first)a.evidence[stage]={stage,attemptId:a.id,origin:state.settings.admin?'demo':'learner',created:new Date().toISOString(),validationVersion:2,summary:stages.find(s=>s.id===stage)!.summary,draft:structuredClone(a.draft),inquiry:structuredClone(a.inquiry)};playEffect('success');void save(state).then(()=>{go('nature-map');if(first)showConcept(stage,state.settings,()=>reward({attempt:a,state} as Context,stageIds.indexOf(stage)));else if(habitEarned(a,stage))notice(`'${habits[stageIds.indexOf(stage)].name}' 배지를 받았어요. 발견 도감에서 볼 수 있어요.`);});}
 // 다시 도전 restarts only the working records of one stage; accepted evidence, rewards, report and card stay.
-function retry(stage:Stage){const i=stageIds.indexOf(stage);modal(`${stages[i].title} 다시 도전`,[paragraph('네 탐구를 처음부터 다시 해요. 이미 남긴 발견 기록·보상·소개 카드는 그대로 남아요.'),paragraph(`이번에 네 탐구를 한 번에 정확히 기록하면 '${habits[i].name}' 배지를 받아요.`),button('다시 도전 시작',()=>{const a=active(state);for(const t of tasksFor(stage))a.inquiry.records[t.id]=emptyRecord();a.inquiry.current[stage]=0;persist();document.querySelectorAll<HTMLDialogElement>('dialog[open]').forEach(d=>d.close());go(stages[i].entry);},'primary')]);}
+function retry(stage:Stage){const i=stageIds.indexOf(stage);modal(`${stages[i].title} 다시 도전`,[paragraph('네 탐구를 처음부터 다시 해요. 이미 남긴 발견 기록·보상·소개 카드는 그대로 남아요.'),paragraph(`이번에 네 탐구를 한 번에 정확히 기록하면 '${habits[i].name}' 배지를 받아요.`),button('다시 도전 시작',()=>{const a=active(state);for(const t of tasksFor(stage))a.inquiry.records[t.id]=prepareInquiry(t);a.inquiry.current[stage]=0;persist();document.querySelectorAll<HTMLDialogElement>('dialog[open]').forEach(d=>d.close());go(stages[i].entry);},'primary')]);}
 function story(){
  const sections=[['연구소를 다시 깨워요','숲과 연못의 관찰 기록이 뒤섞였어요. 모아와 토토가 네 도움이 필요해요.'],['손으로 탐구하고 발견해요','확대해 관찰하고, 시간을 움직여 비교하고, 근거를 연결해요.'],['발견이 모이면 연구소가 깨어나요','탐구를 마치면 연구소가 복구돼요. 끝까지 모으면 내 소개 카드와 인증서를 만들 수 있어요.']];
  const body=el('div','intro-story');const page=el('div','story-page');const pic=el('img','story-character');pic.src='assets/characters/moa-portrait.webp';pic.alt='모아 연구원';const copy=el('div','story-copy');page.append(pic,copy);const tabs=el('div','story-controls');let n=0;
