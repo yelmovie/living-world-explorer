@@ -19,6 +19,8 @@
 | 기존 생성 배경·캐릭터 | 연구소 장식·지도·NPC | 기존 프로젝트 AI 생성 자료, 일부 생성 날짜·도구만 기록됨 | 확인 필요 | 납품 담당자가 생성 당시 계정·계약·상업 이용 조건을 대조해야 함 |
 | 이번 제작 AI 이미지 | 새 지도·캐릭터·시설 이미지 | 기본 image_gen으로 프로젝트용 생성, 제작 담당자 기록과 연결 | 확인 필요 | 최종 파일 목록·생성 날짜·계정 이용 조건 기록을 납품 때 보존 |
 | 배경 음악 2곡 (2026-10-25) | 지도·탐구 메인테마, 결과 화면 엔딩테마 | 제작자가 본인 Suno Premier 플랜 계정으로 직접 생성(가사 없음). Premier 플랜 생성물은 상업 이용 가능. 생성 기록: assets/generated/bgm-20261025.json | PASS | 원본 MP3 보관, 배포본은 AAC 96kbps로 변환 |
+| 기록 넘김·코어 가동 | bookFlip1, powerUp4 | Kenney · [RPG Audio](https://kenney.nl/assets/rpg-audio), [Digital Audio](https://kenney.nl/assets/digital-audio) · CC0 | 확인 | 짧은 구간을 편집 |
+| 유리판 물방울 | water_drops.ogg | angeloyazar · [Object Dropping into Water](https://opengameart.org/content/object-dropping-into-water-0) · CC0 | 확인 | 한 방울 구간을 편집 |
 | 개념 영상 소리 | 개념 영상의 짧은 음 | 프로젝트 자체 합성 | PASS | 외부 음악 서비스·샘플 없음 |
 | 효과음 | 클릭·채집·촬영·성공 등 | Kenney Interface Sounds 1.0 · CC0-1.0, public/assets/audio/KENNEY-LICENSE.txt | PASS | 파일별 매핑과 경위: public/assets/audio/sources.json |
 
@@ -31,6 +33,7 @@
 | public/assets/places/greenhouse.webp | 기존 프로젝트의 연구소 배경 AI 생성 이미지 | 게임 배경, 과학 관찰 근거 아님 |
 | _unused/public-assets-20261025/exploration-map.webp, map-terrain-v2.webp | 2026-10-18·10-21 기본 image_gen 생성. docs/MAP_ASSET_PROMPT.md에 프롬프트 기록 | 이전 탐험 지도. 현재 쓰지 않아 배포 폴더에서 뺌 |
 | public/assets/study/{spoiled-milk,tooth,bacteria}.webp | 2026-10-25 Higgsfield MCP gpt_image_2_5로 프로젝트용 자체 생성(세균 그림은 기존 그림을 화풍 참고로 다시 그림). 원본 assets/generated/study-20261025b/, 기록 assets/generated/study-20261025b.json | 학습용 설명 모형. 실제 현미경·임상 사진 아님 |
+| public/assets/ui/hand-lens.webp · yogurt-maker.webp · water-glass.webp · starter.webp | 2026-11-03 OpenAI image_gen으로 생성한 황동 손돋보기, 소형 요구르트 발효기, 물컵과 식품용 유산균 가루. WebP로 최적화 | 움직이는 관찰 도구와 가상 발효 실험 소품 |
 | public/assets/ui/{microscope-frame,dropper,slide,water-drop,notebook,tape,badge-M1~M5}.webp | 2026-10-25 Higgsfield MCP gpt_image_2_5(고화질·투명 배경)로 프로젝트용 자체 생성. 원본 PNG는 assets/generated/props-20261025/, 프롬프트·작업 ID는 assets/generated/props-20261025.json, 변환은 scripts/ui-props.mjs | 탐구 소품·스테이지 배지. 장식·조작 소품이며 과학 관찰 근거 아님 |
 | public/assets/map/terrain.webp | 2026-10-24 기본 image_gen, v2의 건물·보행 경로를 보존한 새 지도 | 현재 지도·로딩 중 풍경, 1280×720 |
 | public/assets/study/{pond,bacteria,bread-0,leaf-0,yogurt,soil,milk,yeast}.webp, places/core.webp | 2026-10-24 기본 image_gen으로 각각 생성, docs/ART_GENERATION_20261024.md, assets/generated/study-20261024.json | 학습용 설명 그림·채집 장면·복구 연출, 실제 현미경 사진 아님 |
@@ -91,6 +94,10 @@ SOFTWARE.
 ```
 
 Jua OFL 원문은 public/assets/fonts/Jua-OFL.txt에 동봉한다. 배포 폴더에도 이 고지와 사용한 라이선스 원문을 함께 전달한다.
+
+## 복구 지도 주민 일러스트 (2026-11-02)
+
+기존 길잡이 토토의 지도 그림을 화풍 참고로 사용해 표본지기 솔비, 물길지기 여울, 기록원 두리, 정원사 밤톨, 발효 장인 보리를 각각 생성했다. 투명 배경을 유지한 WebP 다섯 장을 `public/assets/map/residents/`에 두고 지도, 귀환 장면과 대화에서 함께 사용한다.
 
 ## 자체 제작물 고지
 

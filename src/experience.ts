@@ -1,7 +1,10 @@
 import {el,button,heading,paragraph,modal,type Context} from './ui';
 import {stages} from './content';
-import {validEvidence,stageIds,type Attempt} from './model';
+import {validEvidence,stageIds,type Attempt,type Stage} from './model';
+import {residents,residentImage} from './residents';
 import {tasksFor} from './curriculum';
+import type {InquiryTask,InquiryRecord} from './inquiry-model';
+import {taskArt} from './artAssets';
 import {taskIssues} from './inquiry-evaluate';
 
 export const missions=[
@@ -9,7 +12,7 @@ export const missions=[
  {icon:'drop',quest:'연못의 움직임 기록이 끊겼어. 같은 생물의 두 순간을 비교해줘.',reward:'연못 관찰소 복구',kit:'한 방울 비교 기록',action:'채집 · 멈추기 · 두 시점 비교'},
  {icon:'link',quest:'관찰과 추측이 뒤섞였어. 설명을 뒷받침하는 원문을 연결해줘.',reward:'자료 통신망 복구',kit:'세균 증거 프로필',action:'원문 열기 · 연결 · 다시 판단'},
  {icon:'clock',quest:'생물은 늘 해로울까? 시간을 되돌려 서로 다른 상황을 조사해줘.',reward:'생활마을 연구등 복구',kit:'생활 영향 사건 보고서',action:'시간 탐색 · 변화 표시 · 맥락 비교'},
- {icon:'flask',quest:'작업실이 멈췄어. 모은 발효 기록으로 설계하고 시험해줘.',reward:'BIO 작업실 전원 복구',kit:'나만의 BIO 설계도',action:'배치 · 연결 · 예상 · 실행'}
+ {icon:'flask',quest:'작업실이 멈췄어. 모은 생물의 작용 기록으로 설계하고 시험해줘.',reward:'BIO 작업실 전원 복구',kit:'나만의 BIO 설계도',action:'배치 · 연결 · 예상 · 실행'}
 ];
 const paths:Record<string,string>={home:'M3 11 12 3l9 8M5 10v11h5v-7h4v7h5V10',back:'m15 5-7 7 7 7',map:'m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2Zm6-2v16m6-14v16',sound:'m11 4-6 5H2v6h3l6 5Zm4 4a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14',mute:'m11 4-6 5H2v6h3l6 5Zm5 5 6 6m0-6-6 6',settings:'M9 3h6l1 4 4 2v6l-4 2-1 4H9l-1-4-4-2V9l4-2ZM9 12a3 3 0 1 0 6 0 3 3 0 1 0-6 0',bag:'M5 7h14v14H5ZM9 7V3h6v4M5 12h14',lens:'M15 15l6 6M3 10a7 7 0 1 0 14 0 7 7 0 1 0-14 0',drop:'M12 2S4 11 4 15a8 8 0 0 0 16 0c0-4-8-13-8-13Z',link:'m9 15 6-6M7 13 4 16a3 3 0 0 0 4 4l5-5m-2-6 5-5a3 3 0 0 1 4 4l-3 3',clock:'M12 7v6l4 2M2 12a10 10 0 1 0 20 0 10 10 0 1 0-20 0',flask:'M9 3h6m-5 0v7L4 20h16l-6-10V3M7 15h10',lock:'M7 11h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2Zm1 0V7a4 4 0 0 1 8 0v4m-4 4v2',unlock:'M7 11h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2Zm1 0V6a4 4 0 0 1 7.75-1.4M12 15v2',star:'m12 2 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z',check:'m4 12 5 5L20 6',help:'M9 8a3 3 0 1 1 5 2c-2 1-2 2-2 4m0 3v1M2 12a10 10 0 1 0 20 0 10 10 0 1 0-20 0'};
 export function icon(name:string){const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');svg.classList.add('ui-icon');const path=document.createElementNS(svg.namespaceURI,'path');path.setAttribute('d',paths[name]||paths.star);svg.append(path);return svg;}
@@ -25,9 +28,27 @@ export const habits=[
 /** Earned when all four tasks of the stage were accepted without a failed submission since the stage was last (re)started. */
 export function habitEarned(a:Attempt,stage:typeof stageIds[number]){return tasksFor(stage).every(t=>{const r=a.inquiry.records[t.id];return !!r?.completedAt&&r.clean===true&&!taskIssues(t,r).length;});}
 export function canDoLines(a:Attempt){return [...habits.filter((_,i)=>a.canDo?.includes(stageIds[i])).map(h=>'나는 이제 '+h.can),...(a.canDoNote?.trim()?[`나는 이제 ${a.canDoNote.trim()} 수 있어요.`]:[])];}
+export function activityIllustration(task:InquiryTask,cls:string,record?:InquiryRecord){
+ const holder=el('span',cls+' activity-art');
+ for(const art of taskArt(task,record)){const img=el('img');img.src=art.src;img.alt=art.label;img.draggable=false;holder.append(img);}
+ holder.classList.toggle('has-many',holder.children.length>1);
+ return holder;
+}
 /** Painted research badge for stage index 0–4 (public/assets/ui/badge-M*.webp); decorative, so alt is empty. */
 export function stageBadge(index:number,cls='stage-badge'){const img=el('img',cls);img.src=`assets/ui/badge-M${index+1}.webp`;img.alt='';img.draggable=false;return img;}
-export function reward(ctx:Context,index:number){const m=missions[index];const card=el('div','reward-body');const art=el('img','reward-image');art.src=`assets/places/${['fungi','water','archive','village','workshop'][index]}.webp`;art.alt=stages[index].place+'의 복구된 모습';const label=el('span','reward-check');label.append(icon('check'),document.createTextNode('발견 기록 연결 완료'));const scene=el('div','reward-scene');scene.append(art,stageBadge(index,'reward-stamp'));card.append(scene,label,heading(m.kit),el('strong','reward-world',m.reward));const dialog=modal('발견이 연구소를 바꿨어!',[card,button('다음 장소 탐험',()=>dialog.close(),'primary')],{showClose:false});dialog.classList.add('reward-modal');}
+export function reward(stage:Stage,meet:()=>void){
+ const index=stageIds.indexOf(stage),resident=residents[stage],mission=missions[index];
+ const card=el('div','reward-body');
+ const art=el('img','reward-image');art.src=`assets/places/${['fungi','water','archive','village','workshop'][index]}.webp`;art.alt=stages[index].place+'의 복구된 모습';
+ const scene=el('div','reward-scene');scene.append(art,residentImage(stage,'resident-return'),stageBadge(index,'reward-stamp'));
+ card.append(scene,el('span','reward-check',mission.kit+' · '+mission.reward),paragraph(stages[index].place+'에 불이 켜졌어요! '+resident.role+' '+resident.name+'도 돌아왔어요.','resident-return-note'));
+ const actions=el('div','resident-reward-actions');
+ const dialog=modal('마을에 이웃이 돌아왔어!',[card,actions],{showClose:false});
+ actions.append(button(resident.name+'에게 말 걸기',()=>{
+   dialog.addEventListener('close',meet,{once:true});dialog.close();
+ }),button('다음 장소 탐험',()=>dialog.close(),'primary'));
+ dialog.classList.add('reward-modal','resident-reward');
+}
 export function progress(ctx:Context){const row=el('div','repair-progress');row.setAttribute('aria-label','연구소 복구 진행');stages.forEach((s,i)=>{const done=validEvidence(ctx.attempt,s.id,ctx.state.settings.admin);const b=iconButton(done?'check':missions[i].icon,`${i+1}. ${s.title}${done?' 복구 완료':''}`,()=>modal(missions[i].kit,[paragraph(done?s.summary:missions[i].quest),paragraph(`완료 보상: ${missions[i].reward}`)]),done?'repair done':'repair');row.append(b);});return row;}
 const toolSelection=new Map<string,string>();
 export function toolTabs(ctx:Context,side:HTMLElement,groups:{name:string;nodes:Node[]}[],initial?:string){

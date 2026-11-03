@@ -1,0 +1,76 @@
+/* The button and its sprite stay in the same map coordinate system as the doors. */
+.map-resident {
+  position:absolute;
+  transform:translate(-50%,-100%);
+  width:clamp(76px,7.6vw,116px);
+  height:clamp(61px,9.6vh,96px);
+  z-index:1;
+  padding:0;
+  border:0;
+  border-radius:14px;
+  background:transparent;
+  color:var(--ink-strong);
+  pointer-events:auto;
+}
+.map-resident::before {
+  content:'';
+  position:absolute;
+  bottom:0;
+  left:6%;
+  width:56%;
+  height:13%;
+  border-radius:50%;
+  background:rgb(54 51 29 / 31%);
+}
+.resident-sprite {
+  position:absolute;
+  bottom:2%;
+  left:2%;
+  width:66%;
+  height:96%;
+  object-fit:contain;
+  object-position:center bottom;
+  filter:drop-shadow(0 1px 1px #fff2ce) drop-shadow(0 2px 1px #49371a);
+}
+.resident-name {
+  position:absolute;
+  top:2%;
+  right:1%;
+  padding:3px 8px;
+  background:var(--paper-face);
+  color:var(--ink-strong);
+  border:2px solid var(--brass-deep,#966a36);
+  border-radius:12px 12px 12px 3px;
+  font:clamp(15px,1.3vw,20px)/1.1 var(--font-display);
+  box-shadow:0 2px 0 rgb(71 47 22 / 42%);
+}
+.resident-name::after {
+  content:'';position:absolute;bottom:-5px;left:4px;width:6px;height:6px;
+  background:inherit;border:solid var(--brass-deep,#966a36);border-width:0 0 2px 2px;
+  transform:skewY(-27deg);
+}
+.map-resident:is(:hover,:focus-visible) .resident-name {background:var(--cream-56);text-decoration:underline}
+.modal.resident-dialog {max-width:570px}
+.resident-conversation {display:grid;grid-template-columns:clamp(88px,14vw,152px) 1fr;align-items:center;gap:clamp(12px,2vw,22px)}
+.resident-portrait {width:100%;height:clamp(112px,25vh,180px);object-fit:contain;filter:drop-shadow(0 3px 2px rgb(71 47 22 / 15%))}
+.resident-lines {min-width:0}
+.resident-lines .eyebrow {color:var(--ink-strong)}
+.resident-lines .resident-line {margin-top:8px;font-size:clamp(17px,1.7vw,22px);line-height:1.52}
+.resident-replies,.resident-reward-actions {display:flex;gap:8px;flex-wrap:wrap}
+.resident-replies button,.resident-reward-actions button {flex:1 1 auto;min-height:46px}
+.resident-replies [aria-pressed=true] {background:var(--stage-m1-soft,var(--sage-76));border-color:var(--forest-551)}
+.modal.resident-reward {overflow:auto}
+.resident-reward .reward-body {gap:10px}
+.resident-reward .reward-image {height:clamp(105px,24vh,195px)}
+.resident-reward .reward-stamp {width:clamp(64px,9vw,96px);height:auto;bottom:5px}
+.resident-return {position:absolute;left:9%;bottom:7%;height:84%;max-width:39%;object-fit:contain;filter:drop-shadow(0 3px 2px rgb(58 38 21 / 55%))}
+.resident-reward .resident-return-note {font-family:var(--font-display);font-size:clamp(19px,2.3vw,26px)}
+@media (prefers-reduced-motion:no-preference) {
+  html:not(.reduced) .resident-return {animation:resident-arrives .45s ease-out both}
+  @keyframes resident-arrives {from{opacity:0;transform:translateY(7px)}}
+}
+@media (max-height:520px) {
+  .modal.resident-reward,.modal.resident-dialog {padding:14px 20px;gap:8px}
+  .resident-reward .reward-body {gap:6px}
+  .resident-portrait {height:90px}
+}

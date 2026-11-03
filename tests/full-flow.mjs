@@ -15,12 +15,14 @@ async function connectAll(task){
  for(const [i,item] of task.items.entries()){
   if(task.kind==='build'&&!item.target)continue;
   if(task.kind==='build'&&record?.assignments[item.target]===item.id)continue;
-  if(task.kind==='build')await touch(132+i*233,431);
+  if(task.id==='M1-4')await touch(411,105+i*118);
+  else if(task.kind==='build')await touch(132+i*233,431);
   else{const columns=task.items.length>3?2:1,rowH=Math.min(200,430/Math.ceil(task.items.length/columns));await touch(columns===2?165+(i%2)*280:245,65+(Math.floor(i/columns)+.5)*rowH);}
   await page.locator('.source-preview').waitFor({state:'visible'});
   assert.equal(await page.locator('dialog[open]').count(),0,'source selection must not interrupt the canvas');
   const targetIndex=task.targets.findIndex(t=>t.id===item.target);
-  await touch(task.kind==='build'?185+targetIndex*295:task.targets.length>2?827:805,task.kind==='build'?200:90+(targetIndex+.5)*(400/task.targets.length));
+  if(task.id==='M1-4')await touch(648,145+targetIndex*137);
+  else await touch(task.kind==='build'?185+targetIndex*295:task.targets.length>2?827:805,task.kind==='build'?200:90+(targetIndex+.5)*(400/task.targets.length));
  }
  if(task.kind==='build'){
   const latest=await waitSaved(page,s=>s.learner.inquiry.records[task.id].assignments.edge1==='linked'&&s.learner.inquiry.records[task.id].assignments.edge2==='linked');
@@ -45,17 +47,28 @@ async function completeTask(task,replay=false){
   // Cilia close-up: 793×496 picture fitted in 760×410 at 480,282; tap the hair rim.
   await btn('현미경으로 움직임의 비밀 찾기').click();await btn('움직임 다시 보기').waitFor();const w=410*793/496;await tapCanvas(page,(480-w/2+.17*w)/960,(282-205+.501*410)/540);await page.getByText('현미경 · 몸 둘레 표시 1곳').waitFor();}
  if(task.kind==='timeline'){await setRange(page,'관찰 순서',3);await page.getByRole('button',{name:/^이후 고정/}).click();await mark(...(task.organism==='bread'?[.49,.4]:[.51,.54]));assert.ok((await page.locator('.process-note').innerText()).length>0);}
- if(task.kind==='build'){await connectAll(task);await btn('사례처럼 이어질 것 같아요').click();await btn('설계 가동').click();await btn('예상과 같아요').waitFor();await btn('예상과 같아요').click();}
+ if(task.kind==='build'){await connectAll(task);await btn(task.id==='M5-1'?'요구르트가 될 거예요':'사례처럼 이어질 것 같아요').click();await btn(task.id==='M5-1'?'발효기 켜기':'설계 가동').click();await btn('예상과 같아요').waitFor();await btn('예상과 같아요').click();}
  if(task.kind==='review'){await btn('모든 세균이 해로울 것 같아요').click();for(const item of task.items){await btn(item.label).click();await page.locator('.source-preview').waitFor({state:'visible'});}await btn('모든 세균이 해로운 것은 아니에요').click();await btn('새 자료: 요구르트 만들기 · 근거 선택').click();assert.match(await page.locator('.expedition-tools').innerText(),/수정/);}
- if(task.kind==='publish'){const dialog=await alternative();await dialog.getByRole('button',{name:'요구르트 소개하기',exact:true}).click();await dialog.getByRole('button',{name:'닫기',exact:true}).click();await btn('특정 세균의 작용').click();assert.ok((await page.getByLabel('내 소개 문장',{exact:true}).inputValue()).length>0,'selected case and action create an editable introduction');await page.getByLabel('내 소개 문장',{exact:true}).fill('특정 세균의 작용을 우유로 요구르트를 만드는 데 이용해요.');}
+ if(task.kind==='publish'){const dialog=await alternative();await dialog.getByRole('button',{name:'요구르트 소개하기',exact:true}).click();await dialog.getByRole('button',{name:'닫기',exact:true}).click();await btn('유산균의 작용').click();assert.ok((await page.getByLabel('내 소개 문장',{exact:true}).inputValue()).length>0,'selected case and action create an editable introduction');await page.getByLabel('내 소개 문장',{exact:true}).fill('특정 세균의 작용을 우유로 요구르트를 만드는 데 이용해요.');}
  await btn('발견 기록하기').click();await page.locator('.discovery-dialog').waitFor();
  await btn(task.order===4?'연구소 복구하기':'다음 발견으로').click();
- if(task.order===4&&!replay){await page.locator('.concept-dialog').waitFor();await btn('복구 보상 받기').click();await btn('다음 장소 탐험').click();await page.locator('.screen-nature-map').waitFor();}
- if(task.order===4&&replay)await page.locator('.screen-nature-map').waitFor();
+ if(task.order===4&&!replay){
+  await page.locator('.concept-dialog').waitFor();await btn('복구 보상 받기').click();
+  const reward=page.locator('.resident-reward');
+  if(task.stage==='M1'){
+   await reward.getByRole('button',{name:'솔비에게 말 걸기'}).click();
+   const talk=page.locator('.resident-dialog');await talk.getByRole('button',{name:'노트에 뭘 그렸어?'}).click();
+   assert.match(await talk.locator('.resident-line').innerText(),/갓 아래/);await talk.getByRole('button',{name:'닫기'}).click();
+   assert.ok(await page.locator('.map-resident[data-stage="M1"]').evaluate(b=>b===document.activeElement));
+  }else await reward.getByRole('button',{name:'다음 장소 탐험'}).click();
+  await page.locator('.screen-nature-map').waitFor();
+  assert.equal(await page.locator('.map-resident').count(),Number(task.stage.slice(1)));
+ }
+ if(task.order===4&&replay){await page.locator('.screen-nature-map').waitFor();assert.equal(await page.locator('.map-resident').count(),5);}
  checks.push(task.id);console.log(task.id+' completed');
 }
 try{
- await mkdir('.tmp/screens',{recursive:true});await navigate(page,base,'main');if(!process.env.RESUME_FLOW){await btn('탐험 시작').click();await btn('다음').click();await btn('다음').click();await btn('탐험 지도로').click();await waitForScene(page,'.map-host');
+ await mkdir('.tmp/screens',{recursive:true});await navigate(page,base,'main');if(!process.env.RESUME_FLOW){await btn('탐험 시작').click();await btn('다음').click();await btn('다음').click();await btn('탐험 지도로').click();await waitForScene(page,'.map-host');assert.equal(await page.locator('.map-resident').count(),0);
  await page.getByRole('button',{name:/^1\. 버섯숲 표본실/}).click();await btn('연구소 들어가기').click();
  // Empty submission must stay on the activity and explain what is missing.
  await btn('발견 기록하기').click();assert.ok((await page.locator('.inquiry-feedback').innerText()).length>0);assert.equal(await page.locator('.discovery-dialog').count(),0);

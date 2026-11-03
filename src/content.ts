@@ -20,7 +20,7 @@ export const sources=[
 ];
 export const cases=[
  {id:'bread',name:'빵에 생긴 곰팡이',organism:'균류',action:'곰팡이가 자라면서 빵이 변했어요.',clues:['시간에 따른 빵의 모습','관련 생물: 곰팡이'],answer:'problem',explain:'먹을 빵이 변질되어 이용하기 어려워졌어요.'},
- {id:'yogurt',name:'요구르트 만들기',organism:'세균',action:'특정 세균의 작용을 이용해 요구르트를 만들어요.',clues:['우유를 이용한 발효 음식','관련 생물: 요구르트 만드는 세균'],answer:'help',explain:'세균의 작용을 음식 만들기에 이용해요.'},
+ {id:'yogurt',name:'요구르트 만들기',organism:'세균',action:'유산균이 우유 속 당을 이용하는 작용으로 요구르트를 만들어요.',clues:['우유를 이용한 발효 음식','관련 생물: 요구르트 만드는 세균'],answer:'help',explain:'세균의 작용을 음식 만들기에 이용해요.'},
  {id:'leaf',name:'낙엽이 분해되는 숲',organism:'균류·세균',action:'균류와 세균은 죽은 생물의 물질을 분해하는 데 관여해요.',clues:['쌓인 낙엽의 전후 모습','분해에 관여하는 균류·세균'],answer:'help',explain:'죽은 생물의 물질이 분해되는 데 도움을 줘요.'},
  {id:'water',name:'물속의 먹이 관계',organism:'원생생물',action:'짚신벌레 같은 작은 생물은 다른 물속 생물의 먹이가 되기도 해요.',clues:['작은 생물로 이어지는 먹이 관계','물속 생물과 이어지는 우리 생활'],answer:'help',explain:'물속 생물의 먹이 관계를 이어 주는 데 관여해요.'}
 ];

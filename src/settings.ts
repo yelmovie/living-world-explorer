@@ -25,7 +25,7 @@ function showDialog(dialog: HTMLDialogElement, previous: HTMLElement | null) {
   dialog.addEventListener('close',() => {dialog.remove();previous?.focus();},{once:true});
   document.body.append(dialog);dialog.showModal();
 }
-export function openSettings(state: State, hooks: SettingsHooks) {
+export function openSettings(state: State, hooks: SettingsHooks, showTeacherTools=false) {
   const previous = document.activeElement as HTMLElement | null;
   const dialog = el('dialog','modal settings-dialog');
   dialog.setAttribute('aria-labelledby','settings-title');
@@ -47,26 +47,29 @@ export function openSettings(state: State, hooks: SettingsHooks) {
   const volumeRow=el('label','field settings-volume-row');const volumeLabel=el('div','settings-sound-row');volumeLabel.append(el('span','',copy.sound.volume),value);volumeRow.append(volumeLabel,volume);body.append(volumeRow);
 
   body.append(button(copy.story,()=>{dialog.close();hooks.showStory();},'secondary settings-wide'));
-  const finished = active(state).activated;
-  if (hooks.showEnding) body.append(button(copy.ending,()=>{dialog.close();hooks.showEnding!();},'secondary settings-wide',!finished));
-  body.append(button(copy.certificate,()=>{dialog.close();hooks.printCertificate?.();},'secondary settings-wide',!finished || !hooks.printCertificate));
-  if (!finished) body.append(paragraph(copy.finishFirst,'muted settings-lock-note'));
+  const ending = hooks.showEnding && button(copy.ending,()=>{dialog.close();hooks.showEnding!();},'secondary settings-wide');
+  const certificate = button(copy.certificate,()=>{dialog.close();hooks.printCertificate?.();},'secondary settings-wide');
+  const lockNote = paragraph(copy.finishFirst,'muted settings-lock-note');
+  if (ending) body.append(ending);
+  body.append(certificate,lockNote);
   body.append(details(copy.appInfoTitle,[...textRows(copy.appInfo),paragraph(`${copy.appName} v${copy.version} · ${copy.producer}`,'muted'),switchRow(copy.large,()=>prefs.large,on=>prefs.large=on),switchRow(copy.reduced,()=>prefs.reduced,on=>prefs.reduced=on)]));
   body.append(details(copy.studentTitle,textRows(copy.student)));
   const curriculum = details(copy.curriculumTitle,[paragraph(copy.curriculumIntro),...copy.curriculum.map(row=>paragraph(`[${row.code}] ${row.text}`))]);
   const unlock = button(prefs.admin?copy.unlockOn:copy.unlock,()=>{
     prefs.admin=!prefs.admin;
     if (prefs.admin) state.preview=makeAttempt();
-    unlock.textContent=prefs.admin?copy.unlockOn:copy.unlock;
-    unlock.setAttribute('aria-pressed',String(prefs.admin));
-    update();
+    refreshMode();
+    hooks.save();
     hooks.go(prefs.admin?'nature-map':state.learner.route);
   },'secondary settings-wide');unlock.setAttribute('aria-pressed',String(prefs.admin));unlock.setAttribute('aria-label','관리자 전체 해금');
   const teacherTools:Node[]=[paragraph(copy.unlockInfo),unlock,paragraph(copy.previewInfo,'muted')];
   if (hooks.loadExample) teacherTools.push(button(copy.sample,()=>{
     const load=async()=>{await hooks.loadExample!();hooks.save();dialog.close();hooks.render();hooks.go('nature-map');};void load().catch(()=>notice('예시 기록을 열지 못했어요. 다시 시도해 주세요.'));
   },'secondary settings-wide'),paragraph(copy.sampleInfo,'muted'));
-  body.append(details(copy.teacherTitle,[...textRows(copy.teacher),curriculum,details(copy.toolsTitle,teacherTools)]));
+  const toolsGroup=details(copy.toolsTitle,teacherTools);
+  const teacherGroup=details(copy.teacherTitle,[...textRows(copy.teacher),curriculum,toolsGroup]);
+  toolsGroup.open=teacherGroup.open=showTeacherTools;
+  body.append(teacherGroup);
   const sources = details(copy.sourcesTitle,[paragraph(copy.sourcesIntro),...copy.sources.map(source=>{const article=el('section','settings-source');article.append(el('h3','',source.title),paragraph(source.text));return article;})]);
   for(const reference of inquiryReferences)sources.append(paragraph(referenceText(reference),'muted'));
   body.append(details(copy.creditsTitle,[...textRows(copy.credits),sources,...textRows(copy.copyright)]));
@@ -78,7 +81,18 @@ export function openSettings(state: State, hooks: SettingsHooks) {
     const row=el('div','settings-footer');row.append(cancel,button(copy.erase,()=>{confirm.close();dialog.close();hooks.resetLearner();},'danger'));
     confirm.append(h,paragraph(prefs.admin?copy.previewResetInfo:copy.resetInfo),row);showDialog(confirm,reset);cancel.focus();
   },'secondary');
+  function refreshMode(){
+    const finished=active(state).activated;
+    unlock.textContent=prefs.admin?copy.unlockOn:copy.unlock;
+    unlock.setAttribute('aria-pressed',String(prefs.admin));
+    reset.textContent=prefs.admin?copy.previewReset:copy.reset;
+    if(ending)ending.disabled=!finished;
+    certificate.disabled=!finished||!hooks.printCertificate;
+    lockNote.hidden=finished;
+  }
+  refreshMode();
   footer.append(reset,button(copy.close,()=>dialog.close(),'primary'));
   dialog.append(header,body,footer);showDialog(dialog,previous);
+  if(showTeacherTools)unlock.focus();
   return dialog;
 }

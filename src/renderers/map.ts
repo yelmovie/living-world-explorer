@@ -1,14 +1,14 @@
 import Phaser from 'phaser';
+import {drawBuildingLights} from './map-lighting';
 import type {Point} from '../model';
 import {MAP_WIDTH,MAP_HEIGHT,mapSpawn,locations,pathGraph,destinationNodeIds,routeBetween,nearestRoadPoint,mapAssets} from '../mapData';
 export {locations} from '../mapData';
 type Direction='up'|'down'|'left'|'right';
-let previousRepair:boolean[]|undefined;
+let previousVisit:{attemptId:string;completed:boolean[]}|undefined;
 
 /** The map is a ground-plane road network. DOM labels and the canvas share these coordinates. */
-export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onArrive:(index:number,point:Point)=>void,reduced:boolean,onMove?:(point:Point)=>void){
+export function mountMap(host:HTMLElement,position:Point,completed:boolean[],attemptId:string,onArrive:(index:number,point:Point)=>void,reduced:boolean,onMove?:(point:Point)=>void){
  let requested:number|undefined;let navigate:(index:number)=>void=()=>{};let walk:(direction:Direction)=>void=()=>{};let stop:()=>void=()=>{};let disposed=false;
- const repaired=completed.filter(Boolean).length;
  class Village extends Phaser.Scene{
   private hero!:Phaser.GameObjects.Container;
   private friend!:Phaser.GameObjects.Container;
@@ -34,18 +34,24 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
   create(){
    if(this.textures.exists('village'))this.add.image(MAP_WIDTH/2,MAP_HEIGHT/2,'village').setDisplaySize(MAP_WIDTH,MAP_HEIGHT);
    else this.add.rectangle(MAP_WIDTH/2,MAP_HEIGHT/2,MAP_WIDTH,MAP_HEIGHT,0xc8d6b5);
+   const lamps=this.textures.createCanvas('building-lights',MAP_WIDTH,MAP_HEIGHT);
+   if(lamps){
+    drawBuildingLights(lamps.context,completed);lamps.refresh();
+    this.add.image(0,0,'building-lights').setOrigin(0);
+   }
    const next=completed.findIndex(v=>!v);const current=locations[next<0?5:next];
    const ring=this.add.ellipse(current.x,current.y+2,74,24,0xf7cd69,.45).setStrokeStyle(3,0xffedb0,.9);if(!reduced)this.tweens.add({targets:ring,alpha:.55,scaleX:1.1,duration:1000,yoyo:true,repeat:-1});
-   locations.forEach((p,i)=>{if(i<5&&!completed[i])return;const lit=i===5?repaired===5:completed[i];if(!lit)return;const aura=this.add.ellipse(p.x,p.y-24,110,115,0xffdf8c,.13);this.add.circle(p.x-21,p.y-48,4,0xffe5a3,.95);this.add.circle(p.x+21,p.y-48,4,0xffe5a3,.95);this.add.circle(p.x-40,p.y+2,5,0xffdc86,.95);if(!reduced)this.tweens.add({targets:aura,alpha:.22,duration:1700+i*100,yoyo:true,repeat:-1});});
    const valid=Number.isFinite(position.x)&&Number.isFinite(position.y)&&position.x>=0&&position.y>=0&&position.x<=MAP_WIDTH&&position.y<=MAP_HEIGHT;
    const spawn=nearestRoadPoint(valid?position:mapSpawn);
    this.hero=this.add.container(spawn.x,spawn.y);this.hero.add(this.add.ellipse(0,-2,37,13,0x203e2f,.3));
    this.heroImage=this.add.image(0,0,'moa-down').setOrigin(.5,1);this.heroImage.setScale(92/this.heroImage.height);this.hero.add(this.heroImage);
    this.friend=this.add.container(spawn.x,Math.min(MAP_HEIGHT-18,spawn.y+34));this.friend.add(this.add.ellipse(0,-2,25,10,0x203e2f,.23));this.friendImage=this.add.image(0,0,'friend-down').setOrigin(.5,1);this.friendImage.setScale(65/this.friendImage.height);this.friend.add(this.friendImage);
    this.pathHistory=[{x:this.friend.x,y:this.friend.y},{...spawn}];locations.forEach((p,i)=>{if(Math.hypot(p.x-spawn.x,p.y-spawn.y)<24)this.insideDoors.add(i);});
-   // Restored structures remain brighter; this is derived from the saved evidence, not a second progress store.
-   this.add.rectangle(MAP_WIDTH/2,MAP_HEIGHT/2,MAP_WIDTH,MAP_HEIGHT,0x263f3d,.21*(1-repaired/5)).setDepth(10000);
-   if(previousRepair&&!reduced)completed.forEach((done,i)=>{if(done&&!previousRepair![i])this.restoration(i);});previousRepair=[...completed];
+   if(previousVisit?.attemptId===attemptId&&!reduced){
+    const prior=previousVisit.completed;
+    completed.forEach((done,i)=>{if(done&&!prior[i])this.restoration(i);});
+   }
+   previousVisit={attemptId,completed:[...completed]};
    navigate=(index:number)=>{if(!locations[index])return;this.keys.clear();this.held=undefined;this.destination=index;if(reduced){this.hero.setPosition(locations[index].x,locations[index].y);this.friend.setPosition(locations[index].x,locations[index].y+30);this.route=[];this.arrive();return;}this.route=routeBetween({x:this.hero.x,y:this.hero.y},destinationNodeIds[index]);};
    walk=(direction:Direction)=>{this.route=[];this.destination=undefined;this.held=direction;};
    stop=()=>{this.held=undefined;this.keys.clear();};
@@ -91,5 +97,7 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
   }
  }
  const game=new Phaser.Game({type:Phaser.CANVAS,parent:host,width:MAP_WIDTH,height:MAP_HEIGHT,backgroundColor:'#9daf83',pixelArt:true,antialias:false,scene:Village,scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},audio:{noAudio:true},banner:false});
- return {move:(index:number)=>{requested=index;navigate(index);},walk:(direction:Direction)=>walk(direction),stop:()=>stop(),dispose:()=>{disposed=true;game.destroy(true);}};
+ // Resize the canvas and touch coordinates in the same frame as the DOM map markers.
+ const resize=()=>{if(game.scale.canvas&&game.scale.getParentBounds())game.scale.refresh();};
+ return {resize,move:(index:number)=>{requested=index;navigate(index);},walk:(direction:Direction)=>walk(direction),stop:()=>stop(),dispose:()=>{disposed=true;game.destroy(true);}};
 }

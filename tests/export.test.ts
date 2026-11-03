@@ -5,7 +5,7 @@ import {emptyRecord} from '../src/inquiry-model';
 
 describe('현재 소개 카드의 사례와 근거',()=>{
  it.each([
-  ['yogurt','요구르트','특정 세균의 작용','음식 만들기','assets/study/yogurt.webp'],
+  ['yogurt','요구르트','유산균의 작용','우유 속 당','assets/study/yogurt.webp'],
   ['bread','빵 반죽','효모의 작용','반죽을 부풀','assets/study/dough-after.webp'],
   ['leaf','낙엽 분해','균류·세균의 분해 작용','분해하는 데 관여','assets/study/leaf-3.webp']
  ])('%s 선택을 요구르트 고정 문구로 바꾸지 않는다',(caseId,label,action,description,art)=>{

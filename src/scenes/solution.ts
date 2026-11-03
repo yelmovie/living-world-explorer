@@ -36,7 +36,7 @@ export function core(ctx:Context){
  });work.append(sockets);
  const activate=()=>{
   if(stopped||!coreReady||!linked()||running||finished)return;
-  running=true;side.inert=true;sockets.inert=true;
+  running=true;playEffect('core-wake');side.inert=true;sockets.inert=true;
   const finish=()=>{if(stopped||finished)return;finished=true;cancelAnimationFrame(raf);a.activated=true;ctx.save();ctx.go('results');};
   const banner=el('div','core-power','내 발견이 연구소를 깨워요');const record=el('div');work.querySelector('.evidence-view')?.remove();work.append(banner);side.replaceChildren(record);side.inert=false;
   ctx.host.querySelector('.action-bar')?.replaceChildren(button('결과로 바로 가기',finish,'primary'));

@@ -34,7 +34,7 @@ try{
  // Completed learner records are isolated from the teacher preview checks above.
  const completed=await browser.newContext({viewport:{width:1024,height:768},hasTouch:true,storageState:'.tmp/learner20-state.json'}),p=await completed.newPage();p.setDefaultTimeout(15000);p.on('pageerror',e=>errors.push(e.message));
  await activity(p,'solution-assembly',1);const before=(await readSaved(p)).learner.inquiry.records['M5-1'];
- const editor=await alternative(p);await editor.getByRole('button',{name:'우유',exact:true}).click();await editor.getByRole('button',{name:'재료에 연결',exact:true}).click();await editor.getByRole('button',{name:'닫기',exact:true}).click();
+ const editor=await alternative(p);await editor.getByRole('button',{name:'우유',exact:true}).click();await editor.getByRole('button',{name:'재료 병에 담기',exact:true}).click();await editor.getByRole('button',{name:'닫기',exact:true}).click();
  const after=(await waitSaved(p)).learner.inquiry.records['M5-1'];assert.equal(after.prediction,before.prediction);assert.equal(after.runResult,before.runResult);assert.equal(after.reflection,before.reflection);assert.deepEqual(after.runs,before.runs);checks.push('placing the same design material preserves its completed experiment');
  await activity(p,'protist-observation',3);if(await button(p,'움직임 다시 보기').count())await button(p,'움직임 다시 보기').click();
  await setRange(p,'관찰 시점',0);const pinB=p.getByRole('button',{name:/^B 고정/});if(await pinB.isEnabled())await pinB.click();

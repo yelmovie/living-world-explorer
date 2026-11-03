@@ -1,6 +1,6 @@
-/** Project BGM (main loop, ending loop) + locally hosted Kenney CC0 interaction sounds. */
+/** Project BGM (main loop, ending loop) + locally hosted CC0 interaction sounds. */
 export type AudioSettings = {sound: boolean; bgm?: boolean; bgmVolume?: number};
-export type EffectName = 'click'|'success'|'retry'|'snap'|'capture'|'water'|'hint'|'run';
+export type EffectName = 'click'|'success'|'retry'|'snap'|'capture'|'water'|'hint'|'run'|'page-turn'|'pipette-drop'|'core-wake';
 export type MusicTrack = 'main'|'ending';
 const tracks: Record<MusicTrack, string> = {main: 'assets/audio/bgm-main-theme.m4a', ending: 'assets/audio/bgm-ending-theme.m4a'};
 // Files are normalized to -16 LUFS. 100% BGM ≈ -36 LUFS, just under the effects (≈ -34 LUFS at .06). Tune by ear here.
@@ -85,9 +85,9 @@ function sync() {
 }
 function preloadEffects(){
  if(samplesRequested)return;const ctx=engine();if(!ctx)return;samplesRequested=true;
- for(const name of ['click','success','retry','snap','capture','water','hint','run'] as EffectName[])void fetch(`assets/audio/${name}.wav`).then(r=>{if(!r.ok)throw Error('audio');return r.arrayBuffer();}).then(data=>ctx.decodeAudioData(data)).then(buffer=>{if(context===ctx)samples.set(name,buffer);}).catch(()=>{});
+ for(const name of ['click','success','retry','snap','capture','water','hint','run','page-turn','pipette-drop','core-wake'] as EffectName[])void fetch(`assets/audio/${name}.wav`).then(r=>{if(!r.ok)throw Error('audio');return r.arrayBuffer();}).then(data=>ctx.decodeAudioData(data)).then(buffer=>{if(context===ctx)samples.set(name,buffer);}).catch(()=>{});
 }
-function firstGesture() {unlocked = true;preloadEffects();sync();}
+function firstGesture() {unlocked = true;if(settings.sound)preloadEffects();sync();}
 function visibility() {if (document.hidden) {stopMusic();stopVoices(effectVoices);}else sync();}
 function install() {
   if (installed) return;
@@ -98,7 +98,7 @@ function install() {
   observer = new MutationObserver(sync);
   observer.observe(document.body, {childList: true, subtree: true, attributes: true, attributeFilter: ['open']});
 }
-export function syncAudio(value: AudioSettings) {settings = value;install();sync();}
+export function syncAudio(value: AudioSettings) {settings = value;install();if(unlocked&&settings.sound)preloadEffects();sync();}
 export function setAudioQuiet(value: boolean) {explicitQuiet = value;sync();}
 export function setMusicTrack(value: MusicTrack) {if (track === value) return;track = value;sync();}
 export function anySound(value: AudioSettings) {return !!(value.sound || value.bgm);}

@@ -1,6 +1,7 @@
 import {describe,it,expect} from 'vitest';
 import {inquiryTasks} from '../src/curriculum';
-import {artFor,artFrame,artKey,artTime} from '../src/artAssets';
+import {artFor,artFrame,artKey,artTime,taskArt} from '../src/artAssets';
+import {emptyRecord} from '../src/inquiry-model';
 
 describe('학습 자료의 의미와 표본 이미지 연결',()=>{
  const item=(task:string,id:string)=>inquiryTasks.find(t=>t.id===task)!.items.find(i=>i.id===id)!;
@@ -28,6 +29,17 @@ describe('학습 자료의 의미와 표본 이미지 연결',()=>{
  it('모든 활동 자료가 명확한 그림과 시간 단계로 연결된다',()=>{
   for(const task of inquiryTasks)for(const it of task.items){const kind=artKey(it);if(kind==='question')continue;const art=artFor(kind,artTime(kind,it.detail,it.id));expect(art,it.id).toBeDefined();expect(art!.src,it.id).toMatch(/^assets\/.+\.webp$/);}
   for(const kind of ['bread','leaf'])expect(new Set([0,1,2,3].map(time=>artFor(kind,time)!.src)).size).toBe(4);
+ });
+ it('활동 그림은 관찰 대상과 발표자가 선택한 사례를 따른다',()=>{
+  const task=(id:string)=>inquiryTasks.find(t=>t.id===id)!;
+  for(const t of inquiryTasks)expect(taskArt(t).length,t.id).toBeGreaterThan(0);
+  expect(taskArt(task('M1-3'))[0].src).toBe(artFor('mold')!.src);
+  expect(taskArt(task('M2-2'))[0].src).toBe(artFor('spirogyra')!.src);
+  expect(taskArt(task('M2-3'))[0].src).toBe(artFor('paramecium')!.src);
+  expect(taskArt(task('M1-4')).map(a=>a.src)).toContain(artFor('mold')!.src);
+  const record=emptyRecord();record.assignments.case='bread';
+  expect(taskArt(task('M5-4'),record).map(a=>a.src)).toEqual([artFor('risenDough')!.src]);
+  record.capture=true;expect(taskArt(task('M1-2'),record)[0].src).toBe(artFor('mushroomSpores')!.src);
  });
  it('기존 시간 값은 보존하면서 그림 번호만 안전하게 정한다',()=>{
   expect(artFrame(-1)).toBe(0);expect(artFrame(9)).toBe(3);expect(artFrame(Number.NaN)).toBe(0);

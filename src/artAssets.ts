@@ -1,3 +1,5 @@
+import type {InquiryTask,InquiryRecord} from './inquiry-model';
+
 /** Shared visual references for the inquiry cards, source sheets and renderer. */
 export type InquiryArt={src:string;label:string;frames?:string[]};
 export const inquiryArt:Record<string,InquiryArt>={
@@ -12,6 +14,8 @@ export const inquiryArt:Record<string,InquiryArt>={
  moldyFruit:{src:'assets/study/moldy-fruit.webp',label:'곰팡이가 자라 변질된 과일의 관찰 예시'},
  dough:{src:'assets/study/dough-before.webp',label:'발효 전 유리 그릇 속 빵 반죽'},
  risenDough:{src:'assets/study/dough-after.webp',label:'같은 유리 그릇에서 부푼 빵 반죽'},
+ starter:{src:'assets/ui/starter.webp',label:'요구르트에 쓰는 식품용 유산균 가루'},
+ waterGlass:{src:'assets/ui/water-glass.webp',label:'맑은 물이 든 컵'},
  yogurt:{src:'assets/study/yogurt.webp',label:'요구르트 조사 그림'},
  spoiledMilk:{src:'assets/study/spoiled-milk.webp',label:'오래 두어 덩어리지고 상한 우유'},
  tooth:{src:'assets/study/tooth.webp',label:'충치가 생긴 어금니 모형과 칫솔'},
@@ -47,6 +51,20 @@ export function artKey(item:{id:string;art?:string;label?:string;detail?:string}
  return item.art;
 }
 
+/** Images describe this activity, including the chosen case on a completed introduction card. */
+export function taskArt(task:InquiryTask,record?:InquiryRecord):InquiryArt[]{
+ if(task.organism){
+  if(task.kind==='timeline')return [artFor(task.organism,0)!,artFor(task.organism,record?.pins[1]??3)!];
+  const kind=task.organism==='mushroom'&&record?.capture&&record.v===2?'mushroomSpores':task.organism;
+  return [artFor(kind)!];
+ }
+ if(task.kind==='sample')return [artFor('pond')!];
+ const selected=task.kind==='publish'?task.items.find(item=>item.id===record?.assignments.case):undefined;
+ const items=selected?[selected]:task.kind==='build'?task.items.filter(item=>item.target==='output'):task.items;
+ const pictures=items.map(item=>{const kind=artKey(item);return artFor(kind,artTime(kind,item.detail,item.id));}).filter((art):art is InquiryArt=>!!art);
+ return pictures.filter((art,i)=>pictures.findIndex(other=>other.src===art.src)===i).slice(0,3);
+}
+
 /** 맨눈 → 돋보기 → 현미경 steps of the microscope tasks. context is the naked-eye picture, focus is where the magnifier looks (0–1).
  * lens: own picture for the 돋보기 step (new structure appears instead of a blurry enlargement). gate: the 돋보기 picture must be tapped on this feature to open the microscope. */
 export type MagnifyView={context:string;time:number;focus:{x:number;y:number};lens?:string;gate?:string;captions:[string,string,string]};
@@ -58,5 +76,3 @@ export const magnify:Record<string,MagnifyView>={
 /** Older records (before 2026-10-25) keep the original 돋보기 enlargement and no gate. */
 export function magnifyFor(organism:string|undefined,current:boolean):MagnifyView|undefined{const view=magnify[organism||''];return view&&!current?{...view,lens:undefined,gate:undefined,captions:[view.captions[0],'돋보기 · 크게 보면 모양이 더 잘 보여요','현미경 · 특징이 자세히 보여요']}:view;}
 export const levelNames=['맨눈','돋보기','현미경'] as const;
-/** Smallest detail each step can show (size ladder chip in the microscope tools). */
-export const levelReach=['머리카락 굵기(약 0.1mm)까지 보여요','머리카락 굵기의 10분의 1(약 0.01mm)까지 보여요','머리카락 굵기의 100분의 1(약 0.001mm)까지 보여요'] as const;

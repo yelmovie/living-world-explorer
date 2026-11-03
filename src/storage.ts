@@ -6,6 +6,7 @@ import {validDraft,recoverDraft} from './validate';
 import {missing} from './evaluate';
 const blobs=new Map<string,Blob>();
 let db:IDBDatabase|undefined;
+export let restoredFromPreview=false;
 export let storageMessage='기기에 저장 중';
 let queue=Promise.resolve();
 let protectedOriginal=false;
@@ -39,6 +40,7 @@ export function restoreAttempt(raw:unknown):Attempt{
 export async function load():Promise<State>{
  const fallback=makeState();
  protectedOriginal=false;
+ restoredFromPreview=false;
  observedState=undefined;
  try{
   db=await new Promise<IDBDatabase>((resolve,reject)=>{const r=indexedDB.open('life-code-lab',1);r.onupgradeneeded=()=>{r.result.createObjectStore('state');r.result.createObjectStore('captures');};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);r.onblocked=()=>reject(new Error('blocked'));});
@@ -51,6 +53,7 @@ export async function load():Promise<State>{
   const s:State={...fallback,learner:restoreAttempt(raw.learner),preview:restoreAttempt(raw.preview),settings:{...fallback.settings}};
   for(const k of ['sound','bgm','large','reduced','flat'] as const)s.settings[k]=raw.settings?.[k]===true;
   // Classroom previews are temporary. Reload always returns to the student's own attempt.
+  restoredFromPreview=raw.settings?.admin===true;
   s.settings.admin=false;
   s.preview=makeAttempt();
   s.settings.bgmVolume=typeof raw.settings?.bgmVolume==='number'?Math.max(0,Math.min(100,raw.settings.bgmVolume)):30;

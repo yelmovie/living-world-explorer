@@ -4,7 +4,7 @@ import {emptyRecord} from './inquiry-model';
 /** Prepare equipment, never the learner's observation, claim or biological action. Existing records are left intact. */
 export function prepareInquiry(task:InquiryTask):InquiryRecord{
  const r=emptyRecord();
- if(task.kind==='microscope'&&task.id!=='M1-2'){r.level=2;r.focus=65;}
+ if(task.kind==='microscope'&&task.id!=='M1-2'){r.level=2;if(task.organism!=='mold')r.focus=65;}
  if(task.kind==='track'){r.pins=[0];r.time=5;}
  if(task.kind==='timeline'){r.pins=[0];r.time=3;}
  if(task.kind==='build'&&task.order>1){

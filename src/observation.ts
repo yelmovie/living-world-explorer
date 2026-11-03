@@ -31,4 +31,5 @@ export function markHint(task:InquiryTask,r?:Pick<InquiryRecord,'v'>){
  if(task.kind==='timeline')return '이 표시는 새 변화가 확인되지 않는 곳이에요. 이전 표시를 유지했어요. 전후를 겹쳐 새 곰팡이나 새로 사라진 잎 부분을 찾아요.';
  if(task.kind==='track')return '이 표시는 몸 둘레 밖이나 몸 안쪽이에요. 앞서 찾은 표시는 유지했어요. 몸 가장자리에 난 가는 털을 찾아봐요.';
  if(r&&observedKind(task,r)==='mushroomSpores')return '이 표시는 알갱이 밖이에요. 앞서 찾은 표시는 유지했어요. 주름 가장자리에 붙은 작은 갈색 알갱이를 찾아봐요.';
+ if(task.organism==='spirogyra')return '초록색 실처럼 이어진 부분을 다시 눌러요.';
  return '이 표시는 특징 밖이에요. 앞서 찾은 표시는 유지했어요. 그림의 주름·가는 실·둥근 부분을 다시 살펴봐요.';}

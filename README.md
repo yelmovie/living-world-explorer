@@ -33,6 +33,7 @@ npm run test:browser
 npm run test:flow
 node tests/storage-safety.mjs
 node tests/interaction-review.mjs
+node tests/map-residents.mjs
 node tests/streamlined-browser.mjs
 npm run test:offline
 ```
@@ -54,7 +55,8 @@ npm run test:offline
 
 - [가로 태블릿 탐험 설계 v1.2](docs/TABLET_EXPLORATION.md): 2026-10-18 요청에 따른 현재 구현과 보상·화면 흐름.
 - [태블릿 검증 결과](docs/TABLET_VERIFICATION.md): 테스트 범위와 남은 검증.
-- [영상 제작 캔버스](https://chatgpt.com/space/page_b460050fb99081919a7ca655d9b2e6c5): 도입 6초와 엔딩 8초 제작 프롬프트.
+- [인트로·엔딩 영상 제작 캔버스](https://chatgpt.com/space/page_a98ab1b350b48191b24af1a2fb676dfc)에서 도입 14초와 엔딩 15초에 맞춘 이미지 6장, 장면별 영상 프롬프트, 한국어 SRT 자막을 복사할 수 있다.
+- [이전 영상 기획안](https://chatgpt.com/space/page_b460050fb99081919a7ca655d9b2e6c5)에는 도입 6초와 엔딩 8초 단축안이 있다.
 - [미션 계약](docs/mvp-spec.json): 5장·학습 활동 10개·전체 15개 화면.
 - [이전 탐구 상호작용 설계](docs/INTERACTION_DESIGN.md): 현미경·비교·근거·시간·실행의 완료 조건. 렌더러와 레이아웃은 v1.2 우선.
 

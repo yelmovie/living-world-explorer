@@ -12,14 +12,14 @@ export const rungs:Rung[]=[
  {id:'bacteria',label:'세균',size:'약 0.001mm',art:'bacteria',stage:'M3'}
 ];
 const NAKED_EYE_LAST='hair';
-export const ladderFact='세균은 짚신벌레보다 약 200배, 머리카락 굵기보다 약 100배 작아요. 학교 현미경으로도 점처럼만 보여서, 모양은 더 높은 배율로 찍은 사진 자료로 조사해요.';
+export const ladderFact='이 예에서 짚신벌레의 길이는 세균 길이의 약 200배예요. 실제 크기는 종류마다 달라요.';
 
 function rungRow(r:Rung,lit:boolean){
  const row=el('li','ladder-rung'+(lit?' lit':''));row.dataset.rung=r.id;
  const pic=el('span','ladder-pic');if(r.art&&inquiryArt[r.art]){const img=el('img');img.src=inquiryArt[r.art].src;img.alt='';pic.append(img);}else pic.classList.add('ladder-hair');
  row.append(pic,el('strong','',r.label),el('small','',r.size));return row;
 }
-const limitLine=()=>{const li=el('li','ladder-limit');li.append(el('span','','↑ 맨눈으로 볼 수 있어요'),el('span','','↓ 돋보기·현미경이 필요해요'));return li;};
+const limitLine=()=>{const li=el('li','ladder-limit');li.append(el('span','','↑ 이 정도 굵기는 맨눈으로 구별하기 쉬워요'),el('span','','↓ 더 가는 부분은 확대해 비교해요'));return li;};
 
 /** Read-only ladder (발견 도감). lit: stages whose organisms are already discovered. */
 export function sizeLadder(lit:Set<string>){
@@ -36,10 +36,10 @@ export function ladderPlacement(done:boolean,onPlaced:()=>void){
  const slot=(index:number)=>{const li=el('li','ladder-slot');const placed=done&&index===known.length;
   const b=button(placed?'세균 · 약 0.001mm':'여기에 놓기',()=>{
    if(index===known.length){say.textContent=ladderFact;list.querySelectorAll('.ladder-slot button').forEach(n=>(n as HTMLButtonElement).disabled=true);b.textContent='세균 · 약 0.001mm';li.classList.add('placed');onPlaced();return;}
-   say.textContent=`${known[index]?.label||'맨 위'}보다도 작아요. 세균은 맨눈은 물론 학교 현미경으로도 겨우 점처럼 보여요. 더 아래 칸을 골라 봐요.`;},placed?'selected':'secondary',done&&!placed);
+   say.textContent=`${known[index]?.label||'맨 위'}보다도 작아요. 이 예의 세균은 약 0.001mm예요. 더 아래 칸을 골라 봐요.`;},placed?'selected':'secondary',done&&!placed);
   li.append(b);if(placed)li.classList.add('placed');return li;};
  list.append(slot(0));known.forEach((r,i)=>{list.append(rungRow(r,true));if(r.id===NAKED_EYE_LAST)list.append(limitLine());list.append(slot(i+1));});
  // Reopened after placing: show where the bacteria went.
  if(done)requestAnimationFrame(()=>list.querySelector('.ladder-slot.placed')?.scrollIntoView({block:'nearest'}));
- box.append(paragraph('크기 사다리 · 위에서 아래로 갈수록 작아져요. 칸마다 크기 차이는 달라요.','muted'),list,say);return box;
+ box.append(paragraph('크기 사다리 · 위에서 아래로 갈수록 작아져요. 크기는 대표적인 예이고 칸마다 차이는 달라요.','muted'),list,say);return box;
 }
