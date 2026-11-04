@@ -30,6 +30,8 @@ export async function waitForScene(page,selector){
 }
 
 export const button=(page,name)=>page.getByRole('button',{name,exact:true});
+// A browser without H.264 closes the film by itself, so a missing skip button is fine.
+export const skipFilm=page=>page.locator('.film-skip').click({timeout:3000}).catch(()=>{});
 export async function navigate(page,base,route){
  if(page.url()==='about:blank')await page.goto(base+'/#/'+route);
  else await page.evaluate(route=>{location.hash='#/'+route;},route);

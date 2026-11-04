@@ -5,6 +5,7 @@ import {stageIds,validEvidence} from '../model';
 import {inquiryEvidenceView as evidenceView} from './inquiry';
 import {stageBadge} from '../experience';
 import {playEffect} from '../audio';
+import {showFilm} from '../film';
 async function scene(ctx:Context,host:HTMLElement,labels:string[],enabled:boolean[],onPick:(i:number)=>void,core=false,onReady:()=>void=()=>{}){
  let disposed=false;let lab:ReturnType<typeof import('../renderers/lab2d').mountLab2d>|undefined;
  const progress=(event:Event)=>{const {step,failed}=(event as CustomEvent<{step:number;failed:boolean}>).detail;lab?.progress(step,failed);};host.addEventListener('lab-progress',progress);ctx.cleanup(()=>{disposed=true;host.removeEventListener('lab-progress',progress);lab?.dispose();});
@@ -37,7 +38,7 @@ export function core(ctx:Context){
  const activate=()=>{
   if(stopped||!coreReady||!linked()||running||finished)return;
   running=true;playEffect('core-wake');side.inert=true;sockets.inert=true;
-  const finish=()=>{if(stopped||finished)return;finished=true;cancelAnimationFrame(raf);a.activated=true;ctx.save();ctx.go('results');};
+  const finish=()=>{if(stopped||finished)return;finished=true;cancelAnimationFrame(raf);a.activated=true;ctx.save();ctx.go('results');showFilm('final',ctx.state.settings);};
   const banner=el('div','core-power','내 발견이 연구소를 깨워요');const record=el('div');work.querySelector('.evidence-view')?.remove();work.append(banner);side.replaceChildren(record);side.inert=false;
   ctx.host.querySelector('.action-bar')?.replaceChildren(button('결과로 바로 가기',finish,'primary'));
   let elapsed=0,previous=performance.now(),shown=-1;

@@ -40,8 +40,8 @@ function stopVoices(voices: Set<AudioScheduledSourceNode>) {
   for (const voice of voices) {try { voice.stop(); } catch { /* Already stopped. */ }}
   voices.clear();
 }
-// Only a playing video silences BGM; settings and story dialogs keep it so the volume slider can be heard.
-function quiet() {return explicitQuiet || document.hidden || !!document.querySelector('dialog[open] video');}
+// Only a concept video silences BGM; story films play over it, and settings keep it so the volume slider can be heard.
+function quiet() {return explicitQuiet || document.hidden || !!document.querySelector('dialog[open] video:not(.film-video)');}
 function stopMusic() {music?.pause();}
 function voice(frequency: number, duration: number, destination: GainNode, voices: Set<AudioScheduledSourceNode>, start: number, type: OscillatorType = 'sine') {
   const ctx = context;

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
-import {launchBrowser,waitForScene,button,navigate,teacherTools,readSaved,waitSaved,setRange} from './browser.mjs';
+import {launchBrowser,waitForScene,button,navigate,teacherTools,readSaved,waitSaved,setRange,skipFilm} from './browser.mjs';
 import {inquiryTasks,stageRoutes,names} from './curriculum.mjs';
 const base=process.env.APP_URL||'http://127.0.0.1:5176';
 const browser=await launchBrowser();const context=await browser.newContext({viewport:{width:1280,height:800},hasTouch:true,...(process.env.RESUME_FLOW?{storageState:'.tmp/learner20-state.json'}:{})});const page=await context.newPage();page.setDefaultTimeout(15000);
@@ -68,7 +68,7 @@ async function completeTask(task,replay=false){
  checks.push(task.id);console.log(task.id+' completed');
 }
 try{
- await mkdir('.tmp/screens',{recursive:true});await navigate(page,base,'main');if(!process.env.RESUME_FLOW){await btn('탐험 시작').click();await btn('다음').click();await btn('다음').click();await btn('탐험 지도로').click();await waitForScene(page,'.map-host');assert.equal(await page.locator('.map-resident').count(),0);
+ await mkdir('.tmp/screens',{recursive:true});await navigate(page,base,'main');if(!process.env.RESUME_FLOW){await btn('탐험 시작').click();await skipFilm(page);await btn('다음').click();await btn('다음').click();await btn('탐험 지도로').click();await waitForScene(page,'.map-host');assert.equal(await page.locator('.map-resident').count(),0);
  await page.getByRole('button',{name:/^1\. 버섯숲 표본실/}).click();await btn('연구소 들어가기').click();
  // Empty submission must stay on the activity and explain what is missing.
  await btn('발견 기록하기').click();assert.ok((await page.locator('.inquiry-feedback').innerText()).length>0);assert.equal(await page.locator('.discovery-dialog').count(),0);
@@ -80,7 +80,7 @@ try{
  let saved=await waitSaved(page,s=>Object.keys(s.learner.evidence).length===5);assert.equal(Object.values(saved.learner.inquiry.records).filter(r=>r.completedAt).length,20);assert.equal(saved.learner.inquiry.rewards.length,10);
  await navigate(page,base,'final-report');for(let i=0;i<5;i++)await page.getByRole('button',{name:/^(이 )?기록 확인$/}).click();await btn('생활 사건 발표').click();assert.ok(await page.locator('dialog .album-tile').count()>=4);await page.getByRole('dialog').last().getByRole('button',{name:'닫기',exact:true}).click();await btn('발견을 코어에 연결').click();
  for(const name of names){await btn(name+' 포트').click();assert.equal(await page.locator('dialog[open]').count(),0,'core connects with one tap');}
- await btn('코어 가동').click();await btn('결과로 바로 가기').click();await page.locator('.screen-results').waitFor();await page.getByLabel('소개 카드 제목',{exact:true}).fill('내가 발견한 생물의 작용');await page.getByLabel('소개 문장',{exact:true}).fill('우리 생활에는 작은 생물의 도움이 있어요.');
+ await btn('코어 가동').click();await btn('결과로 바로 가기').click();await skipFilm(page);await page.locator('.screen-results').waitFor();await page.getByLabel('소개 카드 제목',{exact:true}).fill('내가 발견한 생물의 작용');await page.getByLabel('소개 문장',{exact:true}).fill('우리 생활에는 작은 생물의 도움이 있어요.');
  const dp=page.waitForEvent('download');await btn('내 카드 저장').click();const download=await dp;await download.saveAs('.tmp/result-card.png');saved=await waitSaved(page,s=>s.learner.cardTitle==='내가 발견한 생물의 작용');
  await page.reload();await page.locator('.screen-results').waitFor();assert.equal(await page.getByLabel('소개 카드 제목').inputValue(),'내가 발견한 생물의 작용');
  const learnerBefore=JSON.stringify((await readSaved(page)).learner);const settings=await teacherTools(page);await settings.getByRole('button',{name:'관리자 전체 해금',exact:true}).click();await settings.getByRole('button',{name:'시연용 예시 기록 불러오기',exact:true}).click();await page.locator('dialog[open]').waitFor({state:'detached'});await navigate(page,base,'solution-run');
