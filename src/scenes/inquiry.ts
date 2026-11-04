@@ -19,12 +19,13 @@ import {sourceNotes} from '../inquiry-sources';
 import {activityIllustration} from '../experience';
 import {prepareInquiry,validTrackPair,validTimelinePair,reflectClaim,introduction} from '../inquiry-preparation';
 import {chooseCase} from '../inquiry-actions';
+import '../link-board.css';
 
 const backgrounds:Record<Stage,string>={M1:'fungi',M2:'water',M3:'archive',M4:'village',M5:'workshop'};
 export function mentor(task:InquiryTask,record:InquiryRecord){const box=el('div','buddy-card');const pic=el('img');pic.src='assets/characters/companion-portrait.webp';pic.alt='토끼 길잡이 토토';const talk=el('div','buddy-speech');talk.hidden=true;let level=0;const text=paragraph('');const more=button('다른 힌트',()=>{level=(level+1)%3;draw();playEffect('hint');},'text-button');const draw=()=>{text.textContent=[task.mentor,task.instruction,guidance(task,record).action][level];};talk.append(text,more,button('자료·관찰 조건',()=>modal('자료와 관찰 조건',[sourceNotes(task)]),'text-button'));const b=button('',()=>{talk.hidden=!talk.hidden;level=0;draw();b.setAttribute('aria-expanded',String(!talk.hidden));playEffect('hint');},'buddy-toggle');b.setAttribute('aria-label','토토의 힌트');b.setAttribute('aria-expanded','false');b.append(pic,el('span','','토토에게 힌트'));box.append(b,talk);return box;}
 export function inquiryScene(ctx:Context,stage:Stage){
  const progress=ctx.attempt.inquiry;const list=tasksFor(stage);let index=progress.current[stage]??0;index=Math.max(0,Math.min(3,index));const task=list[index];const r=progress.records[task.id]??=prepareInquiry(task);let disposed=false;ctx.cleanup(()=>disposed=true);
- ctx.host.classList.add('expedition-shell',`stage-${stage}`);ctx.host.dataset.stage=stage;ctx.host.dataset.kind=task.kind;ctx.host.style.setProperty('--facility-image',`url('/assets/places/${backgrounds[stage]}.webp')`);
+ const linking=['collect','connect','sort'].includes(task.kind);ctx.host.classList.add('expedition-shell',`stage-${stage}`);ctx.host.classList.toggle('link-task',linking);ctx.host.dataset.stage=stage;ctx.host.dataset.kind=task.kind;ctx.host.style.setProperty('--facility-image',`url('/assets/places/${backgrounds[stage]}.webp')`);
  const head=el('div','expedition-header');const emblem=activityIllustration(task,'mission-emblem');const titles=el('div','mission-titles');titles.append(el('span','eyebrow',`MISSION ${stage.slice(1).padStart(2,'0')} · ${stages.find(s=>s.id===stage)!.title} · ${index+1}번째 발견`),heading(task.title));head.append(emblem,titles);ctx.host.append(head);
  const grid=el('div','expedition-workspace');const work=el('section','expedition-work');const host=el('div','expedition-canvas-host');host.setAttribute('aria-label',task.title+' 탐구 장면');const badge=el('span','model-badge',task.kind==='build'?'관계 설명 모형':'관찰·조사 모형');work.append(host,badge);const side=el('aside','expedition-panel');grid.append(work,side);ctx.host.append(grid);
  let running=false,ready=false;const loading=el('div','inquiry-loading','관찰 이미지를 준비하고 있어요…');loading.setAttribute('role','status');work.append(loading);const status=el('div','inquiry-status');status.setAttribute('role','status');const counter=el('strong','inquiry-counter');const action=paragraph('','next-instruction');const meter=el('div','inquiry-meter');meter.setAttribute('aria-hidden','true');const fill=el('span');meter.append(fill);status.append(counter,meter,action);side.append(status);const tools=el('div','expedition-tools');tools.inert=true;side.append(tools);
@@ -58,7 +59,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
    selectedCard=id;if(fromList)view?.arm(id);
   }
   sourcePreview.hidden=false;sourcePreview.classList.remove('filed');sourcePreview.replaceChildren(el('strong','',it.label),paragraph(it.detail));
-  if(['collect','connect','sort','build'].includes(task.kind)){
+  if(task.kind==='build'){
    const targets=el('div','source-targets');
    for(const t of task.targets)targets.append(button(putLabel(t),()=>{
     if(running||disposed)return;
@@ -71,7 +72,9 @@ export function inquiryScene(ctx:Context,stage:Stage){
   save();
   if(task.kind==='review'){controls();view?.refresh();}
  };
- void import('../renderers/inquiry2d').then(async({mountInquiry})=>{await document.fonts.ready;if(disposed)return;view=mountInquiry(host,task,r,{assigned:(id,target)=>{selectedCard='';const item=task.items.find(it=>it.id===id)!;const slot=task.targets.find(t=>t.id===target)!;sourcePreview.replaceChildren(el('strong','',item.label+' → '+slot.label));sourcePreview.classList.add('filed');updateStatus();},changed:()=>{save();feedback.textContent='';controls();},open:source,feedback:info,ready:(ok)=>{ready=ok;if(demoButton)demoButton.disabled=!ok;tools.inert=!ok;next.disabled=!ok;if(ok)loading.remove();else{loading.replaceChildren(paragraph('관찰 이미지를 준비하지 못했어요. 연결을 확인하고 다시 열어요.'),button('이미지 다시 준비',ctx.render));}}},ctx.state.settings.reduced);ctx.cleanup(view.dispose);}).catch(()=>{loading.replaceChildren(paragraph('장면을 열지 못했어요.'),button('다시 열기',ctx.render));});
+ // Link boards never need Phaser, so they load their own small renderer.
+ const scene=():Promise<typeof import('../renderers/inquiry2d').mountInquiry>=>linking?import('../renderers/link-board').then(m=>m.mountLinkBoard):import('../renderers/inquiry2d').then(m=>m.mountInquiry);
+ void scene().then(async mount=>{await document.fonts.ready;if(disposed)return;view=mount(host,task,r,{assigned:(id,target)=>{selectedCard='';const item=task.items.find(it=>it.id===id)!;const slot=task.targets.find(t=>t.id===target)!;sourcePreview.replaceChildren(el('strong','',item.label+' → '+slot.label));sourcePreview.classList.add('filed');updateStatus();},changed:()=>{save();feedback.textContent='';controls();},open:source,feedback:info,ready:(ok)=>{ready=ok;if(demoButton)demoButton.disabled=!ok;tools.inert=!ok;next.disabled=!ok;if(ok)loading.remove();else{loading.replaceChildren(paragraph('관찰 이미지를 준비하지 못했어요. 연결을 확인하고 다시 열어요.'),button('이미지 다시 준비',ctx.render));}}},ctx.state.settings.reduced);ctx.cleanup(view.dispose);}).catch(()=>{loading.replaceChildren(paragraph('장면을 열지 못했어요.'),button('다시 열기',ctx.render));});
  const openLadder=()=>{const dialog=modal('세균은 얼마나 작을까요?',[ladderPlacement(r.assignments.ladder==='smallest',()=>{r.assignments.ladder='smallest';save();playEffect('success');controls();})]);dialog.classList.add('ladder-dialog');};
  const controls=()=>{tools.replaceChildren();
   if(task.kind==='microscope'){
@@ -154,7 +157,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
   if(!ready||running)return info(running?'실험 중에는 설계를 바꿀 수 없어요.':'이미지가 준비되면 조작할 수 있어요.');
   if(task.kind==='timeline'&&validTimelinePair(r))view?.setPreview(false);
   const list:Node[]=[];let selected='';
-  if(['collect','connect','sort','build'].includes(task.kind)){
+  if(task.kind==='build'){
    const picked=paragraph('자료를 먼저 살펴보고 선택해요.');list.push(picked);const buttons:HTMLButtonElement[]=[];task.items.forEach(it=>{const b=button(it.label,()=>{selected=it.id;source(it.id,true);picked.textContent=`선택한 자료: ${it.label} · ${it.detail}`;buttons.forEach(n=>n.setAttribute('aria-pressed',String(n===b)));save();});b.setAttribute('aria-pressed','false');buttons.push(b);list.push(b);});
    for(const t of task.targets)list.push(button(putLabel(t),()=>{if(!selected)return notice('먼저 자료를 골라요.');view?.assignCard(selected,t.id);const it=task.items.find(i=>i.id===selected)!;notice(it.target===t.id?'연결했어요.':task.feedback);}));
   }else if(task.kind==='microscope'||task.kind==='timeline'||task.kind==='track'&&r.level===2){
@@ -210,7 +213,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
  }
  const footer=el('div','expedition-footer');const left=el('div','expedition-secondary');left.append(button(index===0?'지도로':'이전 발견',()=>{if(index===0)ctx.go('nature-map');else{progress.current[stage]=index-1;ctx.save();ctx.go(index-1<2?stages.find(s=>s.id===stage)!.entry:stages.find(s=>s.id===stage)!.exit);}}));
  // Secondary helpers sit under the tools so the bottom corners keep one back action and one next action.
- const links=el('div','panel-links');links.append(mentor(task,r),button('버튼으로 조작',alternative,'text-button'));side.append(links);
+ const links=el('div','panel-links');links.append(mentor(task,r));if(!linking)links.append(button('버튼으로 조작',alternative,'text-button'));side.append(links);
  const next=button(r.completedAt?'기록 확인하고 계속':'발견 기록하기',()=>{
   if(!ready||running)return info('이미지와 실행 결과를 확인한 뒤 기록해요.');
   if(document.querySelector('.discovery-dialog'))return;
@@ -220,8 +223,9 @@ export function inquiryScene(ctx:Context,stage:Stage){
   const card=el('div','discovery-card');card.append(activityIllustration(task,'discovery-stamp',r),heading(task.success),...task.terms?.length?[termChips(task.terms)]:[],paragraph(index===3?'연구소의 이 구역을 복구할 수 있어요.':'이 발견을 다음 탐구에서 이어서 써봐요.'));const model=modelButton(task.id);if(model)card.append(model);
   const dialog=modal(index===3?'연구 패킷 완성!':'새로운 발견을 기록했어요',[card,button(index===3?'연구소 복구하기':'다음 발견으로',()=>{dialog.close();if(index===3){ctx.complete(stage);return;}playEffect('page-turn');progress.current[stage]=index+1;ctx.save();ctx.go(index+1<2?stages.find(s=>s.id===stage)!.entry:stages.find(s=>s.id===stage)!.exit);},'primary')],{showClose:false});dialog.classList.add('discovery-dialog');
  },'primary',true);footer.append(left,next);ctx.host.append(footer);
- const stepper=el('div','activity-stepper');stepper.setAttribute('aria-label','발견 기록 진행');for(const [i,t] of list.entries()){const done=!!progress.records[t.id]?.completedAt;const step=button(String(i+1),()=>{progress.current[stage]=i;ctx.save();ctx.go(i<2?stages.find(s=>s.id===stage)!.entry:stages.find(s=>s.id===stage)!.exit);},i===index?'current':done?'done':'',!done&&i!==index&&!ctx.state.settings.admin);step.setAttribute('aria-label',`${i+1}번째 발견: ${t.title}`);if(i===index)step.setAttribute('aria-current','step');stepper.append(step);}work.append(stepper);
+ const stepper=el('div','activity-stepper');stepper.setAttribute('aria-label','발견 기록 진행');for(const [i,t] of list.entries()){const done=!!progress.records[t.id]?.completedAt;const step=button(String(i+1),()=>{progress.current[stage]=i;ctx.save();ctx.go(i<2?stages.find(s=>s.id===stage)!.entry:stages.find(s=>s.id===stage)!.exit);},i===index?'current':done?'done':'',!done&&i!==index&&!ctx.state.settings.admin);step.setAttribute('aria-label',`${i+1}번째 발견: ${t.title}`);if(i===index)step.setAttribute('aria-current','step');stepper.append(step);}if(linking)footer.insertBefore(stepper,next);else work.append(stepper);
  if(ctx.attempt.evidence[stage]||ctx.state.settings.admin)left.append(button('개념 영상',()=>showConcept(stage,ctx.state.settings),'secondary concept-replay'));
+ if(linking)left.append(badge);
 }
 
 /** 새 낱말 chips: the concept words a discovery introduced. */

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
-import {launchBrowser,waitForScene,button,navigate,teacherTools,readSaved,waitSaved,setRange,skipFilm} from './browser.mjs';
+import {launchBrowser,waitForScene,button,navigate,teacherTools,readSaved,waitSaved,setRange,skipFilm,linkCard,linkTarget} from './browser.mjs';
 import {inquiryTasks,stageRoutes,names} from './curriculum.mjs';
 const base=process.env.APP_URL||'http://127.0.0.1:5176';
 const browser=await launchBrowser();const context=await browser.newContext({viewport:{width:1280,height:800},hasTouch:true,...(process.env.RESUME_FLOW?{storageState:'.tmp/learner20-state.json'}:{})});const page=await context.newPage();page.setDefaultTimeout(15000);
@@ -15,14 +15,13 @@ async function connectAll(task){
  for(const [i,item] of task.items.entries()){
   if(task.kind==='build'&&!item.target)continue;
   if(task.kind==='build'&&record?.assignments[item.target]===item.id)continue;
-  if(task.id==='M1-4')await touch(411,105+i*118);
-  else if(task.kind==='build')await touch(132+i*233,431);
-  else{const columns=task.items.length>3?2:1,rowH=Math.min(200,430/Math.ceil(task.items.length/columns));await touch(columns===2?165+(i%2)*280:245,65+(Math.floor(i/columns)+.5)*rowH);}
+  if(task.kind==='build')await touch(132+i*233,431);
+  else await linkCard(page,item.id).tap();
   await page.locator('.source-preview').waitFor({state:'visible'});
   assert.equal(await page.locator('dialog[open]').count(),0,'source selection must not interrupt the canvas');
   const targetIndex=task.targets.findIndex(t=>t.id===item.target);
-  if(task.id==='M1-4')await touch(648,145+targetIndex*137);
-  else await touch(task.kind==='build'?185+targetIndex*295:task.targets.length>2?827:805,task.kind==='build'?200:90+(targetIndex+.5)*(400/task.targets.length));
+  if(task.kind==='build')await touch(185+targetIndex*295,200);
+  else await linkTarget(page,item.target).tap();
  }
  if(task.kind==='build'){
   const latest=await waitSaved(page,s=>s.learner.inquiry.records[task.id].assignments.edge1==='linked'&&s.learner.inquiry.records[task.id].assignments.edge2==='linked');

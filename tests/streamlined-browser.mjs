@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
-import {launchBrowser,button,navigate,readSaved,waitSaved,setRange,teacherTools} from './browser.mjs';
+import {launchBrowser,button,navigate,readSaved,waitSaved,setRange,teacherTools,linkCard,linkTarget} from './browser.mjs';
 const base=process.env.APP_URL||'http://127.0.0.1:5176';
 const browser=await launchBrowser(),errors=[],checks=[];
 const context=await browser.newContext({viewport:{width:1024,height:768},hasTouch:true});
@@ -15,9 +15,9 @@ try{
  await mkdir('.tmp/streamlined',{recursive:true});
  await navigate(page,base,'fungi-field');await ready(page);
  // A wrong grouping is editable in place. Reading and choosing never requires a source modal.
- await touch(page,245,165);assert.equal(await page.locator('dialog[open]').count(),0);assert.ok((await page.locator('.source-preview').innerText()).includes('죽은 나무'));
- await touch(page,805,390);await waitSaved(page,s=>s.learner.inquiry.records['M1-1'].assignments.log==='mold');assert.ok((await page.locator('.inquiry-feedback').innerText()).length>0);
- await touch(page,245,165);await touch(page,805,190);await waitSaved(page,s=>s.learner.inquiry.records['M1-1'].assignments.log==='mushroom');
+ await linkCard(page,'log').tap();assert.equal(await page.locator('dialog[open]').count(),0);assert.ok((await page.locator('.source-preview').innerText()).includes('죽은 나무'));
+ await linkTarget(page,'mold').tap();await waitSaved(page,s=>s.learner.inquiry.records['M1-1'].assignments.log==='mold');assert.ok((await page.locator('.inquiry-feedback').innerText()).length>0);
+ await linkCard(page,'log').tap();await linkTarget(page,'mushroom').tap();await waitSaved(page,s=>s.learner.inquiry.records['M1-1'].assignments.log==='mushroom');
  await page.screenshot({path:'.tmp/streamlined/source-touch.png'});checks.push('wrong classification gives feedback and can be corrected with two taps without reopening a modal');
  // Empty teacher preview does not acquire ports or activate the core, even when routing is unlocked.
  let settings=await teacherTools(page);await settings.getByRole('button',{name:'관리자 전체 해금',exact:true}).click();await settings.getByRole('button',{name:'닫기',exact:true}).click();

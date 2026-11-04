@@ -15,7 +15,7 @@ export async function waitForScene(page,selector){
  if(await page.locator(selector).evaluate(host=>getComputedStyle(host).display==='none'))return;
  await page.waitForFunction(selector=>{
   const host=document.querySelector(selector);
-  if(host?.querySelector('.flat-lab'))return true;
+  if(host?.querySelector('.flat-lab,.link-board'))return true;
   const canvas=host?.querySelector('canvas');
   const context=canvas?.getContext('2d');
   if(!context||!canvas.width||!canvas.height)return false;
@@ -43,4 +43,6 @@ export async function readSaved(page){return page.evaluate(()=>new Promise((reso
 export async function waitSaved(page,predicate){await page.waitForTimeout(220);for(let i=0;i<30;i++){const saved=await readSaved(page);if(saved&&(!predicate||predicate(saved)))return saved;await page.waitForTimeout(100);}throw Error('expected persisted state was not reached');}
 export async function setRange(page,label,value){await page.getByRole('slider',{name:label,exact:true}).evaluate((n,v)=>{n.value=String(v);n.dispatchEvent(new Event('input',{bubbles:true}));},value);}
 export async function choose(page,label,text){await button(page,label).click();await page.getByRole('dialog').last().getByRole('button',{name:text,exact:true}).click();}
+export const linkCard=(page,id)=>page.locator(`[data-link-item="${id}"]`);
+export const linkTarget=(page,id)=>page.locator(`[data-link-target="${id}"]`);
 export async function tapCanvas(page,x,y){const c=page.locator('.expedition-canvas-host canvas');const r=await c.boundingBox();if(!r)throw Error('inquiry canvas missing');await page.mouse.click(r.x+r.width*x,r.y+r.height*y);}

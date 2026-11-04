@@ -18,9 +18,8 @@ export function guidance(task:InquiryTask,r:InquiryRecord,selectedCard=''){
   total=items.length;done=items.filter(it=>r.opened.includes(it.id)&&(r.assignments[it.id]||'')===it.target).length;
   const card=items.find(it=>it.id===selectedCard);
   const pending=items.find(it=>!r.opened.includes(it.id)||it.target!==r.assignments[it.id]);
-  if(card)action=`‘${card.label}’의 내용을 읽고, 오른쪽에서 어울리는 칸을 눌러요.`;
-  else if(pending)action=`왼쪽 ‘${pending.label}’ 자료를 눌러요.`;
-  if(task.id==='M1-4'&&pending)action=card?'오른쪽에서 어울리는 표본의 점을 눌러 선을 이어요.':'왼쪽 특징의 점을 오른쪽 표본의 점으로 끌어요. 두 점을 차례로 눌러도 돼요.';
+  if(card)action=`‘${card.label}’ 내용을 읽고, 어울리는 기록 칸까지 선을 이어요.`;
+  else if(pending)action=`‘${pending.label}’ 자료를 눌러 살펴봐요.`;
   if(task.id==='M3-2'&&r.v===2){
    total++;done+=Number(r.assignments.ladder==='smallest');
    if(!pending&&!card&&r.assignments.ladder!=='smallest')action='이제 ‘크기 사다리에 세균 놓기’를 눌러요.';

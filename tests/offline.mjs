@@ -31,7 +31,7 @@ try{
  page.on('requestfailed',r=>{if(r.url().startsWith(base))result.failed.push(r.url().slice(base.length));});
  await page.reload();await page.locator('.screen-main').waitFor({timeout:20000});result.main=await page.locator('.hero .title-art').evaluate(i=>i.complete&&i.naturalWidth>0);
  await navigate(page,base,'nature-map');await waitForScene(page,'.map-host');result.map={canvas:await page.locator('.map-host canvas').count()};
- await navigate(page,base,'fungi-field');await waitForScene(page,'.expedition-canvas-host');result.inquiry={canvas:await page.locator('.expedition-canvas-host canvas').count()};
+ await navigate(page,base,'fungi-field');await waitForScene(page,'.expedition-canvas-host');result.inquiry={canvas:await page.locator('.expedition-canvas-host canvas,.link-board').count()};
  const study=precached.map(f=>f[0]).filter(f=>f.startsWith('assets/study/'));
  result.inquiry.study=await page.evaluate(srcs=>Promise.all(srcs.map(src=>new Promise(done=>{const i=new Image();i.onload=i.onerror=()=>done({src,width:i.naturalWidth});i.src=src;}))),study);
  await page.waitForFunction(()=>[...document.querySelectorAll('main img')].every(i=>i.complete));

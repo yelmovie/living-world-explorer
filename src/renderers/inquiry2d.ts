@@ -7,12 +7,12 @@ import {playEffect} from '../audio';
 import {inquiryArt,artTime,artKey,artFrame,magnifyFor,type MagnifyView} from '../artAssets';
 import {addMark,markHint,viewToImage,observedKind,featureAt} from '../observation';
 import type {ObservationFrame} from '../inquiry-playback';
-type Hooks={assigned:(id:string,target:string)=>void;changed:()=>void;open:(id:string)=>void;feedback:(text:string)=>void;ready:(ok:boolean)=>void};
+export type InquiryHooks={assigned:(id:string,target:string)=>void;changed:()=>void;open:(id:string)=>void;feedback:(text:string)=>void;ready:(ok:boolean)=>void};
 const WIDTH=960,HEIGHT=540;
-export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRecord,hooks:Hooks,reduced:boolean){
+export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRecord,hooks:InquiryHooks,reduced:boolean){
  let record=learner;
  let beforeDemo:{preview:boolean;reveal:number|undefined}|undefined;
- let refresh=()=>{};let play=false;let preview=false;let disposed=false;let armed='';let reveal:number|undefined;let simulating=false;let scene:Phaser.Scene|undefined;let inputObjects:Phaser.GameObjects.GameObject[]=[];
+ let refresh=()=>{};let play=false;let preview=false;let disposed=false;let armed='';let reveal:number|undefined;let simulating=false;let scene:Phaser.Scene|undefined;
  const blocked=()=>disposed||document.hidden||!!document.querySelector('dialog[open]');
  // Scene colours follow the DOM tokens (styles.css stage layer), so one token edit restyles both.
  const css=(name:string,fallback:number)=>{const v=getComputedStyle(host).getPropertyValue(name).trim();return /^#[0-9a-f]{6}$/i.test(v)?parseInt(v.slice(1),16):fallback;};
@@ -24,9 +24,9 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
   failed=false;
   preload(){this.load.on('loaderror',(file:Phaser.Loader.File)=>{if(!file.key.startsWith('ui-'))this.failed=true;});const view=task.kind==='microscope'?magnifyFor(task.organism,record.v===2):undefined;const needed=new Set([...task.items.map(artKey),task.organism,observedKind(task,record),task.kind==='sample'?'water':undefined,view?.context,view?.lens]);for(const art of needed)if(art&&inquiryArt[art]){const asset=inquiryArt[art];if(asset.frames)asset.frames.forEach((src,i)=>this.load.image(`art-${art}-${i}`,src));else this.load.image(`art-${art}`,asset.src);}
    // Decorative props are optional: a missing prop falls back to the drawn card, never blocks the activity.
-   const props=['tape',...task.kind==='microscope'?['microscope-frame',...(view?['hand-lens']:[])]:[],...task.id==='M5-1'?['yogurt-maker']:[],...task.kind==='sample'?['dropper','slide','water-drop']:[],...['collect','connect','sort'].includes(task.kind)?['notebook']:[]];for(const p of props)this.load.image(`ui-${p}`,`assets/ui/${p}.webp`);}
+   const props=['tape',...task.kind==='microscope'?['microscope-frame',...(view?['hand-lens']:[])]:[],...task.id==='M5-1'?['yogurt-maker']:[],...task.kind==='sample'?['dropper','slide','water-drop']:[]];for(const p of props)this.load.image(`ui-${p}`,`assets/ui/${p}.webp`);}
   create(){scene=this;if(this.failed){hooks.ready(false);return;}refresh=()=>this.paint();this.paint();hooks.ready(true);}
-  wipe(){this.tweens.killAll();this.trackSurface=undefined;this.trackElapsed=0;inputObjects=[];this.children.removeAll(true);for(const name of this.textures.getTextureKeys())if(name.startsWith('plate-'))this.textures.remove(name);}
+  wipe(){this.tweens.killAll();this.trackSurface=undefined;this.trackElapsed=0;this.children.removeAll(true);for(const name of this.textures.getTextureKeys())if(name.startsWith('plate-'))this.textures.remove(name);}
   text(x:number,y:number,text:string,size=23,color='#234b3c',width=330){return this.add.text(x,y,text,{fontFamily:'Lab Display, Malgun Gothic',fontSize:`${Math.max(28,size)}px`,color,align:'center',wordWrap:{width,useAdvancedWrap:true},lineSpacing:4}).setOrigin(.5);}
   // Rounded pill behind short captions so they read over any photo.
   caption(x:number,y:number,label:string,size=28,color=tone.ink,width=850){const t=this.text(x,y,label,size,color,width);const w=t.width+30,h=t.height+12,r=Math.min(22,h/2),g=this.add.graphics();g.fillStyle(tone.shade,.14).fillRoundedRect(x-w/2+2,y-h/2+4,w,h,r);g.fillStyle(tone.paper,.97).fillRoundedRect(x-w/2,y-h/2,w,h,r);g.lineStyle(2,tone.line,1).strokeRoundedRect(x-w/2,y-h/2,w,h,r);this.children.bringToTop(t);return t;}
@@ -35,7 +35,6 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
   card(x:number,y:number,w:number,h:number,style:Parameters<Inquiry['cardShape']>[5]={}){return this.cardShape(this.add.graphics(),x,y,w,h,style);}
   tape(x:number,y:number,w=92,angle=-4){return this.textures.exists('ui-tape')?this.add.image(x,y,'ui-tape').setDisplaySize(w,w*.21).setAngle(angle).setAlpha(.95):undefined;}
   badge(x:number,y:number){const g=this.add.graphics();g.fillStyle(tone.accent,1).fillCircle(x,y,16);g.lineStyle(3,0xffffff,1).strokeCircle(x,y,16);return [g,this.add.text(x,y,'✓',{fontFamily:'Lab Display, Malgun Gothic',fontSize:'20px',color:'#ffffff'}).setOrigin(.5)];}
-  thumb(x:number,y:number,it:InquiryTask['items'][number]){const kind=artKey(it);const key=kind&&inquiryArt[kind]?.frames?`art-${kind}-${artFrame(artTime(kind,it.detail,it.id))}`:`art-${kind}`;const g=this.add.graphics();g.fillStyle(tone.shade,.2).fillRoundedRect(x-21,y-15,44,34,5);g.fillStyle(0xffffff,1).fillRoundedRect(x-22,y-17,44,34,5);g.lineStyle(2,tone.accent,1).strokeRoundedRect(x-22,y-17,44,34,5);if(this.textures.exists(key)){const pic=this.add.image(x,y,key);pic.setScale(Math.min(38/pic.width,28/pic.height));}else this.add.text(x,y,'?',{fontFamily:'Lab Display, Malgun Gothic',fontSize:'22px',color:tone.ink}).setOrigin(.5);}
   plate(x:number,y:number,w:number,h:number,label:string,fill=tone.paper){const box=this.card(x,y,w,h,{fill});if(label)this.text(x,y,label,22,tone.ink,w-20);return box;}
   art(x:number,y:number,w:number,h:number,kind:string,options:Parameters<typeof draw>[2]&{fit?:'contain'}={}){
    const name=inquiryArt[kind]?.frames?`art-${kind}-${artFrame(options.time)}`:`art-${kind}`;
@@ -46,97 +45,12 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
   commit(){playEffect(task.kind==='sample'?(record.sequence===3?'pipette-drop':'water'):'click');hooks.changed();this.paint();}
   pauseGuard(){return blocked()||simulating||!!beforeDemo;}
   paint(){if(disposed)return;this.wipe();
-   if(task.id==='M1-4'){this.paintMatching();return;}
-   if(['collect','connect','sort'].includes(task.kind)){this.paintConnections();return;}
    if(task.kind==='microscope'||task.kind==='track'||task.kind==='timeline'){this.paintObservation();return;}
    if(task.kind==='sample'){this.paintSampling();return;}
    if(task.kind==='build'){this.paintBuild();return;}
    if(task.kind==='review'){this.paintReview();return;}
    this.paintPublish();
   }
-  paintMatching(){
-   const sources=task.items.map((item,i)=>({item,index:i,y:105+i*118}));
-   const targets=task.targets.map((target,i)=>({target,y:145+i*137}));
-   const colors=[0x346ba0,0x9a5947,0x527a3f,0x795298];
-   const links=this.add.graphics();
-   const activeFrames:Phaser.GameObjects.Graphics[]=[];
-   const stroke=(fromY:number,toX:number,toY:number,color:number)=>{
-    const curve=new Phaser.Curves.CubicBezier(new Phaser.Math.Vector2(411,fromY),new Phaser.Math.Vector2(500,fromY),new Phaser.Math.Vector2(toX-90,toY),new Phaser.Math.Vector2(toX,toY));
-    links.lineStyle(10,0xfffaf0,.94);curve.draw(links,40);links.lineStyle(5,color,1);curve.draw(links,40);
-   };
-   const redraw=(pointer?:Phaser.Input.Pointer)=>{
-    links.clear();
-    for(const s of sources){
-     if(pointer&&s.item.id===armed){stroke(s.y,pointer.x,pointer.y,colors[s.index]);continue;}
-     const target=targets.find(t=>t.target.id===record.assignments[s.item.id]);
-     if(target)stroke(s.y,648,target.y,colors[s.index]);
-    }
-    activeFrames.forEach((frame,i)=>frame.setVisible(sources[i].item.id===armed));
-   };
-   this.caption(209,30,'① 특징의 점',24);this.caption(800,30,'② 표본의 점',24);
-   for(const {target,y} of targets){
-    this.card(797,y,274,108,{fill:tone.paper,stroke:tone.accent});
-    const label=target.id==='mushroom'?'버섯':target.id==='mold'?'곰팡이':'둘 다';
-    this.text(797,y-16,label,30,tone.ink,244);
-    const connected=sources.filter(s=>record.assignments[s.item.id]===target.id);
-    if(!connected.length)this.text(797,y+26,'여기로 이어요',20,tone.ink,240);
-    connected.forEach((s,i)=>{
-     const x=797+(i-(connected.length-1)/2)*38;
-     this.add.circle(x,y+28,15,colors[s.index]);this.add.text(x,y+28,String(s.index+1),{fontFamily:'Lab Display, Malgun Gothic',fontSize:'22px',color:'#ffffff'}).setOrigin(.5);
-    });
-    this.add.circle(648,y,18,0xfffaf0).setStrokeStyle(5,tone.accent);
-    const zone=this.add.zone(784,y,310,116).setRectangleDropZone(310,116).setInteractive({useHandCursor:true});
-    zone.setData('target',target.id);
-    zone.on('pointerdown',()=>{if(this.pauseGuard())return;if(armed)this.assign(armed,target.id);else hooks.feedback('왼쪽 특징을 먼저 골라요. 점을 끌거나 두 점을 차례로 누를 수 있어요.');});
-   }
-   for(const s of sources){
-    const {item,index,y}=s,color=colors[index];
-    this.card(211,y,366,104,{fill:tone.paper,stroke:record.assignments[item.id]?color:tone.line});
-    const kind=artKey(item);this.art(92,y,112,84,kind||'question',{time:artTime(kind,item.detail,item.id),fit:'contain'});
-    this.text(270,y,item.label,23,tone.ink,213);
-    const frame=this.add.graphics().lineStyle(5,color).strokeRoundedRect(26,y-54,370,108,18);activeFrames.push(frame);
-    this.add.circle(411,y,19,color).setStrokeStyle(4,0xfffaf0);
-    this.add.text(411,y,String(index+1),{fontFamily:'Lab Display, Malgun Gothic',fontSize:'23px',color:'#ffffff'}).setOrigin(.5);
-    const zone=this.add.zone(228,y,412,110).setInteractive({useHandCursor:true});
-    this.input.setDraggable(zone);
-    let dropped=false;
-    zone.on('pointerdown',()=>{if(this.pauseGuard())return;dropped=false;armed=item.id;hooks.open(item.id);redraw();});
-    zone.on('drag',(p:Phaser.Input.Pointer)=>{if(!this.pauseGuard())redraw(p);});
-    zone.on('drop',(_p:Phaser.Input.Pointer,target:Phaser.GameObjects.Zone)=>{
-     if(this.pauseGuard())return;dropped=true;this.assign(item.id,String(target.getData('target')));
-    });
-    zone.on('dragend',()=>{if(zone.active&&!dropped)redraw();});
-   }
-   redraw();
-  }
-  paintConnections(){
-   this.caption(245,33,'① 자료 고르기',23);this.caption(805,33,'② 기록 칸 고르기',23);
-   const n=task.items.length;const columns=n>3?2:1;const itemWidth=columns===2?262:390;const rows=Math.ceil(n/columns);const rowH=Math.min(200,430/rows);
-   const notebook=task.targets.length<=2&&this.textures.exists('ui-notebook');const targetWidth=task.targets.length>2?200:250,targetHeight=task.targets.length>3?90:task.targets.length>2?112:186;const targetX=task.targets.length>2?827:805;
-   const anchors=task.targets.map((t,i)=>({id:t.id,x:targetX,y:90+(i+.5)*(400/task.targets.length)}));
-   // Drop targets glow while a card is armed or dragged over them (tap → tap works the same as drag).
-   const glows=new Map<string,Phaser.GameObjects.Graphics>();
-   anchors.forEach(a=>{const info=task.targets.find(t=>t.id===a.id)!;const glow=this.add.graphics();glow.lineStyle(6,tone.pick,.9).strokeRoundedRect(a.x-targetWidth/2-8,a.y-targetHeight/2-8,targetWidth+16,targetHeight+16,24);glow.setVisible(!!armed);glows.set(a.id,glow);
-    const filed=task.items.filter(it=>record.assignments[it.id]===a.id);const label=filed.length?a.y-24:a.y;
-    if(notebook){const pic=this.add.image(a.x,a.y,'ui-notebook');pic.setScale(Math.min(targetWidth/pic.width,targetHeight/pic.height));this.caption(a.x,filed.length?a.y-30:a.y+6,info.label,22,tone.ink,targetWidth-40);}
-    else{this.card(a.x,a.y,targetWidth,targetHeight,{fill:tone.soft,stroke:tone.accent,width:2});const tab=this.add.graphics();tab.fillStyle(tone.accent,1).fillRoundedRect(a.x-targetWidth/2,a.y-targetHeight/2,12,targetHeight,{tl:18,bl:18,tr:0,br:0});this.text(a.x+6,label,info.label,22,tone.ink,targetWidth-30);}
-    filed.forEach((it,k)=>this.thumb(a.x+(k-(filed.length-1)/2)*50,a.y+(notebook?38:28),it));
-    const zone=this.add.zone(a.x,a.y,targetWidth+10,targetHeight+8).setRectangleDropZone(targetWidth+10,targetHeight+8).setInteractive({useHandCursor:true});zone.setData('target',a.id);zone.on('pointerdown',()=>{if(this.pauseGuard())return;if(armed)this.assign(armed,a.id);else hooks.feedback('왼쪽에서 자료 한 장을 먼저 골라요.');});});
-   const resetFaces:(()=>void)[]=[];
-   const showGlow=(id?:string)=>glows.forEach((g,key)=>g.setVisible(id===undefined?!!armed:key===id));
-   for(const [i,it] of task.items.entries()){
-    const x=columns===2?165+(i%2)*280:245,y=65+(Math.floor(i/columns)+.5)*rowH;const linked=record.assignments[it.id]===it.target;const misplaced=!!record.assignments[it.id]&&!linked;const box=this.add.container(x,y);const cardH=rowH-16;
-    const face=this.add.graphics();const style=(picked:boolean)=>this.cardShape(face,0,0,itemWidth,cardH,{fill:linked?tone.soft:tone.paper,stroke:picked||misplaced?tone.pick:linked?tone.accent:tone.line,width:picked?5:2});style(armed===it.id);resetFaces.push(()=>style(false));box.add(face);
-    if(it.art)box.add(columns===2?this.art(0,-30,itemWidth-24,cardH-70,artKey(it)!,{time:artTime(artKey(it),it.detail,it.id),fit:'contain'}):this.art(-117,0,144,cardH-24,artKey(it)!,{time:artTime(artKey(it),it.detail,it.id),fit:'contain'}));
-    box.add(this.text(columns===2?0:65,it.art&&columns===2?cardH/2-30:0,it.label,21,tone.ink,columns===2?itemWidth-20:216));
-    const tape=this.tape(0,-cardH/2+3,84,i%2?3:-4);if(tape)box.add(tape);if(linked)box.add(this.badge(itemWidth/2-10,-cardH/2+10));
-    box.setSize(itemWidth,cardH).setInteractive({useHandCursor:true});this.input.setDraggable(box);inputObjects.push(box);
-    box.on('pointerdown',()=>{if(this.pauseGuard())return;armed=it.id;resetFaces.forEach(reset=>reset());style(true);showGlow();hooks.open(it.id);});box.on('drag',(_pointer:Phaser.Input.Pointer,dx:number,dy:number)=>{if(this.pauseGuard())return;box.setPosition(dx,dy);box.setDepth(10);});
-    box.on('dragenter',(_p:Phaser.Input.Pointer,zone:Phaser.GameObjects.Zone)=>showGlow(String(zone.getData('target'))));box.on('dragleave',()=>showGlow());
-    box.on('drop',(_p:Phaser.Input.Pointer,zone:Phaser.GameObjects.Zone)=>{this.assign(it.id,String(zone.getData('target')));});box.on('dragend',()=>{if(!disposed&&box.active)box.setPosition(x,y).setDepth(0);});
-   }
-  }
-  assign(id:string,target:string){if(!this.pauseGuard())assignCard(id,target);}
   paintObservation(){
    const isTimeline=task.kind==='timeline',isTrack=task.kind==='track';const kind=observedKind(task,record)||'mushroom';const comparing=record.pins.length===2&&Number.isFinite(record.pins[0])&&Number.isFinite(record.pins[1])&&!play&&!preview;
    // Cilia close-up: after A·B the same paramecium is shown still and large so its edge hairs can be marked.
@@ -321,7 +235,6 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
   armed='';hooks.assigned(id,target);
   if(changed){playEffect('snap');hooks.changed();}
   refresh();
-  if(task.kind!=='build')hooks.feedback(item.target===target?'단서를 알맞게 연결했어요.':task.feedback);
   return changed;
  }
  // Upgrade a saved unfinished design whose old manual + buttons had not been pressed.
@@ -338,3 +251,4 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
  };
  return {showFrame,endDemo,refresh:()=>{if(!disposed&&!simulating)refresh();},setPreview:(value:boolean)=>{if(disposed||simulating)return;preview=value;refresh();},setReveal:(value:number|undefined)=>{if(disposed||simulating)return;preview=false;reveal=value===undefined?undefined:Phaser.Math.Clamp(value,0,1);refresh();},animateRun:(valid:boolean,finish:()=>void)=>{if(scene instanceof Inquiry)scene.animateRun(valid,finish);else finish();},setPlaying:(value:boolean)=>{if(disposed||simulating||value&&blocked())return;if(play!==value){play=value;refresh();}},arm:(id:string)=>{if(disposed||simulating)return;armed=id;refresh();},assignCard,assign:assignCard,place:assignCard,dispose:()=>{disposed=true;play=false;document.removeEventListener('scroll',rebound,{capture:true});game.destroy(true);}};
 }
+export type InquiryView=ReturnType<typeof mountInquiry>;
