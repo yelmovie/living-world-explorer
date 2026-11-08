@@ -27,6 +27,7 @@ try{
       assert.equal(await start.count(),0,task.id+' is a learner decision');
       continue;
     }
+    if(task.kind==='sample'){assert.equal(await start.count(),0,'choose a sampling site first');await button(page,'물가 가까이').click();}
     const stop=page.getByRole('button',{name:/멈추기/});
     const initial=(await waitSaved(page)).preview.inquiry.records[task.id];
     await start.click();
@@ -34,7 +35,7 @@ try{
     assert.ok(await button(page,'발견 기록하기').isDisabled());
     await stop.click();
     assert.deepEqual((await waitSaved(page)).preview.inquiry.records[task.id],initial,'stop must restore '+task.id);
-    if(task.kind==='sample')await button(page,'물가 가까이').click();
+    await page.getByLabel('재생 속도',{exact:true}).selectOption('2');
     await start.click();
     await stop.waitFor({state:'hidden',timeout:18000});
     const result=(await waitSaved(page)).preview.inquiry.records[task.id];
@@ -46,12 +47,12 @@ try{
     if(task.id==='M1-3')assert.equal(result.focus,initial.focus,'mold focusing stays with the learner');
     if(task.id==='M1-2'){
       assert.equal(result.level,1,'wait at the gill decision');
-      assert.equal(await start.count(),0);
+      assert.equal(await start.isVisible(),false);
     }
     if(task.kind==='sample'){
       assert.equal(result.assignments.site,'edge');
       assert.equal(result.sequence,3);
-      assert.equal(await start.count(),0);
+      assert.equal(await start.isVisible(),false);
     }
     plays++;
     console.log(task.id+' optional playback and handoff passed');

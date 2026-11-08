@@ -1,13 +1,13 @@
-/* Source-to-record line board (src/renderers/link-board.ts).
-   The board takes the whole work area; the status panel shrinks to a side note. */
-.link-task{--link-pick:#d39a3f;--link-wrong:var(--feedback-accent);--link-port:clamp(26px,2.4vw,36px)}
+/* Source-to-record board: pictures, labels and connection status each own a slot. */
+.link-task{--link-pick:#d39a3f;--link-wrong:var(--feedback-accent);--link-port:clamp(24px,2.4vw,34px)}
 .expedition-shell.link-task{--work-column:minmax(0,1fr);--panel-column:clamp(230px,17vw,300px)}
 .large-text .expedition-shell.link-task{--panel-column:clamp(270px,22vw,340px)}
 .link-task .expedition-canvas-host{container-type:inline-size;overflow:visible}
+.link-scroll-cue{display:none}
 
-.link-board{position:relative;isolation:isolate;display:grid;grid-template-rows:minmax(0,1fr);height:100%;column-gap:clamp(56px,9cqw,132px)}
+.link-board{position:relative;isolation:isolate;display:grid;grid-template-rows:minmax(0,1fr);height:100%;column-gap:clamp(44px,7cqw,104px)}
 .link-board[data-layout=side]{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
-.link-board[data-layout=center]{grid-template-columns:minmax(0,1fr) minmax(0,.8fr) minmax(0,1fr);column-gap:clamp(44px,6cqw,84px)}
+.link-board[data-layout=center]{grid-template-columns:minmax(0,1fr) minmax(0,.9fr) minmax(0,1fr);column-gap:clamp(38px,5cqw,72px)}
 .link-lines{position:absolute;inset:0;z-index:1;width:100%;height:100%;overflow:visible;pointer-events:none}
 .link-halo,.link-line{fill:none;stroke-linecap:round}
 .link-halo{stroke:var(--paper-face);stroke-width:11;opacity:.95}
@@ -16,55 +16,58 @@
 .link-line.is-wrong{stroke:var(--link-wrong);stroke-dasharray:.03 .025}
 .link-line.is-draft{stroke:var(--link-pick)}
 
-.link-column{display:flex;flex-direction:column;gap:8px;min-width:0;min-height:0}
-.link-heading{align-self:center;display:inline-flex;align-items:center;gap:8px;min-height:44px;margin:0;padding:3px 18px 3px 5px;border:2px solid var(--paper-line);border-radius:var(--radius-pill);background:var(--paper-face);box-shadow:0 3px 0 var(--shade-a18);color:var(--ink-strong);font-family:var(--font-display);font-size:var(--font-size-body);font-weight:400;white-space:nowrap}
-.link-step{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--stage-soft);color:var(--ink-strong)}
+.link-column{display:flex;flex-direction:column;gap:10px;min-width:0;min-height:0}
+.link-heading{align-self:center;display:flex;align-items:center;justify-content:center;gap:8px;max-width:100%;min-height:44px;margin:0;padding:4px 12px 4px 5px;border:2px solid var(--paper-line);border-radius:var(--radius-pill);background:var(--paper-face);box-shadow:0 3px 0 var(--shade-a18);color:var(--ink-strong);font-family:var(--font-display);font-size:var(--font-size-body);font-weight:400;line-height:1.2;word-break:keep-all;overflow-wrap:anywhere;text-align:center}
+.link-heading>span:last-child{min-width:0}
+.link-step{flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--stage-soft);color:var(--ink-strong)}
 .link-heading.is-current{border-color:var(--stage-accent);background:var(--stage-accent);color:var(--ink-on-accent)}
 .link-heading.is-current .link-step{background:var(--paper-face);color:var(--ink-strong)}
-.link-stack{flex:1;display:grid;grid-auto-rows:minmax(0,1fr);gap:clamp(8px,1.2cqw,16px);min-height:0}
+.link-stack{flex:1;display:grid;grid-auto-rows:minmax(48px,1fr);gap:clamp(8px,1.2cqw,16px);min-height:0}
 
-.link-card{position:relative;display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);align-items:center;gap:clamp(8px,1cqw,14px);min-width:0;min-height:0;padding:clamp(6px,.8cqw,12px);border:3px solid var(--paper-line);border-radius:var(--radius-md);background:var(--paper-face);box-shadow:0 4px 0 var(--shade-a18);color:var(--ink-strong);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;transition:border-color .15s,box-shadow .15s}
-.link-card:has(.link-port[data-side=right]){padding-right:calc(var(--link-port)*.75)}
-.link-card:has(.link-port[data-side=left]){padding-left:calc(var(--link-port)*.75);grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}
+.link-card{position:relative;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);align-items:stretch;gap:clamp(8px,1cqw,14px);min-width:0;min-height:48px;padding:clamp(6px,.8cqw,12px);border:2px solid var(--paper-line);border-radius:var(--radius-md);background:var(--paper-face);box-shadow:0 4px 0 var(--shade-a18);color:var(--ink-strong);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;transition:border-color .15s,box-shadow .15s}
+.link-card:has(.link-port[data-side=right]){padding-right:calc(var(--link-port)*.7)}
+.link-card:has(.link-port[data-side=left]){padding-left:calc(var(--link-port)*.7);grid-template-columns:minmax(0,1fr) minmax(0,1.35fr)}
 .link-card:has(.link-port[data-side=left]) .link-photo{order:1}
 .link-card:active{cursor:grabbing}
-.link-photo{display:block;height:100%;min-height:0;overflow:hidden;border-radius:10px;background:var(--stage-soft)}
+.link-photo{display:block;height:100%;min-height:0;overflow:hidden;border:1px solid var(--paper-line);border-radius:8px;background:var(--stage-soft)}
 .link-photo>*,.link-thumb>*{display:block;width:100%;height:100%;object-fit:cover;pointer-events:none}
-.link-name{min-width:0;font-family:var(--font-display);font-size:clamp(18px,2.3cqw,32px);line-height:1.25;text-align:center;word-break:keep-all;overflow-wrap:break-word}
-.link-card.is-armed{border-color:var(--link-pick);box-shadow:0 0 0 4px var(--brass-soft),0 4px 0 var(--shade-a18)}
+.link-caption{display:flex;align-items:center;justify-content:center;gap:6px;min-width:0}
+.link-name{min-width:0;font-family:var(--font-display);font-size:clamp(18px,2.2cqw,30px);line-height:1.25;text-align:center;word-break:keep-all;overflow-wrap:anywhere}
+.link-card.is-armed{border-color:var(--link-pick);box-shadow:0 0 0 3px var(--brass-soft),0 4px 0 var(--shade-a18)}
 .link-card.is-right{border-color:var(--stage-accent)}
 .link-card.is-wrong{border-color:var(--link-wrong);border-style:dashed}
 .link-mark:empty{display:none}
-.link-mark{position:absolute;top:-11px;left:-11px;z-index:3;display:grid;place-items:center;width:32px;height:32px;border:3px solid var(--paper-face);border-radius:50%;background:var(--stage-accent);color:var(--ink-on-accent);font-family:var(--font-display);font-size:18px}
+.link-mark{flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--stage-accent);color:var(--ink-on-accent);font-family:var(--font-display);font-size:16px;line-height:1}
 .link-card.is-wrong .link-mark{background:var(--link-wrong)}
 
-/* Hollow ring = open, filled = linked. The ring beside the next step carries the only looping motion. */
-.link-port{position:absolute;top:50%;z-index:3;width:var(--link-port);height:var(--link-port);margin-top:calc(var(--link-port)/-2);border:5px solid var(--stage-accent);border-radius:50%;background:var(--paper-face);box-shadow:0 2px 0 var(--shade-a18)}
+/* Hollow ring = open, filled = linked. The ring is beside the card, never over its words. */
+.link-port{position:absolute;top:50%;z-index:3;width:var(--link-port);height:var(--link-port);margin-top:calc(var(--link-port)/-2);border:4px solid var(--stage-accent);border-radius:50%;background:var(--paper-face);box-shadow:0 2px 0 var(--shade-a18)}
 .link-port[data-side=right]{right:calc(var(--link-port)/-2)}
 .link-port[data-side=left]{left:calc(var(--link-port)/-2)}
-.link-card.is-right .link-port,.link-target:has(.link-thumb) .link-port{background:var(--stage-accent);border-color:var(--paper-face)}
+.link-card.is-right .link-port,.link-target.has-sources .link-port{background:var(--stage-accent);border-color:var(--paper-face)}
 .link-card.is-wrong .link-port{background:var(--link-wrong);border-color:var(--paper-face)}
 .link-card.is-armed .link-port{background:var(--link-pick);border-color:var(--paper-face)}
-.link-port::after{content:'';position:absolute;inset:-9px;border:3px solid var(--link-pick);border-radius:50%;opacity:0}
+.link-port::after{content:'';position:absolute;inset:-8px;border:3px solid var(--link-pick);border-radius:50%;opacity:0}
 .link-card.is-next .link-port::after,.link-card.is-armed .link-port::after,.link-board[data-step="2"] .link-target .link-port::after{opacity:.9}
 @media(prefers-reduced-motion:no-preference){html:not(.reduced) .link-card.is-next .link-port::after,html:not(.reduced) .link-board[data-step="2"] .link-target .link-port::after{animation:link-ring 1.4s ease-out infinite}html:not(.reduced) .link-line.is-right.is-new{stroke-dasharray:1;animation:link-draw .28s ease-out}}
 @keyframes link-ring{from{opacity:.9;transform:scale(.8)}to{opacity:0;transform:scale(1.2)}}
 @keyframes link-draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
 
-.link-target{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(4px,.7cqw,10px);min-width:0;min-height:0;padding:clamp(6px,.8cqw,12px) clamp(14px,2cqw,28px);border:3px solid var(--stage-accent);border-radius:var(--radius-md);background:var(--stage-soft);box-shadow:0 4px 0 var(--shade-a18);color:var(--ink-strong);transition:border-color .15s,box-shadow .15s}
-.link-board[data-notebook] .link-target{padding:9% 8% 8%;border:0;border-radius:0;background:url('/assets/ui/notebook.webp') center/100% 100% no-repeat;box-shadow:none}
-.link-target-name{flex:none;max-width:100%;padding:2px 14px;border-radius:var(--radius-pill);background:var(--paper-face);font-family:var(--font-display);font-size:clamp(18px,2.1cqw,30px);line-height:1.25;text-align:center;word-break:keep-all}
-.link-filed{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:0}
-.link-thumb{flex:0 1 auto;height:100%;max-height:clamp(44px,12cqw,150px);aspect-ratio:16/10;min-width:0;overflow:hidden;border:3px solid var(--paper-face);border-radius:10px;box-shadow:0 0 0 2px var(--stage-accent)}
-.link-empty{padding:2px 12px;border:2px dashed var(--stage-accent);border-radius:var(--radius-sm);color:var(--ink-strong);font-size:var(--font-size-small);line-height:1.3;word-break:keep-all}
-.link-board[data-step="2"] .link-target{outline:4px dashed var(--link-pick);outline-offset:1px}
-.link-target.is-over,.link-board[data-step="2"] .link-target.is-over{outline-style:solid;outline-width:6px}
-/* The notebook picture is not a rectangle, so its glow follows the page edge instead of a box outline. */
-.link-board[data-notebook][data-step="2"] .link-target{outline:0;filter:drop-shadow(0 0 3px var(--link-pick)) drop-shadow(0 0 8px var(--link-pick))}
-.link-board[data-notebook][data-step="2"] .link-target.is-over{filter:drop-shadow(0 0 4px var(--link-pick)) drop-shadow(0 0 16px var(--link-pick))}
+/* A ruled record card keeps the real sources visible without squeezing text inside a notebook bitmap. */
+.link-target{position:relative;display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:6px;min-width:0;min-height:48px;padding:clamp(8px,1cqw,16px) clamp(14px,1.7cqw,24px);border:2px solid var(--stage-accent);border-radius:var(--radius-md);background:var(--paper-face);box-shadow:0 4px 0 var(--shade-a18),inset 5px 0 0 var(--stage-soft);color:var(--ink-strong);transition:border-color .15s,box-shadow .15s}
+.link-board[data-notebook] .link-target{border-radius:5px 16px 16px 5px;box-shadow:0 4px 0 var(--shade-a18),inset 5px 0 0 var(--stage-accent),inset 9px 0 0 var(--stage-soft)}
+.link-target-name{flex:none;max-width:100%;font-family:var(--font-display);font-size:clamp(18px,2cqw,28px);line-height:1.25;text-align:center;word-break:keep-all;overflow-wrap:anywhere}
+.link-count{flex:none;font-size:var(--font-size-small);line-height:1.2;text-align:center;color:var(--color-text-muted)}
+.link-target.has-sources .link-count{color:var(--stage-accent)}
+.link-filed{flex:1;display:grid;grid-template-columns:repeat(var(--filed-count,1),minmax(0,1fr));align-items:center;justify-items:center;gap:6px;width:100%;min-height:0}
+.link-thumb{display:block;width:100%;height:100%;max-height:clamp(38px,10cqw,132px);min-width:0;min-height:0;overflow:hidden;border:2px solid var(--paper-face);border-radius:8px;box-shadow:0 0 0 1px var(--stage-accent)}
+.link-empty{padding:5px 8px;border:1px dashed var(--paper-line);border-radius:var(--radius-sm);color:var(--color-text-muted);font-size:var(--font-size-small);line-height:1.35;word-break:keep-all;overflow-wrap:anywhere}
+.link-board[data-step="2"] .link-target{outline:3px dashed var(--link-pick);outline-offset:3px}
+.link-target.is-over,.link-board[data-step="2"] .link-target.is-over{outline-style:solid;outline-width:4px}
+.link-board[data-layout=center] .link-count{display:none}
 @media(hover:hover) and (pointer:fine){.link-card:hover:not(.is-armed){border-color:var(--stage-accent)}.link-board[data-step="2"] .link-target:hover{outline-style:solid}}
 
-/* Side note: one line of status, the chosen source, and the hint button. */
+/* Side note: status, chosen source and an optional hint. */
 .link-task .expedition-panel{align-self:start;gap:8px;padding:14px 12px 6px}
 .link-task .inquiry-status{padding:8px 12px}
 .link-task .inquiry-meter{margin:4px 0 6px}
@@ -75,24 +78,27 @@
 .link-task .panel-links{padding-top:4px}
 .link-task .expedition-secondary{display:flex;align-items:center;gap:10px}
 .link-task .expedition-secondary>.model-badge{flex:none;align-self:center;white-space:nowrap}
-
-@media(min-width:851px){
- .link-task .expedition-footer{display:grid;grid-template-columns:minmax(max-content,1fr) auto minmax(max-content,1fr);gap:12px}
- .link-task .expedition-footer>.primary{justify-self:end;margin-left:0}
-}
-/* The title moves up beside the HUD buttons so the board gets that height; the teacher banner keeps that band. */
-@media(min-width:1280px),(min-width:851px) and (max-height:640px){
- :root:not(:has(.preview-banner)) .expedition-shell.link-task{padding-top:10px;row-gap:8px}
- :root:not(:has(.preview-banner)) .link-task .expedition-panel{margin-top:calc(var(--hud-top) - 10px)}
-}
+@media(min-width:851px){.link-task .expedition-footer{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px}.link-task .expedition-footer>.primary{justify-self:end;margin-left:0}}
+/* The title shares the HUD band while the board gets the remaining height. */
+@media(min-width:1280px),(min-width:851px) and (max-height:640px){:root:not(:has(.preview-banner)) .expedition-shell.link-task{padding-top:10px;row-gap:8px}:root:not(:has(.preview-banner)) .link-task .expedition-panel{margin-top:calc(var(--hud-top) - 10px)}}
 @media(min-width:1280px){:root:not(:has(.preview-banner)) .link-task .expedition-header{max-width:calc(100% - 300px)}}
-/* Narrow boards: the three-column layout stacks each picture over its name. */
-@container (max-width:820px){
- .link-board[data-layout=center] .link-card,.link-board[data-layout=center] .link-card:has(.link-port[data-side=left]){grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;gap:4px}
+/* Narrow boards keep a small real picture next to the name, rather than placing the name over it. */
+@container(max-width:820px){
+ .link-board[data-layout=center] .link-card,.link-board[data-layout=center] .link-card:has(.link-port[data-side=left]){grid-template-columns:minmax(32px,.42fr) minmax(0,1fr);gap:6px;padding:6px 12px 6px 6px}
+ .link-board[data-layout=center] .link-card:has(.link-port[data-side=left]){padding:6px 6px 6px 12px}
  .link-board[data-layout=center] .link-card .link-photo{order:0}
- .link-board[data-layout=center] .link-name{font-size:18px;line-height:1.2}
+ .link-board[data-layout=center] .link-caption{flex-wrap:wrap;gap:2px}
+ .link-board[data-layout=center] .link-name{font-size:18px;line-height:1.25}
+ .link-board[data-layout=center] .link-target{padding:6px 12px;gap:4px}
+ .link-board[data-layout=center] .link-target-name{font-size:18px}
+ .link-board[data-layout=center] .link-empty{font-size:16px;padding:2px 4px}
 }
-/* Low landscape (phones, folds, in-app browsers): every pixel of height goes to the board. */
+@container(max-width:660px){
+ .link-board[data-layout=side] .link-card{grid-template-columns:minmax(38px,.45fr) minmax(0,1fr);gap:6px}
+ .link-board[data-layout=side] .link-name,.link-board[data-layout=side] .link-target-name{font-size:18px}
+ .link-board[data-layout=side] .link-caption{flex-wrap:wrap;gap:2px}
+}
+/* Low landscape: remove repeated miniature photos only in the record area; source photos remain. */
 @media(min-width:851px) and (max-height:640px){
  .expedition-shell.link-task{padding-bottom:6px;row-gap:6px}
  .link-task .expedition-header{justify-self:start;margin-inline:116px 0;max-width:calc(100% - 120px);padding:4px 16px}
@@ -100,34 +106,63 @@
  .link-task .expedition-header h2{font-size:22px}
  .link-task .expedition-secondary>.model-badge{display:none}
  .link-task .expedition-footer{min-height:0;padding-block:2px}
- .link-column{gap:4px}
- /* Keeps the first heading clear of the back button, which reaches down past the title row here. */
- .link-sources:first-of-type .link-heading{align-self:flex-end}
- .link-board[data-layout=center] .link-sources:first-of-type .link-heading{margin-right:-24px}
- .link-heading{min-height:34px;font-size:var(--font-size-label)}
- .link-step{width:26px;height:26px}
+ .link-column{gap:6px}
+ .link-heading{min-height:34px;font-size:18px;padding:3px 8px;gap:5px}
+ .link-step{width:24px;height:24px;font-size:16px}
  .link-stack{gap:6px}
- .link-card{grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);padding:4px;padding-right:calc(var(--link-port)*.7)}
- .link-name,.link-target-name{font-size:18px;line-height:1.2}
- .link-board[data-notebook] .link-target{padding:6% 6% 5%}
- .link-empty{padding-block:0;font-size:16px}
+ .link-card{grid-template-columns:minmax(38px,.45fr) minmax(0,1fr);padding:4px;padding-right:calc(var(--link-port)*.7)}
+ .link-name,.link-target-name{font-size:18px;line-height:1.25}
+ .link-target{padding:6px 14px;gap:4px}
+ .link-count{font-size:16px}
+ .link-board[data-layout=center] .link-filed{display:none}
+ .link-board[data-layout=center] .link-target{padding:4px 12px}
+ .link-empty{padding:2px 4px;font-size:16px}
 }
-@media(min-width:851px) and (max-height:480px){.link-board[data-layout=center] .link-card .link-photo{display:none}}
 @media(max-width:850px){
  .link-task .expedition-work{height:auto;flex:none}
  .link-task .expedition-canvas-host{height:auto;min-height:0;flex:none}
  .link-task .expedition-footer>.activity-stepper{order:3;flex-basis:100%}
- .link-board{height:auto;column-gap:44px}
- .link-stack{grid-auto-rows:minmax(120px,auto)}
- .link-card,.link-card:has(.link-port[data-side=left]){grid-template-columns:minmax(0,1fr);gap:6px;touch-action:pan-y}
+ .link-board{height:auto;column-gap:36px}
+ .link-stack{grid-auto-rows:minmax(148px,auto)}
+ .link-card,.link-card:has(.link-port[data-side=left]),.link-board[data-layout=center] .link-card,.link-board[data-layout=center] .link-card:has(.link-port[data-side=left]){grid-template-columns:minmax(0,1fr);grid-template-rows:84px auto;gap:6px;touch-action:pan-y;padding:6px 12px}
  .link-card:has(.link-port[data-side=left]) .link-photo{order:0}
  .link-photo{height:84px}
+ .link-caption{align-self:center;flex-wrap:wrap;gap:3px}
+ .link-target{padding:12px 14px}
+ .link-target-name,.link-name{font-size:18px}
  .link-task .expedition-panel{align-self:stretch}
 }
-/* Phone portrait: three columns no longer fit, so M3-2 stacks and the record thumbnails carry the link. */
+/* Portrait: two evidence columns, followed by a full-width record shelf. */
 @media(max-width:599px){
- .link-board[data-layout=center]{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ .link-board[data-layout=center]{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
  .link-board[data-layout=center] .link-records{grid-column:1/-1;grid-row:2}
+ .link-board[data-layout=center] .link-records .link-stack{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:minmax(148px,auto)}
  .link-board[data-layout=center] .link-lines,.link-board[data-layout=center] .link-port{display:none}
+ .link-board[data-layout=center] .link-count{display:block}
+ .link-heading{font-size:18px;gap:4px;padding-inline:6px}
+ .link-step{width:24px;height:24px;font-size:16px}
+ .link-board[data-layout=side] .link-empty{font-size:16px}
 }
-@media(min-width:851px) and (max-width:1000px) and (max-height:640px){.link-board[data-layout=center] .link-step{display:none}.link-board[data-layout=center] .link-heading{padding-left:14px}}
+
+/* A small landscape board scrolls its evidence, never its footer. Intrinsic rows
+   reserve the full height of a Korean label instead of forcing four targets into
+   a shorter fraction track. The side instruction already names the next action. */
+@media(min-width:660px) and (max-width:1100px) and (max-height:640px) and (min-aspect-ratio:3/2){
+ .expedition-shell.link-task .expedition-canvas-host{overflow:hidden}
+ .expedition-shell.link-task .link-board{height:100%;grid-template-rows:minmax(min-content,1fr);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--stage-accent) var(--stage-soft);scrollbar-gutter:stable;padding-block:3px 8px}
+ .expedition-shell.link-task .link-scrollable .link-board{height:calc(100% - 28px)}
+ .expedition-shell.link-task .link-scrollable .link-scroll-cue{position:absolute;inset:auto 0 0;display:flex;align-items:center;justify-content:center;gap:6px;min-height:26px;padding:3px 8px;border-top:1px solid var(--paper-line);border-radius:6px;background:var(--paper-face);color:var(--ink-strong);font-size:16px;line-height:1.2;pointer-events:none}
+ .expedition-shell.link-task .link-scroll-cue svg{flex:none;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+ .expedition-shell.link-task .link-column{min-height:min-content;gap:6px}
+ .expedition-shell.link-task .link-stack{min-height:min-content;grid-auto-rows:auto;align-content:stretch;gap:6px}
+ .expedition-shell.link-task .link-card,.expedition-shell.link-task .link-card:has(.link-port[data-side=left]){grid-template-columns:38px minmax(0,1fr);grid-template-rows:auto;align-items:center;padding:5px 12px 5px 5px;min-height:48px;touch-action:pan-y}
+ .expedition-shell.link-task .link-card:has(.link-port[data-side=left]){padding-inline:12px 5px}
+ .expedition-shell.link-task .link-card .link-photo{order:0;height:38px;align-self:center}
+ .expedition-shell.link-task .link-caption{min-width:0;flex-wrap:wrap;gap:2px}
+ .expedition-shell.link-task .link-name,.expedition-shell.link-task .link-target-name{font-size:18px;line-height:1.25}
+ .expedition-shell.link-task .link-target{min-height:48px;padding:6px 12px}
+ .expedition-shell.link-task .link-filed,.expedition-shell.link-task .link-count{display:none}
+}
+@media(min-width:660px) and (max-width:1100px) and (max-height:560px) and (min-aspect-ratio:3/2){
+ .expedition-shell.link-task .link-heading{display:none}
+}

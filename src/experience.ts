@@ -1,4 +1,4 @@
-import {el,button,heading,paragraph,modal,type Context} from './ui';
+import {el,button,paragraph,modal,type Context} from './ui';
 import {stages} from './content';
 import {validEvidence,stageIds,type Attempt,type Stage} from './model';
 import {residents,residentImage} from './residents';
@@ -27,6 +27,8 @@ export const habits=[
 ];
 /** Earned when all four tasks of the stage were accepted without a failed submission since the stage was last (re)started. */
 export function habitEarned(a:Attempt,stage:typeof stageIds[number]){return tasksFor(stage).every(t=>{const r=a.inquiry.records[t.id];return !!r?.completedAt&&r.clean===true&&!taskIssues(t,r).length;});}
+/** Recognise checking evidence again without changing existing first-pass badges. */
+export function revisedEvidenceCount(a:Attempt,stage:Stage){return tasksFor(stage).filter(t=>{const r=a.inquiry.records[t.id];return !!r?.completedAt&&r.clean===false&&r.tries>1&&!taskIssues(t,r).length;}).length;}
 export function canDoLines(a:Attempt){return [...habits.filter((_,i)=>a.canDo?.includes(stageIds[i])).map(h=>'나는 이제 '+h.can),...(a.canDoNote?.trim()?[`나는 이제 ${a.canDoNote.trim()} 수 있어요.`]:[])];}
 export function activityIllustration(task:InquiryTask,cls:string,record?:InquiryRecord){
  const holder=el('span',cls+' activity-art');

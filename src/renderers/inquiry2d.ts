@@ -7,12 +7,12 @@ import {playEffect} from '../audio';
 import {inquiryArt,artTime,artKey,artFrame,magnifyFor,type MagnifyView} from '../artAssets';
 import {addMark,markHint,viewToImage,observedKind,featureAt} from '../observation';
 import type {ObservationFrame} from '../inquiry-playback';
-export type InquiryHooks={assigned:(id:string,target:string)=>void;changed:()=>void;open:(id:string)=>void;feedback:(text:string)=>void;ready:(ok:boolean)=>void};
+export type InquiryHooks={assigned:(id:string,target:string)=>void;changed:()=>void;open:(id:string)=>void;feedback:(text:string,kind?:'retry'|'success')=>void;ready:(ok:boolean)=>void};
 const WIDTH=960,HEIGHT=540;
 export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRecord,hooks:InquiryHooks,reduced:boolean){
  let record=learner;
  let beforeDemo:{preview:boolean;reveal:number|undefined}|undefined;
- let refresh=()=>{};let play=false;let preview=false;let disposed=false;let armed='';let reveal:number|undefined;let simulating=false;let scene:Phaser.Scene|undefined;
+ let refresh=()=>{};let play=false;let preview=false;let disposed=false;let armed='';let reveal:number|undefined;let simulating=false;let scene:Phaser.Scene|undefined;let playbackRate=1;
  const blocked=()=>disposed||document.hidden||!!document.querySelector('dialog[open]');
  // Scene colours follow the DOM tokens (styles.css stage layer), so one token edit restyles both.
  const css=(name:string,fallback:number)=>{const v=getComputedStyle(host).getPropertyValue(name).trim();return /^#[0-9a-f]{6}$/i.test(v)?parseInt(v.slice(1),16):fallback;};
@@ -25,7 +25,7 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
   preload(){this.load.on('loaderror',(file:Phaser.Loader.File)=>{if(!file.key.startsWith('ui-'))this.failed=true;});const view=task.kind==='microscope'?magnifyFor(task.organism,record.v===2):undefined;const needed=new Set([...task.items.map(artKey),task.organism,observedKind(task,record),task.kind==='sample'?'water':undefined,view?.context,view?.lens]);for(const art of needed)if(art&&inquiryArt[art]){const asset=inquiryArt[art];if(asset.frames)asset.frames.forEach((src,i)=>this.load.image(`art-${art}-${i}`,src));else this.load.image(`art-${art}`,asset.src);}
    // Decorative props are optional: a missing prop falls back to the drawn card, never blocks the activity.
    const props=['tape',...task.kind==='microscope'?['microscope-frame',...(view?['hand-lens']:[])]:[],...task.id==='M5-1'?['yogurt-maker']:[],...task.kind==='sample'?['dropper','slide','water-drop']:[]];for(const p of props)this.load.image(`ui-${p}`,`assets/ui/${p}.webp`);}
-  create(){scene=this;if(this.failed){hooks.ready(false);return;}refresh=()=>this.paint();this.paint();hooks.ready(true);}
+  create(){scene=this;this.tweens.timeScale=playbackRate;this.input.dragDistanceThreshold=12;if(this.failed){hooks.ready(false);return;}refresh=()=>this.paint();this.paint();hooks.ready(true);}
   wipe(){this.tweens.killAll();this.trackSurface=undefined;this.trackElapsed=0;this.children.removeAll(true);for(const name of this.textures.getTextureKeys())if(name.startsWith('plate-'))this.textures.remove(name);}
   text(x:number,y:number,text:string,size=23,color='#234b3c',width=330){return this.add.text(x,y,text,{fontFamily:'Lab Display, Malgun Gothic',fontSize:`${Math.max(28,size)}px`,color,align:'center',wordWrap:{width,useAdvancedWrap:true},lineSpacing:4}).setOrigin(.5);}
   // Rounded pill behind short captions so they read over any photo.
@@ -35,6 +35,14 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
   card(x:number,y:number,w:number,h:number,style:Parameters<Inquiry['cardShape']>[5]={}){return this.cardShape(this.add.graphics(),x,y,w,h,style);}
   tape(x:number,y:number,w=92,angle=-4){return this.textures.exists('ui-tape')?this.add.image(x,y,'ui-tape').setDisplaySize(w,w*.21).setAngle(angle).setAlpha(.95):undefined;}
   badge(x:number,y:number){const g=this.add.graphics();g.fillStyle(tone.accent,1).fillCircle(x,y,16);g.lineStyle(3,0xffffff,1).strokeCircle(x,y,16);return [g,this.add.text(x,y,'✓',{fontFamily:'Lab Display, Malgun Gothic',fontSize:'20px',color:'#ffffff'}).setOrigin(.5)];}
+  // Numbered phases use a separate strip, leaving the specimen itself unobstructed.
+  phase(x:number,y:number,index:number,label:string,done:boolean,current:boolean){
+   this.card(x,y,280,48,{fill:current?tone.soft:tone.paper,stroke:current||done?tone.accent:tone.line,width:current?3:2,radius:24});
+   const dot=this.add.circle(x-118,y,17,tone.paper);
+   dot.setFillStyle(done||current?tone.accent:tone.paper).setStrokeStyle(2,tone.accent);
+   this.text(x-118,y,done?'✓':String(index),28,done||current?'#fffdf4':tone.ink,38);
+   this.text(x+16,y,label,28,tone.ink,218);
+  }
   plate(x:number,y:number,w:number,h:number,label:string,fill=tone.paper){const box=this.card(x,y,w,h,{fill});if(label)this.text(x,y,label,22,tone.ink,w-20);return box;}
   art(x:number,y:number,w:number,h:number,kind:string,options:Parameters<typeof draw>[2]&{fit?:'contain'}={}){
    const name=inquiryArt[kind]?.frames?`art-${kind}-${artFrame(options.time)}`:`art-${kind}`;
@@ -43,7 +51,9 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
    const c=options.fit==='contain'?canvas(640,Math.round(640*(source?.height||360)/(source?.width||640))):canvas(Math.round(w),Math.round(h));
    draw(c,kind,{...options,image,markerSpace:'world'});const key=`plate-${crypto.randomUUID()}`;const texture=this.textures.addCanvas(key,c)!;if(task.kind==='track'&&kind==='paramecium'&&record.level<2)this.trackSurface={canvas:c,texture};const picture=this.add.image(x,y,key);if(options.fit==='contain')picture.setScale(Math.min(w/c.width,h/c.height));return picture;}
   commit(){playEffect(task.kind==='sample'?(record.sequence===3?'pipette-drop':'water'):'click');hooks.changed();this.paint();}
-  pauseGuard(){return blocked()||simulating||!!beforeDemo;}
+  // Phaser also forwards window presses, whose coordinates can be stale just after scrolling.
+  // Keep outside releases available for drag cleanup, but only apply an action from the canvas.
+  pauseGuard(){return blocked()||simulating||!!beforeDemo||this.input.activePointer.event?.target!==this.game.canvas;}
   paint(){if(disposed)return;this.wipe();
    if(task.kind==='microscope'||task.kind==='track'||task.kind==='timeline'){this.paintObservation();return;}
    if(task.kind==='sample'){this.paintSampling();return;}
@@ -63,8 +73,15 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
     const line=this.add.rectangle(split,275,5,h,0xd6a64a);const handle=this.add.rectangle(split,275,88,70,0xfff9df).setStrokeStyle(3,0x8a703c);const label=this.text(split,275,'↔',36);handle.setInteractive({useHandCursor:true});this.input.setDraggable(handle);
     handle.on('drag',(_p:Phaser.Input.Pointer,x:number)=>{if(this.pauseGuard())return;const clamped=Phaser.Math.Clamp(x,left,left+w);reveal=(clamped-left)/w;mask.clear().fillStyle(0xffffff).fillRect(clamped,top,left+w-clamped,h);line.x=handle.x=label.x=clamped;});
     this.caption(250,60,'A · 이전');this.caption(710,60,'B · 이후');this.caption(480,500,'손잡이를 밀어 같은 위치의 변화를 비교해요',28,'#3e6651',860);
-   }else if(comparing){for(let i=0;i<2;i++){const x=260+i*440;this.drawSpecimen(x,265,410,340,kind,record.pins[i],i===1);this.caption(x,65,`${i===0?'A · 이전':'B · 이후'} ${isTimeline?'관찰 '+(record.pins[i]+1):'시점 '+record.pins[i]}`,24);}}
-   else{this.drawSpecimen(480,270,750,435,kind,record.time,task.kind==='microscope');if(preview&&!play&&(isTimeline||isTrack))this.caption(480,30,isTimeline?'지금 고른 모습 · 관찰 '+(record.time+1):'지금 고른 순간 · 시점 '+Math.round(record.time),22);}
+   }else if(comparing){
+    for(let i=0;i<2;i++){
+     const x=260+i*440;
+     this.drawSpecimen(x,265,410,340,kind,record.pins[i],i===1);
+     this.caption(x,65,`${i===0?'A · 이전':'B · 이후'} ${isTimeline?'관찰 '+(record.pins[i]+1):'시점 '+record.pins[i]}`,28,tone.ink,370);
+    }
+    if(isTimeline)this.caption(700,455,'달라진 곳을 눌러요',28,tone.ink,370);
+   }
+   else{this.drawSpecimen(480,isTimeline?255:270,isTimeline?730:750,isTimeline?390:435,kind,record.time,task.kind==='microscope');if(preview&&!play&&(isTimeline||isTrack))this.caption(480,30,isTimeline?'지금 고른 모습 · 관찰 '+(record.time+1):'지금 고른 순간 · 시점 '+Math.round(record.time),22);}
    if(isTrack&&(!comparing||reveal===undefined))this.caption(480,510,'같은 시야 · 같은 짚신벌레의 위치를 비교해요',20,'#3e6651',850);
    if(isTimeline&&(!comparing||reveal===undefined)){const g=this.add.graphics();g.lineStyle(6,tone.line,1).lineBetween(235,505,725,505);for(let i=0;i<4;i++){const x=235+i*163,current=i===record.time,pinned=record.pins.includes(i);g.fillStyle(tone.shade,.16).fillCircle(x+2,509,32);g.fillStyle(current?tone.accent:pinned?tone.soft:tone.paper,1).fillCircle(x,505,32);g.lineStyle(3,current||pinned?tone.accent:tone.line,1).strokeCircle(x,505,32);this.add.zone(x,505,76,76).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard())return;record.time=i;preview=true;this.commit();});this.text(x,505,String(i+1),21,current?'#fffdf4':tone.ink);}}
   }
@@ -80,7 +97,7 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
    // 맨눈 and 돋보기 show the place the specimen came from; only the microscope step can be focused and photographed.
    const view=magnifyFor(task.organism,record.v===2);if(task.kind==='microscope'&&markable&&!record.capture&&view&&record.level<2){this.drawContext(x,view,record.level);return;}
    if(task.kind==='microscope'&&markable&&!record.capture&&this.textures.exists('ui-microscope-frame')){
-    const r=172;({w,h}=this.specimenSize(r*2.6,r*2.6,kind,time));y=262;
+    const r=194;({w,h}=this.specimenSize(r*2.6,r*2.6,kind,time));y=262;
     const glass=this.add.graphics();glass.fillStyle(tone.shade,.25).fillCircle(x+4,y+10,r+40);glass.fillStyle(0xf6f3e6,1).fillCircle(x,y,r+4);
     const picture=this.art(x,y,w,h,kind,opts);const lens=this.make.graphics({},false).fillStyle(0xffffff).fillCircle(x,y,r);picture.setMask(lens.createGeometryMask());
     const frame=this.add.image(x,y,'ui-microscope-frame');frame.setDisplaySize(r*2/(LENS_HOLE*2),r*2/(LENS_HOLE*2));
@@ -104,7 +121,7 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
    const lensKey=level===1&&view.lens?`art-${view.lens}`:'';
    if(lensKey&&this.textures.exists(lensKey)){
     // 돋보기 has its own picture, so a new structure appears instead of a blurrier enlargement.
-    const source=this.textures.get(lensKey).getSourceImage() as {width:number;height:number};const y=282,scale=Math.min(720/source.width,405/source.height),w=source.width*scale,h=source.height*scale;
+    const source=this.textures.get(lensKey).getSourceImage() as {width:number;height:number};const y=282,scale=Math.min(880/source.width,448/source.height),w=source.width*scale,h=source.height*scale;
     this.card(x,y,w+20,h+20,{fill:0xffffff,radius:12});
     const picture=this.add.image(x,y,lensKey).setScale(scale);
     addHandLens(this,{picture,start:{x:.53,y:.23},blocked:()=>this.pauseGuard(),inspect:point=>{
@@ -114,7 +131,7 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
     this.caption(x,30,view.captions[1],22);return;
    }
    const key=inquiryArt[view.context]?.frames?`art-${view.context}-${artFrame(view.time)}`:`art-${view.context}`;if(!this.textures.exists(key))return;
-   const source=this.textures.get(key).getSourceImage() as {width:number;height:number};const y=282,scale=Math.min(720/source.width,405/source.height),w=source.width*scale,h=source.height*scale;
+   const source=this.textures.get(key).getSourceImage() as {width:number;height:number};const y=282,scale=Math.min(880/source.width,448/source.height),w=source.width*scale,h=source.height*scale;
    this.card(x,y,w+20,h+20,{fill:0xffffff,radius:12});const picture=this.add.image(x,y,key).setScale(scale);
    const fx=x-w/2+view.focus.x*w,fy=y-h/2+view.focus.y*h,r=124;
    if(level===0){const ring=this.add.graphics();ring.lineStyle(5,0xffffff,.95).strokeCircle(fx,fy,62);ring.lineStyle(3,tone.accent,.9).strokeCircle(fx,fy,67);if(!reduced)this.tweens.add({targets:ring,alpha:.35,duration:900,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});}
@@ -126,14 +143,21 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
    this.caption(x,30,view.captions[level],22);
   }
   paintSampling(){
+   const site=!!record.assignments.site,collected=record.sequence>=2,prepared=record.sequence===3;
+   const rail=this.add.graphics();rail.lineStyle(3,tone.line,1).lineBetween(180,33,785,33);
+   this.phase(175,33,1,'장소 고르기',site,!site);
+   this.phase(480,33,2,'한 방울 채집',collected,site&&!collected);
+   this.phase(785,33,3,'유리판에 옮기기',prepared,collected&&!prepared);
    this.card(325,315,620,370,{fill:0xffffff,radius:14});this.art(325,315,600,350,'water');
    for(const [id,x,y,label] of [['edge',130,360,'물가 가까이'],['plant',390,265,'물풀 가까이']] as [string,number,number,string][]){
     const chosen=record.assignments.site===id;const ring=this.add.graphics();ring.lineStyle(5,0xffffff,.95).strokeCircle(x,y,30);ring.lineStyle(3,tone.accent,.9).strokeCircle(x,y,34);const dot=this.add.graphics();dot.fillStyle(chosen?tone.accent:0xffffff,chosen?1:.6).fillCircle(x,y,chosen?20:14);
     if(!chosen&&!reduced)this.tweens.add({targets:ring,alpha:.35,duration:900,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});
-    this.add.zone(x,y,88,88).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard()||record.assignments.site===id)return;record.assignments.site=id;record.sequence=0;this.commit();});this.caption(x,y+58,label,22);}
-   const slideY=350;this.card(785,slideY+14,262,214,{fill:tone.paper,radius:20,stroke:record.sequence===2?tone.pick:tone.line,width:record.sequence===2?5:2});this.tape(785,slideY-92,86,-3);if(this.textures.exists('ui-slide')){this.add.image(785,slideY,'ui-slide').setDisplaySize(230,97);}else this.plate(785,slideY,200,110,'',0xe8efe8);
+    this.add.zone(x,y,88,88).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard()||record.assignments.site===id)return;record.assignments.site=id;record.sequence=0;this.commit();});this.caption(x,y+58,(chosen?'✓ ':'')+label,28,tone.ink,230);}
+   const slideY=350;
+   this.card(785,slideY+14,262,214,{fill:prepared?tone.soft:tone.paper,radius:20,stroke:collected?tone.accent:tone.line,width:collected?4:2});
+   if(prepared)this.badge(887,slideY-65);if(this.textures.exists('ui-slide')){this.add.image(785,slideY,'ui-slide').setDisplaySize(230,97);}else this.plate(785,slideY,200,110,'',0xe8efe8);
    if(record.sequence===3&&this.textures.exists('ui-water-drop'))this.add.image(785,slideY-6,'ui-water-drop').setDisplaySize(58,45);else if(record.sequence===3)this.add.circle(785,slideY-6,20,0x73b4bd);
-   this.text(785,slideY+82,record.sequence===3?'한 방울 준비 완료':'받침 유리판',22,tone.ink,240);
+   this.text(785,slideY+82,prepared?'한 방울 준비 완료':collected?'여기에 한 방울 놓아요':'받침 유리판',28,tone.ink,230);
    this.add.zone(785,slideY+14,262,214).setInteractive({useHandCursor:true}).on('pointerdown',()=>{
     if(this.pauseGuard()||record.sequence===3)return;
     if(record.sequence!==2)return hooks.feedback(record.assignments.site?'스포이드를 먼저 눌러 물 한 방울을 담아요.':'물가나 물풀 가까이를 먼저 골라요.');
@@ -154,16 +178,24 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
   paintBuild(){
    const yogurt=task.id==='M5-1';
    const resetFaces:(()=>void)[]=[];const slots=task.targets.map((t,i)=>({id:t.id,x:185+i*295,y:200}));const g=this.add.graphics();
-   if(yogurt)this.card(480,179,895,278,{fill:0xfff5db,stroke:0xb28e51,radius:30,alpha:.97});
-   for(let i=0;i<2;i++){const linked=record.assignments[`edge${i+1}`]==='linked',color=linked?tone.accent:tone.line;g.lineStyle(10,color,1);g.lineBetween(slots[i].x+112,200,slots[i+1].x-120,200);g.fillStyle(color,1).fillTriangle(slots[i+1].x-112,200,slots[i+1].x-130,188,slots[i+1].x-130,212);}
+   this.card(480,178,916,274,{fill:yogurt?0xfff5db:tone.paper,stroke:yogurt?0xb28e51:tone.line,radius:26,alpha:.97});
+   for(let i=0;i<2;i++){const linked=record.assignments[`edge${i+1}`]==='linked',color=linked?tone.accent:tone.line;g.lineStyle(6,color,1);g.lineBetween(slots[i].x+117,200,slots[i+1].x-120,200);g.fillStyle(color,1).fillTriangle(slots[i+1].x-112,200,slots[i+1].x-129,190,slots[i+1].x-129,210);}
    slots.forEach((s,i)=>{const it=task.items.find(item=>item.id===record.assignments[s.id]);
     if(yogurt&&s.id==='action'){
-     this.drawYogurtMaker(s.x,174,255,166);
-     this.caption(s.x,273,it?it.label:'여기에 넣기',20,tone.ink,235);
-    }else if(it){this.card(s.x,s.y,230,180);this.tape(s.x,s.y-88,84,i%2?3:-3);this.art(s.x,s.y-24,206,100,artKey(it)||'question',{time:artTime(artKey(it),it.detail,it.id),fit:'contain'});this.text(s.x,s.y+59,it.label,21,tone.ink,214);}
-    else{this.card(s.x,s.y,230,180,{fill:tone.soft,stroke:tone.accent,alpha:.82});this.text(s.x,s.y,yogurt?(s.id==='input'?'병에 담기':'목표 음식 놓기'):'여기에 놓아요',22,tone.ink,200);}
-    this.caption(s.x,68,yogurt&&s.id==='action'?'발효기':task.targets[i].label,23);const zone=this.add.zone(s.x,s.y,240,190).setRectangleDropZone(240,190).setInteractive({useHandCursor:true});zone.setData('target',s.id);zone.on('pointerdown',()=>{if(this.pauseGuard())return;if(armed)this.place(armed,s.id);else hooks.feedback('아래에서 놓고 싶은 카드를 먼저 골라요.');});});
-   task.items.forEach((it,i)=>{const x=132+i*233,y=431;const box=this.add.container(x,y);const face=this.add.graphics();this.cardShape(face,0,0,210,154,{stroke:armed===it.id?tone.pick:tone.line,width:armed===it.id?5:2});resetFaces.push(()=>this.cardShape(face,0,0,210,154));box.add(face);box.add(this.art(0,-30,188,72,artKey(it)||'question',{time:artTime(artKey(it),it.detail,it.id),fit:'contain'}));box.add(this.text(0,44,it.label,21,tone.ink,194));const tape=this.tape(0,-74,72,i%2?3:-4);if(tape)box.add(tape);box.setSize(210,154).setInteractive({useHandCursor:true});this.input.setDraggable(box);box.on('pointerdown',()=>{if(this.pauseGuard())return;armed=it.id;resetFaces.forEach(reset=>reset());this.cardShape(face,0,0,210,154,{stroke:tone.pick,width:5});hooks.open(it.id);});box.on('drag',(_p:Phaser.Input.Pointer,x:number,y:number)=>{if(this.pauseGuard())return;box.setPosition(x,y).setDepth(10);});box.on('drop',(_p:Phaser.Input.Pointer,zone:Phaser.GameObjects.Zone)=>this.place(it.id,String(zone.getData('target'))));box.on('dragend',()=>{if(box.active)box.setPosition(x,y).setDepth(0);});});
+     this.drawYogurtMaker(s.x,166,245,150);
+     this.caption(s.x,274,it?it.label:'여기에 넣기',28,tone.ink,224);
+    }else if(it){
+     this.card(s.x,s.y,230,205,{fill:tone.paper,stroke:tone.accent,width:3});
+     this.art(s.x,152,206,88,artKey(it)||'question',{time:artTime(artKey(it),it.detail,it.id),fit:'contain'});
+     this.text(s.x,254,it.label,28,tone.ink,210);
+    }
+    else{
+     this.card(s.x,s.y,230,205,{fill:tone.soft,stroke:tone.accent,alpha:.82});
+     const guide=this.add.graphics();guide.lineStyle(2,tone.accent,.35).strokeRoundedRect(s.x-101,111,202,178,12);
+     this.text(s.x,s.y,yogurt?(s.id==='input'?'병에 담기':'목표 음식 놓기'):'여기에 놓아요',28,tone.ink,190);
+    }
+    this.caption(s.x,68,`${i+1} · ${yogurt&&s.id==='action'?'발효기':task.targets[i].label}`,28,tone.ink,235);const zone=this.add.zone(s.x,s.y,240,190).setRectangleDropZone(240,190).setInteractive({useHandCursor:true});zone.setData('target',s.id);zone.on('pointerdown',()=>{if(this.pauseGuard())return;if(armed)this.place(armed,s.id);else hooks.feedback('아래에서 놓고 싶은 카드를 먼저 골라요.');});});
+   task.items.forEach((it,i)=>{const x=132+i*233,y=431;const box=this.add.container(x,y);const face=this.add.graphics();this.cardShape(face,0,0,210,174,{stroke:armed===it.id?tone.pick:tone.line,width:armed===it.id?5:2});resetFaces.push(()=>this.cardShape(face,0,0,210,174));box.add(face);box.add(this.art(0,-45,188,64,artKey(it)||'question',{time:artTime(artKey(it),it.detail,it.id),fit:'contain'}));box.add(this.text(0,39,it.label,28,tone.ink,194));box.setSize(210,174).setInteractive({useHandCursor:true});this.input.setDraggable(box);box.on('pointerdown',()=>{if(this.pauseGuard())return;armed=it.id;resetFaces.forEach(reset=>reset());this.cardShape(face,0,0,210,174,{stroke:tone.pick,width:5});hooks.open(it.id);});box.on('drag',(_p:Phaser.Input.Pointer,x:number,y:number)=>{if(this.pauseGuard())return;box.setPosition(x,y).setDepth(10);});box.on('drop',(_p:Phaser.Input.Pointer,zone:Phaser.GameObjects.Zone)=>this.place(it.id,String(zone.getData('target'))));box.on('dragend',()=>{if(box.active)box.setPosition(x,y).setDepth(0);});});
    if(!record.runResult){const filled=task.targets.every(t=>!!record.assignments[t.id]);if(!yogurt||!filled||armed)this.caption(480,322,armed?'이제 위쪽에서 놓을 곳을 눌러요':yogurt?'아래에서 골라 작업대에 놓아요':'아래에서 카드 한 장을 골라요',22);}
    if(record.runResult){const ok=record.runResult==='supported';this.caption(480,315,yogurt?(ok?'완성! 우유가 걸쭉하고 새콤해졌어요':'다시 살펴보기 · 재료와 만들 음식을 확인해요'):ok?`${task.caseName} 사례로 연결됐어요`:'흐름이 멈췄어요 · 연결과 자료를 다시 봐요',23,ok?'#286341':'#995131',850);}
   }
@@ -183,12 +215,12 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
    this.drawYogurtMaker(401,256,416,265);
    const ingredient=task.items.find(it=>it.id===record.assignments.input);
    const container=this.art(165,218,100,75,ingredient?artKey(ingredient)||'milk':'milk',{fit:'contain'});
-   const dial=this.add.circle(735,244,53,0xfff6da).setStrokeStyle(6,0xaa8150);
-   for(let i=0;i<12;i++){const a=i*Math.PI/6;this.add.circle(dial.x+Math.sin(a)*42,dial.y-Math.cos(a)*42,2.5,0x775735);}
-   const hand=this.add.rectangle(dial.x,dial.y,5,34,0x745238).setOrigin(.5,1);
+   const dial=this.add.circle(750,165,42,0xfff6da).setStrokeStyle(6,0xaa8150);
+   for(let i=0;i<12;i++){const a=i*Math.PI/6;this.add.circle(dial.x+Math.sin(a)*32,dial.y-Math.cos(a)*32,2.5,0x775735);}
+   const hand=this.add.rectangle(dial.x,dial.y,5,28,0x745238).setOrigin(.5,1);
    if(valid){
-    const result=this.art(737,281,225,146,'yogurt',{fit:'contain'}).setAlpha(0);
-    const label=this.text(737,179,'완성!',26,tone.ink).setAlpha(0);
+    const result=this.art(750,325,190,124,'yogurt',{fit:'contain'}).setAlpha(0);
+    const label=this.text(750,241,'완성!',26,tone.ink).setAlpha(0);
     this.tweens.add({targets:[result,label],delay:3850,alpha:1,y:'-=18',duration:650,ease:'Sine.easeOut'});
    }
    const line=this.text(480,432,'고른 재료를 발효기에 넣어요.',27,tone.ink,790);
@@ -206,19 +238,25 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
    this.tweens.add({targets:signal,x:end,duration:1400,ease:'Sine.easeInOut',onComplete:()=>{simulating=false;signal.destroy();if(!disposed)finish();}});
   }
   paintReview(){
-   this.caption(480,45,'새 자료를 보고 내 생각을 다시 살펴봐요',30);
-   task.items.forEach((it,i)=>{const x=260+i*440;this.card(x,265,390,325,{stroke:record.opened.includes(it.id)?tone.accent:tone.line});this.tape(x,108,92,i?4:-4);this.art(x,230,350,200,artKey(it)||'bacteria',{fit:'contain'});this.text(x,375,(record.opened.includes(it.id)?'✓ ':'')+it.label,28,'#234b3c',350);this.add.zone(x,265,390,325).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard())return;if(!record.assignments.initial)return hooks.feedback('새 자료를 보기 전 생각을 먼저 골라요.');hooks.open(it.id);});});
-   this.caption(480,485,'처음 생각 → 새 근거 → 유지하거나 수정한 주장',26);
+   task.items.forEach((it,i)=>{
+    const x=260+i*440,read=record.opened.includes(it.id);
+    this.card(x,275,390,410,{fill:read?tone.soft:tone.paper,stroke:read?tone.accent:tone.line,width:read?3:2});
+    this.text(x,102,`조사 자료 ${i+1}`,28,tone.ink,300);
+    this.art(x,245,350,225,artKey(it)||'bacteria',{fit:'contain'});
+    this.text(x,395,it.label,28,tone.ink,345);
+    this.caption(x,455,read?'✓ 읽은 자료':'눌러서 자료 읽기',28,tone.ink,345);this.add.zone(x,275,390,410).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard())return;if(!record.assignments.initial)return hooks.feedback('새 자료를 보기 전 생각을 먼저 골라요.');hooks.open(it.id);});});
   }
   paintPublish(){
    task.items.forEach((it,i)=>{const x=180+i*300;const selected=record.assignments.case===it.id;this.card(x,170,260,245,{fill:selected?tone.soft:tone.paper,stroke:selected?tone.accent:tone.line,width:selected?4:2});if(selected)this.badge(x+118,58);this.art(x,135,230,140,artKey(it)||'yogurt',{time:artTime(artKey(it),it.detail,it.id),fit:'contain'});this.text(x,248,it.label,30);this.add.zone(x,170,260,245).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard())return;if(chooseCase(task,record,it.id)){playEffect('snap');this.commit();}});});
-   this.card(480,415,850,180);this.tape(480,327,110,-2);this.text(480,345,'내 소개 카드',28);
-   this.text(480,425,record.note.length>68?record.note.slice(0,68)+'…':record.note||'사례를 고르면 나만의 소개를 완성할 수 있어요.',28,'#234b3c',780);
+   this.card(480,415,850,180);
+   this.text(480,347,'내 소개 카드',28);
+   this.add.graphics().lineStyle(2,tone.line,1).lineBetween(88,372,872,372);
+   this.text(480,438,record.note.length>68?record.note.slice(0,68)+'…':record.note||'사례를 고르면 나만의 소개를 완성할 수 있어요.',28,tone.ink,780);
   }
   update(_time:number,delta:number){
    if(blocked()){this.tweens.pauseAll();return;}this.tweens.resumeAll();
    if(!play||task.kind!=='track'||simulating)return;
-   record.time=(record.time+delta/1000)%10;this.trackElapsed+=delta;
+   record.time=(record.time+delta/1000*playbackRate)%10;this.trackElapsed+=delta;
    // Playback repaints one persistent canvas, never the text, input zones or display list.
    if(this.trackSurface&&this.trackElapsed>=1000/30){this.trackElapsed=0;const image=this.textures.exists('art-paramecium')?this.textures.get('art-paramecium').getSourceImage() as CanvasImageSource:undefined;draw(this.trackSurface.canvas,task.organism||'paramecium',{time:record.time,focus:65,light:65,zoom:record.zoom,pan:record.pan,trail:true,image});this.trackSurface.texture.refresh();}
   }
@@ -226,6 +264,8 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
  const game=new Phaser.Game({type:Phaser.CANVAS,parent:host,width:WIDTH,height:HEIGHT,transparent:true,scene:Inquiry,scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},audio:{noAudio:true},banner:false,render:{antialias:true}});
  // Narrow layouts scroll inside the screen, not the window; Phaser only re-reads the canvas position on resize, so taps drifted after scrolling.
  const rebound=()=>game.scale?.updateBounds();document.addEventListener('scroll',rebound,{capture:true,passive:true});
+ const beforePointer=(e:PointerEvent)=>{if(e.target===game.canvas)rebound();};
+ document.addEventListener('pointerdown',beforePointer,true);
  // DOM alternatives intentionally work inside their own dialog; canvas handlers use pauseGuard.
  function assignCard(id:string,target:string){
   if(disposed||simulating||document.hidden)return false;
@@ -249,6 +289,6 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
   if(!beforeDemo)return;
   record=learner;preview=beforeDemo.preview;reveal=beforeDemo.reveal;play=false;beforeDemo=undefined;refresh();
  };
- return {showFrame,endDemo,refresh:()=>{if(!disposed&&!simulating)refresh();},setPreview:(value:boolean)=>{if(disposed||simulating)return;preview=value;refresh();},setReveal:(value:number|undefined)=>{if(disposed||simulating)return;preview=false;reveal=value===undefined?undefined:Phaser.Math.Clamp(value,0,1);refresh();},animateRun:(valid:boolean,finish:()=>void)=>{if(scene instanceof Inquiry)scene.animateRun(valid,finish);else finish();},setPlaying:(value:boolean)=>{if(disposed||simulating||value&&blocked())return;if(play!==value){play=value;refresh();}},arm:(id:string)=>{if(disposed||simulating)return;armed=id;refresh();},assignCard,assign:assignCard,place:assignCard,dispose:()=>{disposed=true;play=false;document.removeEventListener('scroll',rebound,{capture:true});game.destroy(true);}};
+ return {showFrame,endDemo,setPlaybackRate:(rate:number)=>{playbackRate=rate;if(scene)scene.tweens.timeScale=rate;},refresh:()=>{if(!disposed&&!simulating)refresh();},setPreview:(value:boolean)=>{if(disposed||simulating)return;preview=value;refresh();},setReveal:(value:number|undefined)=>{if(disposed||simulating)return;preview=false;reveal=value===undefined?undefined:Phaser.Math.Clamp(value,0,1);refresh();},animateRun:(valid:boolean,finish:()=>void)=>{if(scene instanceof Inquiry)scene.animateRun(valid,finish);else finish();},setPlaying:(value:boolean)=>{if(disposed||simulating||value&&blocked())return;if(play!==value){play=value;refresh();}},arm:(id:string)=>{if(disposed||simulating)return;armed=id;refresh();},assignCard,assign:assignCard,place:assignCard,dispose:()=>{disposed=true;play=false;document.removeEventListener('scroll',rebound,{capture:true});document.removeEventListener('pointerdown',beforePointer,true);game.destroy(true);}};
 }
 export type InquiryView=ReturnType<typeof mountInquiry>;

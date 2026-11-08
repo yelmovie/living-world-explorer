@@ -27,13 +27,21 @@ async function ranged(req,f){
  return new Response(blob.slice(start,end+1),{status:206,headers:{'Content-Type':res.headers.get('Content-Type')||'','Content-Range':`bytes ${start}-${end}/${size}`,'Content-Length':String(end-start+1),'Accept-Ranges':'bytes'}});
 }
 
+// Lazy GLB/JS requests usually have no Range header. Remember their first successful response too.
+async function cachedFile(req,f){
+ const cache=await caches.open(CACHE),hit=await cache.match(f.key);if(hit)return hit;
+ const response=await fetch(req);
+ if(response.ok){try{await cache.put(f.key,response.clone());}catch{/* Quota failure must not prevent the online view. */}}
+ return response;
+}
+
 self.addEventListener('fetch',event=>{
  const req=event.request,url=new URL(req.url);if(req.method!=='GET'||url.origin!==location.origin)return;
  // Network first so a new deploy shows when online; a stalled classroom network falls back after 4s.
  if(req.mode==='navigate'){event.respondWith(within(fetch(req),4000).catch(()=>caches.match(shell).then(r=>r||Response.error())));return;}
  const f=files.get(url.origin+url.pathname);
  if(req.headers.has('range')){event.respondWith(ranged(req,f));return;}
- if(f){event.respondWith(caches.match(f.key).then(hit=>hit||fetch(req)));return;}
+ if(f){event.respondWith(cachedFile(req,f));return;}
  // Unknown files (e.g. a newer deploy's chunk installed by a waiting worker) still get an offline fallback.
  event.respondWith(fetch(req).catch(()=>caches.match(req,{ignoreSearch:true}).then(r=>r||Response.error())));
 });

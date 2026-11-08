@@ -41,6 +41,9 @@
 | public/assets/study/{deadwood,moldy-fruit,dough-before,dough-after,bread-1~3,leaf-1~3}.webp | 2026-10-25 기본 image_gen 생성·편집 10개. assets/generated/specimens-20261025.json에 전체 프롬프트와 파일별 기록 | 학습용 관찰 모형. 같은 식빵·낙엽·반죽의 전후 비교, 실제 실험 사진·측정 원자료 아님 |
 | public/assets/map/moa-{down,right,up,left}.webp | 2026-10-21 기본 image_gen 자체 생성 | 갈색 묶은 머리·안경·연구 조끼의 모아, 투명 2.5D 픽셀 캐릭터 |
 | public/assets/map/companion-{down,right,up,left}.webp | 2026-10-21 기본 image_gen 자체 생성 | 분홍 토끼 보조 캐릭터, 투명 2.5D 픽셀 캐릭터 |
+| src/renderers/core3d.ts, src/renderers/core-apparatus.ts | 2026-11-06, Three.js 기본 도형과 직접 구성한 결정 면으로 황동 링·포트·회전 장치 제작 | 중앙 연구소에서만 불러오는 실시간 3D 모형 |
+| public/assets/ui/{bio-core,bio-core-powered}.webp | 2026-11-06, Blender에서 프로젝트용 황동·초록 결정 모형을 직접 구성해 고정 카메라로 렌더링. 재현 코드 scripts/render-core-figure.py | 중앙 연구소의 가상 코어 장치, 포트 점등과 안내는 별도 DOM |
+| public/assets/ui/og-life-code-v1.jpg | 2026-11-05 기존 greenhouse.webp, logo.webp, moa-full.webp, companion-full.webp를 Sharp로 합성(1200×600) | 링크 공유용 썸네일. 신규 표본이나 현미경 사진 아님 |
 | public/assets/ui/icon-{192,512}.png | 2026-10-25 companion-portrait.webp(위 자체 생성 토토 초상)를 #315f46 바탕에 sharp로 합성한 2차 이미지 | 홈 화면 앱 아이콘(manifest.webmanifest) |
 | public/assets/characters/{moa,companion}-portrait.webp | 2026-10-21 기본 image_gen 자체 생성, 320×320 투명 | 시설 안내 초상, 과학 관찰 근거 아님 |
 | public/assets/study/{mushroom-spores,mold-lens,spirogyra-lens,mushroom-mycelium}.webp | 2026-10-25 Higgsfield gpt_image_2_5(기존 학습 그림을 화풍 참고로 사용) 생성 4장, 6크레딧. 기록: assets/generated/study-20261025c.json | 확대 단계(돋보기·현미경)와 균사 단면 설명 모형. 실제 현미경 사진 아님 |

@@ -5,7 +5,19 @@ export function paragraph(text:string,cls=''){return el('p',cls,text);}
 export function panel(title:string,...children:Node[]){const n=el('section','panel');n.append(heading(title),...children);return n;}
 export function choices(options:{id:string;label:string}[],value:string,change:(id:string)=>void){const box=el('div','choices');for(const o of options){const b=button(o.label,()=>change(o.id),'choice'+(value===o.id?' selected':''));b.setAttribute('aria-pressed',String(value===o.id));box.append(b);}return box;}
 export function select(label:string,options:{id:string;label:string}[],value:string,change:(id:string)=>void){let selected=value;const wrap=el('div','field');wrap.append(el('span','field-label',label));const pick=button(options.find(o=>o.id===value)?.label||'골라요',()=>{pick.setAttribute('aria-expanded','true');const dialog=modal(label,options.filter(o=>o.id).map(o=>{const b=button(o.label,()=>{selected=o.id;pick.textContent=o.label;dialog.close();change(o.id);},o.id===selected?'selected':'secondary');b.setAttribute('aria-pressed',String(o.id===selected));return b;}));dialog.addEventListener('close',()=>pick.setAttribute('aria-expanded','false'),{once:true});},'choice pick');pick.setAttribute('aria-label',label);pick.setAttribute('aria-haspopup','dialog');pick.setAttribute('aria-expanded','false');wrap.append(pick);return wrap;}
-export function slider(label:string,min:number,max:number,step:number,value:number,change:(v:number)=>void){const wrap=el('label','field slider');const name=el('span','field-label',label);const row=el('div','range-row');const input=el('input');input.type='range';input.min=String(min);input.max=String(max);input.step=String(step);input.value=String(value);input.setAttribute('aria-label',label);const update=(v:number)=>{input.value=String(Math.min(max,Math.max(min,v)));change(+input.value);};input.oninput=()=>change(+input.value);row.append(button('−',()=>update(+input.value-step),'step'),input,button('+',()=>update(+input.value+step),'step'));wrap.append(name,row);return wrap;}
+export function slider(label:string,min:number,max:number,step:number,value:number,change:(v:number)=>void){
+ const wrap=el('div','field slider'),name=el('span','field-label',label),row=el('div','range-row');
+ const input=el('input'),readout=el('output','slider-readout');
+ input.type='range';input.min=String(min);input.max=String(max);input.step=String(step);input.value=String(value);input.setAttribute('aria-label',label);
+ const refresh=()=>{const v=+input.value;readout.value=String(Number(v.toFixed(3)));less.disabled=v<=min;more.disabled=v>=max;};
+ const update=(v:number)=>{input.value=String(Math.min(max,Math.max(min,v)));refresh();change(+input.value);};
+ const less=button('−',()=>update(+input.value-step),'step'),more=button('+',()=>update(+input.value+step),'step');
+ less.setAttribute('aria-label',label+' 줄이기');more.setAttribute('aria-label',label+' 늘리기');
+ readout.setAttribute('aria-label',label+' 현재 값');
+ input.oninput=()=>{refresh();change(+input.value);};refresh();
+ name.append(readout);row.append(less,input,more);wrap.append(name,row);return wrap;
+}
+
 export function modal(title:string,children:Node[],options:{showClose?:boolean;description?:HTMLElement}={}){
  const dialog=el('dialog','modal');const previous=document.activeElement as HTMLElement|null;
  const titleNode=heading(title);titleNode.id=`dialog-${crypto.randomUUID()}`;dialog.setAttribute('aria-labelledby',titleNode.id);
@@ -19,4 +31,5 @@ export function modal(title:string,children:Node[],options:{showClose?:boolean;d
 }
 export function notice(text:string){const old=document.querySelector('.toast');old?.remove();const n=el('div','toast',text);n.setAttribute('role','status');document.body.append(n);setTimeout(()=>n.remove(),6500);}
 export function modelBadge(){return el('span','model-badge','설명용 모형');}
+export function reducedMotion(setting:boolean){return setting||window.matchMedia('(prefers-reduced-motion: reduce)').matches;}
 export type Context={host:HTMLElement;save:()=>void;render:()=>void;go:(route:string)=>void;complete:(stage:import('./model').Stage)=>void;state:import('./model').State;attempt:import('./model').Attempt;cleanup:(f:()=>void)=>void};

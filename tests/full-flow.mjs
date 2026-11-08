@@ -34,8 +34,8 @@ async function completeTask(task,replay=false){
  if(['collect','connect','sort'].includes(task.kind))await connectAll(task);
  if(task.id==='M3-2'){await btn('크기 사다리에 세균 놓기').click();const ladder=page.locator('.ladder-dialog');await ladder.getByRole('button',{name:'여기에 놓기'}).first().click();assert.match(await ladder.locator('.ladder-feedback').innerText(),/더 아래/);await ladder.getByRole('button',{name:'여기에 놓기'}).last().click();assert.match(await ladder.locator('.ladder-feedback').innerText(),/약 200배/);await ladder.getByRole('button',{name:'닫기',exact:true}).click();}
  if(task.kind==='microscope'){if(await btn('돋보기로 크게 보기').count())await btn('돋보기로 크게 보기').click();
-  // M1-2: the microscope opens only after the gills are found on the 돋보기 picture (793×496 shown in 720×405 at 480,282).
-  if(task.organism==='mushroom'){const s=405/496,w=793*s;await tapCanvas(page,(480-w/2+.34*w)/960,(282-202.5+.33*405)/540);}else if(await btn('현미경으로 크게 보기').count())await btn('현미경으로 크게 보기').click();
+  // M1-2: the microscope opens only after the gills are found on the 돋보기 picture (793×496 shown in 880×448 at 480,282).
+  if(task.organism==='mushroom'){const s=448/496,w=793*s;await tapCanvas(page,(480-w/2+.34*w)/960,(282-224+.33*448)/540);}else if(await btn('현미경으로 크게 보기').count())await btn('현미경으로 크게 보기').click();
   await setRange(page,'초점',65);await btn('사진 촬영').click();await btn('표시 되돌리기').waitFor();
   // Actual canvas hit testing: spores on the 16:9 gill photo (750 wide), the two distinct mold regions, the spirogyra filament.
   const wide=task.organism==='mushroom',imageWidth=wide?750:435*793/496,imageHeight=wide?750*573/1024:435,top=270-imageHeight/2;
@@ -45,9 +45,10 @@ async function completeTask(task,replay=false){
  if(task.kind==='track'){await setRange(page,'관찰 시점',5);await page.getByRole('button',{name:/^B 고정/}).click();
   // Cilia close-up: 793×496 picture fitted in 760×410 at 480,282; tap the hair rim.
   await btn('현미경으로 움직임의 비밀 찾기').click();await btn('움직임 다시 보기').waitFor();const w=410*793/496;await tapCanvas(page,(480-w/2+.17*w)/960,(282-205+.501*410)/540);await page.getByText('현미경 · 몸 둘레 표시 1곳').waitFor();}
- if(task.kind==='timeline'){await setRange(page,'관찰 순서',3);await page.getByRole('button',{name:/^이후 고정/}).click();await mark(...(task.organism==='bread'?[.49,.4]:[.51,.54]));assert.ok((await page.locator('.process-note').innerText()).length>0);}
+ if(task.kind==='timeline'){await setRange(page,'관찰 순서',3);await page.getByRole('button',{name:/^이후 고정/}).click();await mark(...(task.organism==='bread'?[.49,.4]:[.51,.54]));
+  await page.getByText('관련 조사 자료 읽기',{exact:true}).click();assert.ok(await page.locator('.process-note').isVisible());await page.getByRole('dialog').getByRole('button',{name:'닫기',exact:true}).click();}
  if(task.kind==='build'){await connectAll(task);await btn(task.id==='M5-1'?'요구르트가 될 거예요':'사례처럼 이어질 것 같아요').click();await btn(task.id==='M5-1'?'발효기 켜기':'설계 가동').click();await btn('예상과 같아요').waitFor();await btn('예상과 같아요').click();}
- if(task.kind==='review'){await btn('모든 세균이 해로울 것 같아요').click();for(const item of task.items){await btn(item.label).click();await page.locator('.source-preview').waitFor({state:'visible'});}await btn('모든 세균이 해로운 것은 아니에요').click();await btn('새 자료: 요구르트 만들기 · 근거 선택').click();assert.match(await page.locator('.expedition-tools').innerText(),/수정/);}
+ if(task.kind==='review'){await btn('모든 세균이 해로울 것 같아요').click();for(const item of task.items){await btn(item.label).click();await page.locator('.source-preview').waitFor({state:'visible'});await btn('자료 확인했어요').click();}await btn('모든 세균이 해로운 것은 아니에요').click();await btn('요구르트 만들기').click();assert.match(await page.locator('.inquiry-status').innerText(),/수정/);}
  if(task.kind==='publish'){const dialog=await alternative();await dialog.getByRole('button',{name:'요구르트 소개하기',exact:true}).click();await dialog.getByRole('button',{name:'닫기',exact:true}).click();await btn('유산균의 작용').click();assert.ok((await page.getByLabel('내 소개 문장',{exact:true}).inputValue()).length>0,'selected case and action create an editable introduction');await page.getByLabel('내 소개 문장',{exact:true}).fill('특정 세균의 작용을 우유로 요구르트를 만드는 데 이용해요.');}
  await btn('발견 기록하기').click();await page.locator('.discovery-dialog').waitFor();
  await btn(task.order===4?'연구소 복구하기':'다음 발견으로').click();

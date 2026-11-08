@@ -1,3 +1,4 @@
+import {storageMessage} from './storage';
 import {active,makeAttempt,type State} from './model';
 import {el,button,paragraph,notice} from './ui';
 import {settingsContent as copy} from './settingsContent';
@@ -33,6 +34,7 @@ export function openSettings(state: State, hooks: SettingsHooks, showTeacherTool
   const title = el('h2','settings-title',copy.title);title.id = 'settings-title';
   const header = el('div','settings-header');header.append(title);
   const body = el('div','settings-scroll');
+  const storageStatus=paragraph('기록 상태: '+storageMessage,'storage-status');storageStatus.setAttribute('role','status');body.append(storageStatus);
   const prefs = state.settings as State['settings'] & {bgm?: boolean;bgmVolume?: number};
   const update = () => {hooks.save();syncAudio(prefs);hooks.render();};
   const volume = el('input');volume.type='range';volume.min='0';volume.max='100';volume.step='5';volume.value=String(prefs.bgmVolume ?? 35);volume.disabled=!prefs.bgm;volume.setAttribute('aria-label',copy.sound.volume);

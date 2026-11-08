@@ -1,0 +1,203 @@
+/* The field notebook keeps labels, choice marks and controls in separate spaces. */
+.expedition-shell .expedition-panel-body{container-type:inline-size}
+.expedition-shell .expedition-tools,
+.expedition-shell .source-preview,
+.expedition-shell .inquiry-status,
+.expedition-shell .panel-links{min-width:0;overflow-wrap:break-word;word-break:keep-all}
+.expedition-shell .expedition-tools .button{max-width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere}
+.expedition-shell .inquiry-choice-group{display:flex;flex-direction:column;gap:8px;min-width:0;flex-basis:100%}
+.expedition-shell .inquiry-choice-group>.field-label{margin:0;color:var(--ink-strong);line-height:1.4}
+.expedition-shell .expedition-tools .choices{width:100%;min-width:0;align-items:stretch}
+.expedition-shell .expedition-tools .choices>.button{justify-content:flex-start;gap:9px;min-height:52px;padding:10px;text-align:left;line-height:1.4}
+.expedition-shell .inquiry-choice-label{min-width:0;flex:1}
+.expedition-shell .expedition-tools .choices>.button::before{content:'';display:block;flex:0 0 20px;width:20px;height:20px;align-self:center;border:2px solid var(--paper-line);border-radius:50%;background:var(--paper-face);box-sizing:border-box}
+.expedition-shell .expedition-tools .choices>.button[aria-pressed=true]::before{border-color:var(--stage-accent);background:var(--stage-accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='m4 10 4 4 8-8' fill='none' stroke='%23fffdf4' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/18px no-repeat}
+.expedition-shell .expedition-tools .choices>.button[aria-pressed=true]{border-color:var(--stage-accent);box-shadow:inset 0 0 0 1px var(--stage-accent)}
+
+/* Tool steps retain their own number cell when the label wraps or text is enlarged. */
+.expedition-shell .level-steps{border-radius:var(--radius-md);padding:5px;gap:5px}
+.expedition-shell .level-steps>.button{display:flex;flex-direction:column;gap:2px;min-height:56px;padding:5px 3px;border-radius:var(--radius-sm);line-height:1.25}
+.expedition-shell .instrument-step-number{display:block;font-family:var(--font-body);font-size:14px;line-height:1.1;opacity:.8}
+.expedition-shell .instrument-step-number::before{content:attr(data-step)}
+.expedition-shell .instrument-step-label{min-width:0;overflow-wrap:anywhere}
+.expedition-shell .level-steps>.button[aria-pressed=true] .instrument-step-number{opacity:1;font-weight:700}
+
+/* A range gets the entire row; the value never competes with its +/- buttons. */
+.expedition-shell .expedition-tools .field.slider{display:grid;grid-template-columns:minmax(0,1fr);gap:3px;min-width:0;margin:0}
+.expedition-shell .expedition-tools .field.slider>.field-label{display:flex;justify-content:space-between;gap:10px;align-items:baseline;min-width:0;line-height:1.4}
+.expedition-shell .instrument-readout{flex:none;font-family:var(--font-body);font-variant-numeric:tabular-nums;color:var(--stage-accent);font-weight:700;white-space:nowrap}
+.expedition-shell .expedition-tools .range-row{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;gap:8px;min-width:0}
+.expedition-shell .expedition-tools .range-row>.button{width:48px;min-width:48px;height:48px;min-height:48px;padding:0}
+.expedition-shell .expedition-tools .range-row>input{display:block;width:100%;min-width:0;margin:0;min-height:48px}
+
+.expedition-shell .card-assist{width:100%;min-height:48px;flex:none;white-space:normal;overflow-wrap:anywhere}
+.expedition-shell .source-preview>strong{display:block;line-height:1.4;overflow-wrap:anywhere}
+.expedition-shell .source-targets{grid-template-columns:minmax(0,1fr)}
+.expedition-shell .inline-targets summary,
+.expedition-shell .instrument-note summary{min-height:48px;padding:10px 8px;line-height:1.4;overflow-wrap:anywhere}
+.expedition-shell .panel-links>.button.text-button{min-height:48px}
+.expedition-shell .expedition-panel .buddy-toggle{min-height:48px;gap:8px}
+.expedition-shell .buddy-toggle img{flex:none}
+.expedition-shell .buddy-toggle>span{min-width:0;overflow-wrap:anywhere}
+.expedition-shell .buddy-speech{max-width:100%}
+.expedition-shell .buddy-speech .button{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.expedition-shell .expedition-tools textarea{width:100%;min-width:0;min-height:120px;padding:12px;line-height:1.5;border:2px solid var(--paper-line);border-radius:var(--radius-md);background:var(--paper-face);color:var(--ink-strong);resize:vertical}
+
+@container (max-width:360px){
+ .expedition-shell:is([data-kind=review],[data-kind=build],[data-kind=publish]) .expedition-tools .choices{grid-template-columns:minmax(0,1fr)}
+}
+@container (max-width:240px){
+ .expedition-shell .expedition-tools .choices{grid-template-columns:minmax(0,1fr)}
+}
+@media(min-width:1500px) and (min-height:850px){
+ .expedition-shell .level-steps>.button{min-height:64px}
+ .expedition-shell .instrument-step-number{font-size:16px}
+}
+
+/* A stage owns one viewport. Only the current operation occupies the notebook. */
+#app>.expedition-shell{display:grid;grid-template-columns:minmax(0,1fr) clamp(320px,29vw,448px);grid-template-rows:auto minmax(0,1fr) auto;gap:8px 16px;height:100%;min-height:0;flex:1;overflow:hidden;padding:72px 16px max(8px,env(safe-area-inset-bottom))}
+#app>.expedition-shell .expedition-workspace{display:contents}
+#app>.expedition-shell .expedition-header{grid-area:1/1;justify-self:center;margin:0;max-width:100%;min-height:0;padding:8px 16px;gap:0}
+#app>.expedition-shell .mission-emblem,#app>.expedition-shell .eyebrow{display:none}
+#app>.expedition-shell .expedition-header h2{font-size:clamp(24px,2.1vw,36px);line-height:1.25}
+#app>.expedition-shell .expedition-work{grid-area:2/1;height:100%;min-height:0;gap:0;flex:1}
+#app>.expedition-shell .expedition-canvas-host{height:100%;min-height:0;flex:1;aspect-ratio:auto;overflow:hidden}
+#app>.expedition-shell .expedition-work>.model-badge{display:none}
+#app>.expedition-shell .expedition-panel{grid-area:1/2/3/3;align-self:stretch;height:100%;max-height:100%;padding:16px;gap:8px;overflow:hidden}
+#app>.expedition-shell .inquiry-status{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:8px;padding:8px 8px 16px;flex:none}
+#app>.expedition-shell .inquiry-counter{grid-area:1/2;font-size:var(--font-size-small);line-height:1.4;white-space:nowrap}
+#app>.expedition-shell .inquiry-status.ready .inquiry-counter{grid-area:auto;grid-column:1/-1}
+#app>.expedition-shell .inquiry-status.ready .next-instruction{display:none}
+#app>.expedition-shell .next-instruction{grid-area:1/1;font-size:var(--font-size-label);line-height:1.4}
+#app>.expedition-shell .inquiry-meter{position:absolute;inset:auto 8px 4px;height:4px;margin:0}
+#app>.expedition-shell .inquiry-feedback{grid-area:1/1/2/3;font-size:var(--font-size-label);padding:0;border:0;background:none}
+#app>.expedition-shell .inquiry-feedback::before{display:none}
+#app>.expedition-shell .expedition-panel-body{min-height:0;flex:1;overflow:visible;padding:0;gap:8px;container-type:normal}
+#app>.expedition-shell .expedition-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:8px;padding:0;min-height:0;flex:none}
+#app>.expedition-shell .expedition-tools>*{grid-column:1/-1;min-width:0}
+#app>.expedition-shell .expedition-tools>.button:not(.primary),#app>.expedition-shell .expedition-tools>.text-button{grid-column:auto}
+#app>.expedition-shell .expedition-tools .button{min-height:48px;padding:8px;font-size:var(--font-size-label);line-height:1.35}
+#app>.expedition-shell .expedition-tools .choices{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding:0}
+#app>.expedition-shell .inquiry-choice-group{gap:8px}
+#app>.expedition-shell .inquiry-choice-group>.field-label{font-size:var(--font-size-label)}
+#app>.expedition-shell .expedition-tools .choices>.button{min-height:48px;padding:8px;line-height:1.35}
+#app>.expedition-shell .expedition-tools .field.slider{display:grid;grid-template-columns:80px minmax(0,1fr);align-items:center;gap:8px}
+#app>.expedition-shell .expedition-tools .field.slider>.field-label{display:flex;flex-direction:column;gap:0;font-size:var(--font-size-small);line-height:1.25}
+#app>.expedition-shell .expedition-tools .range-row{grid-template-columns:44px minmax(0,1fr) 44px;gap:4px}
+#app>.expedition-shell .expedition-tools .range-row>.button{width:44px;min-width:44px;height:44px;min-height:44px;padding:0}
+#app>.expedition-shell .expedition-tools .range-row>input{min-height:44px;height:44px}
+#app>.expedition-shell .expedition-tools textarea{min-height:80px;height:96px;resize:none;font-size:var(--font-size-label)}
+#app>.expedition-shell .source-preview{padding:8px;gap:8px;font-size:var(--font-size-label);line-height:1.4}
+#app>.expedition-shell .expedition-footer{grid-column:1/-1;position:static;display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:16px;min-height:0;padding:0;background:none;border-radius:0}
+#app>.expedition-shell .expedition-secondary{display:flex;flex-direction:row;flex-wrap:nowrap;gap:8px;align-items:center}
+#app>.expedition-shell .expedition-secondary>.model-badge{display:none}
+#app>.expedition-shell .panel-links{display:flex;gap:8px;flex-wrap:nowrap;align-items:center}
+#app>.expedition-shell .expedition-footer .button{min-height:48px;padding:8px 12px;font-size:var(--font-size-label);white-space:nowrap}
+#app>.expedition-shell .panel-links>.button{background:var(--paper-face);border:1px solid var(--paper-line);border-radius:var(--radius-pill);min-width:0}
+#app>.expedition-shell .expedition-footer>.primary{margin:0;min-width:0;justify-self:end}
+#app>.expedition-shell .activity-stepper{order:0;grid-column:auto;flex-basis:auto;gap:16px;padding:4px 8px;justify-self:center}
+#app>.expedition-shell .activity-stepper>.button{width:44px;min-width:44px;height:44px;min-height:44px;padding:0}
+#app>.expedition-shell .activity-stepper>.button+.button::before{width:8px}
+#app:has(>.expedition-shell)>.toolbar{position:absolute;inset:12px 16px auto;margin:0;padding:0;height:48px;min-height:0}
+.inquiry-playback{display:flex;align-items:center;justify-content:space-between;gap:8px;flex:none}
+.inquiry-playback[hidden],.inquiry-playback [hidden]{display:none}
+.inquiry-playback>.observation-play{flex:1;min-width:0;min-height:48px;padding:8px;font-size:var(--font-size-label);white-space:nowrap}
+.playback-speed{display:flex;align-items:center;gap:8px;font-size:var(--font-size-small);color:var(--ink-strong)}
+.playback-speed select{min-width:80px;min-height:48px;padding:8px;border:2px solid var(--paper-line);border-radius:var(--radius-sm);background:var(--paper-face);color:var(--ink-strong);font-size:var(--font-size-label);cursor:pointer}
+#app>.expedition-shell .observation-play[aria-pressed=true]{background:var(--forest-551);color:var(--ink-on-accent)}
+
+/* Every evidence card fits; source prose stays in the adjacent notebook. */
+#app>.expedition-shell .link-board{height:100%;overflow:visible;grid-template-rows:minmax(0,1fr);padding:4px 16px 8px;column-gap:40px;scrollbar-gutter:auto}
+#app>.expedition-shell .link-column{min-height:0;gap:8px}
+#app>.expedition-shell .link-stack{min-height:0;grid-auto-rows:minmax(48px,1fr);gap:8px;align-content:stretch}
+#app>.expedition-shell .link-card,#app>.expedition-shell .link-card:has(.link-port[data-side=left]){grid-template-columns:minmax(32px,.4fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:8px;padding:4px 16px 4px 8px;min-height:48px;touch-action:none}
+#app>.expedition-shell .link-card .link-photo{order:0;height:100%;align-self:stretch}
+#app>.expedition-shell .link-caption{flex-wrap:nowrap;gap:4px}
+#app>.expedition-shell .link-name,#app>.expedition-shell .link-target-name{font-size:clamp(18px,1.6vw,28px);line-height:1.25}
+#app>.expedition-shell .link-heading{min-height:32px;font-size:var(--font-size-label);padding:4px 8px;gap:8px}
+#app>.expedition-shell .link-step{width:24px;height:24px;font-size:18px}
+#app>.expedition-shell .link-target{min-height:48px;padding:8px 16px;gap:4px}
+#app>.expedition-shell .link-scroll-cue{display:none}
+
+@media(max-height:640px) and (min-width:660px){
+ #app>.expedition-shell{padding:64px 8px 8px;gap:8px}
+ #app>.expedition-shell .expedition-panel{padding:8px}
+ #app>.expedition-shell .expedition-header{padding:4px 12px}
+ #app>.expedition-shell .expedition-header h2{font-size:24px}
+ #app>.expedition-shell .expedition-tools .button,#app>.expedition-shell .inquiry-playback>.button{min-height:44px}
+ #app>.expedition-shell .expedition-footer{gap:8px}
+ #app>.expedition-shell .expedition-footer .button{min-height:44px;padding:8px}
+ #app>.expedition-shell .activity-stepper{gap:8px;padding:4px}
+ #app>.expedition-shell .activity-stepper>.button+.button::before{display:none}
+ #app>.expedition-shell .link-heading,#app>.expedition-shell .link-filed,#app>.expedition-shell .link-count{display:none}
+ #app>.expedition-shell .link-card{padding-inline:8px 12px}
+ #app>.expedition-shell .link-name,#app>.expedition-shell .link-target-name{font-size:18px}
+ .playback-speed select{min-height:44px}
+}
+@media(min-width:1500px) and (min-height:850px){
+ #app>.expedition-shell{padding:96px 24px 16px;gap:16px 24px}
+ #app>.expedition-shell .expedition-panel{padding:24px;gap:16px}
+ #app>.expedition-shell .expedition-tools{gap:16px}
+ #app>.expedition-shell .expedition-tools .field.slider{grid-template-columns:96px minmax(0,1fr)}
+ #app>.expedition-shell .expedition-tools .button{min-height:56px}
+ #app>.expedition-shell .inquiry-status{padding:16px 16px 24px}
+}
+@media(max-width:659px){
+ #app>.expedition-shell{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(208px,1fr) auto auto;padding:72px 8px 8px;gap:8px}
+ #app>.expedition-shell .expedition-header{grid-area:1/1;padding:8px}
+ #app>.expedition-shell .expedition-header h2{font-size:22px}
+ #app>.expedition-shell .expedition-work{grid-area:2/1}
+ #app>.expedition-shell .expedition-panel{grid-area:3/1;padding:8px;height:auto;gap:8px}
+ #app>.expedition-shell .expedition-footer{grid-area:4/1;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+ #app>.expedition-shell .expedition-secondary{gap:8px;flex-wrap:wrap}
+ #app>.expedition-shell .panel-links{gap:8px}
+ #app>.expedition-shell .panel-links>.button{font-size:14px;min-height:44px;padding:8px}
+ #app>.expedition-shell .expedition-footer>.activity-stepper{grid-column:1/-1;grid-row:2;gap:16px}
+ #app>.expedition-shell .expedition-footer>.primary{grid-column:2;grid-row:1;align-self:stretch}
+ #app>.expedition-shell .expedition-secondary>.button{display:none}
+ #app>.expedition-shell .expedition-tools{gap:8px}
+ #app>.expedition-shell .expedition-tools .button{min-height:44px}
+ #app>.expedition-shell .link-heading,#app>.expedition-shell .link-count,#app>.expedition-shell .link-filed{display:none}
+ #app>.expedition-shell .link-board[data-layout=center]{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;gap:8px 24px}
+ #app>.expedition-shell .link-board[data-layout=center] .link-records{grid-area:2/1/3/3}
+ #app>.expedition-shell .link-board[data-layout=center] .link-records .link-stack{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:minmax(48px,1fr)}
+ #app>.expedition-shell .link-board{padding-inline:8px;column-gap:24px}
+ #app>.expedition-shell .link-card,#app>.expedition-shell .link-card:has(.link-port[data-side=left]){grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr);padding:4px 12px;gap:0}
+ #app>.expedition-shell .link-photo{display:none}
+ #app>.expedition-shell .link-target{padding:4px 8px}
+ #app>.expedition-shell .link-name,#app>.expedition-shell .link-target-name{font-size:16px}
+ #app:has(>.expedition-shell) .preview-banner{position:absolute;top:0;left:50%;right:auto;max-width:120px;min-height:44px;padding:4px 8px;font-size:14px;transform:translateX(-50%)}
+}
+.playback-speed>span{white-space:nowrap}
+#app>.expedition-shell .inquiry-playback>.run-play{white-space:normal}
+#app>.expedition-shell .expedition-tools .claim-decision{font-size:var(--font-size-small);line-height:1.35}
+#app>.expedition-shell .inquiry-status[hidden]{display:none}
+#app>.expedition-shell .expedition-tools[data-phase=evidence] .choices{grid-template-columns:repeat(2,minmax(0,1fr))}
+#app>.expedition-shell .panel-links>.button{flex:none;min-width:48px}
+#app>.expedition-shell:is([data-kind=build],[data-kind=publish]) .expedition-tools .choices{grid-template-columns:repeat(2,minmax(0,1fr))}
+#app>.expedition-shell[data-kind=build] .expedition-tools>.button{grid-column:1/-1}
+#app>.expedition-shell .link-heading.placeholder{visibility:hidden}
+@media(max-width:659px){
+ #app>.expedition-shell .link-card,#app>.expedition-shell .link-card:has(.link-port[data-side=left]){grid-template-columns:32px minmax(0,1fr);gap:4px;padding-inline:4px 12px}
+ #app>.expedition-shell .link-card .link-photo{display:block}
+}
+.large-text #app>.expedition-shell{--font-size-label:24px;--font-size-small:20px;grid-template-columns:minmax(0,1fr) clamp(384px,35vw,480px)}
+.large-text #app>.expedition-shell .expedition-tools[data-phase=initial] .choices,
+.large-text #app>.expedition-shell .expedition-tools[data-phase=claim] .choices{grid-template-columns:repeat(2,minmax(0,1fr))}
+.large-text #app>.expedition-shell .expedition-tools[data-phase=claim] .field-label{display:none}
+@media(max-width:659px){.large-text #app>.expedition-shell{grid-template-columns:minmax(0,1fr)}}
+#app>.expedition-shell .link-mark{position:absolute;top:4px;left:8px;width:24px;height:24px;z-index:2}
+@media(min-width:660px) and (max-height:640px){
+ #app>.expedition-shell.link-task{grid-template-columns:minmax(0,1fr) clamp(256px,24vw,320px)}
+ .large-text #app>.expedition-shell.link-task{grid-template-columns:minmax(0,1fr) 384px}
+}
+#app>.expedition-shell .expedition-tools[data-phase=evidence] .field-label{display:none}
+@media(min-width:660px) and (max-height:640px){
+ .large-text #app>.expedition-shell .expedition-panel{gap:4px}
+ .large-text #app>.expedition-shell .inquiry-status{padding-bottom:8px}
+ .large-text #app>.expedition-shell .expedition-tools .field.slider{grid-template-columns:112px minmax(0,1fr)}
+ .large-text #app>.expedition-shell .expedition-tools .field.slider>.field-label{flex-direction:row;justify-content:space-between;align-items:center;gap:4px}
+ .large-text #app>.expedition-shell .expedition-tools .button{padding-block:4px;min-height:44px}
+ .large-text #app>.expedition-shell .inquiry-playback>.observation-play{padding-block:4px;min-height:44px}
+ .large-text #app>.expedition-shell .playback-speed select{padding-block:4px}
+}
