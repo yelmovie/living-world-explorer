@@ -20,6 +20,7 @@ import {prepareInquiry,validTrackPair,validTimelinePair,reflectClaim,introductio
 import {chooseCase} from '../inquiry-actions';
 import '../link-board.css';
 import '../inquiry-controls.css';
+import '../inquiry-simplified.css';
 
 let playbackRate=1;
 const backgrounds:Record<Stage,string>={M1:'fungi',M2:'water',M3:'archive',M4:'village',M5:'workshop'};
@@ -100,25 +101,18 @@ export function inquiryScene(ctx:Context,stage:Stage){
   if(task.kind==='review'){controls();view?.refresh();}
  };
  // Link boards never need Phaser, so they load their own small renderer.
- const scene=():Promise<typeof import('../renderers/inquiry2d').mountInquiry>=>linking?import('../renderers/link-board').then(m=>m.mountLinkBoard):import('../renderers/inquiry2d').then(m=>m.mountInquiry);
+ const scene=():Promise<typeof import('../renderers/inquiry2d').mountInquiry>=>task.kind==='microscope'?import('../renderers/simple-microscope').then(m=>m.mountMicroscope):task.id==='M1-4'?import('../renderers/fungi-sort').then(m=>m.mountFungiSort):linking?import('../renderers/link-board').then(m=>m.mountLinkBoard):import('../renderers/inquiry2d').then(m=>m.mountInquiry);
  void scene().then(async mount=>{await document.fonts.ready;if(disposed)return;view=mount(host,task,r,{assigned:()=>{selectedCard='';sourcePreview.hidden=true;sourcePreview.replaceChildren();updateStatus();},changed:()=>{save();controls();},open:source,feedback:info,ready:(ok)=>{ready=ok;view?.setPlaybackRate(playbackRate);if(demoButton)demoButton.disabled=!ok;speed.disabled=!ok;tools.inert=!ok;next.disabled=!ok;if(ok)loading.remove();else{loading.replaceChildren(paragraph('관찰 이미지를 준비하지 못했어요. 연결을 확인하고 다시 열어요.'),button('이미지 다시 준비',ctx.render));}}},reducedMotion(ctx.state.settings.reduced));ctx.cleanup(view.dispose);}).catch(()=>{loading.replaceChildren(paragraph('장면을 열지 못했어요.'),button('다시 열기',ctx.render));});
  const openLadder=()=>{const dialog=modal('세균은 얼마나 작을까요?',[ladderPlacement(r.assignments.ladder==='smallest',()=>{r.assignments.ladder='smallest';save();playEffect('success');controls();})]);dialog.classList.add('ladder-dialog');};
  const drawControls=()=>{tools.replaceChildren();playback.querySelector('.run-play')?.remove();
   tools.dataset.phase=task.kind==='review'?(readingSource?'reading':!r.assignments.initial?'initial':!task.items.every(it=>r.opened.includes(it.id))?'sources':!r.assignments.claim||editingClaim?'claim':'evidence'):task.kind;
   if(task.kind==='microscope'){
-   const view=magnifyFor(task.organism,r.v===2);
-   // A gated 돋보기 (M1-2: find the gills) opens the microscope only by tapping the feature in the picture.
-   if(view&&!r.capture&&r.level<2){if(!(view.gate&&r.level===1))tools.append(button(r.level===0?'돋보기로 크게 보기':'현미경으로 크게 보기',()=>{r.level++;paint();controls();playEffect('capture');},'primary'));}
-   else{
-   if(!r.capture){
-    const sharp=()=>Math.abs(r.focus-65)<=12&&r.light>=40&&r.light<=85;
-    const capture=button('사진 촬영',()=>{if(!sharp())return info('아직 흐려요. 초점과 밝기를 맞추면 특징이 선명해져요.');r.capture=true;r.marks=[];paint();controls();playEffect('capture');},'primary',!sharp());
-    const adjusted=()=>{paint();capture.disabled=!sharp();};
-    tools.append(slider('초점',0,100,5,r.focus,v=>{r.focus=v;adjusted();}),slider('밝기',20,100,5,r.light,v=>{r.light=v;adjusted();}),capture);
-   }
-   else tools.append(button('표시 되돌리기',()=>{r.marks.pop();paint();controls();},'secondary',!r.marks.length),button('다시 관찰',()=>{r.capture=false;r.marks=[];if(task.organism==='mold')r.focus=prepareInquiry(task).focus;paint();controls();}));
-
-   }
+   if(r.level<2&&!r.capture)tools.append(button('현미경으로 관찰하기',()=>{r.level=2;r.focus=45;r.light=65;paint();controls();},'primary'));
+   else if(!r.capture){
+    const sharp=()=>Math.abs(r.focus-65)<=12;
+    const capture=button('관찰 사진 남기기',()=>{if(!sharp())return info('초점을 맞춰 선명하게 보아요.');r.capture=true;r.level=2;r.light=65;r.marks=[];paint();controls();playEffect('capture');},'primary',!sharp());
+    tools.append(slider('초점',35,95,5,r.focus,v=>{r.focus=v;paint();capture.disabled=!sharp();}),button('초점 자동 맞춤',()=>{r.focus=65;r.light=65;paint();controls();}),capture);
+   }else tools.append(paragraph(task.organism==='mushroom'?'포자는 버섯의 주름에서 만들어져요. 알맞은 조건에서 균사가 자랄 수 있어요.':task.organism==='mold'?'이 곰팡이는 균사로 이루어져 있고, 포자주머니 안에서 포자가 만들어져요.':'해캄은 초록색이고 여러 마디가 실처럼 이어져 있어요.'),button('다시 관찰하기',()=>{r.capture=false;r.marks=[];r.focus=65;paint();controls();}));
   }else if(task.kind==='track'&&r.level===2){
    const found=r.marks.filter(p=>markValid(task,r,p)).length;
    tools.append(paragraph(`현미경 · 몸 둘레 표시 ${found}곳`),button('표시 되돌리기',()=>{r.marks.pop();paint();controls();},'secondary',!r.marks.length),button('움직임 다시 보기',()=>{r.level=0;paint();controls();}));
@@ -315,7 +309,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
   if(task.kind==='build'||task.kind==='publish')nodes.unshift(paragraph(task.items.filter(i=>i.target).map(i=>i.detail).join('\n')));
   const model=modelButton(task.id);if(model)nodes.push(model);modal('탐구 도움말',nodes);
  },'text-button'));
- if(!linking){
+ if(!linking&&task.kind!=='microscope'){
   const assist=button('버튼으로 조작',alternative,'text-button');
   links.append(assist);
  }
@@ -359,11 +353,11 @@ export function inquiryEvidenceView(evidence:Evidence|undefined,compact=false){
    const pending=picture.getContext('2d')!;pending.fillStyle='#edf1df';pending.fillRect(0,0,picture.width,picture.height);pending.fillStyle='#315f46';pending.font='28px sans-serif';pending.fillText('관찰 사진 준비 중…',35,180);
    // The moving specimen uses the same deterministic drawing as the activity.
    if(art){const image=new Image();image.onload=()=>{if(task.kind!=='track')picture.height=Math.round(picture.width*image.height/image.width);paint(image);imageReady=true;preview.disabled=false;};image.onerror=()=>{pending.clearRect(0,0,picture.width,picture.height);pending.fillText('사진을 다시 열어 주세요.',35,180);};image.src=art.src;}else{paint();imageReady=true;}
-   const preview=button('',()=>{if(!imageReady)return;const full=canvas(picture.width,picture.height);full.getContext('2d')!.drawImage(picture,0,0);full.setAttribute('aria-label',picture.getAttribute('aria-label')!);const dialog=modal('내 관찰 사진',[full,paragraph(task.kind==='microscope'?`내가 남긴 특징 표시 ${record.marks.length}곳`:'고정한 이후 시점과 내가 남긴 관찰 표시예요.')]);dialog.classList.add('observation-preview-dialog');},'observation-preview',!imageReady);preview.setAttribute('aria-label',task.title+' · 내 관찰 사진 크게 보기');preview.append(picture);row.append(preview);
+   const preview=button('',()=>{if(!imageReady)return;const full=canvas(picture.width,picture.height);full.getContext('2d')!.drawImage(picture,0,0);full.setAttribute('aria-label',picture.getAttribute('aria-label')!);const dialog=modal('내 관찰 사진',[full,paragraph(task.kind==='microscope'?`확대하여 살펴보고 남긴 관찰 모형이에요`:'고정한 이후 시점과 내가 남긴 관찰 표시예요.')]);dialog.classList.add('observation-preview-dialog');},'observation-preview',!imageReady);preview.setAttribute('aria-label',task.title+' · 내 관찰 사진 크게 보기');preview.append(picture);row.append(preview);
   }else if(art){const image=el('img');image.src=art.src;image.alt=art.label;row.append(image);}
   row.append(el('strong','',task.title),paragraph(task.success));if(task.terms?.length)row.append(termChips(task.terms));const model=modelButton(task.id,'3D로 보기');if(model)row.append(model);
   const beforeDetails=row.children.length;
-  if(task.kind==='microscope')row.append(paragraph(`내 촬영 · 초점 ${record.focus} · 밝기 ${record.light} · ${record.zoom}배 · 특징 표시 ${record.marks.length}곳`));
+  if(task.kind==='microscope')row.append(paragraph(`내 관찰 사진 · 초점 ${record.focus} · 특징을 확대해 살펴봤어요`));
   else if(task.kind==='track')row.append(paragraph(`같은 시야의 두 순간 · A ${record.pins[0]} → B ${record.pins[1]} · 그림은 B의 위치예요.${record.marks.length?` 현미경에서 몸 둘레의 섬모 ${record.marks.length}곳을 찾았어요.`:''}`));
   else if(task.kind==='timeline')row.append(paragraph(`이전 관찰 ${record.pins[0]+1} → 이후 관찰 ${record.pins[1]+1} · 그림은 이후 모습과 내 표시 ${record.marks.length}곳이에요.`));
   else if(task.kind==='sample')row.append(paragraph(`${record.assignments.site==='plant'?'물풀 가까이':'물가 가까이'}에서 채집 · ${record.sequence===3?'한 방울 표본 준비 완료':'준비 순서 '+record.sequence}`));

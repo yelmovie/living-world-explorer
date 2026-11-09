@@ -1,0 +1,47 @@
+[
+  {
+    "stage": "M1",
+    "asset": "public/assets/audio/npc/M1.m4a",
+    "source_uuid": "40d63199-d321-4b43-8117-ee0da2414864",
+    "voice": "모모 여자 목소리",
+    "sha256": "3268e8a5b6d3d06b92dfa05b78e3476d7fd4ff199f8f1ec7fd4a2363e31f3fe4",
+    "source_original": "/Volumes/T7 Shield/connectai_yel/pink-jarvis/data/media/40d63199-d321-4b43-8117-ee0da2414864.wav",
+    "recoverable_source": "/Users/yel/.Trash/creatures-npc-20261107/40d63199-d321-4b43-8117-ee0da2414864.wav"
+  },
+  {
+    "stage": "M2",
+    "asset": "public/assets/audio/npc/M2.m4a",
+    "source_uuid": "82c34761-1325-4b6a-b60c-a7415b67dcea",
+    "voice": "모모 여자 목소리",
+    "sha256": "109f06330b41c5564a8bfb266207f4a60c944b75bec938bfbab0703428125ebe",
+    "source_original": "/Volumes/T7 Shield/connectai_yel/pink-jarvis/data/media/82c34761-1325-4b6a-b60c-a7415b67dcea.wav",
+    "recoverable_source": "/Users/yel/.Trash/creatures-npc-20261107/82c34761-1325-4b6a-b60c-a7415b67dcea.wav"
+  },
+  {
+    "stage": "M3",
+    "asset": "public/assets/audio/npc/M3.m4a",
+    "source_uuid": "9e24a697-d858-42c5-ba32-5e8ad0054802",
+    "voice": "모모 여자 목소리",
+    "sha256": "2c15d1a6f0fd1753b61d5ee6af6b6326a6e89b3224b2b65d4f87bd0c8a6fedc7",
+    "source_original": "/Volumes/T7 Shield/connectai_yel/pink-jarvis/data/media/9e24a697-d858-42c5-ba32-5e8ad0054802.wav",
+    "recoverable_source": "/Users/yel/.Trash/creatures-npc-20261107/9e24a697-d858-42c5-ba32-5e8ad0054802.wav"
+  },
+  {
+    "stage": "M4",
+    "asset": "public/assets/audio/npc/M4.m4a",
+    "source_uuid": "d9632f03-2139-4bf0-a85e-80c013b5cb43",
+    "voice": "모모 남자 목소리",
+    "sha256": "acfb9db3ae6c7dad82b14fbb39d580872e4ac555be361460dc1243ce10079447",
+    "source_original": "/Volumes/T7 Shield/connectai_yel/pink-jarvis/data/media/d9632f03-2139-4bf0-a85e-80c013b5cb43.wav",
+    "recoverable_source": "/Users/yel/.Trash/creatures-npc-20261107/d9632f03-2139-4bf0-a85e-80c013b5cb43.wav"
+  },
+  {
+    "stage": "M5",
+    "asset": "public/assets/audio/npc/M5.m4a",
+    "source_uuid": "5185510b-3631-430d-98f3-9b79efb666cf",
+    "voice": "모모 남자 목소리",
+    "sha256": "8aa6a522d270dfe8586e37598f61faf840079fb171ff61c367285f4153a5d5c1",
+    "source_original": "/Volumes/T7 Shield/connectai_yel/pink-jarvis/data/media/5185510b-3631-430d-98f3-9b79efb666cf.wav",
+    "recoverable_source": "/Users/yel/.Trash/creatures-npc-20261107/5185510b-3631-430d-98f3-9b79efb666cf.wav"
+  }
+]

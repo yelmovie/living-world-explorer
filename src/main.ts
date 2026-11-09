@@ -1,3 +1,4 @@
+import { mountMapVillains } from './map-villains.js';
 import {revisedEvidenceCount} from './experience';
 import {needsStorageWarning} from './storage-status';
 import './styles.css';
@@ -62,6 +63,7 @@ function main(ctx:Context){
 function map(ctx:Context){
  const done=stageIds.map(s=>validEvidence(ctx.attempt,s,state.settings.admin));const unlocked=(i:number)=>state.settings.admin||(i===5?done.every(Boolean):i===0||done[i-1]);
  const camera=el('div','map-camera');const land=el('div','map-landscape');const host=el('div','map-host');land.style.backgroundImage=`url('${mapAssets.terrain}')`;land.style.backgroundSize='100% 100%';const overlay=el('div','map-overlay');land.append(host,overlay);camera.append(land);ctx.host.append(camera);
+ ctx.cleanup(mountMapVillains(overlay,{key:'living-world:map-villains:v1',power:'생명빛 파동',reduced:reducedMotion(state.settings.reduced),preview:state.settings.admin,stages:mapNodes.filter(n=>n.index<5).map(n=>({name:n.label,x:[43,73,89,48,39][n.index],y:[37,39,73,80,77][n.index],ready:done[n.index],token:ctx.attempt.id+':'+(ctx.attempt.evidence[stageIds[n.index]]?.created||'pending')})),sound:final=>playEffect(final?'success':'snap')}));
  const arrival=el('div','map-arrival');ctx.host.append(arrival);let selected=-1,arrived=-1;let disposed=false;let m:ReturnType<typeof import('./renderers/map').mountMap>|undefined;let position={...ctx.attempt.mapPosition};
  let mode:'follow'|'hand'|'overview'='follow',pan={x:0,y:0},translation={x:0,y:0};
  const frame=(point:typeof position)=>{position=point;const cw=camera.clientWidth,ch=camera.clientHeight;const w=(mode==='overview'?Math.min:Math.max)(cw,ch*16/9),h=w*9/16;land.style.width=`${w}px`;land.style.height=`${h}px`;const clampAxis=(size:number,span:number,at:number)=>span<=size?(size-span)/2:Math.max(size-span,Math.min(0,at));const x=clampAxis(cw,w,mode==='hand'?pan.x:cw*.5-point.x/MAP_WIDTH*w),y=clampAxis(ch,h,mode==='hand'?pan.y:ch*.55-point.y/MAP_HEIGHT*h);translation={x,y};land.style.transform=`translate3d(${x}px,${y}px,0)`;};

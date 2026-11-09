@@ -12,10 +12,7 @@ export function taskIssues(task:InquiryTask,r:InquiryRecord):string[]{
  if(task.id==='M3-2'&&current&&r.assignments.ladder!=='smallest')issues.push('크기 사다리에서 세균이 들어갈 칸을 골라 크기를 비교해요.');
  if(task.kind==='microscope'){
   if(Math.abs(r.focus-65)>12||r.light<40||r.light>85||!r.capture)issues.push('모양이 선명하게 보이도록 조절한 뒤 사진을 찍어요.');
-  const marks=r.marks.filter(p=>markValid(task,r,p));
-  if(marks.length!==r.marks.length)issues.push('특징 밖의 표시만 되돌리고 다시 살펴봐요. 올바른 표시는 그대로 남아요.');
-  if(!marks.length)issues.push(observedKind(task,r)==='mushroomSpores'?'주름 가장자리에 붙은 작은 알갱이(포자)를 표시해요.':task.organism==='mushroom'?'버섯의 갓 아래 주름이 보이는 곳을 표시해요.':'그림에서 실제 보이는 특징에 표시해요.');
-  if(task.organism==='mold'&&!marks.some((p,i)=>marks.slice(i+1).some(q=>Math.hypot((p.x-q.x)*793,(p.y-q.y)*496)>=24)))issues.push('둥근 부분이나 가는 실이 보이는 서로 다른 두 곳을 표시해요. 같은 곳을 반복해 세지는 않아요.');
+
  }
  if(task.kind==='sample'&&(r.sequence!==3||!['edge','plant'].includes(r.assignments.site)))issues.push(task.feedback);
  if(task.kind==='track'&&!validTrackPair(r))issues.push(task.feedback);

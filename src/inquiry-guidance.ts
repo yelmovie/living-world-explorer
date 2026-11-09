@@ -18,20 +18,14 @@ export function guidance(task:InquiryTask,r:InquiryRecord,selectedCard=''){
   total=items.length;done=items.filter(it=>r.opened.includes(it.id)&&(r.assignments[it.id]||'')===it.target).length;
   const card=items.find(it=>it.id===selectedCard);
   const pending=items.find(it=>!r.opened.includes(it.id)||it.target!==r.assignments[it.id]);
-  if(card)action=`‘${card.label}’ 내용을 읽고, 어울리는 기록 칸까지 선을 이어요.`;
+  if(card)action=task.id==='M1-4'?`‘${card.label}’ 카드를 어울리는 칸에 놓아요.`:`‘${card.label}’ 내용을 읽고, 어울리는 기록 칸까지 선을 이어요.`;
   else if(pending)action=`‘${pending.label}’ 자료를 눌러 살펴봐요.`;
   if(task.id==='M3-2'&&r.v===2){
    total++;done+=Number(r.assignments.ladder==='smallest');
    if(!pending&&!card&&r.assignments.ladder!=='smallest')action='이제 ‘크기 사다리에 세균 놓기’를 눌러요.';
   }
  }else if(task.kind==='microscope'){
-  total=4;const sharp=Math.abs(r.focus-65)<=12&&r.light>=40&&r.light<=85;const reached=r.capture||r.level>=2;done=Number(reached)+Number(reached&&sharp)+Number(r.capture)+Number(!issues.length);
-  const gate=magnifyFor(task.organism,r.v===2)?.gate;
-  action=!r.capture?(!reached?(r.level===0?'돋보기로 크게 보기를 눌러요.':gate?'사진에서 갓 아래 주름을 눌러요.':'현미경으로 크게 보기를 눌러요.'):sharp?'사진 촬영을 눌러요.':'초점과 밝기를 맞춰요.'):action;
-  if(r.capture&&issues.length&&!r.marks.length){
-   const feature=observedFeature(task,r);
-   action=`찍은 사진에서 ${feature} 눌러 표시해요.`;
-  }
+  total=2;done=Number(r.level>=2)+Number(r.capture);action=r.capture?'관찰 사진을 남겼어요. 발견 기록하기를 눌러요.':r.level<2?'돋보기로 주름을 살펴본 뒤 현미경으로 관찰해요.':'초점을 맞추고 관찰 사진을 남겨요.';
  }else if(task.kind==='sample'){
   total=3;done=Number(!!r.assignments.site)+Number(r.sequence>=2)+Number(r.sequence===3);action=!r.assignments.site?'채집 장소를 골라요.':r.sequence<2?'한 방울 채집을 눌러요.':r.sequence===2?'한 방울 옮기기를 눌러요.':action;
  }else if(task.kind==='track'){

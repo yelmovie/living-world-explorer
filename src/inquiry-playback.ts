@@ -12,19 +12,10 @@ export type ObservationFrame = {
 export function observationFrames(task:InquiryTask,r:InquiryRecord):ObservationFrame[]{
   switch(task.kind){
     case 'microscope':
-      if(r.capture)return [];
-      if(magnifyFor(task.organism,r.v===2)?.gate&&r.level<2){
-        if(r.level===1)return [];
-        return [
-          {caption:'맨눈으로 표본이 있던 곳을 살펴봐요.',patch:{level:0}},
-          {caption:'돋보기로 가까이 왔어요. 곧 갓 아래의 주름을 직접 찾아요.',patch:{level:1}},
-        ];
-      }
       return [
-        {caption:'맨눈으로 표본이 있던 곳을 살펴봐요.',patch:{level:0,capture:false,zoom:1,pan:{x:0,y:0},marks:[]}},
-        {caption:'돋보기로 가까이 다가가요.',patch:{level:1}},
-        {caption:'현미경의 초점을 돌리면 흐릿하던 윤곽이 또렷해져요.',patch:{level:2,focus:38,light:65}},
-        {caption:task.organism==='mold'?'조절 방법을 봤어요. 이제 내가 초점을 맞추고 촬영해요.':'선명해졌어요. 이제 내가 사진을 찍고 특징을 찾아요.',patch:{focus:65}},
+        {caption:'돋보기로 생김새를 자세히 살펴봐요.',patch:{level:1,capture:false,zoom:1,pan:{x:0,y:0},marks:[]}},
+        {caption:'현미경으로 더 작은 구조를 확대해요.',patch:{level:2,focus:45,light:65}},
+        {caption:task.organism==='mushroom'?'주름에서 만들어진 포자를 모아 확대한 모습이에요.':task.organism==='mold'?'가는 균사와 포자가 들어 있는 둥근 포자주머니를 살펴봐요.':'해캄의 초록색 마디가 실처럼 이어져 있어요.',patch:{focus:65}},
       ];
     case 'sample':
       if(!r.assignments.site||r.sequence===3)return [];
@@ -55,7 +46,6 @@ export function observationFrames(task:InquiryTask,r:InquiryRecord):ObservationF
 /** Apply only equipment preparation. The learner chooses sites, comparison times and evidence. */
 export function finishObservation(task:InquiryTask,r:InquiryRecord){
   if(task.kind==='microscope'&&!r.capture){
-    if(magnifyFor(task.organism,r.v===2)?.gate&&r.level===0){r.level=1;return;}
-    r.level=2;if(task.organism!=='mold')r.focus=65;r.light=65;
+    r.level=2;r.focus=65;r.light=65;
   }else if(task.kind==='sample'&&r.assignments.site)r.sequence=3;
 }
