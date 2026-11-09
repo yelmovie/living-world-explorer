@@ -107,7 +107,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
  const drawControls=()=>{tools.replaceChildren();playback.querySelector('.run-play')?.remove();
   tools.dataset.phase=task.kind==='review'?(readingSource?'reading':!r.assignments.initial?'initial':!task.items.every(it=>r.opened.includes(it.id))?'sources':!r.assignments.claim||editingClaim?'claim':'evidence'):task.kind;
   if(task.kind==='microscope'){
-   if(r.level<2&&!r.capture)tools.append(button('현미경으로 관찰하기',()=>{r.level=2;r.focus=45;r.light=65;paint();controls();},'primary'));
+   if(r.level<2&&!r.capture)tools.append(button('현미경으로 관찰하기',()=>{r.level=2;r.focus=45;r.light=65;paint();controls();playEffect('capture');},'primary'));
    else if(!r.capture){
     const sharp=()=>Math.abs(r.focus-65)<=12;
     const capture=button('관찰 사진 남기기',()=>{if(!sharp())return info('초점을 맞춰 선명하게 보아요.');r.capture=true;r.level=2;r.light=65;r.marks=[];paint();controls();playEffect('capture');},'primary',!sharp());
@@ -148,7 +148,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
    if(run)tools.append(button('새 예상으로 다시 실험',()=>{invalidateRun(r);save();controls();view?.refresh();}));
    else if(!running&&!r.prediction)tools.append(paragraph('나의 예상','field-label'),choices([{id:'supported',label:yes},{id:'stopped',label:no}],r.prediction,v=>{r.prediction=v;save();controls();}));
    if(!run&&r.prediction&&!running)tools.append(button('예상 바꾸기',()=>{r.prediction='';save();controls();},'text-button'));
-   if(!run)playback.prepend(button(yogurt?(running?'발효기를 지켜봐요…':'발효기 켜기'):(running?'흐름을 시험하고 있어요…':'설계 가동'),()=>{if(running)return;if(yogurt&&r.assignments.output!=='yogurt')return info('오늘 만들 음식은 요구르트예요. 오른쪽 칸에 요구르트를 놓아 봐요.');if(!r.prediction)return info('가동하기 전에 어떤 결과일지 예상해요.');const valid=designCorrect(task,r),attempt=startRun(r);running=true;save();controls();playEffect('run');const finish=()=>{if(disposed)return;running=false;attempt.status='completed';attempt.result=valid?'supported':'stopped';r.runResult=attempt.result;r.reflection='';save();view?.refresh();info(valid?(yogurt?'걸쭉한 요구르트가 됐어요! 내가 한 예상과 비교해요.':'설계가 연결됐어요. 실행 당시 예상과 비교해요.'):task.feedback,valid?'success':'retry');controls();};view?.animateRun(valid,finish);},'primary observation-play run-play',running||!r.prediction||!task.targets.every(t=>r.assignments[t.id])));
+   if(!run)playback.prepend(button(yogurt?(running?'발효기를 지켜봐요…':'발효기 켜기'):(running?'흐름을 시험하고 있어요…':'설계 가동'),()=>{if(running)return;if(yogurt&&r.assignments.output!=='yogurt')return info('오늘 만들 음식은 요구르트예요. 오른쪽 칸에 요구르트를 놓아 봐요.');if(!r.prediction)return info('가동하기 전에 어떤 결과일지 예상해요.');const valid=designCorrect(task,r),attempt=startRun(r);running=true;save();controls();playEffect('run');const finish=()=>{if(disposed)return;running=false;attempt.status='completed';attempt.result=valid?'supported':'stopped';r.runResult=attempt.result;r.reflection='';save();view?.refresh();playEffect(valid?'success':'retry');info(valid?(yogurt?'걸쭉한 요구르트가 됐어요! 내가 한 예상과 비교해요.':'설계가 연결됐어요. 실행 당시 예상과 비교해요.'):task.feedback,valid?'success':'retry');controls();};view?.animateRun(valid,finish);},'primary observation-play run-play',running||!r.prediction||!task.targets.every(t=>r.assignments[t.id])));
    if(run){tools.append(choices([{id:'matches',label:'예상과 같아요'},{id:'differs',label:'예상과 달라요'}],run.reflection,v=>{run.reflection=r.reflection=v;save();controls();}));}
   }else if(task.kind==='review'){
    if(readingSource){tools.append(button('자료 확인했어요',()=>{readingSource=false;sourcePreview.hidden=true;controls();},'primary'));}
@@ -261,8 +261,8 @@ export function inquiryScene(ctx:Context,stage:Stage){
    const say=(text:string)=>{message.textContent=text;};
    list.push(message,horizontal,vertical,button(gate?'이 위치의 주름 찾기':'이 위치 표시',()=>{
     if(gate){if(featureAt(task.organism||'',{x,y})===gate){r.level=2;paint();controls();document.querySelector<HTMLDialogElement>('dialog[open]')?.close();info('주름을 찾았어요. 현미경으로 크게 봐요.','success');}else say('갓 아래쪽의 줄무늬(주름)를 찾아요.');return;}
-    if(task.kind==='microscope'&&!r.capture)return say('먼저 관찰 사진을 촬영해요.');if(task.kind==='timeline'&&!validTimelinePair(r))return say('먼저 이전과 이후를 고정해요.');if(!addMark(task,r,{x,y}))return say(markHint(task,r));paint();controls();say(`✓ 특징을 표시했어요. 지금까지 ${r.marks.length}곳을 찾았어요.`);}));
-  }else if(task.kind==='publish')for(const it of task.items)list.push(button(it.label+' 소개하기',()=>{if(chooseCase(task,r,it.id)){paint();controls();}notice('소개할 사례와 근거를 골랐어요.');}));
+    if(task.kind==='microscope'&&!r.capture)return say('먼저 관찰 사진을 촬영해요.');if(task.kind==='timeline'&&!validTimelinePair(r))return say('먼저 이전과 이후를 고정해요.');if(!addMark(task,r,{x,y}))return say(markHint(task,r));paint();controls();playEffect('snap');say(`✓ 특징을 표시했어요. 지금까지 ${r.marks.length}곳을 찾았어요.`);}));
+  }else if(task.kind==='publish')for(const it of task.items)list.push(button(it.label+' 소개하기',()=>{if(chooseCase(task,r,it.id)){paint();controls();playEffect('snap');}notice('소개할 사례와 근거를 골랐어요.');}));
   else list.push(paragraph('오른쪽 도구의 버튼과 시간 조절을 사용할 수 있어요.'));
   const controlDialog=modal('버튼으로 조작',list);
   if(controlDialog.querySelector('.mark-pad'))controlDialog.classList.add('observation-control-dialog');

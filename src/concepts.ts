@@ -29,6 +29,8 @@ export function showConcept(stage:Stage,settings:{sound:boolean;reduced:boolean}
  const concept=concepts[stage],{duration,cues}=conceptCaptions[stage];const still=reducedMotion(settings.reduced);
  const body=el('div','concept-body');body.dataset.reduced=String(still);
  const video=el('video','concept-video');video.src=`assets/concepts/${stage}.mp4`;video.poster=`assets/concepts/${stage}.webp`;video.controls=true;video.playsInline=true;video.preload='metadata';video.muted=!settings.sound;
+ // 2026-11-10: the explainer's effects were mixed about 20 dB louder than the same effects in play; match the story films (desktop/Android; iPad ignores volume).
+ video.volume=.35;
  video.setAttribute('aria-label',`${concept.title} · ${duration}초 개념 영상`);
  const track=el('track');track.kind='captions';track.srclang='ko';track.label='한국어';track.src=`assets/concepts/${stage}.vtt`;video.append(track);
  const caption=paragraph('','concept-caption');caption.setAttribute('aria-live','off');

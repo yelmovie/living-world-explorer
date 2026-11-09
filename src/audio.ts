@@ -16,6 +16,8 @@ let track: MusicTrack = 'main';
 let music: HTMLAudioElement | undefined;
 let musicTrack: MusicTrack | undefined;
 const effectVoices = new Set<AudioScheduledSourceNode>();
+// 2026-11-10: per-file level so short CC0 samples sit within about ±3 dB of each other (measured mean volume: run -9 dB … page-turn -28 dB).
+const effectLevel: Partial<Record<EffectName, number>> = {run:.4,success:.55,retry:.75,hint:.75,'core-wake':.85,water:1.2,'pipette-drop':1.8,capture:1.8,'page-turn':2.2};
 const samples=new Map<EffectName,AudioBuffer>();
 let samplesRequested=false;let lastEffect=0;
 let observer: MutationObserver | undefined;
@@ -129,7 +131,7 @@ export function playEffect(name: EffectName = 'click') {
   const play = () => {
     if (context !== ctx || !effectGain || !settings.sound || document.hidden || explicitQuiet) return;
     effectGain.gain.value = .06 * (narration ? .3 : 1);
-    const buffer=samples.get(name);if(buffer){const source=ctx.createBufferSource();source.buffer=buffer;source.connect(effectGain);effectVoices.add(source);source.onended=()=>{effectVoices.delete(source);source.disconnect();};source.start();return;}
+    const buffer=samples.get(name);if(buffer){const source=ctx.createBufferSource();source.buffer=buffer;const level=ctx.createGain();level.gain.value=effectLevel[name]??1;source.connect(level).connect(effectGain);effectVoices.add(source);source.onended=()=>{effectVoices.delete(source);source.disconnect();level.disconnect();};source.start();return;}
     frequencies.forEach((frequency,i) => voice(frequency, .16, effectGain!, effectVoices, ctx.currentTime + i * .09));
   };
   if (ctx.state === 'suspended') void ctx.resume().then(play).catch(() => {});else play();

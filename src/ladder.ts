@@ -1,5 +1,6 @@
 import {el,button,paragraph} from './ui';
 import {inquiryArt} from './artAssets';
+import {playEffect} from './audio';
 
 /** Size ladder: examples ordered from larger to smaller, not equally spaced ratios. Sizes are approximate. */
 export type Rung={id:string;label:string;size:string;art?:string;stage?:string};
@@ -36,7 +37,7 @@ export function ladderPlacement(done:boolean,onPlaced:()=>void){
  const slot=(index:number)=>{const li=el('li','ladder-slot');const placed=done&&index===known.length;
   const b=button(placed?'세균 · 약 0.001mm':'여기에 놓기',()=>{
    if(index===known.length){say.textContent=ladderFact;list.querySelectorAll('.ladder-slot button').forEach(n=>(n as HTMLButtonElement).disabled=true);b.textContent='세균 · 약 0.001mm';li.classList.add('placed');onPlaced();return;}
-   say.textContent=`${known[index]?.label||'맨 위'}보다도 작아요. 이 예의 세균은 약 0.001mm예요. 더 아래 칸을 골라 봐요.`;},placed?'selected':'secondary',done&&!placed);
+   playEffect('retry');say.textContent=`${known[index]?.label||'맨 위'}보다도 작아요. 이 예의 세균은 약 0.001mm예요. 더 아래 칸을 골라 봐요.`;},placed?'selected':'secondary',done&&!placed);
   li.append(b);if(placed)li.classList.add('placed');return li;};
  list.append(slot(0));known.forEach((r,i)=>{list.append(rungRow(r,true));if(r.id===NAKED_EYE_LAST)list.append(limitLine());list.append(slot(i+1));});
  // Reopened after placing: show where the bacteria went.
