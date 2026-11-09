@@ -1433,7 +1433,7 @@ button.settings-switch[aria-pressed="true"]{background:var(--moss-486);color:var
 .source-notes{font-size:var(--font-size-label);line-height:1.45;text-align:left;grid-column:1/-1}
 .source-notes>*{margin-top:10px}
 .source-notes a{display:block;overflow-wrap:anywhere}
-.source-notes summary{cursor:pointer;min-height:44px;padding-block:10px}
+.source-notes summary{cursor:pointer;min-height:48px;padding-block:10px}
 .record-version{grid-column:1/-1;font-size:var(--font-size-label)}
 .screen-final-report .research-album,.screen-core-restoration .research-album{grid-template-columns:minmax(0,1fr)}
 .screen-final-report .album-tile:has(img),.screen-final-report .album-tile:has(.observation-preview){grid-template-columns:96px minmax(0,1fr)}
@@ -1452,7 +1452,7 @@ button.settings-switch[aria-pressed="true"]{background:var(--moss-486);color:var
 
 /* 2026-10-25 디자인 고도화 층 — 스테이지 색, 미션 머리표, 내용 높이 도구 패널, 단계 트랙.
    Colours come from the five research badges (public/assets/ui/badge-M*.webp). Later rules override earlier ones. */
-:root{--stage-m1:#93603a;--stage-m1-soft:#f4e6d3;--stage-m2:#2f7f86;--stage-m2-soft:#dcefed;--stage-m3:#557a3f;--stage-m3-soft:#e4edd5;--stage-m4:#ad6542;--stage-m4-soft:#f7e3d5;--stage-m5:#5f5aa3;--stage-m5-soft:#e6e4f5;--paper-face:#fffaf0;--paper-line:#e6d8bc;--brass:#a57a33;--brass-soft:#ecd08f;--ink-strong:#1f3f31;--ink-on-accent:#fffdf4;--shade-a18:#2a3b2c2e;--shade-a30:#22312450;--glow-a40:#fff6d266}
+:root{--stage-m1:#93603a;--stage-m1-soft:#f4e6d3;--stage-m2:#2f7f86;--stage-m2-soft:#dcefed;--stage-m3:#557a3f;--stage-m3-soft:#e4edd5;--stage-m4:#a55e3d;--stage-m4-soft:#f7e3d5;--stage-m5:#5f5aa3;--stage-m5-soft:#e6e4f5;--paper-face:#fffaf0;--paper-line:#e6d8bc;--brass:#a57a33;--brass-soft:#ecd08f;--ink-strong:#1f3f31;--ink-on-accent:#fffdf4;--shade-a18:#2a3b2c2e;--shade-a30:#22312450;--glow-a40:#fff6d266}
 .expedition-shell,.screen-final-report,.screen-core-restoration{--stage-accent:var(--stage-m1);--stage-soft:var(--stage-m1-soft)}
 .expedition-shell.stage-M2{--stage-accent:var(--stage-m2);--stage-soft:var(--stage-m2-soft)}
 .expedition-shell.stage-M3{--stage-accent:var(--stage-m3);--stage-soft:var(--stage-m3-soft)}
@@ -1482,7 +1482,7 @@ button.settings-switch[aria-pressed="true"]{background:var(--moss-486);color:var
 .inquiry-feedback:empty{display:none}
 .inquiry-feedback{border-radius:var(--radius-md)}
 .panel-links{display:flex;flex-wrap:wrap;gap:0 18px;padding-top:6px;border-top:2px dashed var(--paper-line);flex:none}
-.panel-links>.button.text-button{min-height:44px;padding:4px 0;font-size:var(--font-size-label);color:var(--color-link);text-decoration:underline;text-decoration-style:dotted;text-underline-offset:5px}
+.panel-links>.button.text-button{min-height:48px;padding:4px 0;font-size:var(--font-size-label);color:var(--color-link);text-decoration:underline;text-decoration-style:dotted;text-underline-offset:5px}
 
 /* Step track: numbered circles joined by a rail; done steps get a check badge. */
 .activity-stepper{gap:28px;width:fit-content;margin-inline:auto;padding:6px 16px;border:2px solid var(--paper-line);border-radius:var(--radius-pill);background:var(--paper-face);box-shadow:0 3px 0 var(--shade-a18)}
@@ -1586,13 +1586,13 @@ textarea,input{word-break:keep-all;overflow-wrap:break-word}
  .expedition-panel{padding:14px 12px 8px;gap:6px}
  .inquiry-status{padding:8px 10px;gap:2px}
  .inquiry-counter{font-size:var(--font-size-small)}
- .buddy-toggle.button{min-height:44px;padding-block:2px}
+ .buddy-toggle.button{min-height:48px;padding-block:2px}
  .buddy-toggle img{width:40px;height:40px}
  .expedition-tools .field.slider{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:8px}
  .expedition-tools .field.slider .field-label{font-size:var(--font-size-label)}
  .expedition-tools>.button{min-height:48px}
  .activity-stepper{padding:4px 12px;gap:22px}
- .activity-stepper>.button,.activity-stepper>*{width:44px;min-width:44px;height:44px;min-height:44px}
+ .activity-stepper>.button,.activity-stepper>*{width:48px;min-width:48px;height:48px;min-height:48px}
  .activity-stepper>.button+.button::before{width:14px}
 }
 /* The model disclaimer sits in the free bottom-left corner so it never covers scene captions. */
@@ -1604,14 +1604,14 @@ textarea,input{word-break:keep-all;overflow-wrap:break-word}
 .expedition-shell:not(.record-ready) .expedition-footer>.primary{background:var(--paper-face);color:var(--ink-strong);border-color:var(--paper-line)}
 .record-ready .expedition-footer>.primary{box-shadow:0 3px 0 var(--forest-900),0 0 0 3px var(--paper-face)}
 .inquiry-status.demonstrating{background:var(--paper-face);outline:2px solid var(--stage-accent)}
-.toolbar .observation-play{width:auto;min-height:44px;padding-inline:14px;border-radius:var(--radius-pill);background:var(--paper-face);color:var(--ink-strong);border:2px solid var(--forest-551);white-space:nowrap;font-size:var(--font-size-label)}
+.toolbar .observation-play{width:auto;min-height:48px;padding-inline:14px;border-radius:var(--radius-pill);background:var(--paper-face);color:var(--ink-strong);border:2px solid var(--forest-551);white-space:nowrap;font-size:var(--font-size-label)}
 .toolbar .observation-play[aria-pressed=true]{background:var(--forest-551);color:white}
 .source-preview.filed{padding-block:8px}
 .mark-pad{display:table;position:relative;width:fit-content;margin:0 auto;max-width:100%;overflow:hidden;cursor:crosshair}
 .mark-pad img{display:block;max-width:100%;max-height:28dvh}
 .mark-cross{position:absolute;width:22px;height:22px;transform:translate(-50%,-50%);border:2px solid white;border-radius:50%;box-shadow:0 0 0 2px #194938;pointer-events:none}
 .mark-cross::after{content:'';position:absolute;inset:7px;background:white;border-radius:50%;box-shadow:0 0 0 1px #194938}
-.inline-targets summary,.instrument-note summary,.evidence-details summary{display:list-item;min-height:44px;padding:10px 4px;cursor:pointer;color:var(--color-link);font-weight:700}
+.inline-targets summary,.instrument-note summary,.evidence-details summary{display:list-item;min-height:48px;padding:10px 4px;cursor:pointer;color:var(--color-link);font-weight:700}
 .evidence-details{grid-column:1/-1;text-align:left}
 .expedition-tools>.instrument-note{order:1}
 .inquiry-feedback:empty{display:none}
@@ -1619,7 +1619,7 @@ textarea,input{word-break:keep-all;overflow-wrap:break-word}
 .expedition-panel .panel-links{align-items:center;gap:4px 12px}
 .panel-links:has(.buddy-speech:not([hidden])) .buddy-card{flex-basis:100%}
 .expedition-tools:empty{display:none}
-.expedition-panel .buddy-toggle{min-height:44px;padding:2px 10px 2px 2px}
+.expedition-panel .buddy-toggle{min-height:48px;padding:2px 10px 2px 2px}
 .expedition-panel .buddy-toggle img{width:36px;height:36px}
 .toolbar .observation-play:focus-visible,summary:focus-visible{outline:3px solid var(--forest-551);outline-offset:2px}
 .mark-message{margin:0;color:var(--ink-strong);font-weight:700}
@@ -1627,7 +1627,7 @@ textarea,input{word-break:keep-all;overflow-wrap:break-word}
 /* 2026-10-25 교육 항목 — 배율 단계, 새 낱말, 탐구 습관 배지, 능력 문장. */
 :root{--habit-gold:#d9a93a;--habit-gold-soft:#fbefcf}
 .level-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:4px;border-radius:var(--radius-pill);background:var(--stage-soft)}
-.level-steps>.button{min-height:44px;padding:4px 6px;border-radius:var(--radius-pill);font-size:var(--font-size-label)}
+.level-steps>.button{min-height:48px;padding:4px 6px;border-radius:var(--radius-pill);font-size:var(--font-size-label)}
 .level-steps>.button.selected{background:var(--stage-accent);border-color:var(--stage-accent);color:var(--ink-on-accent);box-shadow:none}
 .level-steps>.button:disabled{opacity:.55}
 .level-caption{padding:8px 12px;border-left:5px solid var(--stage-accent);border-radius:var(--radius-sm);background:var(--paper-face);font-size:var(--font-size-label);line-height:1.4}
@@ -1670,7 +1670,7 @@ textarea,input{word-break:keep-all;overflow-wrap:break-word}
  .screen-results .result-card .field-label{font-size:var(--font-size-label)}
  .screen-results .result-case{padding:8px 10px;font-size:var(--font-size-label)}
  .screen-results .result-card .can-do{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 10px}
- .screen-results .result-card .can-do>.button{grid-column:2;grid-row:1;min-height:44px}
+ .screen-results .result-card .can-do>.button{grid-column:2;grid-row:1;min-height:48px}
  .screen-results .result-card .can-do-lines{grid-column:1/-1}
 }
 
@@ -1685,13 +1685,13 @@ textarea,input{word-break:keep-all;overflow-wrap:break-word}
 .ladder-hair{background:linear-gradient(transparent 45%,var(--color-text-main) 45% 55%,transparent 55%)}
 .ladder-rung small{font-size:var(--font-size-small);color:var(--color-text-sub);white-space:nowrap}
 .ladder-limit{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px 12px;padding:6px 12px;border-top:3px dashed var(--color-accent);font-size:var(--font-size-small);color:var(--color-text-sub)}
-.ladder-slot .button{width:100%;min-height:44px;border-style:dashed}
+.ladder-slot .button{width:100%;min-height:48px;border-style:dashed}
 .ladder-slot.placed .button{border-style:solid}
 .ladder-feedback{padding:10px 12px;border-radius:var(--radius-sm);background:var(--color-primary-soft)}
 .ladder-task{display:flex;flex-direction:column;gap:10px}
 .ladder-dialog .size-ladder{max-height:min(46vh,440px);overflow:auto;padding-right:6px}
 .record-ladder{margin-bottom:12px}
-.record-ladder>summary{display:flex;align-items:center;min-height:44px;cursor:pointer;font-weight:700}
+.record-ladder>summary{display:flex;align-items:center;min-height:48px;cursor:pointer;font-weight:700}
 
 /* 2026-10-25 · optional 3D specimen viewer (src/models.ts) */
 .model-dialog{width:min(860px,calc(100vw - 32px))}
@@ -1699,7 +1699,7 @@ textarea,input{word-break:keep-all;overflow-wrap:break-word}
 .model-heading h2{margin:0;font-size:clamp(24px,3vw,32px);color:var(--ink-strong)}
 .model-zoom{display:flex;align-items:center;gap:4px;background:var(--paper-face);border:1px solid var(--paper-line);border-radius:var(--radius-pill);padding:2px 4px}
 .model-zoom[hidden],.model-controls[hidden]{display:none}
-.model-zoom .button{min-width:44px;min-height:44px;padding:0 10px;border-radius:50%;line-height:1;font-size:24px}
+.model-zoom .button{min-width:48px;min-height:48px;padding:0 10px;border-radius:50%;line-height:1;font-size:24px}
 .model-zoom output{min-width:3.6em;text-align:center;color:var(--ink-strong);font-weight:bold;font-variant-numeric:tabular-nums}
 .model-stage{position:relative;height:min(52vh,440px);border:2px solid var(--color-border-soft);border-radius:var(--radius-md);background:var(--sage-50);overflow:hidden}
 .model-stage canvas{display:block;width:100%;height:100%;cursor:grab}
@@ -1811,7 +1811,7 @@ textarea,input{word-break:keep-all;overflow-wrap:break-word}
  .observation-control-dialog .field{gap:2px}
  .observation-control-dialog .field-label{font-size:16px;line-height:1.2}
  .observation-control-dialog .button{min-height:48px;font-size:18px;padding-block:4px}
- .observation-control-dialog .range-row input{height:44px}
+ .observation-control-dialog .range-row input{height:48px}
 }
 
 /* Classroom touch targets, including compact landscape observation controls. */
@@ -1885,10 +1885,17 @@ button.step{min-width:48px;min-height:48px}
 /* Observation controls: keep current position visible beside the action label. */
 .slider .field-label{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .slider-readout{font-variant-numeric:tabular-nums;min-width:3ch;padding:2px 9px;border-radius:8px;background:#e4efe4;color:#254d3a;font-weight:700;text-align:center}
-.slider .step{min-width:44px;min-height:44px;touch-action:manipulation}
+.slider .step{min-width:48px;min-height:48px;touch-action:manipulation}
 .slider .step:disabled{opacity:.45;cursor:default}
 /* Keep numbered discovery controls above the 44px touch floor in short tablets. */
 @media(min-width:851px) and (max-height:640px){
  .expedition-shell.link-task .expedition-footer .activity-stepper>.button{width:48px;min-width:48px;height:48px;min-height:48px;flex-shrink:0}
  .expedition-shell.link-task .expedition-footer .activity-stepper{gap:6px;padding-inline:6px}
+}
+/* Notched tablets/phones (viewport-fit=cover): keep edge controls out of the rounded corners and system gesture strips. Zero on ordinary screens. */
+#app{padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+/* Touch screens report a sticky :hover after a tap; drop the lift so a tapped button does not stay raised. */
+@media(hover:none){
+ .button:hover:not(:disabled),.toolbar .icon-button:hover:not(:disabled),.hero-speech.left:hover:not(:disabled){transform:none}
+ .map-node:hover:not(:disabled){transform:translate(-50%,-50%)}
 }
