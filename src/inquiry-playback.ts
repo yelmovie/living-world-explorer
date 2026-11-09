@@ -15,7 +15,7 @@ export function observationFrames(task:InquiryTask,r:InquiryRecord):ObservationF
       return [
         {caption:'돋보기로 생김새를 자세히 살펴봐요.',patch:{level:1,capture:false,zoom:1,pan:{x:0,y:0},marks:[]}},
         {caption:'현미경으로 더 작은 구조를 확대해요.',patch:{level:2,focus:45,light:65}},
-        {caption:task.organism==='mushroom'?'주름에서 만들어진 포자를 모아 확대한 모습이에요.':task.organism==='mold'?'가는 균사와 포자가 들어 있는 둥근 포자주머니를 살펴봐요.':'해캄의 초록색 마디가 실처럼 이어져 있어요.',patch:{focus:65}},
+        {caption:task.organism==='mushroom'?'주름을 확대하면 표면에 붙은 작은 알갱이(포자)가 보여요.':task.organism==='mold'?'가는 균사와 포자가 들어 있는 둥근 포자주머니를 살펴봐요.':'해캄의 초록색 마디가 실처럼 이어져 있어요.',patch:{focus:65}},
       ];
     case 'sample':
       if(!r.assignments.site||r.sequence===3)return [];

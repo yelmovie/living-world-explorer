@@ -25,7 +25,7 @@ export const inquiryArt:Record<string,InquiryArt>={
  pond:{src:'assets/study/pond.webp',label:'물풀과 물가가 보이는 연못 조사 그림'},
  soil:{src:'assets/study/soil.webp',label:'채집한 흙 표본의 조사 그림'},
  // 2026-10-25: magnification steps, fungal common features and the three bacteria shapes (assets/generated/study-20261025c).
- mushroomSpores:{src:'assets/study/mushroom-spores.webp',label:'주름에서 모은 버섯 포자의 광학 현미경풍 AI 생성 관찰 모형'},
+ mushroomSpores:{src:'assets/study/mushroom-spores.webp',label:'버섯 주름 표면과 포자를 확대한 AI 생성 관찰 모형'},
  mushroomMycelium:{src:'assets/study/mushroom-mycelium.webp',label:'죽은 나무 속으로 퍼진 버섯의 균사 단면 모형'},
  moldLens:{src:'assets/study/mold-lens.webp',label:'돋보기로 본 빵 위의 곰팡이'},
  spirogyraLens:{src:'assets/study/spirogyra-lens.webp',label:'돋보기로 본 연못물 속 초록 실'},
@@ -69,7 +69,7 @@ export function taskArt(task:InquiryTask,record?:InquiryRecord):InquiryArt[]{
  * lens: own picture for the 돋보기 step (new structure appears instead of a blurry enlargement). gate: the 돋보기 picture must be tapped on this feature to open the microscope. */
 export type MagnifyView={context:string;time:number;focus:{x:number;y:number};lens?:string;gate?:string;captions:[string,string,string]};
 export const magnify:Record<string,MagnifyView>={
- mushroom:{context:'deadwood',time:0,focus:{x:.74,y:.47},lens:'mushroom',captions:['맨눈 · 죽은 나무에 작은 버섯들이 자라요','돋보기 · 갓 아래 줄무늬(주름)를 크게 살펴봐요','현미경 · 주름에서 모은 작은 알갱이(포자)를 살펴봐요']},
+ mushroom:{context:'deadwood',time:0,focus:{x:.74,y:.47},lens:'mushroom',captions:['맨눈 · 죽은 나무에 작은 버섯들이 자라요','돋보기 · 갓 아래 줄무늬(주름)를 크게 살펴봐요','현미경 · 주름 표면의 작은 알갱이(포자)를 살펴봐요']},
  mold:{context:'bread',time:3,focus:{x:.5,y:.5},lens:'moldLens',captions:['맨눈 · 빵 위에 거뭇한 얼룩이 보여요','돋보기 · 솜털 같은 실 위에 검은 점이 보여요','현미경 · 가는 실(균사)과 둥근 부분이 보여요']},
  spirogyra:{context:'pond',time:0,focus:{x:.45,y:.62},lens:'spirogyraLens',captions:['맨눈 · 연못 물풀 사이의 물을 살펴봐요','돋보기 · 가는 초록 실이 보이지만 속은 아직 안 보여요','현미경 · 실처럼 길게 이어진 해캄이 보여요']}
 };

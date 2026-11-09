@@ -11,7 +11,7 @@ export function taskIssues(task:InquiryTask,r:InquiryRecord):string[]{
  if(['collect','connect','sort'].includes(task.kind)){if(!sourceRead)issues.push('먼저 각 자료를 눌러 안에 담긴 관찰 내용을 읽어요.');if(!items.every(i=>(r.assignments[i.id]||'')===i.target))issues.push(task.feedback);}
  if(task.id==='M3-2'&&current&&r.assignments.ladder!=='smallest')issues.push('크기 사다리에서 세균이 들어갈 칸을 골라 크기를 비교해요.');
  if(task.kind==='microscope'){
-  if(Math.abs(r.focus-65)>12||r.light<40||r.light>85||!r.capture)issues.push('모양이 선명하게 보이도록 조절한 뒤 사진을 찍어요.');
+  if(Math.abs(r.focus-65)>12||r.light<40||r.light>85||!r.capture)issues.push(r.level<2?'‘현미경으로 관찰하기’를 눌러 더 크게 확대해요.':'초점을 맞춘 뒤 ‘관찰 사진 남기기’를 눌러요.');
 
  }
  if(task.kind==='sample'&&(r.sequence!==3||!['edge','plant'].includes(r.assignments.site)))issues.push(task.feedback);
