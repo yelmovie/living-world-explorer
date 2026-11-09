@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>M1 개념 영상 · 버섯숲 표본실</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <style>
+      @font-face{font-family:"Lab Display";src:url('assets/fonts/jua-korean-400.woff2') format('woff2');font-weight:400;unicode-range:U+1100-11FF,U+3130-318F,U+A960-A97F,U+AC00-D7AF,U+D7B0-D7FF}
+      @font-face{font-family:"Lab Display";src:url('assets/fonts/jua-latin-400.woff2') format('woff2');font-weight:400;unicode-range:U+0000-00FF,U+2000-206F}
+      :root{--ink:#213f30;--paper:#fbf7ea;--grid:#dbe5cf;--gold:#d9a93e;--accent:#93603a;--soft:#f4e6d3}
+      *{margin:0;padding:0;box-sizing:border-box}
+      html,body{width:1920px;height:1080px;overflow:hidden;background:var(--paper)}
+      #root{position:relative;width:100%;height:100%;font-family:"Lab Display",sans-serif;color:var(--ink)}
+      .full{position:absolute;inset:0}
+      .paper{background-color:var(--paper);background-image:linear-gradient(var(--grid) 2px,transparent 2px),linear-gradient(90deg,var(--grid) 2px,transparent 2px);background-size:60px 60px;background-position:-2px -2px}
+      .tag{position:absolute;background:#fff;border:4px solid var(--ink);border-radius:18px;padding:10px 24px;font-size:44px;line-height:1.15;white-space:nowrap;box-shadow:0 8px 0 rgba(33,63,48,.16)}
+      .tag .arrow,.answer .arrow{display:inline-block;vertical-align:middle;margin:0 .15em;color:var(--accent)}
+      .head{left:60px;top:44px;font-size:36px;background:var(--soft);border-color:var(--accent)}
+      #moa{position:absolute;left:120px;top:250px;height:780px;transform-origin:50% 100%}
+      .bubble{position:absolute;left:560px;top:330px;max-width:1220px;background:#fff;border:5px solid var(--ink);border-radius:36px;padding:44px 56px;font-size:68px;line-height:1.25;box-shadow:0 10px 0 rgba(33,63,48,.16)}
+      .bubble::before{content:"";position:absolute;left:-42px;top:120px;border:22px solid transparent;border-right:24px solid var(--ink)}
+      .bubble.small{left:auto;right:410px;top:auto;bottom:250px;font-size:44px;padding:24px 34px;border-radius:28px}
+      .bubble.small::before{left:auto;right:-42px;top:44px;border:20px solid transparent;border-left:24px solid var(--ink)}
+      .card{position:absolute;overflow:hidden;background:#fff;border:6px solid var(--ink);border-radius:24px;box-shadow:0 12px 0 rgba(33,63,48,.14)}
+      .card .fill{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+      .card.focus .fill{object-fit:fill}
+      .trail{position:absolute;inset:0;width:100%;height:100%}
+      .name{left:20px;top:18px;background:var(--soft);border-color:var(--accent)}
+      .lens-ring{position:absolute;left:50%;top:50%;width:360px;height:360px;margin:-180px 0 0 -180px;border:14px solid var(--gold);border-radius:50%;box-shadow:0 0 0 6px var(--ink)}
+      .tool-tag{position:absolute;right:20px;top:18px;background:var(--gold);color:var(--ink);border:4px solid var(--ink);border-radius:18px;padding:8px 22px;font-size:40px}
+      .lead{position:absolute;width:5px;height:76px;background:var(--ink);transform-origin:50% 0}
+      .result{transform-origin:50% 0}
+      .leader{position:absolute;inset:0;width:1920px;height:1080px;overflow:visible}
+      .label{border-color:var(--ink)}
+      .answer{position:absolute;left:0;right:0;top:150px;text-align:center;font-size:84px;line-height:1.2;white-space:nowrap}
+      .mark{position:relative;display:inline-block;color:var(--accent);isolation:isolate}
+      .underline{position:absolute;left:-4px;right:-4px;bottom:-6px;height:14px;border-radius:7px;background:var(--gold);transform-origin:0 50%;z-index:-1}
+      .proof{width:560px;height:330px}
+      .tag.mini{left:50%;bottom:16px;transform:translateX(-50%);font-size:36px;padding:6px 18px;border-width:3px}
+      #toto{position:absolute;right:90px;bottom:-30px;height:620px;transform-origin:50% 100%}
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="18" data-width="1920" data-height="1080">
+      <div id="paper" class="clip full paper" data-start="0" data-duration="18" data-track-index="1" style="z-index:1"></div>
+      <div id="header" class="clip full" data-start="0" data-duration="18" data-track-index="2" style="z-index:2"><div id="header-tag" class="tag head">모아의 연구 노트 · 버섯숲 표본실</div></div>
+      <div id="ask" class="clip full" data-start="0" data-duration="3.6" data-track-index="3" style="z-index:3"><img id="moa" src="assets/img/moa-full.webp" alt=""><div id="ask-bubble" class="bubble">버섯과 곰팡이는 무엇으로 되어 있을까?</div></div>
+      <div id="card0" class="clip full" data-start="3.6" data-duration="6" data-track-index="4" style="z-index:4"><div id="card0-box" class="card" style="left:110px;top:250px;width:780px;height:440px">
+  <img id="card0-before" class="fill" src="assets/img/mushroom.webp" alt="">
+  <img id="card0-after" class="fill" src="assets/img/mushroom-spores.webp" alt="">
+  
+  <div id="card0-tool" class="lens-ring"></div>
+  <div id="card0-name" class="tag name">버섯</div>
+</div>
+<div id="card0-lead" class="lead" style="left:498px;top:660px"></div>
+<div id="card0-result" class="tag result" style="left:500px;top:734px">주름에 붙은 포자</div></div>
+      <div id="card1" class="clip full" data-start="3.6" data-duration="6" data-track-index="5" style="z-index:5"><div id="card1-box" class="card" style="left:1030px;top:250px;width:780px;height:440px">
+  <img id="card1-before" class="fill" src="assets/img/mold-lens.webp" alt="">
+  <img id="card1-after" class="fill" src="assets/img/mold.webp" alt="">
+  
+  <div id="card1-tool" class="lens-ring"></div>
+  <div id="card1-name" class="tag name">곰팡이</div>
+</div>
+<div id="card1-lead" class="lead" style="left:1418px;top:660px"></div>
+<div id="card1-result" class="tag result" style="left:1420px;top:734px">가는 실, 균사</div></div>
+      <div id="focus" class="clip full" data-start="9.6" data-duration="3.8" data-track-index="6" style="z-index:6"><div id="focus-box" class="card focus" style="left:353px;top:210px;width:1215px;height:760px"><img id="focus-img" class="fill" src="assets/img/mold.webp" alt=""></div>
+<svg id="lab0-line" class="leader" viewBox="0 0 1920 1080"><line x1="559.55" y1="833.2" x2="859.55" y2="853.2" stroke="#213f30" stroke-width="5" stroke-linecap="round"/><circle cx="559.55" cy="833.2" r="13" fill="#d9a93e" stroke="#213f30" stroke-width="4"/></svg>
+<div id="lab0" class="tag label" style="left:859.55px;top:853.2px">균사(가는 실)</div>
+<svg id="lab1-line" class="leader" viewBox="0 0 1920 1080"><line x1="826.85" y1="331.6" x2="1156.85" y2="361.6" stroke="#213f30" stroke-width="5" stroke-linecap="round"/><circle cx="826.85" cy="331.6" r="13" fill="#d9a93e" stroke="#213f30" stroke-width="4"/></svg>
+<div id="lab1" class="tag label" style="left:1156.85px;top:361.6px">포자가 든 둥근 부분</div></div>
+      <div id="answer" class="clip full" data-start="13.4" data-duration="4.6" data-track-index="7" style="z-index:7"><div id="answer-text" class="answer">버섯과 곰팡이는 <span class="mark">균사<span id="answer-line" class="underline"></span></span>로 된 균류예요</div>
+<div id="proof0" class="card proof" style="left:250px;top:330px"><img class="fill" src="assets/img/mushroom-spores.webp" alt=""><div class="tag mini">주름에 붙은 포자</div></div>
+<div id="proof1" class="card proof" style="left:870px;top:330px"><img class="fill" src="assets/img/mold.webp" alt=""><div class="tag mini">가는 실, 균사</div></div>
+<img id="toto" src="assets/img/companion-full.webp" alt="">
+<div id="toto-bubble" class="bubble small">버섯도 곰팡이도 균류구나!</div></div>
+      <audio id="sfx0" class="clip" src="assets/sfx/page-turn.wav" data-start="0.783" data-duration="0.19" data-track-index="50" data-volume="0.7"></audio>
+      <audio id="sfx1" class="clip" src="assets/sfx/capture.wav" data-start="5.233" data-duration="0.55" data-track-index="51" data-volume="0.7"></audio>
+      <audio id="sfx2" class="clip" src="assets/sfx/snap.wav" data-start="6.383" data-duration="0.19" data-track-index="52" data-volume="0.7"></audio>
+      <audio id="sfx3" class="clip" src="assets/sfx/capture.wav" data-start="7.233" data-duration="0.55" data-track-index="53" data-volume="0.7"></audio>
+      <audio id="sfx4" class="clip" src="assets/sfx/snap.wav" data-start="8.383" data-duration="0.19" data-track-index="54" data-volume="0.7"></audio>
+      <audio id="sfx5" class="clip" src="assets/sfx/snap.wav" data-start="10.533" data-duration="0.19" data-track-index="55" data-volume="0.7"></audio>
+      <audio id="sfx6" class="clip" src="assets/sfx/snap.wav" data-start="11.283" data-duration="0.19" data-track-index="56" data-volume="0.7"></audio>
+      <audio id="sfx7" class="clip" src="assets/sfx/success.wav" data-start="13.533" data-duration="0.54" data-track-index="57" data-volume="0.7"></audio>
+      <audio id="sfx8" class="clip" src="assets/sfx/hint.wav" data-start="15.383" data-duration="0.04" data-track-index="58" data-volume="0.7"></audio>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo('#header-tag',{opacity:0,y:-20},{opacity:1,y:0,duration:.5,ease:'expo.out'},.05);
+      tl.fromTo('#moa',{x:-420},{x:0,duration:.55,ease:'expo.out'},.15);
+      tl.fromTo('#moa',{scaleY:1},{scaleY:.93,duration:.12,ease:'power2.out'},.7);tl.to('#moa',{scaleY:1,duration:.25,ease:'back.out(1.6)'},.82);
+      tl.fromTo('#ask-bubble',{opacity:0,scale:.82},{opacity:1,scale:1,duration:.4,ease:'back.out(1.7)'},.75);
+      tl.to('#moa',{x:-420,duration:.3,ease:'power3.in'},3.2);tl.to('#ask-bubble',{opacity:0,duration:.3,ease:'power3.in'},3.2);
+      tl.fromTo('#card0-box',{opacity:0,y:60},{opacity:1,y:0,duration:.5,ease:'expo.out'},3.7);
+      tl.fromTo('#card0-after',{clipPath:'circle(0% at 50% 50%)'},{clipPath:'circle(75% at 50% 50%)',duration:.7,ease:'power2.inOut'},5.45);
+      tl.fromTo('#card0-tool',{opacity:0,scale:.3},{opacity:1,scale:1,duration:.35,ease:'back.out(1.5)'},5.2);tl.to('#card0-tool',{opacity:0,scale:1.25,duration:.3,ease:'power3.in'},6.1000000000000005);
+      tl.fromTo('#card0-lead',{scaleY:0},{scaleY:1,duration:.2,ease:'power2.out'},6.2);
+      tl.fromTo('#card0-result',{opacity:0,scale:.7,xPercent:-50},{opacity:1,scale:1,xPercent:-50,duration:.3,ease:'back.out(1.8)'},6.35);
+      tl.to(['#card0-box','#card0-lead','#card0-result'],{opacity:0,y:-30,duration:.3,ease:'power3.in'},9.25);
+      tl.fromTo('#card1-box',{opacity:0,y:60},{opacity:1,y:0,duration:.5,ease:'expo.out'},4);
+      tl.fromTo('#card1-after',{clipPath:'circle(0% at 50% 50%)'},{clipPath:'circle(75% at 50% 50%)',duration:.7,ease:'power2.inOut'},7.45);
+      tl.fromTo('#card1-tool',{opacity:0,scale:.3},{opacity:1,scale:1,duration:.35,ease:'back.out(1.5)'},7.2);tl.to('#card1-tool',{opacity:0,scale:1.25,duration:.3,ease:'power3.in'},8.1);
+      tl.fromTo('#card1-lead',{scaleY:0},{scaleY:1,duration:.2,ease:'power2.out'},8.2);
+      tl.fromTo('#card1-result',{opacity:0,scale:.7,xPercent:-50},{opacity:1,scale:1,xPercent:-50,duration:.3,ease:'back.out(1.8)'},8.35);
+      tl.to(['#card1-box','#card1-lead','#card1-result'],{opacity:0,y:-30,duration:.3,ease:'power3.in'},9.3);
+      tl.fromTo('#focus-box',{opacity:0,scale:.92},{opacity:1,scale:1,duration:.5,ease:'expo.out'},9.65);
+      tl.fromTo('#focus-img',{scale:1},{scale:1.05,duration:3.40,ease:'none'},9.799999999999999);
+      tl.fromTo('#lab0-line line',{attr:{x2:559.55,y2:833.2}},{attr:{x2:859.55,y2:853.2},duration:.2,ease:'power2.out'},10.299999999999999);
+      tl.fromTo('#lab0-line circle',{opacity:0,scale:0,transformOrigin:'50% 50%'},{opacity:1,scale:1,duration:.2,ease:'back.out(2)'},10.249999999999998);
+      tl.fromTo('#lab0',{opacity:0,scale:.7,xPercent:-50,yPercent:-50},{opacity:1,scale:1,xPercent:-50,yPercent:-50,duration:.3,ease:'back.out(1.8)'},10.499999999999998);
+      tl.fromTo('#lab1-line line',{attr:{x2:826.85,y2:331.6}},{attr:{x2:1156.85,y2:361.6},duration:.2,ease:'power2.out'},11.049999999999999);
+      tl.fromTo('#lab1-line circle',{opacity:0,scale:0,transformOrigin:'50% 50%'},{opacity:1,scale:1,duration:.2,ease:'back.out(2)'},10.999999999999998);
+      tl.fromTo('#lab1',{opacity:0,scale:.7,xPercent:-50,yPercent:-50},{opacity:1,scale:1,xPercent:-50,yPercent:-50,duration:.3,ease:'back.out(1.8)'},11.249999999999998);
+      tl.to(['#focus-box','#lab0','#lab0-line','#lab1','#lab1-line'],{opacity:0,duration:.3,ease:'power3.in'},13.1);
+      tl.fromTo('#answer-text',{opacity:0,y:40},{opacity:1,y:0,duration:.5,ease:'expo.out'},13.5);
+      tl.fromTo('#answer-line',{scaleX:0},{scaleX:1,duration:.5,ease:'power2.inOut'},13.950000000000001);
+      tl.fromTo('#proof0',{opacity:0,y:50},{opacity:1,y:0,duration:.5,ease:'expo.out'},14.3);
+      tl.fromTo('#proof1',{opacity:0,y:50},{opacity:1,y:0,duration:.5,ease:'expo.out'},14.55);
+      tl.fromTo('#toto',{y:700},{y:0,duration:.55,ease:'back.out(1.4)'},14.700000000000001);
+      tl.fromTo('#toto',{scaleY:1},{scaleY:.92,duration:.12,ease:'power2.out'},15.25);tl.to('#toto',{scaleY:1,duration:.25,ease:'back.out(1.6)'},15.370000000000001);
+      tl.fromTo('#toto-bubble',{opacity:0,scale:.8},{opacity:1,scale:1,duration:.4,ease:'back.out(1.7)'},15.35);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

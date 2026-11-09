@@ -15,3 +15,6 @@ assets/generated/**/*.glb
 .npm-cache/
 .claude/settings.local.json
 .claude/worktrees/
+
+# HyperFrames work files (snapshots, check reports, render cache); sources in films/ are tracked
+films/**/.hyperframes/

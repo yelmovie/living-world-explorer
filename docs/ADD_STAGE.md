@@ -30,7 +30,7 @@
 | 중앙 연구소 번호(`i===5`), 지도 연출의 `i<5`·`repaired/5` | `src/main.ts` `map()`, `src/renderers/map.ts` |
 | 시설 배경 `backgrounds` | `src/scenes/inquiry.ts` |
 | 보상 문구 `missions`, 시설 그림 목록 | `src/experience.ts`, `src/main.ts` `records()` |
-| 개념 영상 문구 `concepts` + `public/assets/concepts/M6.mp4·.webp·.vtt` | `src/concepts.ts` |
+| 개념 영상 제목 `concepts` + 장면 `films/films.data.mjs`(→ `node films/build-films.mjs`, HyperFrames 렌더, `node films/publish-films.mjs <렌더 폴더>`가 `public/assets/concepts/M6.mp4·.webp·.vtt`와 `src/concept-captions.json`을 만듦) | `src/concepts.ts`, `films/` |
 | 보고서·코어의 `5` (`report.length===5`, `ports.length<5`, `/5` 표시) | `src/evaluate.ts`, `src/storage.ts`, `src/main.ts`, `src/scenes/solution.ts` |
 | 결과 화면 "20개 탐구 활동" 문구 | `src/main.ts` `results()` |
 

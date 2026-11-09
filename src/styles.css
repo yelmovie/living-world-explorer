@@ -1413,8 +1413,8 @@ button.settings-switch[aria-pressed="true"]{background:var(--moss-486);color:var
  .expedition-shell[data-kind=track] .expedition-tools>.field+.button{flex-basis:100%}
  .inquiry-status{padding-bottom:8px}
 }
-/* Captions are burned into the clips; keep their DOM equivalent for assistive reading. */
-.concept-caption{position:absolute;width:1px;height:1px;min-height:0;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+/* Concept clips carry only labels; the full sentence is this caption under the clip (also the VTT track). */
+.concept-caption{margin:0;line-height:1.35;word-break:keep-all;flex:none}
 .modal.film-dialog{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;padding:0;border:0;border-radius:0;box-shadow:none;background:#000;overflow:hidden}
 .film-dialog::backdrop{background:#000}
 .film-dialog>h2{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
@@ -1509,14 +1509,13 @@ textarea,input{word-break:keep-all;overflow-wrap:break-word}
 .hero-speech.left::after{content:'';position:absolute;left:38%;bottom:-13px;width:22px;height:22px;background:var(--paper-face);border-right:2px solid var(--paper-line);border-bottom:2px solid var(--paper-line);transform:rotate(45deg)}
 .hero-speech.left:hover:not(:disabled){transform:translateY(-2px)}
 @keyframes idle-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-@keyframes logo-breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.015)}}
 @keyframes start-pulse{0%,82%,100%{box-shadow:var(--shadow-button),0 0 0 0 var(--glow-a40)}90%{box-shadow:var(--shadow-button),0 0 0 14px var(--glow-a40)}}
 @keyframes modal-pop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
 @keyframes stamp-in{0%{opacity:0;transform:scale(2.4) rotate(-14deg)}70%{opacity:1;transform:scale(.94) rotate(-6deg)}100%{opacity:1;transform:scale(1) rotate(-6deg)}}
 @media(prefers-reduced-motion:no-preference){
  html:not(.reduced) .hero-moa{animation:idle-bob 2.2s ease-in-out infinite}
  html:not(.reduced) .hero-companion{animation:idle-bob 2.6s ease-in-out .7s infinite}
- html:not(.reduced) .title-art{animation:logo-breathe 3s ease-in-out infinite}
+ /* Title logo stays still: the two characters and the start button are the only looping groups on the title screen. */
  html:not(.reduced) .screen-main .hero-actions>.button.primary{animation:start-pulse 3.6s ease-out 1.2s infinite}
 }
 
@@ -1898,4 +1897,13 @@ button.step{min-width:48px;min-height:48px}
 @media(hover:none){
  .button:hover:not(:disabled),.toolbar .icon-button:hover:not(:disabled),.hero-speech.left:hover:not(:disabled){transform:none}
  .map-node:hover:not(:disabled){transform:translate(-50%,-50%)}
+}
+/* Short landscape phones/folds: the concept caption is now visible text, so give the clip back the height it takes. */
+@media(max-height:520px) and (orientation:landscape){
+ .concept-dialog{padding:10px 16px;gap:6px}
+ .concept-dialog>h2{font-size:20px}
+ .concept-body{gap:6px}
+ .concept-video{max-height:calc(100dvh - 150px)}
+ .concept-caption{font-size:16px;min-height:0}
+ .concept-actions>.button{min-height:48px}
 }
