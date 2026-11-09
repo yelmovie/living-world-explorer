@@ -21,10 +21,11 @@ let samplesRequested=false;let lastEffect=0;
 let observer: MutationObserver | undefined;
 let narration:HTMLAudioElement|undefined;
 /** User-triggered NPC greeting; no speech is played while sound is muted. */
-export function stopNarration(){if(narration){narration.pause();narration.removeAttribute('src');narration.load();narration=undefined;}sync();}
+function clearNarration(){const previous=narration;narration=undefined;if(previous){previous.onended=previous.onerror=null;previous.pause();previous.removeAttribute('src');previous.load();}}
+export function stopNarration(){clearNarration();sync();}
 export function playNarration(stage:string):boolean{
  if(!settings.sound||document.hidden||explicitQuiet)return false;
- stopNarration();const audio=new Audio(`assets/audio/npc/${stage}.m4a`);audio.preload='none';narration=audio;
+ clearNarration();const audio=new Audio(`assets/audio/npc/${stage}.m4a`);audio.preload='none';narration=audio;
  audio.onended=audio.onerror=()=>{if(narration===audio){narration=undefined;sync();}};
  stopMusic();void audio.play().catch(()=>{if(narration===audio){narration=undefined;sync();}});return true;
 }
@@ -81,7 +82,7 @@ function musicElement(ctx: AudioContext) {
   return music;
 }
 function sync() {
-  if (!settings.sound || document.hidden || explicitQuiet) {stopVoices(effectVoices);if(narration){narration.pause();narration=undefined;}}
+  if (!settings.sound || document.hidden || explicitQuiet) {stopVoices(effectVoices);clearNarration();}
   if (!settings.bgm || !unlocked || quiet() || narration) {stopMusic();return;}
   const ctx = engine();
   if (!ctx || !musicGain) return;
@@ -90,7 +91,7 @@ function sync() {
   const element = musicElement(ctx);
   if (!element) return;
   if (musicTrack !== track) {element.src = tracks[track];musicTrack = track;}
-  const start = () => {if (element.paused && settings.bgm && !quiet()) void element.play().catch(() => {});};
+  const start = () => {if (context === ctx && unlocked && !narration && element.paused && settings.bgm && !quiet()) void element.play().catch(() => {});};
   if (ctx.state === 'suspended') void ctx.resume().then(start).catch(() => {});else start();
 }
 function preloadEffects(){
@@ -121,9 +122,13 @@ export function playEffect(name: EffectName = 'click') {
   if (!ctx || !effectGain) return;
   preloadEffects();
   stopVoices(effectVoices);
-  const frequencies = name === 'success' ? [523.25, 659.25, 783.99] : name === 'retry' ? [392, 329.63] : [523.25];
+  // Original short motifs: lab droplets, specimen capture and the waking life core.
+  const motifs: Record<EffectName, number[]> = {click:[523],success:[523,659,784],retry:[392,330],snap:[880,440],capture:[659,988],water:[784,523,392],hint:[659,784],run:[196],
+    'page-turn':[330,220],'pipette-drop':[988,659],'core-wake':[262,392,523,784]};
+  const frequencies = motifs[name];
   const play = () => {
     if (context !== ctx || !effectGain || !settings.sound || document.hidden || explicitQuiet) return;
+    effectGain.gain.value = .06 * (narration ? .3 : 1);
     const buffer=samples.get(name);if(buffer){const source=ctx.createBufferSource();source.buffer=buffer;source.connect(effectGain);effectVoices.add(source);source.onended=()=>{effectVoices.delete(source);source.disconnect();};source.start();return;}
     frequencies.forEach((frequency,i) => voice(frequency, .16, effectGain!, effectVoices, ctx.currentTime + i * .09));
   };
