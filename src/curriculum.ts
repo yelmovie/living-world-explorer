@@ -53,3 +53,13 @@ export const inquiryTasks:InquiryTask[]=[
  ],[{id:'lactic',label:'유산균의 작용'},{id:'yeast',label:'효모의 작용'},{id:'decompose',label:'균류·세균의 분해 작용'}],'내 설계와 실제 근거가 담긴 생명과학 소개 카드가 완성됐어요.','소개할 사례와 그 사례의 생물 작용을 연결하고, 알게 된 점을 한 문장으로 적어요.')
 ];
 export const tasksFor=(stage:InquiryTask['stage'])=>inquiryTasks.filter(t=>t.stage===stage);
+/** Learning objective per research lab, tied to the standard code each task carries. */
+export const stageObjectives:Record<InquiryTask['stage'],{standard:string;objectives:string[]}>={
+ M1:{standard:'4과12-01',objectives:['버섯과 곰팡이를 돋보기·현미경으로 관찰해 균사와 포자 같은 특징을 설명한다.','균류가 발견되는 장소를 관찰 자료와 연결한다.']},
+ M2:{standard:'4과12-01',objectives:['연못 물 한 방울에서 해캄과 짚신벌레를 찾아 모양과 움직임을 비교한다.','같은 시야의 서로 다른 순간을 근거로 원생생물의 특징을 설명한다.']},
+ M3:{standard:'4과12-01',objectives:['세균의 여러 모양과 사는 곳을 자료로 확인한다.','관찰 자료와 추측을 구별해 근거 있는 설명을 만든다.']},
+ M4:{standard:'4과12-02',objectives:['빵과 낙엽의 전후 변화를 비교해 균류·세균이 생활에 미치는 영향을 조사한다.','같은 생물의 영향도 상황에 따라 다르게 판단한다.']},
+ M5:{standard:'4과12-03',objectives:['요구르트·빵 반죽 사례에서 재료 → 생물의 작용 → 결과를 연결한다.','생명과학이 이용되는 사례를 소개하는 카드를 만들어 공유한다.']}
+};
+/** Content review status. Stays needsReview until a classroom teacher signs it off; reviewer is filled by that person. */
+export const contentReview={needsReview:true,source:'2022 개정 과학과 교육과정 4과12-01~03, 경기도교육청 「다양한 생물과 우리 생활」 자료 92쪽',reviewer:null as string|null,lastChecked:'2026-11-09'};
