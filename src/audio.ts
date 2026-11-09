@@ -19,6 +19,16 @@ const effectVoices = new Set<AudioScheduledSourceNode>();
 const samples=new Map<EffectName,AudioBuffer>();
 let samplesRequested=false;let lastEffect=0;
 let observer: MutationObserver | undefined;
+let narration:HTMLAudioElement|undefined;
+/** User-triggered NPC greeting; no speech is played while sound is muted. */
+export function stopNarration(){if(narration){narration.pause();narration.removeAttribute('src');narration.load();narration=undefined;}sync();}
+export function playNarration(stage:string):boolean{
+ if(!settings.sound||document.hidden||explicitQuiet)return false;
+ stopNarration();const audio=new Audio(`assets/audio/npc/${stage}.m4a`);audio.preload='none';narration=audio;
+ audio.onended=audio.onerror=()=>{if(narration===audio){narration=undefined;sync();}};
+ stopMusic();void audio.play().catch(()=>{if(narration===audio){narration=undefined;sync();}});return true;
+}
+
 
 function engine() {
   if (!context) {
@@ -40,8 +50,8 @@ function stopVoices(voices: Set<AudioScheduledSourceNode>) {
   for (const voice of voices) {try { voice.stop(); } catch { /* Already stopped. */ }}
   voices.clear();
 }
-// Only a playing video silences BGM; settings and story dialogs keep it so the volume slider can be heard.
-function quiet() {return explicitQuiet || document.hidden || !!document.querySelector('dialog[open] video');}
+// Only a concept video silences BGM; story films play over it, and settings keep it so the volume slider can be heard.
+function quiet() {return explicitQuiet || document.hidden || !!document.querySelector('dialog[open] video:not(.film-video)');}
 function stopMusic() {music?.pause();}
 function voice(frequency: number, duration: number, destination: GainNode, voices: Set<AudioScheduledSourceNode>, start: number, type: OscillatorType = 'sine') {
   const ctx = context;
@@ -71,8 +81,8 @@ function musicElement(ctx: AudioContext) {
   return music;
 }
 function sync() {
-  if (!settings.sound || document.hidden || explicitQuiet) stopVoices(effectVoices);
-  if (!settings.bgm || !unlocked || quiet()) {stopMusic();return;}
+  if (!settings.sound || document.hidden || explicitQuiet) {stopVoices(effectVoices);if(narration){narration.pause();narration=undefined;}}
+  if (!settings.bgm || !unlocked || quiet() || narration) {stopMusic();return;}
   const ctx = engine();
   if (!ctx || !musicGain) return;
   const volume = Number.isFinite(settings.bgmVolume) ? Math.max(0, Math.min(100, settings.bgmVolume!)) / 100 : .35;
@@ -88,7 +98,7 @@ function preloadEffects(){
  for(const name of ['click','success','retry','snap','capture','water','hint','run','page-turn','pipette-drop','core-wake'] as EffectName[])void fetch(`assets/audio/${name}.wav`).then(r=>{if(!r.ok)throw Error('audio');return r.arrayBuffer();}).then(data=>ctx.decodeAudioData(data)).then(buffer=>{if(context===ctx)samples.set(name,buffer);}).catch(()=>{});
 }
 function firstGesture() {unlocked = true;if(settings.sound)preloadEffects();sync();}
-function visibility() {if (document.hidden) {stopMusic();stopVoices(effectVoices);}else sync();}
+function visibility() {if (document.hidden) {stopMusic();stopVoices(effectVoices);stopNarration();}else sync();}
 function install() {
   if (installed) return;
   installed = true;
@@ -120,7 +130,7 @@ export function playEffect(name: EffectName = 'click') {
   if (ctx.state === 'suspended') void ctx.resume().then(play).catch(() => {});else play();
 }
 export function disposeAudio() {
-  stopMusic();stopVoices(effectVoices);
+  stopNarration();stopMusic();stopVoices(effectVoices);
   observer?.disconnect();observer = undefined;
   document.removeEventListener('pointerdown', firstGesture);
   document.removeEventListener('keydown', firstGesture);

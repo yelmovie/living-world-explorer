@@ -6,6 +6,7 @@
 | 폴더 | 내용 |
 |---|---|
 | `audio/` | 효과음(`click.wav` 등, Kenney CC0)과 배경 음악(`bgm-main-theme.m4a`, `bgm-ending-theme.m4a`) |
+| `film/` | 시작·복구 영상(`intro`, `final`의 `.mp4`·`.vtt`·포스터 `.webp`). `scripts/render-film.mjs`로 만들고, 오프라인 캐시에는 넣지 않음 |
 | `characters/` | 모아·토토 초상과 전신 |
 | `concepts/` | 스테이지 개념 영상·포스터·자막 |
 | `fonts/` | Jua 웹폰트와 OFL 원문 |

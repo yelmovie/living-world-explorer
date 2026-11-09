@@ -1,5 +1,5 @@
 import type {Stage} from './model';
-import {el,button,heading,paragraph,modal} from './ui';
+import {el,button,heading,paragraph,modal,reducedMotion} from './ui';
 
 export const concepts:Record<Stage,{title:string;beats:string[]}>={
  M1:{title:'모양을 확대하면 특징이 보여요',beats:['버섯과 곰팡이는 균사로 이루어진 균류예요.','버섯 주름의 포자, 곰팡이의 균사를 관찰해요.','생김새와 발견 장소를 함께 기록해요.']},
@@ -25,6 +25,6 @@ export function showConcept(stage:Stage,settings:{sound:boolean;reduced:boolean}
  const dialog=modal(concept.title,[body],{showClose:false});dialog.classList.add('concept-dialog');
  const hidden=()=>{if(document.hidden)video.pause();};document.addEventListener('visibilitychange',hidden);
  dialog.addEventListener('close',()=>{video.pause();video.removeAttribute('src');video.load();document.removeEventListener('visibilitychange',hidden);onContinue?.();},{once:true});
- if(!settings.reduced)void video.play().catch(()=>{});
+ if(!reducedMotion(settings.reduced))void video.play().catch(()=>{});
  return dialog;
 }

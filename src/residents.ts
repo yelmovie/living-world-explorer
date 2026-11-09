@@ -1,3 +1,4 @@
+import {playNarration,stopNarration} from './audio';
 import './residents.css';
 import type {Attempt, Stage} from './model';
 import {MAP_WIDTH, MAP_HEIGHT} from './mapData';
@@ -78,13 +79,15 @@ export function residentConversation(stage:Stage, attempt:Attempt){
   const replies=el('div','resident-replies');
   for(const [question,answer] of [[r.question,memory(stage,attempt)],['이제 무슨 일을 해?',r.work]]){
     const choice=button(question,()=>{
-      line.textContent=answer;
+      stopNarration();line.textContent=answer;
       for(const b of replies.querySelectorAll('button'))b.setAttribute('aria-pressed',String(b===choice));
     });
     choice.setAttribute('aria-pressed','false');
     replies.append(choice);
   }
-  const dialog=modal(r.name+'의 이야기',[scene,replies],{description:line});
+  const listen=button('인사 다시 듣기',()=>{line.textContent=r.welcome;for(const b of replies.querySelectorAll('button'))b.setAttribute('aria-pressed','false');if(!playNarration(stage))line.textContent=r.welcome+' (소리가 꺼져 있어요. 대화를 닫고 소리 버튼을 켜면 들을 수 있어요.)';},'secondary');
+  const dialog=modal(r.name+'의 이야기',[scene,listen,paragraph('모모 AI 생성 음성 · 인사 내용은 위 글로도 읽을 수 있어요.','muted'),replies],{description:line});
+  dialog.addEventListener('close',stopNarration,{once:true});
   dialog.classList.add('resident-dialog');
   return dialog;
 }

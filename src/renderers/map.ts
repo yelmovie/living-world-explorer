@@ -56,7 +56,7 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],att
    walk=(direction:Direction)=>{this.route=[];this.destination=undefined;this.held=direction;};
    stop=()=>{this.held=undefined;this.keys.clear();};
    this.input.on('pointerdown',(pointer:Phaser.Input.Pointer)=>{
-    if(document.hidden||document.querySelector('dialog[open]'))return;
+    if(pointer.event?.target!==this.game.canvas||document.hidden||document.querySelector('dialog[open]'))return;
     const tap={x:pointer.worldX,y:pointer.worldY};const index=locations.findIndex(p=>Math.hypot(tap.x-p.x,tap.y-p.y)<65);
     if(index>=0){navigate(index);return;}
     const target=nearestRoadPoint(tap);if(Math.hypot(target.x-tap.x,target.y-tap.y)>62)return;

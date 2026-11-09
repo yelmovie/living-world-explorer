@@ -18,7 +18,8 @@
 | Google Fonts Jua | 제목 | SIL Open Font License 1.1, public/assets/fonts/Jua-OFL.txt | PASS | 웹폰트 자체 제공, OFL 원문 동봉 |
 | 기존 생성 배경·캐릭터 | 연구소 장식·지도·NPC | 기존 프로젝트 AI 생성 자료, 일부 생성 날짜·도구만 기록됨 | 확인 필요 | 납품 담당자가 생성 당시 계정·계약·상업 이용 조건을 대조해야 함 |
 | 이번 제작 AI 이미지 | 새 지도·캐릭터·시설 이미지 | 기본 image_gen으로 프로젝트용 생성, 제작 담당자 기록과 연결 | 확인 필요 | 최종 파일 목록·생성 날짜·계정 이용 조건 기록을 납품 때 보존 |
-| 배경 음악 2곡 (2026-10-25) | 지도·탐구 메인테마, 결과 화면 엔딩테마 | 제작자가 본인 Suno Premier 플랜 계정으로 직접 생성(가사 없음). Premier 플랜 생성물은 상업 이용 가능. 생성 기록: assets/generated/bgm-20261025.json | PASS | 원본 MP3 보관, 배포본은 AAC 96kbps로 변환 |
+| 배경 음악 2곡 (2026-11-04 교체) | 지도·탐구 메인테마, 결과 화면 엔딩테마 | 제작자가 본인 Suno Premier 플랜 계정으로 직접 생성(가사 없음). Premier 플랜 생성물은 상업 이용 가능. 생성 기록: assets/generated/bgm-20261104.json, 이전 곡: bgm-20261025.json | PASS | 원본 MP3 보관, 배포본은 AAC 96kbps로 변환 |
+| 시작·복구 영상 2편 (2026-11-04) | 탐험 시작 뒤 도입, 코어 복구 뒤 결과 화면 | 프로젝트 자체 AI 생성 영상에 scripts/render-film.mjs로 색보정·자막·연출·효과음을 더함. 원본과 프롬프트: assets/generated/film-20261104/ | PASS | 배포본은 H.264 1080p |
 | 기록 넘김·코어 가동 | bookFlip1, powerUp4 | Kenney · [RPG Audio](https://kenney.nl/assets/rpg-audio), [Digital Audio](https://kenney.nl/assets/digital-audio) · CC0 | 확인 | 짧은 구간을 편집 |
 | 유리판 물방울 | water_drops.ogg | angeloyazar · [Object Dropping into Water](https://opengameart.org/content/object-dropping-into-water-0) · CC0 | 확인 | 한 방울 구간을 편집 |
 | 개념 영상 소리 | 개념 영상의 짧은 음 | 프로젝트 자체 합성 | PASS | 외부 음악 서비스·샘플 없음 |
@@ -40,19 +41,23 @@
 | public/assets/study/{deadwood,moldy-fruit,dough-before,dough-after,bread-1~3,leaf-1~3}.webp | 2026-10-25 기본 image_gen 생성·편집 10개. assets/generated/specimens-20261025.json에 전체 프롬프트와 파일별 기록 | 학습용 관찰 모형. 같은 식빵·낙엽·반죽의 전후 비교, 실제 실험 사진·측정 원자료 아님 |
 | public/assets/map/moa-{down,right,up,left}.webp | 2026-10-21 기본 image_gen 자체 생성 | 갈색 묶은 머리·안경·연구 조끼의 모아, 투명 2.5D 픽셀 캐릭터 |
 | public/assets/map/companion-{down,right,up,left}.webp | 2026-10-21 기본 image_gen 자체 생성 | 분홍 토끼 보조 캐릭터, 투명 2.5D 픽셀 캐릭터 |
+| src/renderers/core3d.ts, src/renderers/core-apparatus.ts | 2026-11-06, Three.js 기본 도형과 직접 구성한 결정 면으로 황동 링·포트·회전 장치 제작 | 중앙 연구소에서만 불러오는 실시간 3D 모형 |
+| public/assets/ui/{bio-core,bio-core-powered}.webp | 2026-11-06, Blender에서 프로젝트용 황동·초록 결정 모형을 직접 구성해 고정 카메라로 렌더링. 재현 코드 scripts/render-core-figure.py | 중앙 연구소의 가상 코어 장치, 포트 점등과 안내는 별도 DOM |
+| public/assets/ui/og-life-code-v1.jpg | 2026-11-05 기존 greenhouse.webp, logo.webp, moa-full.webp, companion-full.webp를 Sharp로 합성(1200×600) | 링크 공유용 썸네일. 신규 표본이나 현미경 사진 아님 |
 | public/assets/ui/icon-{192,512}.png | 2026-10-25 companion-portrait.webp(위 자체 생성 토토 초상)를 #315f46 바탕에 sharp로 합성한 2차 이미지 | 홈 화면 앱 아이콘(manifest.webmanifest) |
 | public/assets/characters/{moa,companion}-portrait.webp | 2026-10-21 기본 image_gen 자체 생성, 320×320 투명 | 시설 안내 초상, 과학 관찰 근거 아님 |
 | public/assets/study/{mushroom-spores,mold-lens,spirogyra-lens,mushroom-mycelium}.webp | 2026-10-25 Higgsfield gpt_image_2_5(기존 학습 그림을 화풍 참고로 사용) 생성 4장, 6크레딧. 기록: assets/generated/study-20261025c.json | 확대 단계(돋보기·현미경)와 균사 단면 설명 모형. 실제 현미경 사진 아님 |
 | public/assets/study/bacteria.webp, bacteria-{round,rod,spiral}.webp | assets/generated/study-20261025b/bacteria.png(자체 생성)을 scripts/recolor-bacteria.mjs로 염색 색(보라·자주)으로 바꾸고 세 모양을 잘라 냄 | 세균 모양 설명 모형. 이전 초록 그림은 _unused/로 이동 |
 | public/assets/models/{mushroom,bread-mold,paramecium,yeast}.glb | 2026-10-25 사용자 Meshy 계정 image-to-3D(입력: 자체 생성 기본 그림 assets/generated/models-20261025/*-3d-base.png). 2026-10-26 scripts/pack-models.mjs로 텍스처를 줄이고 gltfpack으로 UV 이음매를 고정한 채 줄여 meshopt 압축. 기록: assets/generated/models-20261025.json | 선택해서 여는 3D 설명 모형. Meshy 생성물의 상업 이용 조건은 생성 당시 계정 플랜 기준 — 납품 전 확인 |
-| public/assets/audio/bgm-{main,ending}-theme.m4a | 2026-10-25 Suno Premier 플랜 생성(제작자 계정). 받은 파일명 Morning Lab Discovery.mp3, Living Laboratory (1).mp3 | 배경 음악. 원본은 assets/generated/bgm-20261025/ |
+| public/assets/audio/bgm-{main,ending}-theme.m4a | 2026-11-04 Suno Premier 플랜 생성(제작자 계정). 받은 파일명 main.mp3, final.mp3 | 배경 음악. 원본은 assets/generated/bgm-20261104/ |
+| public/assets/film/{intro,final}.{mp4,vtt,webp} | 2026-11-04 제작자 제공 영상을 scripts/render-film.mjs로 가공 | 시작·복구 영상. 원본은 assets/generated/film-20261104/ |
 | public/assets/fonts/jua-korean-400.woff2 | Google Fonts Jua, 제목용 한국어 웹폰트 | SIL OFL 1.1 |
 | public/assets/fonts/jua-latin-400.woff2 | Google Fonts Jua, 제목용 라틴 웹폰트 | SIL OFL 1.1 |
 | src/draw.ts 및 Phaser 탐구 도식 | 프로젝트 자체 제작 설명 모형 | 현미경 사진이나 실험 측정 원자료로 소개하지 않음 |
 | src/experience.ts의 SVG 아이콘 | 프로젝트 자체 제작 선형 아이콘 | 공통 홈·이전·음소거·설정·탐구 도구 |
 | src/audio.ts | 프로젝트 자체 제작 재생 코드. 효과음 파일이 없을 때만 짧은 음을 합성 | 배경 음악은 위 Suno 2곡 |
 
-지도·캐릭터 생성 PNG 원본은 이미지 도구의 기본 생성 위치에 보존하고, 실제 사용하는 최적화 WebP는 D: 프로젝트의 public/assets 종류별 폴더에 둔다(규칙과 옛 이름 대조표: assets/README.md). 2026-10-24 학습 그림 원본은 assets/generated/study-20261024, 2026-10-25 표본 개선 원본은 assets/generated/specimens-20261025, 배경 음악 원본은 assets/generated/bgm-20261025에 보관한다. 새 시설 배경의 파일별 생성 기록은 제작 담당자가 추가한다. references 아래의 이미지 시안은 원본 보관 자료이며, 복사해서 사용하기 전 경위를 확인한다.
+지도·캐릭터 생성 PNG 원본은 이미지 도구의 기본 생성 위치에 보존하고, 실제 사용하는 최적화 WebP는 D: 프로젝트의 public/assets 종류별 폴더에 둔다(규칙과 옛 이름 대조표: assets/README.md). 2026-10-24 학습 그림 원본은 assets/generated/study-20261024, 2026-10-25 표본 개선 원본은 assets/generated/specimens-20261025, 배경 음악 원본은 assets/generated/bgm-20261104(이전 곡은 bgm-20261025)에, 영상 원본은 assets/generated/film-20261104에 보관한다. 새 시설 배경의 파일별 생성 기록은 제작 담당자가 추가한다. references 아래의 이미지 시안은 원본 보관 자료이며, 복사해서 사용하기 전 경위를 확인한다.
 
 ## 교육 내용 근거
 

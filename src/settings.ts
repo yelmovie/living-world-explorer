@@ -1,3 +1,4 @@
+import {storageMessage} from './storage';
 import {active,makeAttempt,type State} from './model';
 import {el,button,paragraph,notice} from './ui';
 import {settingsContent as copy} from './settingsContent';
@@ -10,6 +11,7 @@ export type SettingsHooks = {
   go: (route: string) => void;
   resetLearner: () => void;
   showStory: () => void;
+  showIntro: () => void;
   showEnding?: () => void;
   printCertificate?: () => void;
   loadExample?: () => Promise<void>;
@@ -32,6 +34,7 @@ export function openSettings(state: State, hooks: SettingsHooks, showTeacherTool
   const title = el('h2','settings-title',copy.title);title.id = 'settings-title';
   const header = el('div','settings-header');header.append(title);
   const body = el('div','settings-scroll');
+  const storageStatus=paragraph('기록 상태: '+storageMessage,'storage-status');storageStatus.setAttribute('role','status');body.append(storageStatus);
   const prefs = state.settings as State['settings'] & {bgm?: boolean;bgmVolume?: number};
   const update = () => {hooks.save();syncAudio(prefs);hooks.render();};
   const volume = el('input');volume.type='range';volume.min='0';volume.max='100';volume.step='5';volume.value=String(prefs.bgmVolume ?? 35);volume.disabled=!prefs.bgm;volume.setAttribute('aria-label',copy.sound.volume);
@@ -46,7 +49,7 @@ export function openSettings(state: State, hooks: SettingsHooks, showTeacherTool
   body.append(switchRow(copy.sound.music,()=>!!prefs.bgm,on=>{prefs.bgm=on;volume.disabled=!on;}),switchRow(copy.sound.effects,()=>prefs.sound,on=>prefs.sound=on));
   const volumeRow=el('label','field settings-volume-row');const volumeLabel=el('div','settings-sound-row');volumeLabel.append(el('span','',copy.sound.volume),value);volumeRow.append(volumeLabel,volume);body.append(volumeRow);
 
-  body.append(button(copy.story,()=>{dialog.close();hooks.showStory();},'secondary settings-wide'));
+  body.append(button(copy.story,()=>{dialog.close();hooks.showStory();},'secondary settings-wide'),button(copy.intro,()=>{dialog.close();hooks.showIntro();},'secondary settings-wide'));
   const ending = hooks.showEnding && button(copy.ending,()=>{dialog.close();hooks.showEnding!();},'secondary settings-wide');
   const certificate = button(copy.certificate,()=>{dialog.close();hooks.printCertificate?.();},'secondary settings-wide');
   const lockNote = paragraph(copy.finishFirst,'muted settings-lock-note');

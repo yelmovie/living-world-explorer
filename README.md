@@ -13,7 +13,7 @@ npm test
 npm run build
 ```
 
-의존성이 이미 설치되어 있으면 `npm ci`는 생략한다. 프로젝트·빌드·임시 자료는 현재 D: 프로젝트에 보관한다.
+의존성이 이미 설치되어 있으면 `npm ci`는 생략한다. 프로젝트·빌드·임시 자료는 현재 프로젝트가 있는 외장 SSD에 보관한다.
 
 ## 브라우저 검증
 
@@ -35,12 +35,16 @@ node tests/storage-safety.mjs
 node tests/interaction-review.mjs
 node tests/map-residents.mjs
 node tests/streamlined-browser.mjs
+node tests/stage-layout.mjs
+node tests/core-figure.mjs
 npm run test:offline
 ```
 
-`test:browser`는 15개 경로를 6개 화면 크기로 검사한다. `test:flow`는 실제 학생 흐름으로 20개 탐구와 최종 보고·코어 복구를 완주하고 PNG 저장·새로고침 복원·시연 원본 분리를 확인한다. `interaction-review.mjs`와 `streamlined-browser.mjs`는 `test:flow` 이후 실행하며 직접 조작·오답 수정·중복 입력·시간 비교·회전·저장 복원을 확인한다. `storage-safety.mjs`는 잘못된 저장 구조와 다른 창의 동시 저장으로 원본이 덮이지 않는지 확인한다. `test:offline`은 운영 빌드를 직접 만들어 띄운 뒤 서버를 끄고도 새로고침·지도·탐구 그림이 열리는지 확인한다(서버 실행 불필요, 오프라인 동작은 [배포 안내](docs/DEPLOYMENT.md)). 결과와 스크린샷은 Git에서 제외한 `.tmp/`에 저장한다. Phaser 캔버스는 장면이 그려진 뒤 촬영한다. 다른 서버는 `APP_URL`, 브라우저 실행 파일은 `BROWSER_PATH` 환경변수로 지정할 수 있다. 기존 `.cache/browser-manual/chrome-win/chrome.exe`가 있으면 우선 사용한다.
+`test:browser`는 15개 경로를 6개 화면 크기로 검사한다. `test:flow`는 실제 학생 흐름으로 20개 탐구와 최종 보고·코어 복구를 완주하고 PNG 저장·새로고침 복원·시연 원본 분리를 확인한다. `interaction-review.mjs`와 `streamlined-browser.mjs`는 `test:flow` 이후 실행하며 직접 조작·오답 수정·중복 입력·시간 비교·회전·저장 복원을 확인한다. `storage-safety.mjs`는 잘못된 저장 구조와 다른 창의 동시 저장으로 원본이 덮이지 않는지 확인한다. `test:offline`은 운영 빌드를 직접 만들어 띄운 뒤 서버를 끄고도 새로고침·지도·탐구 그림이 열리는지 확인한다(서버 실행 불필요, 오프라인 동작은 [배포 안내](docs/DEPLOYMENT.md)). `stage-layout.mjs`는 탐구 20개를 전자칠판·태블릿·짧은 가로·폴드 화면에서 열고 관찰 크기, 입력 가림과 피드백 위치를 점검한다. 결과와 스크린샷은 Git에서 제외한 `.tmp/`에 저장한다. Phaser 캔버스는 장면이 그려진 뒤 촬영한다. 다른 서버는 `APP_URL`, 브라우저 실행 파일은 `BROWSER_PATH` 환경변수로 지정할 수 있다. 기존 `.cache/browser-manual/chrome-win/chrome.exe`가 있으면 우선 사용한다.
 
 ## 현재 기준
+
+- [2026-11-05 전체 스테이지 고도화·최종점검](docs/reviews/RELEASE-REVIEW-20261105.md): 탐구 화면 120개 검증, 짧은 가로 화면·조사 자료·사례 교체·코어 조작 개선.
 
 - [2026-10-28 스테이지 학습 흐름 개선](docs/reviews/STAGE-FLOW-20261028.md): 반복 카드 37→27장, 인라인 자료·직접 연결, 관찰 준비 단축, 핵심 작용 설계, 소개 문장 자동 생성. 20활동 터치 완주·117개 단위 검사·90화면 검증.
 
@@ -95,8 +99,8 @@ npm run test:offline
 - 전체 시안과 개별 화면은 레이아웃·분위기 참고용이다. 이미지에 포함된 버튼과 문구는 실제 UI가 아니다.
 - 배경 10장은 2D 장소 화면 후보로 활용할 수 있다.
 - 캐릭터 9장은 여러 자세·표정을 모은 설정화다. 개별 컷 분리와 투명도, 크기 통일 여부를 구현 전에 확인해야 한다.
-- 현재 실행에는 2.5D 픽셀 지도, 방향별 캐릭터 이미지, 생성 시설·표본 그림, 로컬 Kenney 효과음과 배경 음악 2곡(지도·탐구 메인테마, 결과 화면 엔딩테마, Suno Premier 플랜 생성)이 있다. 3D는 버섯·곰팡이·짚신벌레·효모 설명 모형 4개만 발견 카드·도감·탐구 도구의 "3D로 돌려 보기"에서 따로 연다(열 때만 불러옴). 독립 타일셋·연속 보행 스프라이트시트는 사용하지 않는다.
-- 배포 에셋은 `public/assets/` 아래 종류별 폴더(audio·characters·concepts·fonts·map·places·study·ui)에 둔다. 규칙과 2026-10-25 옛 이름 대조표는 [에셋 정리 규칙](assets/README.md), 생성 원본은 `assets/generated/`, 출처는 [CREDITS](assets/CREDITS.md)에 있다.
+- 현재 실행에는 2.5D 픽셀 지도, 방향별 캐릭터 이미지, 생성 시설·표본 그림, 로컬 Kenney 효과음과 배경 음악 2곡(지도·탐구 메인테마, 결과 화면 엔딩테마, Suno Premier 플랜 생성), 시작·복구 영상 2편(`public/assets/film/`, 재생 중에도 배경 음악 유지, `node scripts/render-film.mjs`로 다시 제작)이 있다. 3D는 버섯·곰팡이·짚신벌레·효모 설명 모형 4개만 발견 카드·도감·탐구 도구의 "3D로 돌려 보기"에서 따로 연다(열 때만 불러옴). 독립 타일셋·연속 보행 스프라이트시트는 사용하지 않는다.
+- 배포 에셋은 `public/assets/` 아래 종류별 폴더(audio·characters·concepts·film·fonts·map·places·study·ui)에 둔다. 규칙과 2026-10-25 옛 이름 대조표는 [에셋 정리 규칙](assets/README.md), 생성 원본은 `assets/generated/`, 출처는 [CREDITS](assets/CREDITS.md)에 있다.
 - 과학 관찰 이미지의 출처와 교과 검수 상태는 확인되지 않았다. 화면 시안 속 생물 이미지를 검증된 관찰 자료로 간주하지 않는다.
 
 ## 공유 대화 확인 상태

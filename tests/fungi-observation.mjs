@@ -1,14 +1,13 @@
 import assert from 'node:assert/strict';
 import {mkdir} from 'node:fs/promises';
-import {launchBrowser,button,navigate,teacherTools,waitSaved,setRange,waitForScene} from './browser.mjs';
+import {launchBrowser,button,navigate,teacherTools,waitSaved,setRange,waitForScene,linkCard,linkTarget} from './browser.mjs';
 const base=process.env.APP_URL||'http://127.0.0.1:4173',browser=await launchBrowser();
 const context=await browser.newContext({viewport:{width:1280,height:800},hasTouch:true});
 const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));const b=name=>button(page,name);
 await mkdir('.tmp/fungi-update',{recursive:true});
 const shot=name=>page.screenshot({path:'.tmp/fungi-update/'+name+'.png'});
 const ready=async()=>{await page.locator('.inquiry-loading').waitFor({state:'detached'});await waitForScene(page,'.expedition-canvas-host');};
-async function point(x,y){const box=await page.locator('.expedition-canvas-host canvas').boundingBox();return [box.x+x/960*box.width,box.y+y/540*box.height];}
-const tap=async(x,y)=>page.touchscreen.tap(...await point(x,y));
+const centre=async node=>{const box=await node.boundingBox();return [box.x+box.width/2,box.y+box.height/2];};
 try{
  await navigate(page,base,'fungi-field');
  const original=(await waitSaved(page)).learner;
@@ -31,13 +30,13 @@ try{
  assert.equal(await page.locator('.discovery-stamp img').getAttribute('src'),'assets/study/mold.webp');
  await shot('mold-discovery');await b('다음 발견으로').click();await ready();
  // Wrong link, correction, cancelled drag, and two connections to the same target.
- await tap(411,105);await tap(648,282);
+ await linkCard(page,'cap').tap();await linkTarget(page,'mold').tap();
  let saved=await waitSaved(page,s=>s.preview.inquiry.records['M1-4'].assignments.cap==='mold');assert.equal(saved.preview.inquiry.records['M1-4'].submitted,false);
  const cdp=await context.newCDPSession(page);
- async function drag(x,y,tx,ty){const [a,b]=await point(x,y),[c,d]=await point(tx,ty);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{id:1,x:a,y:b}]});for(let i=1;i<=8;i++)await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{id:1,x:a+(c-a)*i/8,y:b+(d-b)*i/8}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});}
- await drag(411,105,648,145);await waitSaved(page,s=>s.preview.inquiry.records['M1-4'].assignments.cap==='mushroom');
- await drag(411,105,535,515);assert.equal((await waitSaved(page)).preview.inquiry.records['M1-4'].assignments.cap,'mushroom');
- await tap(411,223);await tap(648,282);await tap(411,341);await tap(648,419);await drag(411,459,648,419);
+ async function drag(from,to){const [a,b]=await centre(from),[c,d]=Array.isArray(to)?to:await centre(to);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{id:1,x:a,y:b}]});for(let i=1;i<=8;i++)await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{id:1,x:a+(c-a)*i/8,y:b+(d-b)*i/8}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});}
+ await drag(linkCard(page,'cap'),linkTarget(page,'mushroom'));await waitSaved(page,s=>s.preview.inquiry.records['M1-4'].assignments.cap==='mushroom');
+ const [gapX,gapY]=await centre(linkCard(page,'cap'));await drag(linkCard(page,'cap'),[gapX+260,gapY+6]);assert.equal((await waitSaved(page)).preview.inquiry.records['M1-4'].assignments.cap,'mushroom');
+ await linkCard(page,'hypha').tap();await linkTarget(page,'mold').tap();await linkCard(page,'mycelium').tap();await linkTarget(page,'both').tap();await drag(linkCard(page,'spread'),linkTarget(page,'both'));
  saved=await waitSaved(page,s=>s.preview.inquiry.records['M1-4'].assignments.spread==='both');
  assert.deepEqual(saved.preview.inquiry.records['M1-4'].assignments,{cap:'mushroom',hypha:'mold',mycelium:'both',spread:'both'});
  await shot('matching-lines');

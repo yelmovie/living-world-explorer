@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
-import {launchBrowser,waitForScene,button,navigate,teacherTools,readSaved,waitSaved,setRange} from './browser.mjs';
+import {launchBrowser,waitForScene,button,navigate,teacherTools,readSaved,waitSaved,setRange,skipFilm,linkCard,linkTarget} from './browser.mjs';
 import {inquiryTasks,stageRoutes,names} from './curriculum.mjs';
 const base=process.env.APP_URL||'http://127.0.0.1:5176';
 const browser=await launchBrowser();const context=await browser.newContext({viewport:{width:1280,height:800},hasTouch:true,...(process.env.RESUME_FLOW?{storageState:'.tmp/learner20-state.json'}:{})});const page=await context.newPage();page.setDefaultTimeout(15000);
@@ -15,14 +15,13 @@ async function connectAll(task){
  for(const [i,item] of task.items.entries()){
   if(task.kind==='build'&&!item.target)continue;
   if(task.kind==='build'&&record?.assignments[item.target]===item.id)continue;
-  if(task.id==='M1-4')await touch(411,105+i*118);
-  else if(task.kind==='build')await touch(132+i*233,431);
-  else{const columns=task.items.length>3?2:1,rowH=Math.min(200,430/Math.ceil(task.items.length/columns));await touch(columns===2?165+(i%2)*280:245,65+(Math.floor(i/columns)+.5)*rowH);}
+  if(task.kind==='build')await touch(132+i*233,431);
+  else await linkCard(page,item.id).tap();
   await page.locator('.source-preview').waitFor({state:'visible'});
   assert.equal(await page.locator('dialog[open]').count(),0,'source selection must not interrupt the canvas');
   const targetIndex=task.targets.findIndex(t=>t.id===item.target);
-  if(task.id==='M1-4')await touch(648,145+targetIndex*137);
-  else await touch(task.kind==='build'?185+targetIndex*295:task.targets.length>2?827:805,task.kind==='build'?200:90+(targetIndex+.5)*(400/task.targets.length));
+  if(task.kind==='build')await touch(185+targetIndex*295,200);
+  else await linkTarget(page,item.target).tap();
  }
  if(task.kind==='build'){
   const latest=await waitSaved(page,s=>s.learner.inquiry.records[task.id].assignments.edge1==='linked'&&s.learner.inquiry.records[task.id].assignments.edge2==='linked');
@@ -35,8 +34,8 @@ async function completeTask(task,replay=false){
  if(['collect','connect','sort'].includes(task.kind))await connectAll(task);
  if(task.id==='M3-2'){await btn('크기 사다리에 세균 놓기').click();const ladder=page.locator('.ladder-dialog');await ladder.getByRole('button',{name:'여기에 놓기'}).first().click();assert.match(await ladder.locator('.ladder-feedback').innerText(),/더 아래/);await ladder.getByRole('button',{name:'여기에 놓기'}).last().click();assert.match(await ladder.locator('.ladder-feedback').innerText(),/약 200배/);await ladder.getByRole('button',{name:'닫기',exact:true}).click();}
  if(task.kind==='microscope'){if(await btn('돋보기로 크게 보기').count())await btn('돋보기로 크게 보기').click();
-  // M1-2: the microscope opens only after the gills are found on the 돋보기 picture (793×496 shown in 720×405 at 480,282).
-  if(task.organism==='mushroom'){const s=405/496,w=793*s;await tapCanvas(page,(480-w/2+.34*w)/960,(282-202.5+.33*405)/540);}else if(await btn('현미경으로 크게 보기').count())await btn('현미경으로 크게 보기').click();
+  // M1-2: the microscope opens only after the gills are found on the 돋보기 picture (793×496 shown in 880×448 at 480,282).
+  if(task.organism==='mushroom'){const s=448/496,w=793*s;await tapCanvas(page,(480-w/2+.34*w)/960,(282-224+.33*448)/540);}else if(await btn('현미경으로 크게 보기').count())await btn('현미경으로 크게 보기').click();
   await setRange(page,'초점',65);await btn('사진 촬영').click();await btn('표시 되돌리기').waitFor();
   // Actual canvas hit testing: spores on the 16:9 gill photo (750 wide), the two distinct mold regions, the spirogyra filament.
   const wide=task.organism==='mushroom',imageWidth=wide?750:435*793/496,imageHeight=wide?750*573/1024:435,top=270-imageHeight/2;
@@ -46,9 +45,10 @@ async function completeTask(task,replay=false){
  if(task.kind==='track'){await setRange(page,'관찰 시점',5);await page.getByRole('button',{name:/^B 고정/}).click();
   // Cilia close-up: 793×496 picture fitted in 760×410 at 480,282; tap the hair rim.
   await btn('현미경으로 움직임의 비밀 찾기').click();await btn('움직임 다시 보기').waitFor();const w=410*793/496;await tapCanvas(page,(480-w/2+.17*w)/960,(282-205+.501*410)/540);await page.getByText('현미경 · 몸 둘레 표시 1곳').waitFor();}
- if(task.kind==='timeline'){await setRange(page,'관찰 순서',3);await page.getByRole('button',{name:/^이후 고정/}).click();await mark(...(task.organism==='bread'?[.49,.4]:[.51,.54]));assert.ok((await page.locator('.process-note').innerText()).length>0);}
+ if(task.kind==='timeline'){await setRange(page,'관찰 순서',3);await page.getByRole('button',{name:/^이후 고정/}).click();await mark(...(task.organism==='bread'?[.49,.4]:[.51,.54]));
+  await page.getByText('관련 조사 자료 읽기',{exact:true}).click();assert.ok(await page.locator('.process-note').isVisible());await page.getByRole('dialog').getByRole('button',{name:'닫기',exact:true}).click();}
  if(task.kind==='build'){await connectAll(task);await btn(task.id==='M5-1'?'요구르트가 될 거예요':'사례처럼 이어질 것 같아요').click();await btn(task.id==='M5-1'?'발효기 켜기':'설계 가동').click();await btn('예상과 같아요').waitFor();await btn('예상과 같아요').click();}
- if(task.kind==='review'){await btn('모든 세균이 해로울 것 같아요').click();for(const item of task.items){await btn(item.label).click();await page.locator('.source-preview').waitFor({state:'visible'});}await btn('모든 세균이 해로운 것은 아니에요').click();await btn('새 자료: 요구르트 만들기 · 근거 선택').click();assert.match(await page.locator('.expedition-tools').innerText(),/수정/);}
+ if(task.kind==='review'){await btn('모든 세균이 해로울 것 같아요').click();for(const item of task.items){await btn(item.label).click();await page.locator('.source-preview').waitFor({state:'visible'});await btn('자료 확인했어요').click();}await btn('모든 세균이 해로운 것은 아니에요').click();await btn('요구르트 만들기').click();assert.match(await page.locator('.inquiry-status').innerText(),/수정/);}
  if(task.kind==='publish'){const dialog=await alternative();await dialog.getByRole('button',{name:'요구르트 소개하기',exact:true}).click();await dialog.getByRole('button',{name:'닫기',exact:true}).click();await btn('유산균의 작용').click();assert.ok((await page.getByLabel('내 소개 문장',{exact:true}).inputValue()).length>0,'selected case and action create an editable introduction');await page.getByLabel('내 소개 문장',{exact:true}).fill('특정 세균의 작용을 우유로 요구르트를 만드는 데 이용해요.');}
  await btn('발견 기록하기').click();await page.locator('.discovery-dialog').waitFor();
  await btn(task.order===4?'연구소 복구하기':'다음 발견으로').click();
@@ -68,7 +68,7 @@ async function completeTask(task,replay=false){
  checks.push(task.id);console.log(task.id+' completed');
 }
 try{
- await mkdir('.tmp/screens',{recursive:true});await navigate(page,base,'main');if(!process.env.RESUME_FLOW){await btn('탐험 시작').click();await btn('다음').click();await btn('다음').click();await btn('탐험 지도로').click();await waitForScene(page,'.map-host');assert.equal(await page.locator('.map-resident').count(),0);
+ await mkdir('.tmp/screens',{recursive:true});await navigate(page,base,'main');if(!process.env.RESUME_FLOW){await btn('탐험 시작').click();await skipFilm(page);await btn('다음').click();await btn('다음').click();await btn('탐험 지도로').click();await waitForScene(page,'.map-host');assert.equal(await page.locator('.map-resident').count(),0);
  await page.getByRole('button',{name:/^1\. 버섯숲 표본실/}).click();await btn('연구소 들어가기').click();
  // Empty submission must stay on the activity and explain what is missing.
  await btn('발견 기록하기').click();assert.ok((await page.locator('.inquiry-feedback').innerText()).length>0);assert.equal(await page.locator('.discovery-dialog').count(),0);
@@ -80,7 +80,7 @@ try{
  let saved=await waitSaved(page,s=>Object.keys(s.learner.evidence).length===5);assert.equal(Object.values(saved.learner.inquiry.records).filter(r=>r.completedAt).length,20);assert.equal(saved.learner.inquiry.rewards.length,10);
  await navigate(page,base,'final-report');for(let i=0;i<5;i++)await page.getByRole('button',{name:/^(이 )?기록 확인$/}).click();await btn('생활 사건 발표').click();assert.ok(await page.locator('dialog .album-tile').count()>=4);await page.getByRole('dialog').last().getByRole('button',{name:'닫기',exact:true}).click();await btn('발견을 코어에 연결').click();
  for(const name of names){await btn(name+' 포트').click();assert.equal(await page.locator('dialog[open]').count(),0,'core connects with one tap');}
- await btn('코어 가동').click();await btn('결과로 바로 가기').click();await page.locator('.screen-results').waitFor();await page.getByLabel('소개 카드 제목',{exact:true}).fill('내가 발견한 생물의 작용');await page.getByLabel('소개 문장',{exact:true}).fill('우리 생활에는 작은 생물의 도움이 있어요.');
+ await btn('코어 가동').click();await btn('결과로 바로 가기').click();await skipFilm(page);await page.locator('.screen-results').waitFor();await page.getByLabel('소개 카드 제목',{exact:true}).fill('내가 발견한 생물의 작용');await page.getByLabel('소개 문장',{exact:true}).fill('우리 생활에는 작은 생물의 도움이 있어요.');
  const dp=page.waitForEvent('download');await btn('내 카드 저장').click();const download=await dp;await download.saveAs('.tmp/result-card.png');saved=await waitSaved(page,s=>s.learner.cardTitle==='내가 발견한 생물의 작용');
  await page.reload();await page.locator('.screen-results').waitFor();assert.equal(await page.getByLabel('소개 카드 제목').inputValue(),'내가 발견한 생물의 작용');
  const learnerBefore=JSON.stringify((await readSaved(page)).learner);const settings=await teacherTools(page);await settings.getByRole('button',{name:'관리자 전체 해금',exact:true}).click();await settings.getByRole('button',{name:'시연용 예시 기록 불러오기',exact:true}).click();await page.locator('dialog[open]').waitFor({state:'detached'});await navigate(page,base,'solution-run');

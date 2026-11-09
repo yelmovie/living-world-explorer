@@ -2,7 +2,7 @@ import {describe,it,expect} from 'vitest';
 import {inquiryTasks,tasksFor} from '../src/curriculum';
 import {emptyRecord,recoverInquiry,type InquiryRecord,type InquiryTask} from '../src/inquiry-model';
 import {taskIssues} from '../src/inquiry-evaluate';
-import {habitEarned,canDoLines} from '../src/experience';
+import {habitEarned,canDoLines,revisedEvidenceCount} from '../src/experience';
 import {makeAttempt} from '../src/model';
 import {restoreAttempt} from '../src/storage';
 import {featureAt,observedKind} from '../src/observation';
@@ -42,3 +42,5 @@ describe('2026-10-25 교육 항목',()=>{
   const lines=canDoLines(r);expect(lines).toHaveLength(2);expect(lines.every(l=>l.startsWith('나는 이제 '))).toBe(true);
   const untouched=restoreAttempt(a);expect('canDo' in untouched).toBe(false);expect('canDoNote' in untouched).toBe(false);});
 });
+
+describe('근거 재확인 격려',()=>{it('완료되고 다시 검증된 수정만 인정한다',()=>{const a=makeAttempt(),t=task('M3-1'),r=solved(t);r.clean=false;r.tries=2;a.inquiry.records[t.id]=r;expect(revisedEvidenceCount(a,'M3')).toBe(1);r.completedAt='';expect(revisedEvidenceCount(a,'M3')).toBe(0);});});

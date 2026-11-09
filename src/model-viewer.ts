@@ -12,7 +12,7 @@ const center={x:.5,y:.5};
 export async function mountViewer(host:HTMLElement,src:string,reduced:boolean,start:[number,number]=[0,0],onZoom:(zoom:number)=>void=()=>{}):Promise<Viewer>{
  // Models are meshopt-compressed (scripts/pack-models.mjs); the decoder is bundled into this chunk, so no extra files to fetch.
  const gltf=await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(src);
- const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});renderer.setPixelRatio(Math.min(2,devicePixelRatio));renderer.outputColorSpace=THREE.SRGBColorSpace;
+ const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});renderer.setPixelRatio(Math.min(1.5,devicePixelRatio));renderer.outputColorSpace=THREE.SRGBColorSpace;
  const scene=new THREE.Scene();scene.add(new THREE.HemisphereLight(0xfffdf4,0x7d8a6a,1.3));const sun=new THREE.DirectionalLight(0xffffff,1.1);sun.position.set(2,3,4);scene.add(sun);
  const model=gltf.scene,box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),radius=size.length()/2;
  model.position.sub(box.getCenter(new THREE.Vector3()));
@@ -58,11 +58,12 @@ export async function mountViewer(host:HTMLElement,src:string,reduced:boolean,st
   }else{pivot.rotation.y+=(next.x-prev.x)*.01/zoom;pivot.rotation.x=clampX(pivot.rotation.x+(next.y-prev.y)*.01/zoom);}
  };
  canvas.onpointerup=canvas.onpointercancel=canvas.onlostpointercapture=e=>{pointers.delete(e.pointerId);};
- let raf=0;const frame=()=>{if(spin&&!document.hidden)pivot.rotation.y+=.004;renderer.render(scene,camera);raf=requestAnimationFrame(frame);};frame();
+ let raf=0,disposed=false;const frame=()=>{raf=0;if(disposed||document.hidden)return;if(spin)pivot.rotation.y+=.004;renderer.render(scene,camera);raf=requestAnimationFrame(frame);};
+ const visibility=()=>{cancelAnimationFrame(raf);raf=0;if(!document.hidden&&!disposed)frame();};document.addEventListener('visibilitychange',visibility);frame();
  return {
   rotate:(dx,dy)=>{spin=false;pivot.rotation.y+=dx;pivot.rotation.x=clampX(pivot.rotation.x+dy);},
   zoomBy:steps=>setZoom((steps>0?Math.floor(zoom*2+.00001)+1:Math.ceil(zoom*2-.00001)-1)/2),
   reset:()=>{pivot.rotation.set(start[0],start[1],0);setZoom(1);},
-  dispose:()=>{cancelAnimationFrame(raf);observer.disconnect();canvas.removeEventListener('wheel',wheel);pointers.clear();scene.traverse(o=>{const mesh=o as THREE.Mesh;mesh.geometry?.dispose();const materials=([] as THREE.Material[]).concat(mesh.material||[]);for(const m of materials){for(const value of Object.values(m))if(value instanceof THREE.Texture)value.dispose();m.dispose();}});renderer.dispose();canvas.remove();}
+  dispose:()=>{disposed=true;document.removeEventListener('visibilitychange',visibility);cancelAnimationFrame(raf);observer.disconnect();canvas.removeEventListener('wheel',wheel);pointers.clear();scene.traverse(o=>{const mesh=o as THREE.Mesh;mesh.geometry?.dispose();const materials=([] as THREE.Material[]).concat(mesh.material||[]);for(const m of materials){for(const value of Object.values(m))if(value instanceof THREE.Texture)value.dispose();m.dispose();}});renderer.dispose();canvas.remove();}
  };
 }

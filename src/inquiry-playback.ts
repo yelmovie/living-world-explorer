@@ -27,10 +27,10 @@ export function observationFrames(task:InquiryTask,r:InquiryRecord):ObservationF
         {caption:task.organism==='mold'?'조절 방법을 봤어요. 이제 내가 초점을 맞추고 촬영해요.':'선명해졌어요. 이제 내가 사진을 찍고 특징을 찾아요.',patch:{focus:65}},
       ];
     case 'sample':
-      if(r.sequence===3)return [];
+      if(!r.assignments.site||r.sequence===3)return [];
       return [
-        {caption:'물가와 물풀을 살펴봐요. 두 곳 모두 물을 뜰 수 있어요.',patch:{assignments:{},sequence:0}},
-        {caption:r.assignments.site?'내가 고른 장소에서 한 방울을 떠요.':'물풀 가까이에서 한 방울 뜨는 모습을 살펴봐요.',patch:{assignments:{site:r.assignments.site||'plant'},sequence:2}},
+        {caption:'내가 고른 장소에서 물 한 방울을 준비해요.',patch:{sequence:0}},
+        {caption:'스포이드에 물 한 방울을 담아요.',patch:{sequence:2}},
         {caption:'유리판 위에 물 한 방울을 놓으면 관찰할 준비가 돼요.',patch:{sequence:3}},
       ];
     case 'track':
