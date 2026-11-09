@@ -1,3 +1,4 @@
+import './concept-focus.css';
 import type {Stage} from './model';
 import {el,button,heading,paragraph,modal,reducedMotion} from './ui';
 
@@ -9,19 +10,29 @@ export const concepts:Record<Stage,{title:string;beats:string[]}>={
  M5:{title:'생물의 작용을 우리 생활에 이용해요',beats:['유산균이 우유 속 당을 이용하면서 우유가 걸쭉하고 새콤한 요구르트로 변해요.','효모는 균류예요. 그 작용으로 빵 반죽이 부풀어요.','재료 → 생물의 작용 → 결과를 연결해 설명해요.']}
 };
 
+export const conceptTerms:Record<Stage,string[]>={M1:['균류','균사','포자'],M2:['해캄','짚신벌레','섬모'],M3:['세균','모양','장소'],M4:['음식 변질','분해','상황'],M5:['유산균','효모','생물의 작용']};
+function focusWords(node:HTMLElement,text:string,terms:string[]){
+ node.replaceChildren();let remaining=text;
+ while(remaining){const matches=terms.map(term=>({term,index:remaining.indexOf(term)})).filter(m=>m.index>=0).sort((a,b)=>a.index-b.index||b.term.length-a.term.length);const match=matches[0];if(!match){node.append(remaining);break;}node.append(remaining.slice(0,match.index),el('mark','concept-keyword',match.term));remaining=remaining.slice(match.index+match.term.length);}
+}
 /** Replays are optional; closing a clip never changes or loses learning evidence. */
 export function showConcept(stage:Stage,settings:{sound:boolean;reduced:boolean},onContinue?:()=>void){
- const concept=concepts[stage];const body=el('div','concept-body');
+ const concept=concepts[stage];const body=el('div','concept-body');body.dataset.reduced=String(reducedMotion(settings.reduced));
  const video=el('video','concept-video');video.src=`assets/concepts/${stage}.mp4`;video.poster=`assets/concepts/${stage}.webp`;video.controls=true;video.playsInline=true;video.preload='metadata';video.muted=!settings.sound;
  video.setAttribute('aria-label',`${concept.title} · 12초 개념 영상`);
  const track=el('track');track.kind='captions';track.srclang='ko';track.label='한국어';track.src=`assets/concepts/${stage}.vtt`;video.append(track);
  const caption=paragraph(concept.beats[0],'concept-caption');caption.setAttribute('aria-live','off');
- video.ontimeupdate=()=>{caption.textContent=concept.beats[Math.min(2,Math.floor(video.currentTime/4))];};
+ const focus=el('div','concept-focus');focus.append(el('small','','기억할 낱말'),...conceptTerms[stage].map(term=>el('strong','',term)));
+ const chapters=el('nav','concept-chapters');chapters.setAttribute('aria-label','개념 장면 선택');
+ const labels=['관찰하기','특징 연결','기억하기'];
+ const steps=concept.beats.map((text,index)=>{const b=button(`${index+1} · ${labels[index]}`,()=>{video.currentTime=index*4;update();});b.setAttribute('aria-label',`${index+1}번째 장면: ${text}`);return b;});chapters.append(...steps);
+ function update(){const cue=Math.min(2,Math.floor(video.currentTime/4));focusWords(caption,concept.beats[cue],conceptTerms[stage]);steps.forEach((b,i)=>i===cue?b.setAttribute('aria-current','step'):b.removeAttribute('aria-current'));}
+ video.ontimeupdate=update;update();
  const fallback=el('div','concept-fallback');fallback.hidden=true;fallback.append(heading('핵심 개념을 그림으로 살펴봐요'),...concept.beats.map(text=>paragraph(text)));
- video.onerror=()=>{video.hidden=true;fallback.hidden=false;caption.hidden=true;};
+ video.onerror=()=>{video.hidden=true;fallback.hidden=false;caption.hidden=true;steps.forEach(b=>b.disabled=true);};
  const actions=el('div','concept-actions');
  actions.append(button('처음부터 보기',()=>{video.currentTime=0;void video.play().catch(()=>{});}),button(onContinue?'복구 보상 받기':'탐구로 돌아가기',()=>dialog.close(),'primary'));
- body.append(video,fallback,caption,actions);
+ body.append(video,fallback,focus,chapters,caption,actions);
  const dialog=modal(concept.title,[body],{showClose:false});dialog.classList.add('concept-dialog');
  const hidden=()=>{if(document.hidden)video.pause();};document.addEventListener('visibilitychange',hidden);
  dialog.addEventListener('close',()=>{video.pause();video.removeAttribute('src');video.load();document.removeEventListener('visibilitychange',hidden);onContinue?.();},{once:true});
