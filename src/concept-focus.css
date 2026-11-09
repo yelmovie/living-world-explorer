@@ -1,6 +1,6 @@
 /* Concept recall: quiet emphasis, not perpetual decorative movement. */
 .concept-focus{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;padding:10px 14px;color:#214d43;background:#f5f8e9;border:1px solid #c6d9c3;border-radius:14px;font-size:clamp(16px,1.45vw,22px);line-height:1.45}
-.concept-focus>small{font-size:.8em;font-weight:800;letter-spacing:.04em;color:#536e61}
+.concept-focus>small{font-size:max(16px,.8em);font-weight:800;letter-spacing:.04em;color:#536e61}
 .concept-focus strong{padding:3px 10px;background:#fff5b8;border:1px solid #d5bc51;border-radius:9px;color:#3d471e}
 .concept-keyword{background:#fff1a0;color:#273e2c;border-radius:5px;padding:0 .16em;font-weight:900;box-decoration-break:clone;-webkit-box-decoration-break:clone;text-decoration:underline;text-decoration-color:#a88a2c;text-underline-offset:4px}
 .concept-chapters{display:flex;gap:7px;padding:6px 0;list-style:none;margin:0}
@@ -21,9 +21,9 @@
  .concept-dialog .concept-body{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);grid-auto-rows:auto;column-gap:12px;row-gap:6px;align-items:start}
  .concept-dialog .concept-video,.concept-dialog .concept-fallback{grid-column:1;grid-row:1/span 4;width:100%;max-height:calc(100dvh - 90px)}
  .concept-dialog .concept-focus,.concept-dialog .concept-chapters,.concept-dialog .concept-caption,.concept-dialog .concept-actions{grid-column:2}
- .concept-dialog .concept-focus{font-size:15px;padding:4px 8px}
+ .concept-dialog .concept-focus{font-size:16px;padding:4px 8px}
  .concept-dialog .concept-chapters{padding:0;gap:4px}
- .concept-dialog .concept-chapters button{font-size:14px;padding:4px 6px}
+ .concept-dialog .concept-chapters button{font-size:16px;padding:4px 6px}
  .concept-dialog .concept-caption{font-size:16px;padding:4px 8px}
  .concept-dialog .concept-actions{flex-wrap:wrap;gap:6px}
  .concept-dialog .concept-actions>.button{min-height:48px;flex:1 1 auto;font-size:16px;padding-inline:10px}
