@@ -291,7 +291,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
   view.showFrame(frames[index]);host.inert=true;tools.inert=true;links.inert=true;next.disabled=true;
   feedback.textContent='';status.classList.add('demonstrating');counter.textContent=`자동재생 · ${index+1} / ${frames.length}`;
   showMeter(index+1,frames.length);action.textContent=frames[index].caption;
-  demoButton!.textContent='멈추기';demoButton!.setAttribute('aria-pressed','true');
+  demoButton!.textContent='직접 해보기';demoButton!.setAttribute('aria-pressed','true');
   scheduleFrame();
  }
  function scheduleFrame(){clearTimeout(timer);timer=setTimeout(()=>playFrame(demoStep+1),2600/playbackRate);}
