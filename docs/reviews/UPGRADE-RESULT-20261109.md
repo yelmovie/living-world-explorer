@@ -2,6 +2,18 @@
 
 브랜치 `claude/upgrade-20261109`(시작 `5de842b` = 운영 배포 커밋). 푸시·배포는 하지 않았다. 계획: [UPGRADE-PLAN-20261109](UPGRADE-PLAN-20261109.md), 점수: [SCORE-20261109](SCORE-20261109.md) — 최종스킬 71 → 84/100, 디자인스킬 124 → 128/130.
 
+## 운영본 병합 (메인 세션 요청)
+
+운영 중인 living-world-explorer(배포 a67eb4e4)는 main이 아니라 `origin/feat/story-films-and-link-board`의 `3717d43`(`8882e7e` 개념 설명 다듬기 + `e81d055` 테마 효과음·NPC 내레이션 + `0315dec` 지도 손 이동·전체 보기 + main 병합)에서 올라가 있었다. 이 브랜치를 그대로 배포하면 그 개선이 빠지므로 `3717d43`을 병합했다.
+
+- 그대로 들어온 것: `src/audio.ts`(테마 효과음·NPC 내레이션), `src/main.ts`(지도 손 모드·전체 보기), `src/experience.ts`, `src/concept-focus.css`, `tests/npc-audio.test.ts`, `docs/AUDIO-PROVENANCE-20261109.md`, `docs/CONCEPT-EXPLAINER-20261109.md`.
+- 충돌 `src/styles.css`: 두 쪽 추가분(safe-area·터치 hover / 지도 보기 도구)을 모두 유지.
+- 충돌 `src/concepts.ts`: 새 자막 체계(`concept-captions.json` 단일 원본, 18초, VTT, 움직임 줄이기 = 결론 포스터 + 결론 자막)를 유지하고, `3717d43`의 기억할 낱말(`conceptTerms`, `focusWords` 강조)과 장면 선택 버튼(관찰하기/특징 연결/기억하기)을 살렸다. 장면 버튼은 예전 4초 간격 대신 새 영상의 장면 경계(자막 cue 1·2·3 = 3.6 s 탐구 재현, 9.6 s 확대, 13.4 s 결론)로 이동한다. cue 0(질문)은 "처음부터 보기"가 맡는다. 움직임 줄이기에서는 "기억하기"가 선택된 상태로 결론 문장을 보여 준다.
+- 낱말과 자막 맞춤: M3 `장소` → `사는 곳`(자막에 쓰인 말), M4 자막 2를 "…곰팡이가 피어 음식 변질이 일어나고, 낙엽은 조금씩 분해돼요."로 바꿔 `음식 변질`이 실제로 나오게 했다(영상 화면은 그대로, VTT·manifest만 `node films/publish-films.mjs --captions-only`로 재생성).
+- 장면 버튼 높이 44 → 48px. 짧은 가로 화면(높이 520px 이하)은 영상 왼쪽·낱말/장면/자막/버튼 오른쪽 두 칸 배치 — 병합 직후 915×412에서 영상이 약 55px로 줄던 문제를 고쳐 약 270px 확보.
+- 테스트 추가: 장면 버튼 시각 = 자막 cue 시작·순서, 기억할 낱말이 자막 문장에 실제로 등장(5편 × 2).
+- 병합 후 재검증: `npm test` 153/153, `npm run build` 통과, `test:browser` PASS 90화면·오류 0, `test:flow` FULL FLOW PASS, `stage-layout` 180화면 PASS, 앱 안 개념영상 6크기×5편 재생 30/30 + 장면 버튼 이동(시각·aria-current·48px) 30/30·오류 0, 움직임 줄이기에서 자동재생 없음 + 결론 자막. `test:offline`은 병합 후 다시 돌리지 않았다.
+
 ## 바꾼 것
 
 | 커밋 | 내용 | 파일 |
@@ -29,7 +41,7 @@
 
 | 명령 | 결과 |
 |---|---|
-| `npm test` | 15파일 142/142 통과 |
+| `npm test` | 15파일 142/142 통과 (병합 후 153/153) |
 | `npm run build` | 통과(tsc + vite) |
 | `npm run test:browser` (`APP_URL=http://127.0.0.1:5114`, 시스템 Chrome) | PASS · 90화면 · 페이지 오류 0 · 실패 요청 0 · 첫 화면 187ms/642kB(로컬) |
 | `npm run test:flow` | FULL FLOW PASS: 20 tasks; report; core; PNG; reload; preview isolation |

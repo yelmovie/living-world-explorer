@@ -15,3 +15,9 @@ describe('NPC 인사 재생 수명',()=>{
  it('소리를 끄면 재생 중인 인사를 멈춘다',async()=>{const a=await import('../src/audio');a.syncAudio({sound:true});a.playNarration('M3');a.syncAudio({sound:false});expect(clips[0].paused).toBe(true);});
  it('탭 숨김은 중단하고 다시 보여도 자동 재생하지 않는다',async()=>{const a=await import('../src/audio');a.syncAudio({sound:true});a.playNarration('M4');Object.defineProperty(document,'hidden',{value:true,writable:true});listeners.get('visibilitychange')!();expect(clips[0].paused).toBe(true);Object.defineProperty(document,'hidden',{value:false});listeners.get('visibilitychange')!();expect(clips[0].play).toHaveBeenCalledTimes(1);});
 });
+
+it('muting releases the clip source and event handlers',async()=>{
+ const a=await import('../src/audio');a.syncAudio({sound:true});a.playNarration('M1');
+ const clip=clips[0] as typeof clips[number]&{onended:unknown;onerror:unknown};
+ a.syncAudio({sound:false});expect(clip.src).toBe('');expect(clip.onended).toBeNull();expect(clip.onerror).toBeNull();
+});

@@ -1898,12 +1898,5 @@ button.step{min-width:48px;min-height:48px}
  .button:hover:not(:disabled),.toolbar .icon-button:hover:not(:disabled),.hero-speech.left:hover:not(:disabled){transform:none}
  .map-node:hover:not(:disabled){transform:translate(-50%,-50%)}
 }
-/* Short landscape phones/folds: the concept caption is now visible text, so give the clip back the height it takes. */
-@media(max-height:520px) and (orientation:landscape){
- .concept-dialog{padding:10px 16px;gap:6px}
- .concept-dialog>h2{font-size:20px}
- .concept-body{gap:6px}
- .concept-video{max-height:calc(100dvh - 150px)}
- .concept-caption{font-size:16px;min-height:0}
- .concept-actions>.button{min-height:48px}
-}
+
+.map-view-tools{position:absolute;left:16px;top:88px;z-index:22;display:flex;gap:8px}.map-view-icon{width:48px;min-width:48px;height:48px;min-height:48px;padding:10px;display:grid;place-items:center;background:#fff9e9;border:2px solid #527456;border-radius:14px;box-shadow:0 3px 0 #38503c}.map-view-icon[aria-pressed="true"]{background:#ffdc87}.map-view-icon:focus-visible,.map-camera:focus-visible{outline:3px solid #155eaa;outline-offset:3px}.map-camera.hand-on{cursor:grab}.map-camera.grabbing{cursor:grabbing}.map-camera.hand-on .map-landscape{pointer-events:none}
