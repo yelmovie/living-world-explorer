@@ -1892,3 +1892,5 @@ button.step{min-width:48px;min-height:48px}
  .expedition-shell.link-task .expedition-footer .activity-stepper>.button{width:48px;min-width:48px;height:48px;min-height:48px;flex-shrink:0}
  .expedition-shell.link-task .expedition-footer .activity-stepper{gap:6px;padding-inline:6px}
 }
+
+.map-view-tools{position:absolute;left:16px;top:88px;z-index:22;display:flex;gap:8px}.map-view-icon{width:48px;min-width:48px;height:48px;min-height:48px;padding:10px;display:grid;place-items:center;background:#fff9e9;border:2px solid #527456;border-radius:14px;box-shadow:0 3px 0 #38503c}.map-view-icon[aria-pressed="true"]{background:#ffdc87}.map-view-icon:focus-visible,.map-camera:focus-visible{outline:3px solid #155eaa;outline-offset:3px}.map-camera.hand-on{cursor:grab}.map-camera.grabbing{cursor:grabbing}.map-camera.hand-on .map-landscape{pointer-events:none}
