@@ -14,7 +14,7 @@ describe('이미지와 표시 판정의 일치',()=>{
  it.each([[.5,.24],[.34,.33],[.67,.42],[.34,.53]])('실제 주름 (%s,%s)을 모두 인정한다',(x,y)=>expect(featureAt('mushroom',{x,y})).toBe('gills'));
  it.each([[.5,.1],[.5,.7],[.2,.35],[.79,.4]])('갓 표면·자루·인접 배경 (%s,%s)은 거절한다',(x,y)=>expect(featureAt('mushroom',{x,y})).toBeUndefined());
  it('곰팡이는 실제 둥근 부분과 실을 구분하고 빈 배경을 거절한다',()=>{expect(featureAt('mold',{x:.38,y:.17})).toBe('round');expect(featureAt('mold',{x:.36,y:.5})).toBe('thread');expect(featureAt('mold',{x:.7,y:.1})).toBeUndefined();});
- it('곰팡이의 서로 다른 실제 특징은 머리 두 곳이나 머리·실 조합 모두 인정한다',()=>{const r=emptyRecord();r.focus=65;r.capture=true;r.marks=[{x:.38,y:.17},{x:.665,y:.3}];expect(taskIssues(task('M1-3'),r)).toEqual([]);r.marks=[{x:.38,y:.17},{x:.381,y:.171}];expect(taskIssues(task('M1-3'),r).length).toBeGreaterThan(0);});
+ it('곰팡이 관찰은 선명한 관찰 사진으로 인정하고, 사진이 없으면 인정하지 않는다',()=>{const r=emptyRecord();r.focus=65;r.capture=true;expect(taskIssues(task('M1-3'),r)).toEqual([]);r.capture=false;expect(taskIssues(task('M1-3'),r).length).toBeGreaterThan(0);});
  it('해캄은 녹색 실과 그 사이의 배경을 구분한다',()=>{expect(featureAt('spirogyra',{x:.45,y:.5})).toBe('filament');expect(featureAt('spirogyra',{x:.9,y:.1})).toBeUndefined();});
  it('깨끗한 빵 부분은 모든 전후 조합에서 거절한다',()=>{for(let a=0;a<3;a++)for(let b=a+1;b<4;b++)expect(changedAt('bread',[a,b],{x:.35,y:.48})).toBe(false);});
  it('빵과 낙엽의 서로 다른 실제 변화 영역은 인정한다',()=>{expect(changedAt('bread',[0,3],{x:.49,y:.4})).toBe(true);expect(changedAt('bread',[0,3],{x:.62,y:.66})).toBe(true);expect(changedAt('leaf',[0,3],{x:.51,y:.54})).toBe(true);expect(changedAt('leaf',[0,3],{x:.5,y:.3})).toBe(true);});

@@ -27,8 +27,8 @@ describe('2026-10-25 교육 항목',()=>{
   const m32=solved(task('M3-2'));for(const id of ['round','rod','spiral','green-thread'])delete m32.assignments[id];m32.assignments.forms='shape';delete m32.assignments.ladder;m32.opened=['small','places','forms'];
   const m14=solved(task('M1-4'));delete m14.assignments.mycelium;delete m14.assignments.spread;m14.opened=['cap','hypha','env1','env2'];
   for(const [id,r] of [['M1-2',m12],['M2-3',m23],['M3-2',m32],['M1-4',m14]] as const){const restored=recoverInquiry({version:1,records:{[id]:(()=>{const raw={...r} as Partial<InquiryRecord>;delete raw.v;return raw;})()},current:{},rewards:[]}).records[id];expect(restored.v).toBeUndefined();expect(taskIssues(task(id),restored)).toEqual([]);
-   // The same work started under the new rules is not enough.
-   expect(taskIssues(task(id),{...restored,v:2}).length).toBeGreaterThan(0);}
+   // The same work started under the new rules is not enough. M1-2 now needs only a sharp observation photo (no marks), so it is the same under both rules.
+   if(id!=='M1-2')expect(taskIssues(task(id),{...restored,v:2}).length).toBeGreaterThan(0);}
   expect(legacy(emptyRecord()).v).toBeUndefined();expect(emptyRecord().v).toBe(2);
  });
  it('포자는 주름 가장자리의 알갱이, 섬모는 짚신벌레 몸 둘레에서만 인정한다',()=>{

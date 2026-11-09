@@ -7,10 +7,9 @@ import {designCorrect} from '../src/inquiry-runs';
 import {finishObservation} from '../src/inquiry-playback';
 const task=(id:string)=>inquiryTasks.find(t=>t.id===id)!;
 describe('준비를 줄여도 남겨야 하는 학생의 판단',()=>{
- it('곰팡이는 현미경을 흐리게 준비하고 시연 후에도 학생이 초점을 맞춘다',()=>{
+ it('곰팡이는 현미경을 흐리게 준비하고, 시연이 초점을 맞춰도 관찰 사진은 학생이 남긴다',()=>{
   const t=task('M1-3'),r=prepareInquiry(t);expect(r.level).toBe(2);expect(Math.abs(r.focus-65)).toBeGreaterThan(12);
-  const focus=r.focus;finishObservation(t,r);expect(r.focus).toBe(focus);expect(r.capture).toBe(false);
-  r.focus=60;finishObservation(t,r);expect(r.focus).toBe(60);
+  finishObservation(t,r);expect(r.focus).toBe(65);expect(r.capture).toBe(false);expect(taskIssues(t,r).length).toBeGreaterThan(0);
   r.capture=true;r.marks=[{x:.38,y:.17}];const saved=structuredClone(r);finishObservation(t,r);expect(r).toEqual(saved);
  });
  it('어떤 활동도 준비만으로 완료되지는 않는다',()=>{for(const t of inquiryTasks)expect(taskIssues(t,prepareInquiry(t)).length,t.id).toBeGreaterThan(0);});

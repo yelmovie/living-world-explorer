@@ -15,7 +15,7 @@ export async function waitForScene(page,selector){
  if(await page.locator(selector).evaluate(host=>getComputedStyle(host).display==='none'))return;
  await page.waitForFunction(selector=>{
   const host=document.querySelector(selector);
-  if(host?.querySelector('.flat-lab,.link-board'))return true;
+  if(host?.querySelector('.flat-lab,.link-board,.simple-observation,.fungi-sort'))return true;
   const canvas=host?.querySelector('canvas');
   const context=canvas?.getContext('2d');
   if(!context||!canvas.width||!canvas.height)return false;

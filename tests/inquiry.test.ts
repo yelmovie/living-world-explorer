@@ -15,8 +15,8 @@ describe('스무 가지 탐구의 학습 근거',()=>{
  for(const t of inquiryTasks){it(`${t.id}: 유효한 관찰·연결·설명만 완료로 인정한다`,()=>{expect(taskIssues(t,emptyRecord()).length).toBeGreaterThan(0);expect(taskIssues(t,valid(t.id))).toEqual([]);});}
  it('읽지 않은 정답 연결을 근거로 인정하지 않는다',()=>{const r=valid('M1-1');r.opened=[];expect(taskIssues(inquiryTasks[0],r).length).toBeGreaterThan(0);});
  it('B만 고정한 sparse 배열은 A/B 비교가 아니다',()=>{for(const id of ['M2-3','M4-1']){const r=valid(id);r.pins=[];r.pins[1]=3;expect(taskIssues(inquiryTasks.find(t=>t.id===id)!,r).length).toBeGreaterThan(0);}});
- it('흐린 촬영과 표본 밖의 표시는 거부한다',()=>{const t=inquiryTasks.find(t=>t.id==='M1-2')!,r=valid(t.id);r.focus=10;expect(taskIssues(t,r).length).toBeGreaterThan(0);r.focus=65;r.marks=[{x:.01,y:.01}];expect(taskIssues(t,r).length).toBeGreaterThan(0);});
- it('한 곳을 반복 표시해 곰팡이 두 특징으로 세지 않는다',()=>{const t=inquiryTasks.find(t=>t.id==='M1-3')!,r=valid(t.id);r.marks=[{x:.32,y:.3},{x:.33,y:.31}];expect(taskIssues(t,r).length).toBeGreaterThan(0);});
+ it('흐린 촬영은 거부한다',()=>{const t=inquiryTasks.find(t=>t.id==='M1-2')!,r=valid(t.id);r.focus=10;expect(taskIssues(t,r).length).toBeGreaterThan(0);r.focus=65;expect(taskIssues(t,r)).toEqual([]);});
+ it('관찰 사진을 남기지 않은 곰팡이 관찰은 완료가 아니다',()=>{const t=inquiryTasks.find(t=>t.id==='M1-3')!,r=valid(t.id);r.capture=false;expect(taskIssues(t,r).length).toBeGreaterThan(0);});
  it('같은 장면과 뒤집은 전후는 시간 비교가 아니다',()=>{const t=inquiryTasks.find(t=>t.id==='M4-1')!,r=valid(t.id);r.pins=[3,0];expect(taskIssues(t,r).length).toBeGreaterThan(0);r.pins=[2,2];expect(taskIssues(t,r).length).toBeGreaterThan(0);});
  it('실행 성공 뒤 설계를 바꾸면 새 예상과 실행이 필요하다',()=>{const t=inquiryTasks.find(t=>t.id==='M5-1')!,r=valid(t.id);invalidateRun(r);expect(taskIssues(t,r).length).toBeGreaterThan(0);});
  it('예상이 틀려도 실제 결과를 근거로 비교하면 통과한다',()=>{const t=inquiryTasks.find(t=>t.id==='M5-1')!,r=valid(t.id);r.prediction='stopped';r.runs[0].prediction='stopped';r.runs[0].reflection=r.reflection='differs';expect(taskIssues(t,r)).toEqual([]);});

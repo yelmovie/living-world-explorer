@@ -6,7 +6,7 @@
 #app>.expedition-shell.link-task .expedition-footer{grid-area:4/1}
 #app>.expedition-shell.link-task .inquiry-status{flex:1;min-width:0;padding:0 0 8px}
 #app>.expedition-shell.link-task .expedition-panel-body{flex:1;min-width:0}
-#app>.expedition-shell.link-task .expedition-panel-body:has(.source-preview[hidden]){display:none}
+#app>.expedition-shell.link-task .expedition-panel-body:has(.source-preview[hidden]):not(:has(.expedition-tools>*)){display:none}
 #app>.expedition-shell.link-task .source-preview{padding:0;font-size:clamp(16px,1.5vw,22px)}
 #app>.expedition-shell.link-task .next-instruction{font-size:clamp(16px,1.6vw,22px)}
 #app>.expedition-shell.link-task .link-board{height:100%;padding:4px 16px 8px;column-gap:clamp(72px,10vw,180px);overflow:auto}

@@ -33,13 +33,10 @@ async function completeTask(task,replay=false){
  await page.getByRole('heading',{name:task.title,exact:true}).waitFor();await waitForScene(page,'.expedition-canvas-host');
  if(['collect','connect','sort'].includes(task.kind))await connectAll(task);
  if(task.id==='M3-2'){await btn('크기 사다리에 세균 놓기').click();const ladder=page.locator('.ladder-dialog');await ladder.getByRole('button',{name:'여기에 놓기'}).first().click();assert.match(await ladder.locator('.ladder-feedback').innerText(),/더 아래/);await ladder.getByRole('button',{name:'여기에 놓기'}).last().click();assert.match(await ladder.locator('.ladder-feedback').innerText(),/약 200배/);await ladder.getByRole('button',{name:'닫기',exact:true}).click();}
- if(task.kind==='microscope'){if(await btn('돋보기로 크게 보기').count())await btn('돋보기로 크게 보기').click();
-  // M1-2: the microscope opens only after the gills are found on the 돋보기 picture (793×496 shown in 880×448 at 480,282).
-  if(task.organism==='mushroom'){const s=448/496,w=793*s;await tapCanvas(page,(480-w/2+.34*w)/960,(282-224+.33*448)/540);}else if(await btn('현미경으로 크게 보기').count())await btn('현미경으로 크게 보기').click();
-  await setRange(page,'초점',65);await btn('사진 촬영').click();await btn('표시 되돌리기').waitFor();
-  // Actual canvas hit testing: spores on the 16:9 gill photo (750 wide), the two distinct mold regions, the spirogyra filament.
-  const wide=task.organism==='mushroom',imageWidth=wide?750:435*793/496,imageHeight=wide?750*573/1024:435,top=270-imageHeight/2;
-  for(const [x,y] of task.organism==='mold'?[[.38,.17],[.36,.5]]:wide?[[.506,.201]]:[[.4,.3]])await tapCanvas(page,(480-imageWidth/2+x*imageWidth)/960,(top+y*imageHeight)/540);
+ if(task.kind==='microscope'){
+  // Simplified microscope (2026-11): 돋보기 → 현미경 button, focus, then one observation photo. No hidden gate or feature marks.
+  if(await btn('현미경으로 관찰하기').count())await btn('현미경으로 관찰하기').click();
+  await setRange(page,'초점',65);await btn('관찰 사진 남기기').click();await btn('다시 관찰하기').waitFor();
  }
  if(task.kind==='sample'){await btn('물풀 가까이').click();for(const label of ['한 방울 채집','한 방울 옮기기'])await btn(label).click();}
  if(task.kind==='track'){await setRange(page,'관찰 시점',5);await page.getByRole('button',{name:/^B 고정/}).click();
