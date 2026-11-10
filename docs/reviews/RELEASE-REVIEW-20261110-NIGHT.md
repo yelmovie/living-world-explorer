@@ -41,10 +41,20 @@ Mac 원본652abf9 사본에서 시작했으나 실제 운영은61d6ee3였다. �
 
 ## 배포
 
-이 문서 작성 시점 신규 공개 전. 성공과 운영 파일 대조는 후속 기록으로 추가한다. 이전 운영 롤백 기준61d6ee3 / Pages e72c935e.
+아래 공개 검증 완료. 이전 운영 롤백 기준61d6ee3 / Pages e72c935e.
 
 ## 검수 기준과 한계
 
 `edu-design`, `edu-final-check`(A~G, 점수 규칙), 공통 교육 게임 설계, 태블릿 3D 설계, 프로젝트 `skill/design2`를 기준으로 했다. 기존 RELEASE/SCORE 판정 중 바뀌지 않은 항목은 출처를 명시해 재사용했다. 모든 항목을 새로 실기 검사한 것처럼 표현하지 않는다. FAIL −3, WARNING/NOT TESTED −1이며 점수와 배포 판정은 별개다.
 
 검사는 Mac mini의 Chrome 헤드리스와 화면·터치 에뮬레이션이다. 실제 iPad Safari, 학교 저사양 태블릿의 FPS·메모리, 스피커 청취, 40분 학급 수업과 학생의 독립적 이해는 확인하지 못했다. 자동 정답 경로 통과가 학습 효과 실증은 아니다. 기존 그림·음악의 최종 배포 권리 및 교사 검수 확인은 남는다. 사용자 요청 범위 밖인 시트 1~6은 수정하지 않았다. 새 글꼴을 추가하거나 교체하지 않았다.
+
+## 운영 공개 검증 완료 · 2026-11-10
+
+- 코드 커밋`90b2f2f7fc710b5d366c84250015428dd4f81e5b`, 원격main fast-forward push 완료.
+- Cloudflare production 배포`d322ef7e-5e2a-44ad-8ba0-762ad13eb7cb` 성공. 운영:https://living-world-explorer.pages.dev/ (고정 배포:https://d322ef7e.living-world-explorer.pages.dev/).
+- 운영 공개파일 **172/172 SHA-256 일치**, 오류0. [해시검증](evidence/20261110-night/production-files.json).
+- 실제 운영90화면·새 악당/fallback·터치/키보드·시연격리,20탐구→보고→코어→PNG→재접속→시연 전체흐름 PASS.
+- 압축한 인트로/엔딩을 운영에서 실제 디코드·재생:readyState4,1280×720,24.8/26.4초,오류0. [영상검증](evidence/20261110-night/story-playback.json). 소리를 직접 청취했다는 의미는 아니다.
+- G11 smoke 감점1 해소로 최종 **86/100(8.6/10)**. 실제 기기·교사·기존권리 조건은 남는다.
+- 후속 문서 커밋은 실행 빌드를 바꾸지 않는다.

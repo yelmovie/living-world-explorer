@@ -1,0 +1,22 @@
+{
+  "base": "https://living-world-explorer.pages.dev",
+  "checks": [
+    {
+      "name": "intro",
+      "readyState": 4,
+      "duration": 24.8,
+      "width": 1280,
+      "height": 720,
+      "played": 0.309486
+    },
+    {
+      "name": "final",
+      "readyState": 4,
+      "duration": 26.4,
+      "width": 1280,
+      "height": 720,
+      "played": 0.30964
+    }
+  ],
+  "errors": []
+}
