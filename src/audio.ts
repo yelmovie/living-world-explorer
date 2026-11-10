@@ -1,3 +1,4 @@
+import {narrationRecordings} from './narration-recordings';
 /** Project BGM (main loop, ending loop) + locally hosted CC0 interaction sounds. */
 export type AudioSettings = {sound: boolean; bgm?: boolean; bgmVolume?: number};
 export type EffectName = 'click'|'success'|'retry'|'snap'|'capture'|'water'|'hint'|'run'|'page-turn'|'pipette-drop'|'core-wake';
@@ -22,16 +23,16 @@ const samples=new Map<EffectName,AudioBuffer>();
 let samplesRequested=false;let lastEffect=0;
 let observer: MutationObserver | undefined;
 let narration:HTMLAudioElement|undefined;
-/** Keep shipped greetings until generated character lines and their provenance are available. */
+/** Every playable ID is backed by a shipped, validated character recording. */
 function clearNarration(){const previous=narration;narration=undefined;if(previous){previous.onended=previous.onerror=null;previous.pause();previous.removeAttribute('src');previous.load();}}
 export function stopNarration(){clearNarration();sync();}
 export function playNarration(id:string):boolean{
  if(!settings.sound||document.hidden||explicitQuiet)return false;
  clearNarration();
- const stage=/^(M[1-5])(?:-welcome)?$/.exec(id)?.[1];
- // Unfinished voice plans must not create broken requests or leave the previous line playing.
- if(!stage){sync();return false;}
- const audio=new Audio(`assets/audio/npc/${stage}.m4a`);audio.preload='none';narration=audio;
+ const key=/^M[1-5]$/.test(id)?id+'-welcome':id,recording=narrationRecordings[key];
+ // Unknown IDs must not create broken requests or leave the previous line playing.
+ if(!recording){sync();return false;}
+ const audio=new Audio(recording.src);audio.preload='none';narration=audio;
  audio.onended=audio.onerror=()=>{if(narration===audio){narration=undefined;sync();}};
  stopMusic();void audio.play().catch(()=>{if(narration===audio){narration=undefined;sync();}});return true;
 }

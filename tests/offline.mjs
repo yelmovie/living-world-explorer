@@ -38,8 +38,8 @@ try{
  result.inquiry.domImages=await page.locator('main img').evaluateAll(list=>list.map(i=>({src:i.getAttribute('src'),width:i.naturalWidth})));
  const broken=[...result.inquiry.study,...result.inquiry.domImages].filter(i=>!i.width);
  const bgm=statSync(`${out}/assets/audio/bgm-main-theme.m4a`).size;
- result.media={video:await ranged('assets/concepts/M1.mp4','bytes=100-199'),bgm:await ranged('assets/audio/bgm-main-theme.m4a','bytes=0-')};
- const mediaOk=result.media.video.status===206&&result.media.video.bytes===100&&/^bytes 100-199\//.test(result.media.video.range)&&result.media.bgm.status===206&&result.media.bgm.bytes===bgm;
+ result.media={video:await ranged('assets/concepts/M1.mp4','bytes=100-199'),bgm:await ranged('assets/audio/bgm-main-theme.m4a','bytes=0-'),narration:await ranged('assets/audio/voice/M1-welcome.mp3','bytes=100-199')};
+ const mediaOk=result.media.video.status===206&&result.media.video.bytes===100&&/^bytes 100-199\//.test(result.media.video.range)&&result.media.bgm.status===206&&result.media.bgm.bytes===bgm&&result.media.narration.status===206&&result.media.narration.bytes===100&&/^bytes 100-199\//.test(result.media.narration.range);
  if(!result.main||!result.map.canvas||!result.inquiry.canvas||broken.length||result.failed.length||!mediaOk)throw Error('offline play broke: '+JSON.stringify({main:result.main,broken,failed:result.failed,media:result.media}));
  ok=true;
 }catch(e){result.error=String(e?.stack||e);}
