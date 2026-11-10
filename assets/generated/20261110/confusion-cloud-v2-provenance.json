@@ -1,0 +1,24 @@
+{
+  "created": "2026-11-10",
+  "source": "OpenAI image generation",
+  "purpose": "Fantasy confusion-cloud villain; not a bacterium, fungus or virus",
+  "prompt_summary": "Single friendly mischievous lavender cloud, two soft smoke wisps, cream eyes, teal rim light, hand-painted 2.5D educational woodland RPG style, transparent background, no letters or UI.",
+  "original": {
+    "file": "confusion-cloud-v2-original.png",
+    "bytes": 1140470,
+    "sha256": "104406d91c287581afbf90805d91ac67f6eebd864fe5309618191c7e79a5fc03",
+    "width": 1254,
+    "height": 1254
+  },
+  "runtime": {
+    "file": "public/assets/characters/confusion-cloud-v2.webp",
+    "bytes": 17468,
+    "sha256": "9a1cf2cb3f66c0f0bb8da312d1a99de8b0918deb03a5b75c55fd3dbd0436ac27",
+    "width": 256,
+    "height": 256,
+    "alpha": true
+  },
+  "processing": "Resized and encoded to WebP with Sharp; no scientific organism imagery used.",
+  "validation": "PNG signature/hash/dimensions/alpha and rendered map checked. Existing CSS fallback remains.",
+  "rights_note": "Generated for the user request. Existing project assets have separate rights checks; this record does not certify their rights."
+}

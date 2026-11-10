@@ -1,0 +1,21 @@
+{
+  "checks": [
+    {
+      "fallback": false,
+      "painted": true,
+      "touchKeyboard": true,
+      "reducedMotion": true,
+      "learningUnchanged": true,
+      "previewIsolated": true
+    },
+    {
+      "fallback": true,
+      "painted": false,
+      "touchKeyboard": true,
+      "reducedMotion": true,
+      "learningUnchanged": true,
+      "previewIsolated": true
+    }
+  ],
+  "errors": []
+}
