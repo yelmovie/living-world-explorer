@@ -22,12 +22,16 @@ const samples=new Map<EffectName,AudioBuffer>();
 let samplesRequested=false;let lastEffect=0;
 let observer: MutationObserver | undefined;
 let narration:HTMLAudioElement|undefined;
-/** User-triggered character line (assets/audio/voice/<id>.mp3); no speech is played while sound is muted. A new line stops the previous one. */
+/** Keep shipped greetings until generated character lines and their provenance are available. */
 function clearNarration(){const previous=narration;narration=undefined;if(previous){previous.onended=previous.onerror=null;previous.pause();previous.removeAttribute('src');previous.load();}}
 export function stopNarration(){clearNarration();sync();}
 export function playNarration(id:string):boolean{
  if(!settings.sound||document.hidden||explicitQuiet)return false;
- clearNarration();const audio=new Audio(`assets/audio/voice/${id}.mp3`);audio.preload='none';narration=audio;
+ clearNarration();
+ const stage=/^(M[1-5])(?:-welcome)?$/.exec(id)?.[1];
+ // Unfinished voice plans must not create broken requests or leave the previous line playing.
+ if(!stage){sync();return false;}
+ const audio=new Audio(`assets/audio/npc/${stage}.m4a`);audio.preload='none';narration=audio;
  audio.onended=audio.onerror=()=>{if(narration===audio){narration=undefined;sync();}};
  stopMusic();void audio.play().catch(()=>{if(narration===audio){narration=undefined;sync();}});return true;
 }
