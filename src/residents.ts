@@ -32,19 +32,20 @@ export const residents:Record<Stage,Resident> = {
     work:'첫 빵은 이웃들과 나눌 거야. 빵 옆에는 효모가 만든 기체가 반죽을 부풀렸다는 작은 안내판도 놓을래.'}
 };
 
-function memory(stage:Stage, attempt:Attempt){
+/** The answer and its voice line id (assets/audio/voice/<id>.mp3). */
+function memory(stage:Stage, attempt:Attempt):[string,string]{
   const records=attempt.evidence[stage]?.inquiry?.records;
   if(stage==='M2'){
     const site=records?.['M2-1']?.assignments.site;
-    if(site==='edge'||site==='plant')return (site==='edge'?'물가 가까이':'물풀 가까이')+'에서 떴지! 네 기록을 보고 같은 곳에서 물을 떠서 관찰해 보려고 해.';
+    if(site==='edge'||site==='plant')return [(site==='edge'?'물가 가까이':'물풀 가까이')+'에서 떴지! 네 기록을 보고 같은 곳에서 물을 떠서 관찰해 보려고 해.','M2-memory-'+site];
   }
   if(stage==='M5'){
     const selected=records?.['M5-4']?.assignments.case;
-    if(selected==='bread')return '빵 반죽 카드였지! 효모가 만든 기체가 반죽을 부풀린다는 걸 손님들에게도 들려줄게.';
-    if(selected==='yogurt')return '요구르트 카드였지! 유산균의 도움으로 우유를 요구르트로 만든다는 네 설명을 이웃들에게도 들려줄게.';
-    if(selected==='leaf')return '낙엽 분해 카드였지! 낙엽을 분해하는 생물의 도움으로 퇴비를 만들 수 있다는 이야기를 정원에도 전할게.';
+    if(selected==='bread')return ['빵 반죽 카드였지! 효모가 만든 기체가 반죽을 부풀린다는 걸 손님들에게도 들려줄게.','M5-memory-bread'];
+    if(selected==='yogurt')return ['요구르트 카드였지! 유산균의 도움으로 우유를 요구르트로 만든다는 네 설명을 이웃들에게도 들려줄게.','M5-memory-yogurt'];
+    if(selected==='leaf')return ['낙엽 분해 카드였지! 낙엽을 분해하는 생물의 도움으로 퇴비를 만들 수 있다는 이야기를 정원에도 전할게.','M5-memory-leaf'];
   }
-  return residents[stage].memory;
+  return [residents[stage].memory,stage+'-memory'];
 }
 
 export function residentImage(stage:Stage, className:string){
@@ -77,17 +78,18 @@ export function residentConversation(stage:Stage, attempt:Attempt){
   copy.append(el('span','eyebrow',r.role),line);
   scene.append(residentImage(stage,'resident-portrait'),copy);
   const replies=el('div','resident-replies');
-  for(const [question,answer] of [[r.question,memory(stage,attempt)],['이제 무슨 일을 해?',r.work]]){
+  for(const [question,[answer,voice]] of [[r.question,memory(stage,attempt)],['이제 무슨 일을 해?',[r.work,stage+'-work']]] as [string,[string,string]][]){
     const choice=button(question,()=>{
-      stopNarration();line.textContent=answer;
+      line.textContent=answer;playNarration(voice);
       for(const b of replies.querySelectorAll('button'))b.setAttribute('aria-pressed',String(b===choice));
     });
     choice.setAttribute('aria-pressed','false');
     replies.append(choice);
   }
-  const listen=button('인사 다시 듣기',()=>{line.textContent=r.welcome;for(const b of replies.querySelectorAll('button'))b.setAttribute('aria-pressed','false');if(!playNarration(stage))line.textContent=r.welcome+' (소리가 꺼져 있어요. 대화를 닫고 소리 버튼을 켜면 들을 수 있어요.)';},'secondary');
-  const dialog=modal(r.name+'의 이야기',[scene,listen,paragraph('모모 AI 생성 음성 · 인사 내용은 위 글로도 읽을 수 있어요.','muted'),replies],{description:line});
+  const listen=button('인사 다시 듣기',()=>{line.textContent=r.welcome;for(const b of replies.querySelectorAll('button'))b.setAttribute('aria-pressed','false');if(!playNarration(stage+'-welcome'))line.textContent=r.welcome+' (소리가 꺼져 있어요. 대화를 닫고 소리 버튼을 켜면 들을 수 있어요.)';},'secondary');
+  const dialog=modal(r.name+'의 이야기',[scene,listen,paragraph('AI로 만든 목소리예요 · 말한 내용은 위 글로도 읽을 수 있어요.','muted'),replies],{description:line});
   dialog.addEventListener('close',stopNarration,{once:true});
+  playNarration(stage+'-welcome');
   dialog.classList.add('resident-dialog');
   return dialog;
 }

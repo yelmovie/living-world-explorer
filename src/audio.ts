@@ -22,12 +22,12 @@ const samples=new Map<EffectName,AudioBuffer>();
 let samplesRequested=false;let lastEffect=0;
 let observer: MutationObserver | undefined;
 let narration:HTMLAudioElement|undefined;
-/** User-triggered NPC greeting; no speech is played while sound is muted. */
+/** User-triggered character line (assets/audio/voice/<id>.mp3); no speech is played while sound is muted. A new line stops the previous one. */
 function clearNarration(){const previous=narration;narration=undefined;if(previous){previous.onended=previous.onerror=null;previous.pause();previous.removeAttribute('src');previous.load();}}
 export function stopNarration(){clearNarration();sync();}
-export function playNarration(stage:string):boolean{
+export function playNarration(id:string):boolean{
  if(!settings.sound||document.hidden||explicitQuiet)return false;
- clearNarration();const audio=new Audio(`assets/audio/npc/${stage}.m4a`);audio.preload='none';narration=audio;
+ clearNarration();const audio=new Audio(`assets/audio/voice/${id}.mp3`);audio.preload='none';narration=audio;
  audio.onended=audio.onerror=()=>{if(narration===audio){narration=undefined;sync();}};
  stopMusic();void audio.play().catch(()=>{if(narration===audio){narration=undefined;sync();}});return true;
 }
