@@ -59,7 +59,7 @@ export const settingsContent = {
     '시작 영상과 복구 영상은 프로젝트 자체 AI 생성 영상에 자막과 연출을 더해 만들었어요.',
     '효과음은 Kenney와 angeloyazar의 CC0 음원을 사용해요. 개념 영상의 짧은 음은 프로젝트 자체 합성이에요.',
     '스테이지 개념 영상은 프로젝트의 설명 모형으로 만든 12초 모션 그래픽이에요. 내 발견 도감에서 다시 볼 수 있어요.',
-    '제목에는 Google Fonts Jua를 SIL Open Font License 1.1에 따라 자체 제공하고, 본문에는 기기에 설치된 시스템 글꼴을 사용해요.',
+    '화면과 탐구 글꼴은 네이버 나눔스퀘어네오를 SIL Open Font License 1.1에 따라 자체 제공해요.',
     '출처와 라이선스 상세 내용은 프로젝트의 assets/CREDITS.md에서 확인할 수 있어요.'
   ],
   sourcesTitle: '자료 출처 모아 보기',
@@ -68,7 +68,7 @@ export const settingsContent = {
     {title: '공통 배경·캐릭터', text: '프로젝트 자체 제작 AI 생성 이미지 · 기존 프로젝트 자료와 새 제작 자료. 생성 경위와 배포 전 확인 사항은 CREDITS.md에 기록해요.'},
     {title: '관찰·비교·연결·설계 활동', text: '프로젝트 자체 제작 Canvas·Phaser 설명 모형 · 관찰 및 생물 작용의 관계를 설명하기 위한 모형이에요.'},
     {title: '교육과정', text: '교육부 2022 개정 과학과 교육과정 · 성취기준 원문과 교사용 활동 연결.'},
-    {title: '글꼴', text: 'Jua · Woowahan Brothers · Google Fonts 배포 · SIL Open Font License 1.1. 원문을 프로젝트에 함께 보관해요.'},
+    {title: '글꼴', text: '나눔스퀘어네오 · 네이버 공식 배포 · SIL Open Font License 1.1. 원문을 프로젝트에 함께 보관해요.'},
     {title: '배경 음악', text: '탐험 메인테마·복구 엔딩테마 2곡 · 프로젝트 자체 AI 생성 음원(Suno 유료 플랜) · 가사 없음.'},
     {title: '효과음', text: 'Kenney의 Interface Sounds·RPG Audio·Digital Audio, angeloyazar의 Object Dropping into Water를 사용했어요. 모두 CC0이고 파일별 출처는 assets/audio/sources.json에 있어요.'},
     {title: '프로그램', text: 'Phaser 3 · MIT. Vite · MIT. TypeScript · Apache-2.0. Three.js · MIT(3D 모형 보기, 열 때만 불러와요). meshoptimizer 디코더 · MIT.'},

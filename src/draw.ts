@@ -40,7 +40,7 @@ export function draw(c:HTMLCanvasElement,kind:string,opts:DrawOptions={}){
   g.fillStyle='#fffdf6';g.strokeStyle='#b3c5b6';g.lineWidth=6;g.beginPath();g.roundRect(sx(.35),sy(.2),sx(.3),sy(.6),24);g.fill();g.stroke();g.fillStyle='#437c64';g.fillRect(sx(.35),sy(.45),sx(.3),sy(.2));
  }else if(kind==='question'){
   g.fillStyle='#fff9e9';g.strokeStyle='#8a9e79';g.lineWidth=4;g.beginPath();g.roundRect(sx(.19),sy(.12),sx(.62),sy(.72),18);g.fill();g.stroke();
-  g.font=`bold ${Math.round(h*.51)}px sans-serif`;g.textAlign='center';g.textBaseline='middle';g.fillStyle='#bc8b3d';g.fillText('?',sx(.5),sy(.5));
+  g.font=`bold ${Math.round(h*.51)}px NanumSquareNeo, sans-serif`;g.textAlign='center';g.textBaseline='middle';g.fillStyle='#bc8b3d';g.fillText('?',sx(.5),sy(.5));
  }else{g.fillStyle='#bdd9cf';g.fillRect(sx(.1),sy(.25),sx(.8),sy(.5));for(let i=0;i<7;i++)circle(.2+i*.1,.4+Math.sin(i)*.1,.025,'#4d8b7a');}
  // Generated comparison frames already contain the change. Use these fallback
  // overlays only while no image is available, keeping the specimen coordinates.

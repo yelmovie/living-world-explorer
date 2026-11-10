@@ -350,7 +350,7 @@ export function inquiryEvidenceView(evidence:Evidence|undefined,compact=false){
     picture.setAttribute('aria-label',`${task.title} · 내 관찰 기록 · 표시 ${record.marks.length}곳`);
    };
    let imageReady=false;
-   const pending=picture.getContext('2d')!;pending.fillStyle='#edf1df';pending.fillRect(0,0,picture.width,picture.height);pending.fillStyle='#315f46';pending.font='28px sans-serif';pending.fillText('관찰 사진 준비 중…',35,180);
+   const pending=picture.getContext('2d')!;pending.fillStyle='#edf1df';pending.fillRect(0,0,picture.width,picture.height);pending.fillStyle='#315f46';pending.font='28px NanumSquareNeo, sans-serif';pending.fillText('관찰 사진 준비 중…',35,180);
    // The moving specimen uses the same deterministic drawing as the activity.
    if(art){const image=new Image();image.onload=()=>{if(task.kind!=='track')picture.height=Math.round(picture.width*image.height/image.width);paint(image);imageReady=true;preview.disabled=false;};image.onerror=()=>{pending.clearRect(0,0,picture.width,picture.height);pending.fillText('사진을 다시 열어 주세요.',35,180);};image.src=art.src;}else{paint();imageReady=true;}
    const preview=button('',()=>{if(!imageReady)return;const full=canvas(picture.width,picture.height);full.getContext('2d')!.drawImage(picture,0,0);full.setAttribute('aria-label',picture.getAttribute('aria-label')!);const dialog=modal('내 관찰 사진',[full,paragraph(task.kind==='microscope'?`확대하여 살펴보고 남긴 관찰 모형이에요`:'고정한 이후 시점과 내가 남긴 관찰 표시예요.')]);dialog.classList.add('observation-preview-dialog');},'observation-preview',!imageReady);preview.setAttribute('aria-label',task.title+' · 내 관찰 사진 크게 보기');preview.append(picture);row.append(preview);
