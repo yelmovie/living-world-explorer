@@ -2,9 +2,9 @@
 export const narrationRecordings:Record<string,{src:string;text:string;speaker:string;duration:number}>={
   "story-1": {
     "src": "assets/audio/voice/story-1.mp3",
-    "text": "숲과 연못의 관찰 기록이 뒤섞였어요. 모아와 토토가 네 도움이 필요해요.",
+    "text": "숲과 연못에 궁금한 사건이 생겼어요. 모아와 토토가 증거를 찾는 네 도움이 필요해요.",
     "speaker": "moa",
-    "duration": 6.01
+    "duration": 6.74
   },
   "story-2": {
     "src": "assets/audio/voice/story-2.mp3",
@@ -14,9 +14,9 @@ export const narrationRecordings:Record<string,{src:string;text:string;speaker:s
   },
   "story-3": {
     "src": "assets/audio/voice/story-3.mp3",
-    "text": "탐구를 마치면 연구소가 복구돼요. 끝까지 모으면 내 소개 카드와 인증서를 만들 수 있어요.",
+    "text": "관찰한 단서를 연결하고, 아직 알 수 없는 것도 구별해요. 조사 결과를 전하면 다음 연구소가 열려요.",
     "speaker": "moa",
-    "duration": 6.97
+    "duration": 6.82
   },
   "M1-welcome": {
     "src": "assets/audio/voice/M1-welcome.mp3",
