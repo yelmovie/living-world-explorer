@@ -40,7 +40,7 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],att
     this.add.image(0,0,'building-lights').setOrigin(0);
    }
    const next=completed.findIndex(v=>!v);const current=locations[next<0?5:next];
-   const ring=this.add.ellipse(current.x,current.y+2,74,24,0xf7cd69,.45).setStrokeStyle(3,0xffedb0,.9);if(!reduced)this.tweens.add({targets:ring,alpha:.55,scaleX:1.1,duration:1000,yoyo:true,repeat:-1});
+   const ring=this.add.ellipse(current.x,current.y+2,74,24,0xf7cd69,.45).setStrokeStyle(3,0xffedb0,.9);if(!reduced)this.tweens.add({targets:ring,alpha:.55,scaleX:1.1,duration:1000,yoyo:true,repeat:2});
    const valid=Number.isFinite(position.x)&&Number.isFinite(position.y)&&position.x>=0&&position.y>=0&&position.x<=MAP_WIDTH&&position.y<=MAP_HEIGHT;
    const spawn=nearestRoadPoint(valid?position:mapSpawn);
    this.hero=this.add.container(spawn.x,spawn.y);this.hero.add(this.add.ellipse(0,-2,37,13,0x203e2f,.3));

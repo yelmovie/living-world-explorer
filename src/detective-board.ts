@@ -1,22 +1,144 @@
 import {el,button,paragraph,modal,type Context} from './ui';
 import {artFor} from './artAssets';
-import {researchCases,caseReady} from './detective-cases';
+import {researchCases,caseReady,type CaseClue} from './detective-cases';
 import type {Stage} from './model';
 import {playEffect} from './audio';
 import './detective-board.css';
+
 export function openDetectiveBoard(ctx:Context,stage:Stage,finish?:()=>void){
  const data=researchCases[stage],record=ctx.attempt.inquiry.records[`${stage}-4`];
  if(!record)return;
- const placements:Record<string,string>={};for(const clue of data.clues)placements[clue.id]=record.assignments[`case_${clue.id}`]||'';
- let selected='',closed=false;const board=el('div','detective-board'),cards=el('div','detective-clues'),zones=el('div','detective-zones'),message=paragraph('단서를 눌러 크게 조사한 뒤, 어울리는 칸을 눌러 연결해요.','detective-message');message.setAttribute('role','status');
+
+ const placements:Record<string,string>={};
+ for(const clue of data.clues){
+  const saved=record.assignments[`case_${clue.id}`];
+  placements[clue.id]=saved==='supports'||saved==='limit'?saved:'';
+ }
+ let selected='',closed=false;
+ let solved=record.assignments.case_solved==='yes'&&caseReady(stage,placements);
+ const board=el('div','detective-board');
+ const cards=el('div','detective-clues');
+ const zones=el('div','detective-zones');
+ const progress=paragraph('','detective-progress');
+ const message=paragraph(solved?data.result:'단서를 눌러 자세히 살펴본 뒤, 어울리는 칸을 눌러 연결해요.','detective-message');
+ message.id=`detective-message-${stage}`;
+ message.setAttribute('role','status');
+ message.setAttribute('aria-atomic','true');
+ const clueButtons=new Map<string,HTMLButtonElement>();
+ const placementLabels=new Map<string,HTMLSpanElement>();
+
  const report=button('증거로 사건 설명하기',()=>{
-  const wrong=data.clues.find(c=>placements[c.id]!==c.role);
-  if(wrong){message.textContent=`${wrong.label}: ${wrong.detail} 이 단서로 결론을 뒷받침할 수 있는지 다시 놓아봐요.`;playEffect('retry');return;}
-  record.assignments.case_solved='yes';ctx.save();playEffect('success');board.dataset.solved='true';message.textContent=data.result;done.hidden=false;report.hidden=true;
+  if(closed)return;
+  const wrong=data.clues.find(clue=>placements[clue.id]!==clue.role);
+  if(wrong){
+   selected=wrong.id;
+   message.textContent=`${wrong.label} 단서를 다시 살펴봐요. ${wrong.detail} 어느 칸에 연결하면 좋을까요?`;
+   refresh();
+   clueButtons.get(wrong.id)?.focus();
+   playEffect('retry');
+   return;
+  }
+  solved=true;
+  selected='';
+  record.assignments.case_solved='yes';
+  ctx.save();
+  message.textContent=data.result;
+  refresh();
+  done.focus();
+  playEffect('success');
  },'primary');
- const done=button(finish?'조사 결과 전달하기':'관찰로 돌아가기',()=>{dialog.close();finish?.();},'primary');done.hidden=true;
- const inspect=(id:string)=>{const c=data.clues.find(c=>c.id===id)!;selected=id;message.textContent=c.detail;draw();};
- const place=(role:string)=>{if(closed||!selected)return;placements[selected]=role;record.assignments[`case_${selected}`]=role;record.assignments.case_solved='';ctx.save();selected='';draw();playEffect('snap');};
- const draw=()=>{cards.replaceChildren();for(const c of data.clues){const b=button('',()=>inspect(c.id),'detective-clue'+(selected===c.id?' selected':''));b.dataset.clue=c.id;b.draggable=true;b.setAttribute('aria-pressed',String(selected===c.id));const a=artFor(c.art);if(a){const img=el('img');img.src=a.src;img.alt=a.label;b.append(img);}b.append(el('strong','',c.label),el('span','',placements[c.id]==='supports'?'✓ 설명의 근거':placements[c.id]==='limit'?'✓ 단정할 수 없음':'눌러 조사'));b.ondragstart=e=>{selected=c.id;e.dataTransfer?.setData('text/plain',c.id);};cards.append(b);}zones.replaceChildren();for(const [role,label] of [['supports','설명을 뒷받침하는 증거'],['limit','이것만으로는 단정 못 해요']]){const z=button(label,()=>place(role),'detective-zone');z.dataset.zone=role;z.ondragover=e=>e.preventDefault();z.ondrop=e=>{e.preventDefault();const id=e.dataTransfer?.getData('text/plain');if(data.clues.some(c=>c.id===id)){selected=id!;place(role);}};zones.append(z);}report.disabled=data.clues.some(c=>!placements[c.id]);};
- board.append(paragraph(data.question,'detective-question'),cards,zones,message,report,done);draw();const dialog=modal(data.title,[board]);dialog.classList.add('detective-dialog');dialog.addEventListener('close',()=>closed=true,{once:true});ctx.cleanup(()=>{closed=true;if(dialog.isConnected)dialog.close();});
+ const done=button(finish?'조사 결과 전달하기':'관찰로 돌아가기',()=>{
+  if(closed||!solved||!caseReady(stage,placements))return;
+  closed=true;
+  dialog.close();
+  finish?.();
+ },'primary');
+
+ function refresh(){
+  const connected=data.clues.filter(clue=>placements[clue.id]).length;
+  progress.textContent=solved?`단서 ${data.clues.length}개를 근거와 한계로 설명했어요.`:`연결한 단서 ${connected} / ${data.clues.length} · 모두 연결하면 설명을 확인해요.`;
+  board.dataset.solved=String(solved);
+  for(const clue of data.clues){
+   const current=clueButtons.get(clue.id)!;
+   current.classList.toggle('selected',selected===clue.id);
+   current.setAttribute('aria-pressed',String(selected===clue.id));
+   const role=placements[clue.id];
+   placementLabels.get(clue.id)!.textContent=role==='supports'?'연결됨 · 설명의 근거':role==='limit'?'연결됨 · 단정할 수 없음':'눌러 조사';
+  }
+  report.disabled=connected<data.clues.length;
+  report.hidden=solved;
+  done.hidden=!solved;
+ }
+
+ function inspect(clue:CaseClue){
+  if(closed)return;
+  selected=clue.id;
+  message.textContent=`${clue.detail} 아래 두 칸 중 어울리는 곳에 연결해요.`;
+  refresh();
+ }
+
+ function place(role:CaseClue['role']){
+  if(closed)return;
+  const clue=data.clues.find(candidate=>candidate.id===selected);
+  if(!clue){
+   message.textContent='먼저 조사할 단서를 눌러 골라요.';
+   return;
+  }
+  placements[clue.id]=role;
+  record.assignments[`case_${clue.id}`]=role;
+  record.assignments.case_solved='';
+  solved=false;
+  selected='';
+  ctx.save();
+  refresh();
+  message.textContent=`${clue.label} 단서를 ${role==='supports'?'설명의 근거':'단정할 수 없는 점'}에 연결했어요. ${report.disabled?'다음 단서를 살펴봐요.':'이제 증거로 사건을 설명해요.'}`;
+  playEffect('snap');
+ }
+
+ for(const clue of data.clues){
+  const card=button('',()=>inspect(clue),'detective-clue');
+  card.dataset.clue=clue.id;
+  card.draggable=true;
+  card.setAttribute('aria-describedby',message.id);
+  const art=artFor(clue.art);
+  if(art){
+   const img=el('img');
+   img.src=art.src;
+   img.alt=art.label;
+   card.append(img);
+  }
+  const placement=el('span');
+  card.append(el('strong','',clue.label),placement);
+  card.ondragstart=event=>{
+   inspect(clue);
+   event.dataTransfer?.setData('text/plain',clue.id);
+  };
+  clueButtons.set(clue.id,card);
+  placementLabels.set(clue.id,placement);
+  cards.append(card);
+ }
+ for(const [role,label] of [['supports','설명을 뒷받침하는 증거'],['limit','이것만으로는 단정 못 해요']] as const){
+  const zone=button(label,()=>place(role),'detective-zone');
+  zone.dataset.zone=role;
+  zone.setAttribute('aria-describedby',message.id);
+  zone.ondragover=event=>event.preventDefault();
+  zone.ondrop=event=>{
+   event.preventDefault();
+   const id=event.dataTransfer?.getData('text/plain');
+   if(data.clues.some(clue=>clue.id===id)){
+    selected=id!;
+    place(role);
+   }
+  };
+  zones.append(zone);
+ }
+ board.append(paragraph(data.question,'detective-question'),cards,message,zones,progress,report,done);
+ refresh();
+ const dialog=modal(data.title,[board]);
+ dialog.classList.add('detective-dialog');
+ dialog.addEventListener('close',()=>closed=true,{once:true});
+ ctx.cleanup(()=>{
+  closed=true;
+  if(dialog.isConnected)dialog.close();
+ });
 }

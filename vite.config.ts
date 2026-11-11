@@ -8,7 +8,12 @@ const hash = async (data: Uint8Array | string, n: number) => [...new Uint8Array(
 // _headers is Cloudflare config and is never served. Story films stream from the network: the service worker would
 // otherwise hold back playback until the whole file arrived, and without them offline the game simply continues.
 function offlinePrecache(): Plugin {
-  return { name: 'offline-precache', apply: 'build', async writeBundle({ dir }) {
+  return { name: 'offline-precache', apply: 'build',
+  async generateBundle() {
+    const credits = await this.fs.readFile('assets/CREDITS.md', { encoding: 'utf8' });
+    this.emitFile({ type: 'asset', fileName: 'assets/CREDITS.md', source: credits });
+  },
+  async writeBundle({ dir }) {
     if (!dir) return;
     const walk = async (sub: string): Promise<string[]> => (await Promise.all((await this.fs.readdir(`${dir}/${sub}`, { withFileTypes: true })).map(e => e.isDirectory() ? walk(`${sub}${e.name}/`) : [sub + e.name]))).flat();
     const isMetadata = (f: string) => f.split('/').some(p => p.startsWith('._') || p === '.DS_Store');

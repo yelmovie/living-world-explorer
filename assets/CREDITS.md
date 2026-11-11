@@ -15,7 +15,8 @@
 | TypeScript 5.9.3 | 타입 검사 | Apache-2.0, 로컬 package.json | PASS | 개발 도구 |
 | sharp 0.34.4 | 이미지 최적화 | Apache-2.0, 로컬 package.json | PASS | 개발 도구, 기존 이미지 최적화에 사용 |
 | Vitest 3.2.4 / Playwright Test 1.56.1 | 테스트 | MIT / Apache-2.0, 로컬 package.json | PASS | 개발 도구 |
-| Google Fonts Jua | 제목 | SIL Open Font License 1.1, public/assets/fonts/Jua-OFL.txt | PASS | 웹폰트 자체 제공, OFL 원문 동봉 |
+| 네이버 나눔스퀘어 네오 | 현재 제목·버튼·본문(400·700) | SIL Open Font License 1.1, public/assets/fonts/NanumSquareNeo-OFL.txt | PASS | 공식 배포 출처·SHA-256은 NanumSquareNeo-SOURCE.json에 기록. 2026-11-11 두 배포 파일의 해시 일치 확인 |
+| Google Fonts Jua | 이전 제목용 글꼴 보관 | SIL Open Font License 1.1, _unused/fonts-20261111/Jua-OFL.txt | PASS | 기존 파일·OFL 원문을 _unused/fonts-20261111/에 보관 |
 | 기존 생성 배경·캐릭터 | 연구소 장식·지도·NPC | 기존 프로젝트 AI 생성 자료, 일부 생성 날짜·도구만 기록됨 | 확인 필요 | 납품 담당자가 생성 당시 계정·계약·상업 이용 조건을 대조해야 함 |
 | 이번 제작 AI 이미지 | 새 지도·캐릭터·시설 이미지 | 기본 image_gen으로 프로젝트용 생성, 제작 담당자 기록과 연결 | 확인 필요 | 최종 파일 목록·생성 날짜·계정 이용 조건 기록을 납품 때 보존 |
 | 배경 음악 2곡 (2026-11-04 교체) | 지도·탐구 메인테마, 결과 화면 엔딩테마 | 제작자가 본인 Suno Premier 플랜 계정으로 직접 생성(가사 없음). Premier 플랜 생성물은 상업 이용 가능. 생성 기록: assets/generated/bgm-20261104.json, 이전 곡: bgm-20261025.json | PASS | 원본 MP3 보관, 배포본은 AAC 96kbps로 변환 |
@@ -51,8 +52,9 @@
 | public/assets/models/{mushroom,bread-mold,paramecium,yeast}.glb | 2026-10-25 사용자 Meshy 계정 image-to-3D(입력: 자체 생성 기본 그림 assets/generated/models-20261025/*-3d-base.png). 2026-10-26 scripts/pack-models.mjs로 텍스처를 줄이고 gltfpack으로 UV 이음매를 고정한 채 줄여 meshopt 압축. 기록: assets/generated/models-20261025.json | 선택해서 여는 3D 설명 모형. Meshy 생성물의 상업 이용 조건은 생성 당시 계정 플랜 기준 — 납품 전 확인 |
 | public/assets/audio/bgm-{main,ending}-theme.m4a | 2026-11-04 Suno Premier 플랜 생성(제작자 계정). 받은 파일명 main.mp3, final.mp3 | 배경 음악. 원본은 assets/generated/bgm-20261104/ |
 | public/assets/film/{intro,final}.{mp4,vtt,webp} | 2026-11-04 제작자 제공 영상을 scripts/render-film.mjs로 가공 | 시작·복구 영상. 원본은 assets/generated/film-20261104/ |
-| public/assets/fonts/jua-korean-400.woff2 | Google Fonts Jua, 제목용 한국어 웹폰트 | SIL OFL 1.1 |
-| public/assets/fonts/jua-latin-400.woff2 | Google Fonts Jua, 제목용 라틴 웹폰트 | SIL OFL 1.1 |
+| public/assets/fonts/NanumSquareNeoTTF-{bRg,cBd}.woff2 | 네이버 나눔스퀘어 네오, 현재 UI용 보통·굵은 웹폰트. 공식 배포 출처와 해시는 같은 폴더의 NanumSquareNeo-SOURCE.json | SIL OFL 1.1, NanumSquareNeo-OFL.txt 동봉 |
+| _unused/fonts-20261111/jua-korean-400.woff2 | Google Fonts Jua, 이전 제목용 한국어 웹폰트 보관 | SIL OFL 1.1 |
+| _unused/fonts-20261111/jua-latin-400.woff2 | Google Fonts Jua, 이전 제목용 라틴 웹폰트 보관 | SIL OFL 1.1 |
 | src/draw.ts 및 Phaser 탐구 도식 | 프로젝트 자체 제작 설명 모형 | 현미경 사진이나 실험 측정 원자료로 소개하지 않음 |
 | src/experience.ts의 SVG 아이콘 | 프로젝트 자체 제작 선형 아이콘 | 공통 홈·이전·음소거·설정·탐구 도구 |
 | src/audio.ts | 프로젝트 자체 제작 재생 코드. 효과음 파일이 없을 때만 짧은 음을 합성 | 배경 음악은 위 Suno 2곡 |
@@ -73,6 +75,8 @@ Phaser: Copyright (c) 2024 Richard Davey, Phaser Studio Inc.
 EventEmitter3: Copyright (c) 2014 Arnout Kazemier.
 
 Three.js: Copyright © 2010-2025 three.js authors.
+
+meshoptimizer — Copyright (C) 2016-2024, by Arseny Kapoulkine (arseny.kapoulkine@gmail.com)
 
 위 MIT 구성 요소에 적용하는 허가문:
 
@@ -98,7 +102,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-Jua OFL 원문은 public/assets/fonts/Jua-OFL.txt에 동봉한다. 배포 폴더에도 이 고지와 사용한 라이선스 원문을 함께 전달한다.
+현재 UI용 나눔스퀘어 네오의 OFL 원문은 `public/assets/fonts/NanumSquareNeo-OFL.txt`에 동봉한다. 이전 Jua의 OFL 원문은 기존 글꼴과 함께 `_unused/fonts-20261111/Jua-OFL.txt`에 보관한다. 배포 폴더에도 이 고지와 사용한 라이선스 원문을 함께 전달한다.
 
 ## 복구 지도 주민 일러스트 (2026-11-02)
 

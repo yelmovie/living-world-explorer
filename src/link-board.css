@@ -49,7 +49,7 @@
 .link-card.is-armed .link-port{background:var(--link-pick);border-color:var(--paper-face)}
 .link-port::after{content:'';position:absolute;inset:-8px;border:3px solid var(--link-pick);border-radius:50%;opacity:0}
 .link-card.is-next .link-port::after,.link-card.is-armed .link-port::after,.link-board[data-step="2"] .link-target .link-port::after{opacity:.9}
-@media(prefers-reduced-motion:no-preference){html:not(.reduced) .link-card.is-next .link-port::after,html:not(.reduced) .link-board[data-step="2"] .link-target .link-port::after{animation:link-ring 1.4s ease-out infinite}html:not(.reduced) .link-line.is-right.is-new{stroke-dasharray:1;animation:link-draw .28s ease-out}}
+@media(prefers-reduced-motion:no-preference){html:not(.reduced) .link-card.is-next .link-port::after,html:not(.reduced) .link-board[data-step="2"] .link-target .link-port::after{animation:link-ring 1.4s ease-out 3}html:not(.reduced) .link-line.is-right.is-new{stroke-dasharray:1;animation:link-draw .28s ease-out}}
 @keyframes link-ring{from{opacity:.9;transform:scale(.8)}to{opacity:0;transform:scale(1.2)}}
 @keyframes link-draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
 

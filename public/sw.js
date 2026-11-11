@@ -20,7 +20,11 @@ self.addEventListener('activate',event=>event.waitUntil((async()=>{
 // Media elements ask for byte ranges; answer them from the full cached file (BGM is stored on its first play).
 async function ranged(req,f){
  const cache=await caches.open(CACHE);let res=f&&await cache.match(f.key);
- if(!res){if(!f?.lazy)return fetch(req);res=await fetch(req.url);if(!res.ok)return res;await cache.put(f.key,res.clone());}
+ if(!res){
+  if(!f?.lazy)return fetch(req);
+  res=await fetch(req.url);if(!res.ok)return res;
+  try{await cache.put(f.key,res.clone());}catch{/* Keep online media playable when the offline cache is full. */}
+ }
  const blob=await res.blob(),size=blob.size,m=/^bytes=(\d*)-(\d*)$/.exec(req.headers.get('range'));if(!m)return new Response(blob,{headers:res.headers});
  const start=m[1]?+m[1]:Math.max(0,size-+m[2]),end=m[1]&&m[2]?Math.min(+m[2],size-1):size-1;
  if(start>end)return new Response(null,{status:416,headers:{'Content-Range':`bytes */${size}`}});

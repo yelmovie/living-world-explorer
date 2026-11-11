@@ -1511,14 +1511,14 @@ textarea,input{word-break:keep-all;overflow-wrap:break-word}
 .hero-speech.left::after{content:'';position:absolute;left:38%;bottom:-13px;width:22px;height:22px;background:var(--paper-face);border-right:2px solid var(--paper-line);border-bottom:2px solid var(--paper-line);transform:rotate(45deg)}
 .hero-speech.left:hover:not(:disabled){transform:translateY(-2px)}
 @keyframes idle-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-@keyframes start-pulse{0%,82%,100%{box-shadow:var(--shadow-button),0 0 0 0 var(--glow-a40)}90%{box-shadow:var(--shadow-button),0 0 0 14px var(--glow-a40)}}
+@keyframes start-pulse{0%,82%,100%{transform:scale(1)}90%{transform:scale(1.025)}}
 @keyframes modal-pop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
 @keyframes stamp-in{0%{opacity:0;transform:scale(2.4) rotate(-14deg)}70%{opacity:1;transform:scale(.94) rotate(-6deg)}100%{opacity:1;transform:scale(1) rotate(-6deg)}}
 @media(prefers-reduced-motion:no-preference){
- html:not(.reduced) .hero-moa{animation:idle-bob 2.2s ease-in-out infinite}
- html:not(.reduced) .hero-companion{animation:idle-bob 2.6s ease-in-out .7s infinite}
- /* Title logo stays still: the two characters and the start button are the only looping groups on the title screen. */
- html:not(.reduced) .screen-main .hero-actions>.button.primary{animation:start-pulse 3.6s ease-out 1.2s infinite}
+ html:not(.reduced) .hero-moa{animation:idle-bob 2.2s ease-in-out 2}
+ html:not(.reduced) .hero-companion{animation:idle-bob 2.6s ease-in-out .7s 2}
+ /* A brief welcome settles before the learner starts reading. */
+ html:not(.reduced) .screen-main .hero-actions>.button.primary{animation:start-pulse 3.6s ease-out 1.2s 2}
 }
 
 /* Popups: paper card with a stage-neutral brass band, pop-in once (kept in reduced mode: one-shot). */

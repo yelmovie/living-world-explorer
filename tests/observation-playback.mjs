@@ -28,10 +28,16 @@ try{
       continue;
     }
     if(task.kind==='sample'){assert.equal(await start.count(),0,'choose a sampling site first');await button(page,'물가 가까이').click();}
-    const stop=page.getByRole('button',{name:/멈추기/});
+    const stop=button(page,'직접 해보기');
     const initial=(await waitSaved(page)).preview.inquiry.records[task.id];
     await start.click();
-    assert.ok(await stop.isVisible());
+    await stop.waitFor({state:'visible'});
+    if(task.kind==='microscope'){
+      const caption=await page.locator('.observation-caption').innerText();
+      const feature={mushroom:'주름',mold:'솜털 같은 실',spirogyra:'초록 실'}[task.organism];
+      assert.ok(caption.includes(feature),task.id+' loupe caption matches the specimen');
+      if(task.organism!=='mushroom')assert.ok(!caption.includes('주름'));
+    }
     assert.ok(await button(page,'발견 기록하기').isDisabled());
     await stop.click();
     assert.deepEqual((await waitSaved(page)).preview.inquiry.records[task.id],initial,'stop must restore '+task.id);
@@ -44,10 +50,10 @@ try{
     assert.deepEqual(result.marks,[]);
     assert.deepEqual(result.pins,initial.pins);
     assert.deepEqual(result.opened,initial.opened);
-    if(task.id==='M1-3')assert.equal(result.focus,initial.focus,'mold focusing stays with the learner');
-    if(task.id==='M1-2'){
-      assert.equal(result.level,1,'wait at the gill decision');
-      assert.equal(await start.isVisible(),false);
+    if(task.kind==='microscope'){
+      assert.equal(result.level,2,'automatic observation prepares the microscope');
+      assert.equal(result.focus,65);
+      assert.equal(result.capture,false,'the learner still takes the observation photo');
     }
     if(task.kind==='sample'){
       assert.equal(result.assignments.site,'edge');

@@ -1,1 +1,138 @@
-.detective-dialog{width:min(960px,96vw);max-height:94dvh}.detective-board{display:grid;gap:12px}.detective-question{font-weight:800;margin:0}.detective-clues{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.detective-clue{display:flex;flex-direction:column;gap:8px;border-radius:18px;padding:10px;background:rgba(248,255,248,.82);min-width:0}.detective-clue img{width:100%;height:clamp(110px,23vh,230px);object-fit:contain;border-radius:14px}.detective-clue.selected{outline:4px solid #2d7a67;outline-offset:1px}.detective-clue span{font-size:.85em}.detective-zones{display:grid;grid-template-columns:1fr 1fr;gap:12px}.detective-zone{min-height:60px;border:2px dashed #4c8177;border-radius:18px;background:rgba(213,243,230,.6)}.detective-message{min-height:2.6em;margin:0;padding:10px;border-radius:14px;background:rgba(255,255,255,.8)}.detective-board[data-solved=true]{border-left:6px solid #34836c;padding-left:12px}.case-brief{font-size:.85em;color:#255e52;margin:4px 0}.detective-open{white-space:nowrap}@media(max-width:600px){.detective-clues{gap:8px}.detective-clue{padding:7px;font-size:14px}.detective-clue img{height:110px}.detective-zones{grid-template-columns:1fr}.detective-zone{min-height:48px}}@media(prefers-reduced-motion:no-preference){.detective-clue.selected{transform:translateY(-3px)}}
+.modal.detective-dialog {
+ width:min(960px,calc(100vw - 32px));
+ max-width:960px;
+ max-height:calc(100dvh - 32px);
+}
+.detective-board {
+ display:grid;
+ gap:12px;
+ min-width:0;
+}
+.detective-question {
+ font-weight:800;
+ margin:0;
+}
+.detective-clues {
+ display:grid;
+ grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:12px;
+}
+.detective-clue {
+ display:flex;
+ flex-direction:column;
+ gap:8px;
+ border-radius:18px;
+ padding:10px;
+ background:rgba(248,255,248,.82);
+ min-width:0;
+}
+.detective-clue img {
+ width:100%;
+ height:clamp(110px,23vh,230px);
+ object-fit:contain;
+ border-radius:14px;
+}
+.detective-clue.selected {
+ outline:3px solid var(--color-primary);
+ outline-offset:2px;
+}
+.detective-clue strong,
+.detective-clue span {
+ max-width:100%;
+ overflow-wrap:anywhere;
+}
+.detective-clue span {
+ font-size:max(16px,.85em);
+ line-height:1.35;
+}
+.detective-zones {
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:12px;
+}
+.detective-zone {
+ min-height:60px;
+ border:2px dashed #4c8177;
+ border-radius:18px;
+ background:rgba(213,243,230,.6);
+}
+.detective-message {
+ min-height:2.6em;
+ margin:0;
+ padding:10px 12px;
+ border-radius:14px;
+ background:rgba(255,255,255,.8);
+}
+.modal .detective-progress {
+ margin:0;
+ font-size:16px;
+ line-height:1.4;
+ color:var(--color-text-sub);
+}
+.detective-board[data-solved=true] .detective-message {
+ box-shadow:inset 4px 0 #34836c;
+ background:rgba(213,243,230,.6);
+}
+.case-brief {
+ font-size:.85em;
+ color:#255e52;
+ margin:4px 0;
+}
+.detective-open {
+ white-space:nowrap;
+}
+@media(max-width:659px) {
+ #app>.expedition-shell .expedition-secondary:has(>.detective-open) {
+  display:contents;
+ }
+ #app>.expedition-shell .expedition-secondary>.button.detective-open {
+  display:flex;
+  grid-column:1/-1;
+  grid-row:3;
+  justify-content:center;
+ }
+ .modal.detective-dialog {
+  width:calc(100vw - 24px);
+  max-height:calc(100dvh - 24px);
+  padding:16px;
+ }
+ .detective-clues {
+  gap:8px;
+ }
+ .detective-clue {
+  padding:7px;
+  font-size:16px;
+ }
+ .detective-clue img {
+  height:96px;
+ }
+ .detective-zones {
+  grid-template-columns:1fr;
+ }
+ .detective-zone {
+  min-height:48px;
+ }
+ .modal .detective-message {
+  font-size:18px;
+  line-height:1.45;
+ }
+}
+@media(min-width:601px) and (max-height:600px) {
+ .modal.detective-dialog {
+  padding:16px;
+  gap:10px;
+ }
+ .detective-clue img {
+  height:100px;
+ }
+ .modal .detective-message,
+ .modal .detective-question {
+  font-size:18px;
+  line-height:1.4;
+ }
+}
+@media(prefers-reduced-motion:no-preference) {
+ .detective-clue.selected {
+  transform:translateY(-3px);
+ }
+}

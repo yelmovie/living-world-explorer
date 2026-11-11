@@ -135,6 +135,7 @@
  .screen-core-restoration{gap:8px;padding-bottom:8px}
  .screen-core-restoration .activity-heading h2{font-size:24px;padding-block:4px}
  .screen-core-restoration .core-controls{padding:7px 8px;gap:6px}
+ .screen-core-restoration .core-controls .core-port{font-size:16px;padding-block:4px}
  .core-link-status{padding:5px 8px}
  .core-link-count{font-size:18px}
  .core-controls .core-link-message{font-size:16px;line-height:1.23;margin-top:2px}

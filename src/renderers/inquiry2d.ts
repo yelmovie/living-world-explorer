@@ -134,7 +134,7 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
    const source=this.textures.get(key).getSourceImage() as {width:number;height:number};const y=282,scale=Math.min(880/source.width,448/source.height),w=source.width*scale,h=source.height*scale;
    this.card(x,y,w+20,h+20,{fill:0xffffff,radius:12});const picture=this.add.image(x,y,key).setScale(scale);
    const fx=x-w/2+view.focus.x*w,fy=y-h/2+view.focus.y*h,r=124;
-   if(level===0){const ring=this.add.graphics();ring.lineStyle(5,0xffffff,.95).strokeCircle(fx,fy,62);ring.lineStyle(3,tone.accent,.9).strokeCircle(fx,fy,67);if(!reduced)this.tweens.add({targets:ring,alpha:.35,duration:900,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});}
+   if(level===0){const ring=this.add.graphics();ring.lineStyle(5,0xffffff,.95).strokeCircle(fx,fy,62);ring.lineStyle(3,tone.accent,.9).strokeCircle(fx,fy,67);if(!reduced)this.tweens.add({targets:ring,alpha:.35,duration:900,yoyo:true,repeat:2,ease:'Sine.easeInOut'});}
    else{
     addHandLens(this,{picture,start:view.focus,blocked:()=>this.pauseGuard(),inspect:()=>{record.level=2;this.commit();}});
     this.caption(x,30,view.captions[level],22);return;
@@ -151,7 +151,7 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
    this.card(325,315,620,370,{fill:0xffffff,radius:14});this.art(325,315,600,350,'water');
    for(const [id,x,y,label] of [['edge',130,360,'물가 가까이'],['plant',390,265,'물풀 가까이']] as [string,number,number,string][]){
     const chosen=record.assignments.site===id;const ring=this.add.graphics();ring.lineStyle(5,0xffffff,.95).strokeCircle(x,y,30);ring.lineStyle(3,tone.accent,.9).strokeCircle(x,y,34);const dot=this.add.graphics();dot.fillStyle(chosen?tone.accent:0xffffff,chosen?1:.6).fillCircle(x,y,chosen?20:14);
-    if(!chosen&&!reduced)this.tweens.add({targets:ring,alpha:.35,duration:900,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});
+    if(!chosen&&!reduced)this.tweens.add({targets:ring,alpha:.35,duration:900,yoyo:true,repeat:2,ease:'Sine.easeInOut'});
     this.add.zone(x,y,88,88).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard()||record.assignments.site===id)return;record.assignments.site=id;record.sequence=0;this.commit();});this.caption(x,y+58,(chosen?'✓ ':'')+label,28,tone.ink,230);}
    const slideY=350;
    this.card(785,slideY+14,262,214,{fill:prepared?tone.soft:tone.paper,radius:20,stroke:collected?tone.accent:tone.line,width:collected?4:2});

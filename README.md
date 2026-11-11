@@ -40,9 +40,9 @@ node tests/core-figure.mjs
 npm run test:offline
 ```
 
-2026-11-09 확인: `storage-safety`·`interaction-review`·`streamlined-browser`(그리고 README 밖의 `stage-states`·`link-board`·`observation-playback`·`media-network`)는 화면 문구·구조가 바뀐 뒤(저장 경고 토스트 → 모달, 슬라이더·힌트 이름 등) 갱신되지 않아 실패한다. 앱 결함이 아니라 검사 갱신이 필요한 상태다([고도화 계획](docs/reviews/UPGRADE-PLAN-20261109.md) 2-3). `package.json`의 네 검사와 `stage-layout.mjs`는 통과한다.
+2026-11-11 확인. `storage-safety`는 손상 원본 보존과 동시 저장 4건을 통과했다. `observation-playback`은 대상별 안내·재생 중 조작 잠금·7개 관찰 준비와 중단 시 기록 복원을 확인했다. 2026-11-09에 확인한 `interaction-review`·`streamlined-browser`(그리고 README 밖의 `stage-states`·`link-board`·`media-network`)는 화면 문구·구조가 바뀐 뒤(저장 경고 토스트 → 모달, 슬라이더·힌트 이름 등) 갱신되지 않아 실패한다. 현재 화면과 검사 선택자를 함께 대조해야 한다([고도화 계획](docs/reviews/UPGRADE-PLAN-20261109.md) 2-3). `package.json`의 네 검사와 `stage-layout.mjs`는 통과한다.
 
-`test:browser`는 15개 경로를 6개 화면 크기로 검사한다. `test:flow`는 실제 학생 흐름으로 20개 탐구와 최종 보고·코어 복구를 완주하고 PNG 저장·새로고침 복원·시연 원본 분리를 확인한다. `interaction-review.mjs`와 `streamlined-browser.mjs`는 `test:flow` 이후 실행하며 직접 조작·오답 수정·중복 입력·시간 비교·회전·저장 복원을 확인한다. `storage-safety.mjs`는 잘못된 저장 구조와 다른 창의 동시 저장으로 원본이 덮이지 않는지 확인한다. `test:offline`은 운영 빌드를 직접 만들어 띄운 뒤 서버를 끄고도 새로고침·지도·탐구 그림이 열리는지 확인한다(서버 실행 불필요, 오프라인 동작은 [배포 안내](docs/DEPLOYMENT.md)). `stage-layout.mjs`는 탐구 20개를 전자칠판·태블릿·짧은 가로·폴드 화면에서 열고 관찰 크기, 입력 가림과 피드백 위치를 점검한다. 결과와 스크린샷은 Git에서 제외한 `.tmp/`에 저장한다. Phaser 캔버스는 장면이 그려진 뒤 촬영한다. 다른 서버는 `APP_URL`, 브라우저 실행 파일은 `BROWSER_PATH` 환경변수로 지정할 수 있다. 기존 `.cache/browser-manual/chrome-win/chrome.exe`가 있으면 우선 사용한다.
+`test:browser`는 15개 경로를 9개 화면 크기로 검사한다. `detective-browser.mjs`는 정상 화면 진입으로 5개 사건의 오답 수정·재열기·완료 취소·키보드 포커스·시연 격리를 7개 화면 크기에서 검사한다. `test:flow`는 실제 학생 흐름으로 20개 탐구·5개 사건과 최종 보고·코어 복구를 완주하고 PNG 저장·새로고침 복원·시연 원본 분리를 확인한다. `interaction-review.mjs`와 `streamlined-browser.mjs`는 `test:flow` 이후 실행하며 직접 조작·오답 수정·중복 입력·시간 비교·회전·저장 복원을 확인한다. `storage-safety.mjs`는 잘못된 저장 구조와 다른 창의 동시 저장으로 원본이 덮이지 않는지 확인한다. `test:offline`은 운영 빌드를 직접 만들어 띄운 뒤 서버를 끄고도 새로고침·지도·탐구 그림이 열리는지 확인한다(서버 실행 불필요, 오프라인 동작은 [배포 안내](docs/DEPLOYMENT.md)). `stage-layout.mjs`는 탐구 20개를 전자칠판·태블릿·짧은 가로·폴드 화면에서 열고 관찰 크기, 입력 가림과 피드백 위치를 점검한다. 결과와 스크린샷은 Git에서 제외한 `.tmp/`에 저장한다. Phaser 캔버스는 장면이 그려진 뒤 촬영한다. 다른 서버는 `APP_URL`, 브라우저 실행 파일은 `BROWSER_PATH` 환경변수로 지정할 수 있다. 기존 `.cache/browser-manual/chrome-win/chrome.exe`가 있으면 우선 사용한다.
 
 ## 현재 기준
 

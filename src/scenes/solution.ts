@@ -52,7 +52,7 @@ export function core(ctx:Context){
  function update(fresh=-1){
   const linked=connections(),total=linked.filter(Boolean).length,ready=total===stageIds.length;
   count.textContent=`${total} / ${stageIds.length}개 연결`;
-  message.textContent=ready?(a.activated?'코어를 복구했어요. 다시 가동해 볼 수 있어요.':'다 모았어요! ‘코어 가동’을 눌러요.'):stageIds.some((_,i)=>!eligible(i))?'보고서에서 읽지 않은 기록을 먼저 확인해요.':'연구소 이름을 누르면 같은 번호에 불이 켜져요.';
+  message.textContent=ready?(a.activated?'코어를 복구했어요. 다시 가동해 볼 수 있어요.':'다 모았어요! ‘코어 가동’을 눌러요.'):stageIds.some((_,i)=>!eligible(i))?'보고서에서 읽지 않은 기록을 먼저 확인해요.':'연구 기록을 눌러 연결해요.';
   ports.forEach(({control,state},i)=>{
    const done=linked[i],available=eligible(i);
    control.disabled=done||!available;

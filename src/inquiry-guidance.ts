@@ -39,7 +39,7 @@ export function guidance(task:InquiryTask,r:InquiryRecord,selectedCard=''){
   const card=task.items.find(it=>it.id===selectedCard);
   action=card?`‘${card.label}’ 카드를 놓을 위쪽 칸을 눌러요.`:r.runResult==='stopped'?'흐름이 멈췄어요. 사례 기록을 읽고 바꿀 카드를 다시 골라요.':done<3?(task.order>1?'아래에서 생물의 작용 카드를 고른 뒤 위쪽 가운데 칸을 눌러요.':'아래 카드 한 장을 누른 뒤 위쪽에서 어울리는 칸을 눌러요.'):!r.assignments.edge1||!r.assignments.edge2?'설계도의 빈 자리를 채우면 흐름이 이어져요.':!r.prediction?'나의 예상에서 실행 결과를 먼저 골라요.':!r.runResult?'설계 가동을 눌러 흐름을 시험해요.':!r.reflection?'예상과 실제 결과가 같은지 비교해요.':action;
   if(task.id==='M5-1'){
-   if(card)action=card.id==='yogurt'?'오른쪽 ‘만들 음식’에 놓아요.':card.id==='lactic'?'유산균 가루를 가운데 발효기에 넣어요.':'왼쪽 재료 병에 담거나 가운데 발효기에 넣어요.';
+   if(card)action=`‘${card.label}’의 역할을 생각하고, 어울리는 칸에 놓아요.`;
    else if(r.runResult==='stopped')action='이번 조합을 살펴보고 재료나 만들 음식을 바꿔 봐요.';
    else if(done<3)action=!r.assignments.input?'우유와 물 중 하나를 골라 재료 병에 담아요.':!r.assignments.action?'발효기에 함께 넣을 것을 골라요.':'완성하고 싶은 음식을 골라 오른쪽에 놓아요.';
    else if(!r.prediction)action='따뜻하게 두면 어떻게 될지 예상해요.';

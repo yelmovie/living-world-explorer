@@ -31,6 +31,11 @@
 /* Map world stays between navigation lanes, so moving labels never pass below HUD controls. */
 .screen-nature-map .map-camera{inset:78px 0 142px}
 .screen-nature-map .map-view-tools{top:auto;left:16px;bottom:26px;flex-direction:column}
+@media(min-width:601px){
+ .screen-nature-map .map-companion-help{left:76px;bottom:26px;width:56px;min-height:104px;padding:4px;font-size:16px;justify-content:center}
+ .screen-nature-map .map-companion-help img{width:44px;height:64px}
+ .screen-nature-map .map-directions{left:144px}
+}
 @media(max-width:600px){
  .screen-nature-map .map-directions{left:72px;bottom:16px;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(2,44px);gap:4px}
  .screen-nature-map .map-directions>.button{width:44px;height:44px;min-height:44px}

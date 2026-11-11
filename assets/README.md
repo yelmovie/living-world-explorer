@@ -9,7 +9,7 @@
 | `film/` | 시작·복구 영상(`intro`, `final`의 `.mp4`·`.vtt`·포스터 `.webp`). `scripts/render-film.mjs`로 만들고, 오프라인 캐시에는 넣지 않음 |
 | `characters/` | 모아·토토 초상과 전신 |
 | `concepts/` | 스테이지 개념 영상·포스터·자막 |
-| `fonts/` | Jua 웹폰트와 OFL 원문 |
+| `fonts/` | 현재 UI용 나눔스퀘어 네오 WOFF2(400·700), OFL 원문·출처 및 해시 기록 |
 | `map/` | 탐험 지도(`terrain.webp`), 지도 위 걷는 캐릭터 4방향 |
 | `places/` | 연구 시설 배경(`fungi`·`water`·`archive`·`village`·`workshop`), 연구소(`greenhouse`), 복구된 코어(`core`) |
 | `study/` | 학습용 관찰 모형·조사 그림. 시간 비교는 `bread-0~3`, `leaf-0~3`. 확대 단계는 `*-lens`(돋보기)·`mushroom-spores`(현미경), 세균 세 모양 카드는 `bacteria-{round,rod,spiral}` |
