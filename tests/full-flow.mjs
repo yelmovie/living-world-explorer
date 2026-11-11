@@ -49,7 +49,7 @@ async function completeTask(task,replay=false){
  if(task.kind==='publish'){const dialog=await alternative();await dialog.getByRole('button',{name:'요구르트 소개하기',exact:true}).click();await dialog.getByRole('button',{name:'닫기',exact:true}).click();await btn('유산균의 작용').click();assert.ok((await page.getByLabel('내 소개 문장',{exact:true}).inputValue()).length>0,'selected case and action create an editable introduction');await page.getByLabel('내 소개 문장',{exact:true}).fill('특정 세균의 작용을 우유로 요구르트를 만드는 데 이용해요.');}
  await btn('발견 기록하기').click();await page.locator('.discovery-dialog').waitFor();
  await btn(task.order===4?'연구소 복구하기':'다음 발견으로').click();
- if(task.order===4){const clues=await page.evaluate(async stage=>(await import('/src/detective-cases.ts')).researchCases[stage].clues,task.stage);for(const clue of clues){await page.locator(`[data-clue="${clue.id}"]`).click();await page.locator(`[data-zone="${clue.role}"]`).click();}await btn('증거로 사건 설명하기').click();await btn('조사 결과 전달하기').click();}
+ if(task.order===4){const clues=await page.locator('[data-clue]').evaluateAll(nodes=>nodes.map((n,i)=>({id:n.dataset.clue,role:i===2?'limit':'supports'})));for(const clue of clues){await page.locator(`[data-clue="${clue.id}"]`).click();await page.locator(`[data-zone="${clue.role}"]`).click();}await btn('증거로 사건 설명하기').click();await btn('조사 결과 전달하기').click();}
  if(task.order===4&&!replay){
   await page.locator('.concept-dialog').waitFor();await btn('복구 보상 받기').click();
   const reward=page.locator('.resident-reward');
