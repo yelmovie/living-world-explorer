@@ -41,6 +41,6 @@ export function ladderPlacement(done:boolean,onPlaced:()=>void){
   li.append(b);if(placed)li.classList.add('placed');return li;};
  list.append(slot(0));known.forEach((r,i)=>{list.append(rungRow(r,true));if(r.id===NAKED_EYE_LAST)list.append(limitLine());list.append(slot(i+1));});
  // Reopened after placing: show where the bacteria went.
- if(done)requestAnimationFrame(()=>list.querySelector('.ladder-slot.placed')?.scrollIntoView({block:'nearest'}));
+ if(done)requestAnimationFrame(()=>{list.scrollTop=list.scrollHeight;});
  box.append(paragraph('숫자를 비교해 위에서 아래로 작아지는 자리를 찾아요. 그림은 각각 확대했어요. 종류마다 크기가 다르고 칸마다 차이도 달라요.','muted'),list,say);return box;
 }

@@ -84,7 +84,10 @@ try{
   assert.notDeepEqual(await canvas.screenshot(),first,'the crystal and ring actually move during activation');
  }
  await page.screenshot({path:out+'/1280x800-powered.png',animations:'disabled'});
- await button(page,'결과로 바로 가기').click();
+ // Taking software-rendered screenshots can outlast the five-second activation.
+ await button(page,'결과로 바로 가기').click({timeout:2000}).catch(async error=>{
+  if(!await page.locator('.screen-results').isVisible())throw error;
+ });
  await skipFilm(page);
  await page.locator('.screen-results').waitFor();
  assert.deepEqual((await waitSaved(page,s=>s.preview.activated)).preview.ports.sort(),['M1','M2','M3','M4','M5']);
@@ -102,6 +105,10 @@ try{
  }
  assert.equal(await page.locator('.core-figure').getAttribute('data-power'),'powered');
  assert.ok(await power.isEnabled(),'a failed image does not block activation');
+ await power.click();
+ await button(page,'결과로 바로 가기').click();
+ await skipFilm(page);
+ await page.locator('.screen-results').waitFor();
  assert.deepEqual(errors,[]);
  console.log(`CORE ${live?'THREE.JS':'IMAGE'} PASS: six viewport sizes, touch, keyboard, individual lamps, duplicate protection, revisit, activation, fallback`);
 }finally{await browser.close();}

@@ -26,11 +26,17 @@ try{
  await settings.getByRole('button',{name:'관리자 전체 해금',exact:true}).click();
  await settings.getByRole('button',{name:'닫기',exact:true}).click();
  // A fresh preview lets the first ladder attempt be wrong before example records are loaded.
- for(const [width,height] of [[375,812],[915,412],[1024,768]]){
+ for(const [index,[width,height]] of [[375,812],[375,812],[915,412],[1024,768]].entries()){
   await page.setViewportSize({width,height});const task=await open('M3-2');
-  if(width===375)for(const item of task.items){await linkCard(page,item.id).click();await linkTarget(page,item.target).click();}
-  await button(page,width===375?'크기 사다리에 세균 놓기':'✓ 크기 사다리 다시 보기').click();
+  if(index===0)for(const item of task.items){await linkCard(page,item.id).click();await linkTarget(page,item.target).click();}
+  await button(page,index===0?'크기 사다리에 세균 놓기':'✓ 크기 사다리 다시 보기').click();
   const ladder=page.locator('.ladder-dialog');
+  await ladder.evaluate(async node=>{await Promise.all(node.getAnimations().map(animation=>animation.finished));});
+  const frame=await ladder.evaluate(node=>{
+   const box=node.getBoundingClientRect(),title=node.querySelector('h2').getBoundingClientRect(),close=node.querySelector('.modal-close').getBoundingClientRect();
+   return {scrollTop:node.scrollTop,titleVisible:title.top>=box.top&&title.bottom<=box.bottom,closeVisible:close.top>=box.top&&close.bottom<=box.bottom};
+  });
+  assert.ok(frame.scrollTop===0&&frame.titleVisible&&frame.closeVisible,'ladder title and close remain visible: '+JSON.stringify({width,height,frame}));
   for(const asset of ['hair-shaft.webp','hypha-thread.webp']){
    const image=ladder.locator(`img[src$="/${asset}"]`);
    await image.waitFor();
@@ -48,7 +54,7 @@ try{
    });
    assert.ok(readable,'numeric size labels must stay inside their rows');
   }
-  if(width===375){
+  if(index===0){
    await ladder.getByRole('button',{name:'여기에 놓기',exact:true}).first().click();
    assert.match(await ladder.locator('.ladder-feedback').innerText(),/더 아래/);
    await ladder.getByRole('button',{name:'여기에 놓기',exact:true}).last().click();
