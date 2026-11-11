@@ -28,3 +28,32 @@
  #app>.expedition-shell.link-task.link-task .link-board[data-layout=center]{grid-template-rows:max-content max-content}
  #app>.expedition-shell.link-task.link-task .link-board[data-layout=center] .link-stack{flex:none;grid-auto-rows:minmax(128px,auto)}
 }
+/* Map world stays between navigation lanes, so moving labels never pass below HUD controls. */
+.screen-nature-map .map-camera{inset:78px 0 142px}
+.screen-nature-map .map-view-tools{top:auto;left:16px;bottom:26px;flex-direction:column}
+@media(max-width:600px){
+ .screen-nature-map .map-directions{left:72px;bottom:16px;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(2,44px);gap:4px}
+ .screen-nature-map .map-directions>.button{width:44px;height:44px;min-height:44px}
+ .screen-nature-map .map-next,.screen-nature-map .map-arrival{right:10px;max-width:calc(100% - 224px);font-size:16px;padding:8px;bottom:16px}
+ .screen-nature-map .map-view-tools{left:12px;bottom:16px;gap:4px}
+ .screen-nature-map .map-view-icon{width:44px;height:44px;min-width:44px;min-height:44px}
+ .screen-nature-map .map-camera{bottom:128px}
+}
+@media(max-width:600px){.screen-nature-map .map-companion-help{left:auto;right:12px;top:78px;bottom:auto;width:48px;min-height:48px;height:48px;padding:4px}.screen-nature-map .map-companion-help img{width:36px;height:36px}.screen-nature-map .map-companion-help span{display:none}.screen-nature-map .map-camera{top:136px}}
+/* Shared card rhythm: rounded containers; equal sibling spacing without changing learning diagrams. */
+:root{--card-corner:18px;--card-gap:12px}
+#app :is(.discovery-card,.claim-card,.impact-card,.source-card,.report-card,.result-card,.mentor-card,.tool-panel,.expedition-panel,.link-card,.link-target){border-radius:var(--card-corner)}
+#app :is(.source-grid,.link-stack){gap:var(--card-gap)}
+@media(max-height:560px){#app :is(.source-grid,.link-stack){gap:8px}}
+.tool-panel{padding:16px}
+.discovery-card{padding:16px}
+/* Phone overview uses a readable destination shelf rather than shrinking touch targets together. */
+@media(max-width:600px){
+ .screen-nature-map .map-camera.overview-on .map-landscape{width:100%!important;height:100%!important;transform:none!important}
+ .screen-nature-map .map-camera.overview-on .map-host{opacity:.35;pointer-events:none}
+ .screen-nature-map .map-camera.overview-on .map-overlay{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:12px;padding:12px;overflow:auto;pointer-events:auto}
+ .screen-nature-map .map-camera.overview-on .map-overlay>.map-node,.screen-nature-map .map-camera.overview-on .map-overlay>.map-resident,.screen-nature-map .map-camera.overview-on .map-overlay>.mv-target{position:relative;left:auto!important;top:auto!important;transform:none!important;width:100%;height:86px;min-height:64px;max-width:100%;margin:0}
+ .screen-nature-map .map-camera.overview-on .map-node{font-size:16px;padding:6px;white-space:normal}
+ .screen-nature-map .map-camera.overview-on .map-badge{width:32px;height:32px}
+ .screen-nature-map .map-camera.overview-on .mv-status{position:sticky;grid-column:1/-1}
+}
