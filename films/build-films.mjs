@@ -44,7 +44,7 @@ function build(f) {
   const cardX = [110, 1030], cardY = 250, cw = 780, ch = 440;
   f.pair.forEach((p, i) => {
     const id = 'card' + i, enter = s2 + .1 + i * .3, swap = s2 + 1.6 + i * 2.0;
-    const toolMark = f.tool === 'time' ? `<div id="${id}-tool" class="tool-tag">며칠 뒤</div>`
+    const toolMark = f.tool === 'time' ? `<div id="${id}-tool" class="tool-tag">시간이 흐른 뒤</div>`
       : f.tool === 'work' ? `<div id="${id}-tool" class="tool-tag">생물의 작용</div>`
       : `<div id="${id}-tool" class="lens-ring"></div>`;
     clip(id, s2, s3 - s2, `<div id="${id}-box" class="card" style="left:${cardX[i]}px;top:${cardY}px;width:${cw}px;height:${ch}px">
@@ -172,7 +172,7 @@ for (const f of films) {
   await writeFile(join(dir, 'index.html'), out.html);
   for (const p of out.images) await copyFile(join(pub, p + '.webp'), join(dir, 'assets/img', p.split('/').pop() + '.webp'));
   for (const s of out.sounds) await copyFile(join(pub, 'audio', s + '.wav'), join(dir, 'assets/sfx', s + '.wav'));
-  for (const font of ['jua-korean-400.woff2', 'jua-latin-400.woff2', 'Jua-OFL.txt']) await copyFile(join(pub, 'fonts', font), join(dir, 'assets/fonts', font));
+  for (const font of ['jua-korean-400.woff2', 'jua-latin-400.woff2', 'Jua-OFL.txt']) await copyFile(join(here, 'fonts', font), join(dir, 'assets/fonts', font));
   await writeFile(join(dir, 'hyperframes.json'), JSON.stringify({$schema: 'https://hyperframes.heygen.com/schema/hyperframes.json', paths: {blocks: 'compositions', components: 'compositions/components', assets: 'assets'}, media: {autoProxy: true}, authoringSkill: 'hyperframes'}, null, 2) + '\n');
   await writeFile(join(dir, 'meta.json'), JSON.stringify({id: 'concept-' + f.id, name: `${f.id} 개념 영상 · ${f.place}`}, null, 2) + '\n');
   console.log('built', dir);

@@ -24,6 +24,8 @@ export const inquiryArt:Record<string,InquiryArt>={
  water:{src:'assets/study/pond.webp',label:'물풀과 물가가 보이는 연못 조사 그림'},
  pond:{src:'assets/study/pond.webp',label:'물풀과 물가가 보이는 연못 조사 그림'},
  soil:{src:'assets/study/soil.webp',label:'채집한 흙 표본의 조사 그림'},
+ hairShaft:{src:'assets/study/hair-shaft.webp',label:'한 가닥 머리카락의 굵기를 살펴보는 확대 설명 그림'},
+ hyphaThread:{src:'assets/study/hypha-thread.webp',label:'곰팡이의 가는 실 한 가닥을 확대한 균사 설명 그림'},
  // 2026-10-25: magnification steps, fungal common features and the three bacteria shapes (assets/generated/study-20261025c).
  mushroomSpores:{src:'assets/study/mushroom-spores.webp',label:'버섯 주름 표면과 포자를 확대한 AI 생성 관찰 모형'},
  mushroomMycelium:{src:'assets/study/mushroom-mycelium.webp',label:'죽은 나무 속으로 퍼진 버섯의 균사 단면 모형'},

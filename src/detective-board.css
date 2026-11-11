@@ -36,6 +36,9 @@
  outline:3px solid var(--color-primary);
  outline-offset:2px;
 }
+.detective-clue[data-next=true] {
+ border-color:var(--brass);
+}
 .detective-clue strong,
 .detective-clue span {
  max-width:100%;
@@ -56,6 +59,11 @@
  border-radius:18px;
  background:rgba(213,243,230,.6);
 }
+.detective-board[data-step=place] .detective-zone {
+ border-style:solid;
+ border-color:var(--color-primary);
+ background:var(--color-primary-soft);
+}
 .detective-message {
  min-height:2.6em;
  margin:0;
@@ -65,9 +73,13 @@
 }
 .modal .detective-progress {
  margin:0;
+ padding:8px 12px;
+ border-radius:10px;
+ background:var(--paper-face);
  font-size:16px;
  line-height:1.4;
- color:var(--color-text-sub);
+ font-weight:700;
+ color:var(--color-text-main);
 }
 .detective-board[data-solved=true] .detective-message {
  box-shadow:inset 4px 0 #34836c;

@@ -110,6 +110,13 @@ try{
    if(layout.issues.length)failures.push({task:task.id,width,height,...layout});
    screens.push({task:task.id,width,height,view:layout.view});
    if([412,800,812].includes(height))await page.screenshot({path:out+'/'+width+'-'+task.id+'.png'});
+   const sourceCard=page.locator('.link-card').first();
+   if(await sourceCard.count()){
+    await sourceCard.click();
+    const nextAction=page.locator('.source-preview .source-next');
+    assert.ok(await nextAction.isVisible(),task.id+' selected source keeps next action visible');
+    assert.ok(await visible(nextAction),task.id+' source action can be seen at '+width+'x'+height);
+   }
   }
   console.log(width+'x'+height+' · 20 activities');
  }

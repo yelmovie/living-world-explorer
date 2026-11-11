@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-12",
+  "provider": "Higgsfield connector / OpenAI GPT Image 2.6",
+  "storage": "Cloud-generated, downloaded directly to external T7 Shield. No built-in generator or Momo used.",
+  "purpose": "Elementary scientific explanatory models. Labels and scale numbers are rendered by the application.",
+  "review": "Original PNGs visually inspected. Hair and hypha show individual strands. Microscope slide has a thin flat face and alpha transparency. Numeric scale is not inferred from image size.",
+  "jobs": [
+    {
+      "asset": "hair-shaft",
+      "jobId": "61404f76-2a6f-4e7c-ae53-cbec6b388fdf",
+      "model": "gpt_image_2_6",
+      "params": {
+        "aspect_ratio": "3:2",
+        "prompt": "Create one standalone scientific teaching illustration for a Korean elementary science exploration game. A SINGLE human hair shaft in magnified side view, running diagonally from lower-left to upper-right across the center. Brown cylindrical strand with subtle overlapping cuticle scales, even diameter and clearly visible two side boundaries so the app can explain thickness. It is a specimen strand only, no person, no face, no root bulb, no follicles, no skin, no hair bundle. Warm cream paper background, restrained botanical field-notebook watercolor and delicate pencil texture, sage and warm brown palette, realistic shape with clean silhouette, soft diffuse lighting. Fill the central 70 percent leaving generous cream margins. This is an explanatory model, not a microscope photograph. Do not add measurement arrows, rulers, inset bubbles, labels, symbols, text, letters, numbers, watermarks, frame, or UI. One clear object only. Landscape 3:2."
+      },
+      "original": "assets/generated/20261112/hair-shaft.png",
+      "output": "public/assets/study/hair-shaft.webp",
+      "originalBytes": 1034419,
+      "originalSha256": "51a9df9a3836a683584b4e0e41bb72e5f25ce87a69be82d4d35c57f834b0bf75",
+      "outputBytes": 12622,
+      "outputSha256": "0b51cd28f04d181ff5b9ecffed2169dd02204b0be64ced59e454b5d3507ce3db"
+    },
+    {
+      "asset": "hypha-thread",
+      "jobId": "c15e249e-c619-405a-be72-84a15370bfbe",
+      "model": "gpt_image_2_6",
+      "params": {
+        "prompt": "Create one standalone scientific teaching illustration for an elementary science game. A magnified SINGLE fungal hypha, a thin pale ivory translucent tubular filament, extending gently diagonally left to right across the center with one short lateral branch. Two fine outer edges must be distinguishable so the app can explain its thickness. Subtle organic texture, no internal cellular labels, no conspicuous beads, no fruiting body, no spherical sporangium, no mushroom, no mold colony, no hair, no roots. A simple clear example of a fungal thread, NOT the whole fungus. Warm cream paper background and restrained botanical watercolor with delicate pencil detail, muted sage and ivory palette. Silhouette occupies central 70 percent, generous empty margins. Scientific explanatory model, not a claimed micrograph. No measurement arrows, rulers, inset bubbles, text, letters, numbers, labels, watermark, border, or UI. Landscape 3:2.",
+        "aspect_ratio": "3:2"
+      },
+      "original": "assets/generated/20261112/hypha-thread.png",
+      "output": "public/assets/study/hypha-thread.webp",
+      "originalBytes": 950282,
+      "originalSha256": "0384d743dc65bf4f3a5dd099055d3795da3dc1420d7a6351335c8060dd5d2846",
+      "outputBytes": 5696,
+      "outputSha256": "8d8119e5530393d3eef33dff7b3f020235ea834bf3b4449ead6eee6b2bc0b3cc"
+    },
+    {
+      "asset": "microscope-slide",
+      "jobId": "6caa8244-6f55-4616-b21d-c2b47505eb4b",
+      "model": "gpt_image_2_6",
+      "params": {
+        "prompt": "One plain microscope glass slide, a SINGLE very thin FLAT rectangular transparent glass plate with a three-to-one length-to-width proportion. The glass itself is about one millimeter thick. Shallow three-quarter view, long axis almost horizontal and rotated 12 degrees counterclockwise, full object visible. A completely flat uninterrupted upper surface, absolutely NO raised rim, NO basin, NO recessed center, NO handles, NO stacked plates. Delicate polished straight glass edges with subtle pale aqua reflections. The central surface is empty so the game will place its own animated water drop there. Restrained watercolor scientific classroom specimen prop consistent with a sage-green and brass botanical field notebook, realistic clean shape. Isolated on genuinely transparent background with alpha, no backdrop, no cast shadow beyond the object, no ground plane. No coverslip, no specimen, no droplet, no text, no letters, no numbers, no labels, no ruler, no arrows, no UI. Landscape 21:9.",
+        "aspect_ratio": "21:9",
+        "background": "transparent",
+        "output_format": "png",
+        "quality": "medium"
+      },
+      "original": "assets/generated/20261112/microscope-slide.png",
+      "output": "public/assets/ui/slide-flat.webp",
+      "originalBytes": 789659,
+      "originalSha256": "2d97715df57c208dce93ab6dc4176fc150e3cd3d678dbb18f990b56845199719",
+      "outputBytes": 20894,
+      "outputSha256": "3d9d54949f1677461b41feec51266a81b2a57202081ceed13c26445b2dcb64a4"
+    }
+  ]
+}

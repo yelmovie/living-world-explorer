@@ -16,7 +16,7 @@
 | sharp 0.34.4 | 이미지 최적화 | Apache-2.0, 로컬 package.json | PASS | 개발 도구, 기존 이미지 최적화에 사용 |
 | Vitest 3.2.4 / Playwright Test 1.56.1 | 테스트 | MIT / Apache-2.0, 로컬 package.json | PASS | 개발 도구 |
 | 네이버 나눔스퀘어 네오 | 현재 제목·버튼·본문(400·700) | SIL Open Font License 1.1, public/assets/fonts/NanumSquareNeo-OFL.txt | PASS | 공식 배포 출처·SHA-256은 NanumSquareNeo-SOURCE.json에 기록. 2026-11-11 두 배포 파일의 해시 일치 확인 |
-| Google Fonts Jua | 이전 제목용 글꼴 보관 | SIL Open Font License 1.1, _unused/fonts-20261111/Jua-OFL.txt | PASS | 기존 파일·OFL 원문을 _unused/fonts-20261111/에 보관 |
+| Google Fonts Jua | 개념영상 렌더용 글꼴 | SIL Open Font License 1.1, films/fonts/Jua-OFL.txt | PASS | 기존 파일·OFL 원문을 films/fonts/에 보관 |
 | 기존 생성 배경·캐릭터 | 연구소 장식·지도·NPC | 기존 프로젝트 AI 생성 자료, 일부 생성 날짜·도구만 기록됨 | 확인 필요 | 납품 담당자가 생성 당시 계정·계약·상업 이용 조건을 대조해야 함 |
 | 이번 제작 AI 이미지 | 새 지도·캐릭터·시설 이미지 | 기본 image_gen으로 프로젝트용 생성, 제작 담당자 기록과 연결 | 확인 필요 | 최종 파일 목록·생성 날짜·계정 이용 조건 기록을 납품 때 보존 |
 | 배경 음악 2곡 (2026-11-04 교체) | 지도·탐구 메인테마, 결과 화면 엔딩테마 | 제작자가 본인 Suno Premier 플랜 계정으로 직접 생성(가사 없음). Premier 플랜 생성물은 상업 이용 가능. 생성 기록: assets/generated/bgm-20261104.json, 이전 곡: bgm-20261025.json | PASS | 원본 MP3 보관, 배포본은 AAC 96kbps로 변환 |
@@ -53,8 +53,8 @@
 | public/assets/audio/bgm-{main,ending}-theme.m4a | 2026-11-04 Suno Premier 플랜 생성(제작자 계정). 받은 파일명 main.mp3, final.mp3 | 배경 음악. 원본은 assets/generated/bgm-20261104/ |
 | public/assets/film/{intro,final}.{mp4,vtt,webp} | 2026-11-04 제작자 제공 영상을 scripts/render-film.mjs로 가공 | 시작·복구 영상. 원본은 assets/generated/film-20261104/ |
 | public/assets/fonts/NanumSquareNeoTTF-{bRg,cBd}.woff2 | 네이버 나눔스퀘어 네오, 현재 UI용 보통·굵은 웹폰트. 공식 배포 출처와 해시는 같은 폴더의 NanumSquareNeo-SOURCE.json | SIL OFL 1.1, NanumSquareNeo-OFL.txt 동봉 |
-| _unused/fonts-20261111/jua-korean-400.woff2 | Google Fonts Jua, 이전 제목용 한국어 웹폰트 보관 | SIL OFL 1.1 |
-| _unused/fonts-20261111/jua-latin-400.woff2 | Google Fonts Jua, 이전 제목용 라틴 웹폰트 보관 | SIL OFL 1.1 |
+| films/fonts/jua-korean-400.woff2 | Google Fonts Jua, 개념영상 렌더용 한국어 웹폰트 | SIL OFL 1.1 |
+| films/fonts/jua-latin-400.woff2 | Google Fonts Jua, 개념영상 렌더용 라틴 웹폰트 | SIL OFL 1.1 |
 | src/draw.ts 및 Phaser 탐구 도식 | 프로젝트 자체 제작 설명 모형 | 현미경 사진이나 실험 측정 원자료로 소개하지 않음 |
 | src/experience.ts의 SVG 아이콘 | 프로젝트 자체 제작 선형 아이콘 | 공통 홈·이전·음소거·설정·탐구 도구 |
 | src/audio.ts | 프로젝트 자체 제작 재생 코드. 효과음 파일이 없을 때만 짧은 음을 합성 | 배경 음악은 위 Suno 2곡 |
@@ -102,7 +102,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-현재 UI용 나눔스퀘어 네오의 OFL 원문은 `public/assets/fonts/NanumSquareNeo-OFL.txt`에 동봉한다. 이전 Jua의 OFL 원문은 기존 글꼴과 함께 `_unused/fonts-20261111/Jua-OFL.txt`에 보관한다. 배포 폴더에도 이 고지와 사용한 라이선스 원문을 함께 전달한다.
+현재 UI용 나눔스퀘어 네오의 OFL 원문은 `public/assets/fonts/NanumSquareNeo-OFL.txt`에 동봉한다. 개념영상 Jua의 OFL 원문은 기존 글꼴과 함께 `films/fonts/Jua-OFL.txt`에 보관한다. 배포 폴더에도 이 고지와 사용한 라이선스 원문을 함께 전달한다.
 
 ## 복구 지도 주민 일러스트 (2026-11-02)
 
@@ -122,3 +122,15 @@ SOFTWARE.
 지도 속 보라색 방해 구름은 OpenAI 이미지 생성으로 제작한 상상 캐릭터다. 실제 균류·세균·바이러스를 묘사하지 않으며 학생 가이드에도 구별을 명시했다. 생성 원본·제작 지시 요약·SHA-256·가공 규격은 `generated/20261110/confusion-cloud-v2-provenance.json`에 보관한다. 실행용 `public/assets/characters/confusion-cloud-v2.webp`는256×256 투명 WebP다. 기존 그림의 권리 확인을 대신하는 기록은 아니다.
 
 시작/마무리 이야기 MP4는 기존 영상에서720p H.264로 재인코딩했다. AAC 음성·재생 시간·자막 내용은 바꾸지 않았다. 이전 커밋61d6ee3에 원본이 보존되어 있다.
+
+## 2026-11-12 과학 설명 그림
+
+크기 사다리의 머리카락 한 가닥과 균사 한 가닥, 표본 준비용 평평한 받침 유리판을 Higgsfield 연결 도구의 OpenAI GPT Image 2.6으로 생성했다. 수채화 관찰 노트에 맞춘 교육용 설명 모형이며 크기 수치·측정 방향은 앱의 글자로 표시한다. 원본 PNG와 실제 프롬프트·모델·작업 ID·파일 해시는 `assets/generated/20261112/provenance.json`에 기록했다. 원본을 직접 열어 확인하고 WebP로 줄여 적용했다.
+
+| 파일 | 용도 |
+|---|---|
+| `assets/study/hair-shaft.webp` | 머리카락 한 가닥의 굵기 설명 |
+| `assets/study/hypha-thread.webp` | 둥근 포자주머니와 구별한 균사 굵기 설명 |
+| `assets/ui/slide-flat.webp` | 표본 한 방울을 올리는 얇고 평평한 유리판 |
+
+사용 계정과 생성 서비스의 적용 이용 조건 확인은 납품 권리 검토에 포함한다.
