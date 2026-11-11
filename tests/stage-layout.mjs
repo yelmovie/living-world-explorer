@@ -47,6 +47,23 @@ try{
     for(const n of hud)if(!viewport(n)||hud.some(b=>n!==b&&overlap(rect(n),rect(b))))issues.push('toolbar: '+n.textContent);
     if(hud.some(b=>overlap(rect(b),rect(title))))issues.push('heading covered');
     if(visual.width<280||visual.height<152)issues.push('observation too small');
+    const current=document.querySelector('.activity-stepper .current');
+    if(current){
+     const style=getComputedStyle(current);
+     const luminance=color=>{
+      const [r,g,b]=color.match(/[\d.]+/g).slice(0,3).map(value=>{
+       const channel=Number(value)/255;
+       return channel<=.04045?channel/12.92:((channel+.055)/1.055)**2.4;
+      });
+      return .2126*r+.7152*g+.0722*b;
+     };
+     const foreground=luminance(style.color),background=luminance(style.backgroundColor);
+     if((Math.max(foreground,background)+.05)/(Math.min(foreground,background)+.05)<3)issues.push('current activity number contrast');
+    }
+    for(const caption of view.querySelectorAll('.observation-caption,.observation-disclosure')){
+     const bounds=rect(caption),host=rect(view);
+     if(bounds.top<host.top-1||bounds.bottom>host.bottom+1)issues.push('clipped observation caption');
+    }
     const compact=innerWidth<=850;
     if(!compact)for(const n of document.querySelectorAll('.expedition-footer button,.activity-stepper button')){
      if(!viewport(n)||rect(n).height<44||rect(n).width<44)issues.push('navigation: '+n.textContent);
