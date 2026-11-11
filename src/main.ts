@@ -152,3 +152,5 @@ window.addEventListener('hashchange',()=>{if(state)go(location.hash.replace('#/'
 // Offline play after the first visit; dev builds stay uncached.
 if(import.meta.env.PROD&&'serviceWorker' in navigator)window.addEventListener('load',()=>void navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 document.documentElement.style.removeProperty('--app-height');app.append(paragraph('모아가 연구소를 준비하고 있어요.','loading'));void load().then(s=>{state=s;const a=active(state);if(a.mapPosition.x===480&&a.mapPosition.y===380)a.mapPosition={...mapSpawn};const route=history.state?.teacherPreview||restoredFromPreview?a.route:location.hash.replace('#/','')||a.route;go(route);showStorageWarning();});
+
+import './glass-surfaces.css';

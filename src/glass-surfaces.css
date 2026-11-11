@@ -1,0 +1,30 @@
+/* Illustrated-world glass surfaces. Opacity belongs to the surface, never text. */
+:root{--glass-face:rgba(255,253,243,.78);--glass-reading:rgba(255,253,246,.91);--glass-line:rgba(71,99,75,.34);--glass-shadow:0 6px 20px rgba(27,53,40,.12),inset 0 1px rgba(255,255,255,.8)}
+
+.button:not(.primary):not(.selected):not(.danger):not(.text-button),.toolbar .button.icon-button,.map-view-icon{background:var(--glass-face);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+.expedition-panel,.tool-panel,.discovery-card,.activity-stepper,.expedition-header h2{background:var(--glass-face);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+.modal:not(.film-dialog),.buddy-speech{background:var(--glass-reading);border:1px solid var(--glass-line);box-shadow:0 16px 48px #1b352833;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.modal:not(.film-dialog)::backdrop{background:rgba(18,42,31,.26)}
+.button:not(.primary):not(.selected):not(.danger):hover:not(:disabled){background:rgba(255,254,248,.94)}
+.button[aria-pressed=true],.map-view-icon[aria-pressed=true]{background:#e5efd4;border-color:#55794d}
+@media(prefers-reduced-transparency:reduce){:root{--glass-face:#fffdf3;--glass-reading:#fffdf6}}
+@media print{.modal,.tool-panel,.expedition-panel,.discovery-card{background:#fff!important;backdrop-filter:none!important;box-shadow:none!important}}
+/* Portrait evidence labels get their own track rather than spilling onto the next card. */
+@media(max-width:599px){
+ #app>.expedition-shell.link-task.link-task .link-card,#app>.expedition-shell.link-task.link-task .link-card:has(.link-port[data-side=left]){grid-template-rows:minmax(24px,1fr) auto;grid-template-columns:minmax(0,1fr);gap:4px;padding:6px 12px}
+ #app>.expedition-shell.link-task.link-task .link-photo{height:100%;min-height:24px}
+ #app>.expedition-shell.link-task.link-task .link-caption{min-height:0}
+ #app>.expedition-shell.link-task.link-task .link-name{font-size:18px;line-height:1.2}
+}
+@media(max-width:599px){
+ #app>.expedition-shell.link-task.link-task .link-card .link-photo{position:relative;height:auto;min-height:24px;max-height:100%}
+ #app>.expedition-shell.link-task.link-task .link-card .link-photo>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+ #app>.expedition-shell.link-task.link-task .link-card .link-caption{align-self:stretch}
+}
+#app .link-card,#app .link-target{background:var(--glass-face);box-shadow:var(--glass-shadow)}
+@media(max-width:599px){#app>.expedition-shell.link-task.link-task .link-stack{grid-auto-rows:minmax(128px,1fr)}#app>.expedition-shell.link-task.link-task .link-board{overflow-y:auto}}
+@media(max-width:599px){#app>.expedition-shell.link-task.link-task .link-board[data-layout=center]{grid-template-rows:auto auto;align-content:start}#app>.expedition-shell.link-task.link-task .link-column{min-height:min-content}}
+@media(max-width:599px){
+ #app>.expedition-shell.link-task.link-task .link-board[data-layout=center]{grid-template-rows:max-content max-content}
+ #app>.expedition-shell.link-task.link-task .link-board[data-layout=center] .link-stack{flex:none;grid-auto-rows:minmax(128px,auto)}
+}
