@@ -1,0 +1,23 @@
+
+> life-code-lab@0.1.0 build
+> node node_modules/typescript/bin/tsc --noEmit && node node_modules/vite/bin/vite.js build
+
+vite v7.2.2 building client environment for production...
+transforming...
+✓ 77 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                1.51 kB │ gzip:   0.74 kB
+dist/assets/CREDITS.md                        16.96 kB
+dist/assets/index-mPI7UcfH.css               181.30 kB │ gzip:  34.17 kB
+dist/assets/simple-microscope-BzVi5P8H.js      2.09 kB │ gzip:   1.29 kB
+dist/assets/fungi-sort-C8tWvfvu.js             3.10 kB │ gzip:   1.54 kB
+dist/assets/link-board-CrD_tAg3.js             7.05 kB │ gzip:   3.15 kB
+dist/assets/map-DcHJxjwG.js                    9.05 kB │ gzip:   3.82 kB
+dist/assets/core3d-Ccro6DWq.js                15.85 kB │ gzip:   6.95 kB
+dist/assets/inquiry2d-DbkKpRek.js             24.13 kB │ gzip:   9.69 kB
+dist/assets/model-viewer-Ct6FWSyE.js          69.87 kB │ gzip:  20.73 kB
+dist/assets/index-DAtxc2PX.js                348.71 kB │ gzip: 106.10 kB
+dist/assets/three.module-BQInJftc.js         563.47 kB │ gzip: 145.52 kB
+dist/assets/phaser-Jt__PiWe.js             1,208.08 kB │ gzip: 332.18 kB
+✓ built in 5.69s

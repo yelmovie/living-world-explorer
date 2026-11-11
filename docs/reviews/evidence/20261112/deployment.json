@@ -1,0 +1,20 @@
+{
+  "id": "71a00e0b-6bc0-4eb4-b999-8fb9814a89ae",
+  "url": "https://71a00e0b.living-world-explorer.pages.dev",
+  "environment": "production",
+  "latest_stage": {
+    "name": "deploy",
+    "started_on": null,
+    "ended_on": "2026-11-11T16:15:46.836088Z",
+    "status": "success"
+  },
+  "deployment_trigger": {
+    "type": "ad_hoc",
+    "metadata": {
+      "branch": "main",
+      "commit_hash": "35486baf8c86acbc426b981aa6728c877612cb74",
+      "commit_message": "fix: keep size ladder guidance visible on compact screens",
+      "commit_dirty": false
+    }
+  }
+}

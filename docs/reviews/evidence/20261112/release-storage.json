@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "checks": [
+    "null original preserved",
+    "future original preserved",
+    "malformed original preserved",
+    "stale second tab blocked atomically"
+  ]
+}

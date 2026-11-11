@@ -1,0 +1,20 @@
+[
+  {
+    src: 'assets/audio/voice/story-1.mp3',
+    played: true,
+    ended: true,
+    error: false
+  },
+  {
+    src: 'assets/audio/voice/story-2.mp3',
+    played: true,
+    ended: false,
+    error: false
+  },
+  {
+    src: 'assets/audio/voice/story-3.mp3',
+    played: true,
+    ended: true,
+    error: false
+  }
+]

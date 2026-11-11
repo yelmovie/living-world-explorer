@@ -1,0 +1,2457 @@
+{
+  "status": "PASS",
+  "errors": [],
+  "warnings": [
+    "[.WebGL-0x12c005a3c00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x12c005a3c00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x12c005a3c00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x12c005c4000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+  ],
+  "failedRequests": [],
+  "loading": {
+    "resources": 8,
+    "bytes": 1411200,
+    "external": [],
+    "readyMs": 565
+  },
+  "screens": [
+    {
+      "size": {
+        "width": 915,
+        "height": 412
+      },
+      "route": "main",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 915,
+        "height": 412
+      },
+      "route": "nature-map",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 915,
+        "height": 514.6875
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 915,
+        "height": 412
+      },
+      "route": "fungi-field",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 635,
+        "height": 228.5
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 915,
+        "height": 412
+      },
+      "route": "fungi-microscope",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 571,
+        "height": 222
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 915,
+        "height": 412
+      },
+      "route": "water-sampling",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 571,
+        "height": 222
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 915,
+        "height": 412
+      },
+      "route": "protist-observation",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 571,
+        "height": 222
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 915,
+        "height": 412
+      },
+      "route": "bacteria-sources",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 635,
+        "height": 228.5
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 915,
+        "height": 412
+      },
+      "route": "bacteria-profile",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 635,
+        "height": 228.5
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 915,
+        "height": 412
+      },
+      "route": "impact-investigation",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 571,
+        "height": 222
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 915,
+        "height": 412
+      },
+      "route": "impact-analysis",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 635,
+        "height": 228.5
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 915,
+        "height": 412
+      },
+      "route": "solution-assembly",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 571,
+        "height": 222
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 915,
+        "height": 412
+      },
+      "route": "solution-run",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 571,
+        "height": 222
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 915,
+        "height": 412
+      },
+      "route": "final-report",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 915,
+        "height": 412
+      },
+      "route": "core-restoration",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 551.90625,
+        "height": 222.8125
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 915,
+        "height": 412
+      },
+      "route": "results",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 830,
+        "height": 515
+      },
+      "route": "main",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 830,
+        "height": 515
+      },
+      "route": "nature-map",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 830,
+        "height": 466.875
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 830,
+        "height": 515
+      },
+      "route": "fungi-field",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 802,
+        "height": 246.109375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 830,
+        "height": 515
+      },
+      "route": "fungi-microscope",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 486,
+        "height": 288
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 830,
+        "height": 515
+      },
+      "route": "water-sampling",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 486,
+        "height": 288
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 830,
+        "height": 515
+      },
+      "route": "protist-observation",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 486,
+        "height": 288
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 830,
+        "height": 515
+      },
+      "route": "bacteria-sources",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 802,
+        "height": 246.109375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 830,
+        "height": 515
+      },
+      "route": "bacteria-profile",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 802,
+        "height": 246.109375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 830,
+        "height": 515
+      },
+      "route": "impact-investigation",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 486,
+        "height": 262
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 830,
+        "height": 515
+      },
+      "route": "impact-analysis",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 802,
+        "height": 246.109375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 830,
+        "height": 515
+      },
+      "route": "solution-assembly",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 486,
+        "height": 288
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 830,
+        "height": 515
+      },
+      "route": "solution-run",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 486,
+        "height": 288
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 830,
+        "height": 515
+      },
+      "route": "final-report",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 830,
+        "height": 515
+      },
+      "route": "core-restoration",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 455.546875,
+        "height": 302
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 830,
+        "height": 515
+      },
+      "route": "results",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "route": "main",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "route": "nature-map",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 974.21875,
+        "height": 548
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "route": "fungi-field",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 347,
+        "height": 349.609375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "route": "fungi-microscope",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 359,
+        "height": 320
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "route": "water-sampling",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 359,
+        "height": 345.109375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "route": "protist-observation",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 359,
+        "height": 260.109375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "route": "bacteria-sources",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 347,
+        "height": 349.609375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "route": "bacteria-profile",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 347,
+        "height": 377.109375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "route": "impact-investigation",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 359,
+        "height": 208
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "route": "impact-analysis",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 347,
+        "height": 377.109375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "route": "solution-assembly",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 359,
+        "height": 241.109375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "route": "solution-run",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 359,
+        "height": 241.109375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "route": "final-report",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "route": "core-restoration",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 347,
+        "height": 216
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "route": "results",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1024,
+        "height": 768
+      },
+      "route": "main",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1024,
+        "height": 768
+      },
+      "route": "nature-map",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1024,
+        "height": 576
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1024,
+        "height": 768
+      },
+      "route": "fungi-field",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 996,
+        "height": 470.609375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1024,
+        "height": 768
+      },
+      "route": "fungi-microscope",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 656,
+        "height": 525
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1024,
+        "height": 768
+      },
+      "route": "water-sampling",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 656,
+        "height": 525
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1024,
+        "height": 768
+      },
+      "route": "protist-observation",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 656,
+        "height": 525
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1024,
+        "height": 768
+      },
+      "route": "bacteria-sources",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 996,
+        "height": 470.609375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1024,
+        "height": 768
+      },
+      "route": "bacteria-profile",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 996,
+        "height": 470.609375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1024,
+        "height": 768
+      },
+      "route": "impact-investigation",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 656,
+        "height": 525
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1024,
+        "height": 768
+      },
+      "route": "impact-analysis",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 996,
+        "height": 470.609375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1024,
+        "height": 768
+      },
+      "route": "solution-assembly",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 656,
+        "height": 525
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1024,
+        "height": 768
+      },
+      "route": "solution-run",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 656,
+        "height": 525
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1024,
+        "height": 768
+      },
+      "route": "final-report",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1024,
+        "height": 768
+      },
+      "route": "core-restoration",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 623.84375,
+        "height": 525.609375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1024,
+        "height": 768
+      },
+      "route": "results",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 906,
+        "height": 755
+      },
+      "route": "main",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 906,
+        "height": 755
+      },
+      "route": "nature-map",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 951.109375,
+        "height": 535
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 906,
+        "height": 755
+      },
+      "route": "fungi-field",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 878,
+        "height": 457.609375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 906,
+        "height": 755
+      },
+      "route": "fungi-microscope",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 538,
+        "height": 512
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 906,
+        "height": 755
+      },
+      "route": "water-sampling",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 538,
+        "height": 512
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 906,
+        "height": 755
+      },
+      "route": "protist-observation",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 538,
+        "height": 512
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 906,
+        "height": 755
+      },
+      "route": "bacteria-sources",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 878,
+        "height": 457.609375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 906,
+        "height": 755
+      },
+      "route": "bacteria-profile",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 878,
+        "height": 457.609375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 906,
+        "height": 755
+      },
+      "route": "impact-investigation",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 538,
+        "height": 512
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 906,
+        "height": 755
+      },
+      "route": "impact-analysis",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 878,
+        "height": 457.609375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 906,
+        "height": 755
+      },
+      "route": "solution-assembly",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 538,
+        "height": 512
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 906,
+        "height": 755
+      },
+      "route": "solution-run",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 538,
+        "height": 512
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 906,
+        "height": 755
+      },
+      "route": "final-report",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 906,
+        "height": 755
+      },
+      "route": "core-restoration",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 545.96875,
+        "height": 512.609375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 906,
+        "height": 755
+      },
+      "route": "results",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 800
+      },
+      "route": "main",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 800
+      },
+      "route": "nature-map",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1280,
+        "height": 720
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 800
+      },
+      "route": "fungi-field",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1252,
+        "height": 494.109375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 800
+      },
+      "route": "fungi-microscope",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 860.8125,
+        "height": 553.40625
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 800
+      },
+      "route": "water-sampling",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 860.8125,
+        "height": 553.40625
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 800
+      },
+      "route": "protist-observation",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 860.8125,
+        "height": 553.40625
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 800
+      },
+      "route": "bacteria-sources",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1252,
+        "height": 494.109375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 800
+      },
+      "route": "bacteria-profile",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1252,
+        "height": 494.109375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 800
+      },
+      "route": "impact-investigation",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 860.8125,
+        "height": 553.40625
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 800
+      },
+      "route": "impact-analysis",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1252,
+        "height": 494.109375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 800
+      },
+      "route": "solution-assembly",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 860.8125,
+        "height": 553.40625
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 800
+      },
+      "route": "solution-run",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 860.8125,
+        "height": 553.40625
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 800
+      },
+      "route": "final-report",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 800
+      },
+      "route": "core-restoration",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 798,
+        "height": 551
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 800
+      },
+      "route": "results",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1920,
+        "height": 1080
+      },
+      "route": "main",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1920,
+        "height": 1080
+      },
+      "route": "nature-map",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1920,
+        "height": 1080
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1920,
+        "height": 1080
+      },
+      "route": "fungi-field",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1892,
+        "height": 735.625
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1920,
+        "height": 1080
+      },
+      "route": "fungi-microscope",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1400,
+        "height": 768.8125
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1920,
+        "height": 1080
+      },
+      "route": "water-sampling",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1400,
+        "height": 768.8125
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1920,
+        "height": 1080
+      },
+      "route": "protist-observation",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1400,
+        "height": 768.8125
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1920,
+        "height": 1080
+      },
+      "route": "bacteria-sources",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1892,
+        "height": 735.625
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1920,
+        "height": 1080
+      },
+      "route": "bacteria-profile",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1892,
+        "height": 735.625
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1920,
+        "height": 1080
+      },
+      "route": "impact-investigation",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1400,
+        "height": 768.8125
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1920,
+        "height": 1080
+      },
+      "route": "impact-analysis",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1892,
+        "height": 735.625
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1920,
+        "height": 1080
+      },
+      "route": "solution-assembly",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1400,
+        "height": 768.8125
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1920,
+        "height": 1080
+      },
+      "route": "solution-run",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1400,
+        "height": 768.8125
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1920,
+        "height": 1080
+      },
+      "route": "final-report",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1920,
+        "height": 1080
+      },
+      "route": "core-restoration",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1422,
+        "height": 811
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1920,
+        "height": 1080
+      },
+      "route": "results",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 873,
+        "height": 580
+      },
+      "route": "main",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 873,
+        "height": 580
+      },
+      "route": "nature-map",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 873,
+        "height": 491.0625
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 873,
+        "height": 580
+      },
+      "route": "fungi-field",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 845,
+        "height": 311.109375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 873,
+        "height": 580
+      },
+      "route": "fungi-microscope",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 529,
+        "height": 353
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 873,
+        "height": 580
+      },
+      "route": "water-sampling",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 529,
+        "height": 353
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 873,
+        "height": 580
+      },
+      "route": "protist-observation",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 529,
+        "height": 353
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 873,
+        "height": 580
+      },
+      "route": "bacteria-sources",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 845,
+        "height": 311.109375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 873,
+        "height": 580
+      },
+      "route": "bacteria-profile",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 845,
+        "height": 311.109375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 873,
+        "height": 580
+      },
+      "route": "impact-investigation",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 529,
+        "height": 353
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 873,
+        "height": 580
+      },
+      "route": "impact-analysis",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 845,
+        "height": 311.109375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 873,
+        "height": 580
+      },
+      "route": "solution-assembly",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 529,
+        "height": 353
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 873,
+        "height": 580
+      },
+      "route": "solution-run",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 529,
+        "height": 353
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 873,
+        "height": 580
+      },
+      "route": "final-report",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 873,
+        "height": 580
+      },
+      "route": "core-restoration",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 521,
+        "height": 352.203125
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 873,
+        "height": 580
+      },
+      "route": "results",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 720
+      },
+      "route": "main",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 720
+      },
+      "route": "nature-map",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1280,
+        "height": 720
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 720
+      },
+      "route": "fungi-field",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1252,
+        "height": 418.109375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 720
+      },
+      "route": "fungi-microscope",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 860.8125,
+        "height": 473.40625
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 720
+      },
+      "route": "water-sampling",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 860.8125,
+        "height": 473.40625
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 720
+      },
+      "route": "protist-observation",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 860.8125,
+        "height": 473.40625
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 720
+      },
+      "route": "bacteria-sources",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1252,
+        "height": 418.109375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 720
+      },
+      "route": "bacteria-profile",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1252,
+        "height": 418.109375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 720
+      },
+      "route": "impact-investigation",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 860.8125,
+        "height": 473.40625
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 720
+      },
+      "route": "impact-analysis",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 1252,
+        "height": 418.109375
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 720
+      },
+      "route": "solution-assembly",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 860.8125,
+        "height": 473.40625
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 720
+      },
+      "route": "solution-run",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 860.8125,
+        "height": 473.40625
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 720
+      },
+      "route": "final-report",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 720
+      },
+      "route": "core-restoration",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": {
+        "width": 798,
+        "height": 492.203125
+      },
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 720
+      },
+      "route": "results",
+      "mapOverlaps": [],
+      "horizontal": false,
+      "footer": [],
+      "canvas": null,
+      "canvasMissing": false,
+      "brokenImages": [],
+      "error": false,
+      "smallTouchTargets": []
+    }
+  ],
+  "settingsChecks": [
+    "앱 정보 · 배움과 보상",
+    "학생용 가이드",
+    "교사용 가이드",
+    "이미지·소리·저작권 고지",
+    {
+      "size": {
+        "width": 915,
+        "height": 412
+      },
+      "dialog": true,
+      "footer": true,
+      "scroll": true
+    },
+    {
+      "size": {
+        "width": 830,
+        "height": 515
+      },
+      "dialog": true,
+      "footer": true,
+      "scroll": true
+    },
+    {
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "dialog": true,
+      "footer": true,
+      "scroll": true
+    },
+    {
+      "size": {
+        "width": 1024,
+        "height": 768
+      },
+      "dialog": true,
+      "footer": true,
+      "scroll": true
+    },
+    {
+      "size": {
+        "width": 906,
+        "height": 755
+      },
+      "dialog": true,
+      "footer": true,
+      "scroll": true
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 800
+      },
+      "dialog": true,
+      "footer": true,
+      "scroll": true
+    },
+    {
+      "size": {
+        "width": 1920,
+        "height": 1080
+      },
+      "dialog": true,
+      "footer": true,
+      "scroll": true
+    },
+    {
+      "size": {
+        "width": 873,
+        "height": 580
+      },
+      "dialog": true,
+      "footer": true,
+      "scroll": true
+    },
+    {
+      "size": {
+        "width": 1280,
+        "height": 720
+      },
+      "dialog": true,
+      "footer": true,
+      "scroll": true
+    }
+  ],
+  "previewIsolation": true,
+  "layoutFailures": []
+}

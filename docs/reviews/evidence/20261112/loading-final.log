@@ -1,0 +1,1 @@
+{"base":"http://127.0.0.1:5191","network":"10 Mbps down / 40 ms latency","cpuSlowdown":4,"cache":"fresh context, cache disabled, service worker blocked","runs":[{"readyMs":1328,"bytes":1408996,"requests":8,"external":[]},{"readyMs":7747,"bytes":1408996,"requests":8,"external":[]},{"readyMs":1340,"bytes":1408996,"requests":8,"external":[]}]}

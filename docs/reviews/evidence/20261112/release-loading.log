@@ -1,0 +1,1 @@
+{"base":"https://living-world-explorer.pages.dev","network":"10 Mbps down / 40 ms latency","cpuSlowdown":4,"cache":"fresh context, cache disabled, service worker blocked","runs":[{"readyMs":1376,"bytes":1411215,"requests":8,"external":[]},{"readyMs":1348,"bytes":1411165,"requests":8,"external":[]},{"readyMs":1346,"bytes":1411200,"requests":8,"external":[]}]}

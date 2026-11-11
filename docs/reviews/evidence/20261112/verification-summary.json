@@ -1,0 +1,33 @@
+{
+  "codeCommit": "35486baf8c86acbc426b981aa6728c877612cb74",
+  "productionUrl": "https://living-world-explorer.pages.dev",
+  "deploymentId": "71a00e0b-6bc0-4eb4-b999-8fb9814a89ae",
+  "checkedAt": "2026-11-11T16:21:27.587936+00:00",
+  "status": "PASS",
+  "unitTests": 165,
+  "unitFiles": 17,
+  "buildFiles": 175,
+  "publicFilesMatched": 174,
+  "browserReport": "release-browser.json",
+  "activityReport": "release-stage.json",
+  "detectiveReport": "release-detective.json",
+  "flowReport": "release-full-flow.json",
+  "coreThree": "release-core-webgl.log",
+  "coreImage": "release-core-figure.log",
+  "educationUx": "release-education-ux.log",
+  "videos": 7,
+  "narrations": 24,
+  "storage": "release-storage.json",
+  "publicOffline": "release-public-offline.json",
+  "offlinePrecacheFiles": 161,
+  "publicMap": "release-map-villain-art.log",
+  "publicVoiceUi": "release-story-voice-browser.log",
+  "localCacheQuotaRegression": "release-lazy-cache.log",
+  "load": "release-load.json",
+  "limitations": [
+    "Actual school tablets and iPad Safari gestures not tested",
+    "Teacher content approval and classroom outcomes pending",
+    "Legacy generated asset terms/provenance review incomplete",
+    "Physical mobile printing/sharing and speaker listening not tested"
+  ]
+}

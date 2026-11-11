@@ -1,0 +1,22 @@
+PROFILE 915x412
+PROFILE 830x515
+PROFILE 375x812
+PROFILE 1024x768
+PROFILE 906x755
+PROFILE 1280x800
+PROFILE 1920x1080
+PROFILE 873x580
+PROFILE 1280x720
+{
+  "status": "PASS",
+  "screens": 135,
+  "loading": {
+    "resources": 8,
+    "bytes": 1411200,
+    "external": [],
+    "readyMs": 565
+  },
+  "errors": [],
+  "failedRequests": [],
+  "layoutFailures": []
+}

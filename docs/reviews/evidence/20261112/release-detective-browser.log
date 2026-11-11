@@ -1,0 +1,8 @@
+DETECTIVE 1280x800 5 cases passed
+DETECTIVE 1024x768 5 cases passed
+DETECTIVE 1024x600 5 cases passed
+DETECTIVE 915x412 5 cases passed
+DETECTIVE 830x515 5 cases passed
+DETECTIVE 390x844 5 cases passed
+DETECTIVE 375x812 5 cases passed
+PASS 35 production-entry cases, keyboard focus, incorrect retry, completion invalidation, reopen, layout and learner isolation

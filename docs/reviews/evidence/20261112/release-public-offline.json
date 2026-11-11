@@ -1,0 +1,202 @@
+{
+ "base": "https://living-world-explorer.pages.dev",
+ "version": "c3a8dd280bbb",
+ "precache": {
+  "files": 161,
+  "mb": 13.97
+ },
+ "lazy": [
+  "assets/audio/bgm-ending-theme.m4a",
+  "assets/audio/bgm-main-theme.m4a",
+  "assets/core3d-Ccro6DWq.js",
+  "assets/model-viewer-Ct6FWSyE.js",
+  "assets/models/bread-mold.glb",
+  "assets/models/mushroom.glb",
+  "assets/models/paramecium.glb",
+  "assets/models/yeast.glb",
+  "assets/three.module-BQInJftc.js"
+ ],
+ "failed": [],
+ "errors": [],
+ "online": {
+  "state": "activated",
+  "controlled": true,
+  "entries": 161
+ },
+ "main": true,
+ "map": {
+  "canvas": 1
+ },
+ "inquiry": {
+  "canvas": 1,
+  "study": [
+   {
+    "src": "assets/study/bacteria-rod.webp",
+    "width": 360
+   },
+   {
+    "src": "assets/study/bacteria-round.webp",
+    "width": 360
+   },
+   {
+    "src": "assets/study/bacteria-spiral.webp",
+    "width": 360
+   },
+   {
+    "src": "assets/study/bacteria.webp",
+    "width": 960
+   },
+   {
+    "src": "assets/study/bread-0.webp",
+    "width": 640
+   },
+   {
+    "src": "assets/study/bread-1.webp",
+    "width": 1024
+   },
+   {
+    "src": "assets/study/bread-2.webp",
+    "width": 1024
+   },
+   {
+    "src": "assets/study/bread-3.webp",
+    "width": 1024
+   },
+   {
+    "src": "assets/study/deadwood.webp",
+    "width": 1024
+   },
+   {
+    "src": "assets/study/dough-after.webp",
+    "width": 1024
+   },
+   {
+    "src": "assets/study/dough-before.webp",
+    "width": 1024
+   },
+   {
+    "src": "assets/study/hair-shaft.webp",
+    "width": 480
+   },
+   {
+    "src": "assets/study/hypha-thread.webp",
+    "width": 480
+   },
+   {
+    "src": "assets/study/leaf-0.webp",
+    "width": 640
+   },
+   {
+    "src": "assets/study/leaf-1.webp",
+    "width": 1024
+   },
+   {
+    "src": "assets/study/leaf-2.webp",
+    "width": 1024
+   },
+   {
+    "src": "assets/study/leaf-3.webp",
+    "width": 1024
+   },
+   {
+    "src": "assets/study/milk.webp",
+    "width": 640
+   },
+   {
+    "src": "assets/study/mold-lens.webp",
+    "width": 1024
+   },
+   {
+    "src": "assets/study/mold.webp",
+    "width": 793
+   },
+   {
+    "src": "assets/study/moldy-fruit.webp",
+    "width": 1024
+   },
+   {
+    "src": "assets/study/mushroom-mycelium.webp",
+    "width": 1024
+   },
+   {
+    "src": "assets/study/mushroom-spores.webp",
+    "width": 1024
+   },
+   {
+    "src": "assets/study/mushroom.webp",
+    "width": 793
+   },
+   {
+    "src": "assets/study/paramecium.webp",
+    "width": 793
+   },
+   {
+    "src": "assets/study/pond.webp",
+    "width": 960
+   },
+   {
+    "src": "assets/study/soil.webp",
+    "width": 640
+   },
+   {
+    "src": "assets/study/spirogyra-lens.webp",
+    "width": 1024
+   },
+   {
+    "src": "assets/study/spirogyra.webp",
+    "width": 793
+   },
+   {
+    "src": "assets/study/spoiled-milk.webp",
+    "width": 640
+   },
+   {
+    "src": "assets/study/tooth.webp",
+    "width": 640
+   },
+   {
+    "src": "assets/study/yeast.webp",
+    "width": 640
+   },
+   {
+    "src": "assets/study/yogurt.webp",
+    "width": 640
+   }
+  ],
+  "domImages": [
+   {
+    "src": "assets/study/deadwood.webp",
+    "width": 1024
+   },
+   {
+    "src": "assets/study/bread-3.webp",
+    "width": 1024
+   },
+   {
+    "src": "assets/study/deadwood.webp",
+    "width": 1024
+   },
+   {
+    "src": "assets/study/bread-3.webp",
+    "width": 1024
+   }
+  ]
+ },
+ "media": {
+  "video": {
+   "status": 206,
+   "range": "bytes 100-199/611232",
+   "bytes": 100
+  },
+  "bgm": {
+   "status": 206,
+   "range": "bytes 0-1045849/1045850",
+   "bytes": 1045850
+  },
+  "narration": {
+   "status": 206,
+   "range": "bytes 100-199/84995",
+   "bytes": 100
+  }
+ }
+}
