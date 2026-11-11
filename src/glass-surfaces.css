@@ -57,3 +57,10 @@
  .screen-nature-map .map-camera.overview-on .map-badge{width:32px;height:32px}
  .screen-nature-map .map-camera.overview-on .mv-status{position:sticky;grid-column:1/-1}
 }
+#app .map-node{color:var(--ink-strong)}
+@media(max-width:600px){
+ .screen-nature-map .map-camera.overview-on .map-landscape{background-size:cover!important}
+ .screen-nature-map .map-camera.overview-on .map-node{order:1}
+ .screen-nature-map .map-camera.overview-on .map-resident{order:2;background:var(--glass-face);border:1px solid var(--glass-line)}
+ .screen-nature-map .map-camera.overview-on .mv-target{order:3;background:rgba(238,245,226,.75);border:1px solid var(--glass-line);border-radius:18px}
+}
