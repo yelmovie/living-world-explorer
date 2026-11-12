@@ -1,14 +1,15 @@
+import {stepAlongRoad,MAP_VECTORS} from '../map-controls.js';
 import Phaser from 'phaser';
 import {drawBuildingLights} from './map-lighting';
 import type {Point} from '../model';
-import {MAP_WIDTH,MAP_HEIGHT,mapSpawn,locations,pathGraph,destinationNodeIds,routeBetween,nearestRoadPoint,mapAssets} from '../mapData';
+import {MAP_WIDTH,MAP_HEIGHT,mapSpawn,locations,pathSegments,pathGraph,destinationNodeIds,routeBetween,nearestRoadPoint,mapAssets} from '../mapData';
 export {locations} from '../mapData';
 type Direction='up'|'down'|'left'|'right';
 let previousVisit:{attemptId:string;completed:boolean[]}|undefined;
 
 /** The map is a ground-plane road network. DOM labels and the canvas share these coordinates. */
 export function mountMap(host:HTMLElement,position:Point,completed:boolean[],attemptId:string,onArrive:(index:number,point:Point)=>void,reduced:boolean,onMove?:(point:Point)=>void){
- let requested:number|undefined;let navigate:(index:number)=>void=()=>{};let walk:(direction:Direction)=>void=()=>{};let stop:()=>void=()=>{};let disposed=false;
+ let requested:number|undefined;let navigate:(index:number)=>void=()=>{};let walk:(direction:Direction)=>void=()=>{};let nudge:(direction:Direction)=>void=()=>{};let stop:()=>void=()=>{};let disposed=false;
  class Village extends Phaser.Scene{
   private hero!:Phaser.GameObjects.Container;
   private friend!:Phaser.GameObjects.Container;
@@ -54,7 +55,8 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],att
    previousVisit={attemptId,completed:[...completed]};
    navigate=(index:number)=>{if(!locations[index])return;this.keys.clear();this.held=undefined;this.destination=index;if(reduced){this.hero.setPosition(locations[index].x,locations[index].y);this.friend.setPosition(locations[index].x,locations[index].y+30);this.route=[];this.arrive();return;}this.route=routeBetween({x:this.hero.x,y:this.hero.y},destinationNodeIds[index]);};
    walk=(direction:Direction)=>{this.route=[];this.destination=undefined;this.held=direction;};
-   stop=()=>{this.held=undefined;this.keys.clear();};
+   stop=()=>{this.held=undefined;};
+   nudge=(direction:Direction)=>{const p=stepAlongRoad({x:this.hero.x,y:this.hero.y},MAP_VECTORS[direction],12,pathSegments);this.route=[];this.destination=undefined;this.hero.setPosition(p.x,p.y);this.syncCamera();};
    this.input.on('pointerdown',(pointer:Phaser.Input.Pointer)=>{
     if(pointer.event?.target!==this.game.canvas||document.hidden||document.querySelector('dialog[open]'))return;
     const tap={x:pointer.worldX,y:pointer.worldY};const index=locations.findIndex(p=>Math.hypot(tap.x-p.x,tap.y-p.y)<65);
@@ -63,7 +65,7 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],att
     const nearest=pathGraph.reduce((a,b)=>Math.hypot(target.x-a.point.x,target.y-a.point.y)<Math.hypot(target.x-b.point.x,target.y-b.point.y)?a:b);
     this.keys.clear();this.held=undefined;this.destination=undefined;this.route=routeBetween({x:this.hero.x,y:this.hero.y},nearest.id);this.route.push(target);
    });
-   this.input.keyboard?.on('keydown',(e:KeyboardEvent)=>{if(document.querySelector('dialog[open]'))return;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD'].includes(e.code)){e.preventDefault();this.keys.add(e.code);this.route=[];this.destination=undefined;}});
+   this.input.keyboard?.on('keydown',(e:KeyboardEvent)=>{if(document.querySelector('dialog[open]')||e.ctrlKey||e.metaKey||e.altKey||(e.target instanceof HTMLElement&&(e.target.isContentEditable||e.target.closest('input,textarea,select'))))return;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD'].includes(e.code)){e.preventDefault();this.keys.add(e.code);this.route=[];this.destination=undefined;}});
    this.input.keyboard?.on('keyup',(e:KeyboardEvent)=>this.keys.delete(e.code));
    const blur=()=>{this.keys.clear();this.held=undefined;};document.addEventListener('visibilitychange',blur);window.addEventListener('blur',blur);this.events.once('shutdown',()=>{document.removeEventListener('visibilitychange',blur);window.removeEventListener('blur',blur);});
    this.syncCamera();if(requested!==undefined)navigate(requested);
@@ -84,7 +86,7 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],att
    const dx=(this.keys.has('ArrowRight')||this.keys.has('KeyD')||this.held==='right'?1:0)-(this.keys.has('ArrowLeft')||this.keys.has('KeyA')||this.held==='left'?1:0);
    const dy=(this.keys.has('ArrowDown')||this.keys.has('KeyS')||this.held==='down'?1:0)-(this.keys.has('ArrowUp')||this.keys.has('KeyW')||this.held==='up'?1:0);
    const speed=190;
-   if(dx||dy){const len=Math.hypot(dx,dy);const wanted={x:start.x+dx/len*speed*seconds,y:start.y+dy/len*speed*seconds};const road=nearestRoadPoint(wanted);if(Math.hypot(wanted.x-road.x,wanted.y-road.y)<25)next=road;}
+   if(dx||dy)next=stepAlongRoad(start,{x:dx,y:dy},speed*seconds,pathSegments);
    else if(this.route.length){const target=this.route[0];const distance=Math.hypot(target.x-start.x,target.y-start.y);const amount=speed*seconds;if(distance<=amount){next=target;this.route.shift();}else next={x:start.x+(target.x-start.x)/distance*amount,y:start.y+(target.y-start.y)/distance*amount};}
    this.moving=!!next&&Math.hypot(next.x-start.x,next.y-start.y)>.01;
    if(this.moving&&next){this.face(next.x-start.x,next.y-start.y);this.hero.setPosition(next.x,next.y);const last=this.pathHistory.at(-1)!;if(Math.hypot(last.x-next.x,last.y-next.y)>2)this.pathHistory.push({...next});if(this.pathHistory.length>250)this.pathHistory.shift();this.syncCamera();}
@@ -99,5 +101,5 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],att
  const game=new Phaser.Game({type:Phaser.CANVAS,parent:host,width:MAP_WIDTH,height:MAP_HEIGHT,backgroundColor:'#9daf83',pixelArt:true,antialias:false,scene:Village,scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},audio:{noAudio:true},banner:false});
  // Resize the canvas and touch coordinates in the same frame as the DOM map markers.
  const resize=()=>{if(game.scale.canvas&&game.scale.getParentBounds())game.scale.refresh();};
- return {resize,move:(index:number)=>{requested=index;navigate(index);},walk:(direction:Direction)=>walk(direction),stop:()=>stop(),dispose:()=>{disposed=true;game.destroy(true);}};
+ return {resize,move:(index:number)=>{requested=index;navigate(index);},walk:(direction:Direction)=>walk(direction),nudge:(direction:Direction)=>nudge(direction),stop:()=>stop(),dispose:()=>{disposed=true;game.destroy(true);}};
 }
