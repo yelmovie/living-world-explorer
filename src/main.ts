@@ -57,7 +57,7 @@ function records(){const a=active(state);const cards=stages.map((s,i)=>{const ca
 function titleArt(){const h=el('h1');const image=el('img','title-art');image.src='assets/ui/logo.webp';image.alt='생명 코드 연구소';h.append(image);return h;}
 function main(ctx:Context){
  const hero=el('section','hero');hero.append(titleArt(),paragraph('작은 생물을 만나, 큰 변화를 발견해요.','hero-subtitle'));
- const actions=el('div','hero-actions');const has=Object.keys(ctx.attempt.inquiry.records).length>0||Object.keys(ctx.attempt.evidence).length>0;actions.append(button(has?'탐험 이어하기':'탐험 시작',()=>has?go('nature-map'):showFilm('intro',state.settings,story),'primary large'));hero.append(actions);ctx.host.append(hero);
+ const actions=el('div','hero-actions');const has=Object.keys(ctx.attempt.inquiry.records).length>0||Object.keys(ctx.attempt.evidence).length>0;actions.append(button(has?'탐험 이어 하기':'탐험 시작',()=>has?go('nature-map'):showFilm('intro',state.settings,story),'primary large'));hero.append(actions);ctx.host.append(hero);
  for(const [name,cls,alt] of [['moa','hero-moa','모아 연구원'],['companion','hero-companion','함께 탐험하는 토끼']] as const){const img=el('img','hero-character '+cls);img.src=`assets/characters/${name}-full.webp`;img.alt=alt;ctx.host.append(img);}
  const speech=button('모아의 의뢰 듣기',story,'hero-speech left');ctx.host.append(speech);
 }
