@@ -2,7 +2,7 @@ import {recoverInquiry} from './inquiry-model';
 import {normalizeMapHits} from './map-encounters.js';
 import {tasksFor} from './curriculum';
 import {makeState,makeAttempt,type State,type Attempt,stageIds,captureValid} from './model';
-import {routes} from './content';
+import {routes,activityRoutes,stages} from './content';
 import {validDraft,recoverDraft} from './validate';
 import {missing} from './evaluate';
 const blobs=new Map<string,Blob>();
@@ -25,6 +25,13 @@ export function restoreAttempt(raw:unknown):Attempt{
  // Historical accepted snapshots keep their original validation policy. A stricter
  // image mask must never erase an older student's completed lab or rewards.
  a.evidence=Object.fromEntries(Object.entries(v.evidence||{}).filter(([key,e])=>stageIds.includes(key as typeof stageIds[number])&&e?.stage===key&&e.attemptId===a.id&&['learner','demo'].includes(e.origin)&&(e.inquiry?tasksFor(e.stage).every(t=>!!recoverInquiry(e.inquiry).records[t.id]?.completedAt):validDraft(e.draft)&&missing(e.stage,e.draft).length===0)).map(([key,e])=>[key,{...e,...(e.inquiry?{inquiry:recoverInquiry(e.inquiry)}:{})}]));
+ // Recover the last unfinished research area from older saves made on the home screen.
+ if('resumeRoute' in v)a.resumeRoute=typeof v.resumeRoute==='string'&&activityRoutes.includes(v.resumeRoute)?v.resumeRoute:null;
+ else if(activityRoutes.includes(a.route))a.resumeRoute=a.route;
+ else {
+  const stage=stages.findLast(s=>!a.evidence[s.id]&&tasksFor(s.id).some(t=>a.inquiry.records[t.id]));
+  if(stage)a.resumeRoute=(a.inquiry.current[stage.id]??0)>=2?stage.exit:stage.entry;
+ }
  if('mapHits' in v)a.mapHits=normalizeMapHits(v.mapHits,stageIds.filter(id=>a.evidence[id]));
  a.report=[...new Set((Array.isArray(v.report)?v.report:[]).filter(s=>stageIds.includes(s)&&a.evidence[s]))];
  a.ports=[...new Set((Array.isArray(v.ports)?v.ports:[]).filter(s=>stageIds.includes(s)&&a.evidence[s]))];

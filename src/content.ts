@@ -6,7 +6,8 @@ export const stages:{id:Stage;title:string;place:string;verb:string;entry:string
  {id:'M4',title:'생활 속 사건',place:'생활마을',verb:'시간을 되돌려 봐요',entry:'impact-investigation',exit:'impact-analysis',summary:'생물이 생활에 미치는 영향을 비교했어요.'},
  {id:'M5',title:'생명과학 작업실',place:'BIO 작업실',verb:'만들고 시험해요',entry:'solution-assembly',exit:'solution-run',summary:'생물의 작용을 활용하는 방법을 소개했어요.'}
 ];
-export const routes=['main','nature-map',...stages.flatMap(s=>[s.entry,s.exit]),'final-report','core-restoration','results'];
+export const activityRoutes=stages.flatMap(s=>[s.entry,s.exit]);
+export const routes=['main','nature-map',...activityRoutes,'final-report','core-restoration','results'];
 export const back:Record<string,string>={'main':'main','nature-map':'main','final-report':'nature-map','core-restoration':'final-report','results':'core-restoration',...Object.fromEntries(stages.flatMap(s=>[[s.entry,'nature-map'],[s.exit,s.entry]]))};
 export const organisms:Record<string,string>={mushroom:'버섯',mold:'곰팡이',spirogyra:'해캄',paramecium:'짚신벌레',bacteria:'세균'};
 export const environments=[{id:'wood',title:'발견 장소',text:'이 버섯 표본은 숲의 죽은 나무에서 발견했어요.'},{id:'moist',title:'주변 환경',text:'이 곰팡이 표본은 축축해진 빵에서 관찰했어요.'},{id:'guess',title:'누군가의 생각',text:'모든 균류는 물속에서만 살 것 같아요.'}];

@@ -7,7 +7,7 @@ import {needsStorageWarning} from './storage-status';
 import './styles.css';
 import {active,makeAttempt,stageIds,validEvidence,type Stage,type State} from './model';
 import {load,save,storageMessage,restoredFromPreview,clearResearchCaptures} from './storage';
-import {routes,stages,back} from './content';
+import {routes,activityRoutes,stages,back} from './content';
 import {canEnter} from './evaluate';
 import {reducedMotion,el,button,heading,paragraph,modal,notice,type Context} from './ui';
 import {core} from './scenes/solution';
@@ -48,9 +48,9 @@ function warmNextMap(dialog:HTMLDialogElement){
 function showStorageWarning(){if(needsStorageWarning(storageMessage)&&storageMessage!==shownStorageWarning){shownStorageWarning=storageMessage;modal('기록 저장을 확인해 주세요',[paragraph(storageMessage),paragraph('이 창을 닫기 전에 선생님께 알려 주세요. 설정에서도 저장 상태를 확인할 수 있어요.')]);}}
 function persist(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>void save(state).then(showStorageWarning),120);}
 function allowed(route:string){const a=active(state);if(state.settings.admin||['main','nature-map'].includes(route))return true;const i=stages.findIndex(s=>s.entry===route||s.exit===route);if(i>=0)return (i===0||validEvidence(a,stages[i-1].id,false))&&(route===stages[i].entry||validEvidence(a,stages[i].id,false)||completedTasks(a.inquiry,stages[i].id).length>=2);return canEnter(a,route,false);}
-function go(route:string){if(!routes.includes(route))route='main';if(!allowed(route)){notice('먼저 앞선 발견 기록을 완성해요.');route='nature-map';}active(state).route=route;history.replaceState(state.settings.admin?{teacherPreview:true}:null,'',`#/${route}`);persist();render();app.scrollTop=0;}
+function go(route:string){if(!routes.includes(route))route='main';if(!allowed(route)){notice('먼저 앞선 발견 기록을 완성해요.');route='nature-map';}const a=active(state);a.route=route;if(activityRoutes.includes(route))a.resumeRoute=route;history.replaceState(state.settings.admin?{teacherPreview:true}:null,'',`#/${route}`);persist();render();app.scrollTop=0;}
 let dialogueStage:Stage|null=null;
-function complete(stage:Stage){const a=active(state),first=!validEvidence(a,stage,state.settings.admin);if(first&&!inquiryComplete(a.inquiry,stage)){notice('네 가지 발견 기록을 먼저 완성해요.');return;}if(first)a.evidence[stage]={stage,attemptId:a.id,origin:state.settings.admin?'demo':'learner',created:new Date().toISOString(),validationVersion:2,summary:stages.find(s=>s.id===stage)!.summary,draft:structuredClone(a.draft),inquiry:structuredClone(a.inquiry)};if(first&&!state.settings.admin)dialogueStage=stage;playEffect('success');void save(state).then(()=>{go('nature-map');if(first)showConcept(stage,state.settings,()=>reward(stage,()=>{
+function complete(stage:Stage){const a=active(state),first=!validEvidence(a,stage,state.settings.admin);if(first&&!inquiryComplete(a.inquiry,stage)){notice('네 가지 발견 기록을 먼저 완성해요.');return;}if(first)a.evidence[stage]={stage,attemptId:a.id,origin:state.settings.admin?'demo':'learner',created:new Date().toISOString(),validationVersion:2,summary:stages.find(s=>s.id===stage)!.summary,draft:structuredClone(a.draft),inquiry:structuredClone(a.inquiry)};a.resumeRoute=null;if(first&&!state.settings.admin)dialogueStage=stage;playEffect('success');void save(state).then(()=>{go('nature-map');if(first)showConcept(stage,state.settings,()=>reward(stage,()=>{
  const marker=app.querySelector<HTMLButtonElement>(`.map-resident[data-stage="${stage}"]`);
  marker?.focus({preventScroll:true});marker?.click();
 }));else if(habitEarned(a,stage))notice(`'${habits[stageIds.indexOf(stage)].name}' 배지를 받았어요. 발견 도감에서 볼 수 있어요.`);});}
@@ -74,7 +74,7 @@ function records(){const a=active(state);const cards=stages.map((s,i)=>{const ca
 function titleArt(){const h=el('h1');const image=el('img','title-art');image.fetchPriority='high';image.src='assets/ui/logo.webp';image.alt='생명 코드 연구소';h.append(image);return h;}
 function main(ctx:Context){
  const hero=el('section','hero');hero.append(titleArt(),paragraph('작은 생물을 만나, 큰 변화를 발견해요.','hero-subtitle'));
- const actions=el('div','hero-actions');const has=Object.keys(ctx.attempt.inquiry.records).length>0||Object.keys(ctx.attempt.evidence).length>0;actions.append(button(has?'탐험 이어 하기':'탐험 시작',()=>has?go('nature-map'):showFilm('intro',state.settings,()=>story(true)),'primary large'));hero.append(actions);ctx.host.append(hero);
+ const actions=el('div','hero-actions');const resume=ctx.attempt.resumeRoute;const has=!!resume||Object.keys(ctx.attempt.inquiry.records).length>0||Object.keys(ctx.attempt.evidence).length>0;actions.append(button(has?'탐험 이어 하기':'탐험 시작',()=>has?go(resume&&allowed(resume)?resume:'nature-map'):showFilm('intro',state.settings,()=>story(true)),'primary large'));hero.append(actions);ctx.host.append(hero);
  const speech=button('모아의 의뢰 듣기',()=>story(),'hero-speech left');ctx.host.append(speech);
  const dress=()=>{
   ctx.host.classList.add('home-dressed');
