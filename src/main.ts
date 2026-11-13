@@ -160,7 +160,7 @@ function map(ctx:Context){
   host:camera,stages:state.settings.admin?[]:mapVillainStages.filter((_,i)=>done[i]),progress:ctx.attempt.mapHits,
   onSave:patch=>{ctx.attempt.mapHits={...ctx.attempt.mapHits,...patch};void save(state).then(showStorageWarning);},
   blocked:()=>disposed||mode!=='follow'||guided>=0||ctx.host.dataset.mapReady!=='true',
-  reduced,art:{left:'assets/map-encounter/map-villain-left.webp',frames:6,nativeFacing:1},palette:'#bd84ff',reach:102,contact:24,
+  reduced,art:{left:'assets/map-encounter/map-villain-poses-left.webp',frames:6,nativeFacing:1},palette:'#bd84ff',reach:102,contact:24,
   tone:(kind,hits)=>playEffect(kind==='finish'?'core-wake':kind==='contact'?'pipette-drop':hits===1?'snap':'capture'),
  });
  ctx.cleanup(encounters.destroy);
