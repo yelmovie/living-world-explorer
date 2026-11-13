@@ -20,6 +20,8 @@ try{
  browser=await launchBrowser();const context=await browser.newContext({viewport:{width:1280,height:800}});const page=await context.newPage();
  page.on('pageerror',e=>result.errors.push(e.message));
  await navigate(page,base,'main');
+ // Offline preparation starts after the first usable activity so it cannot compete with entry.
+ await navigate(page,base,'fungi-field');await waitForScene(page,'.expedition-canvas-host');
  await page.waitForFunction(()=>navigator.serviceWorker.controller,null,{timeout:60000});
  result.online=await page.evaluate(async()=>{const r=await navigator.serviceWorker.ready;const keys=await (await caches.open('life-code-lab')).keys();return {state:r.active?.state,controlled:!!navigator.serviceWorker.controller,entries:keys.length};});
  if(result.online.entries<precached.length)throw Error(`precache incomplete: ${result.online.entries}/${precached.length}`);
@@ -27,9 +29,10 @@ try{
  const ranged=(src,range)=>page.evaluate(async([src,range])=>{const r=await fetch(src,{headers:{range}});return {status:r.status,range:r.headers.get('content-range'),bytes:(await r.arrayBuffer()).byteLength};},[src,range]);
  await ranged('assets/audio/bgm-main-theme.m4a','bytes=0-');
  // Server gone + browser offline: everything below must come from Cache Storage.
+ await navigate(page,base,'main');
  stop();await context.setOffline(true);
  page.on('requestfailed',r=>{if(r.url().startsWith(base))result.failed.push(r.url().slice(base.length));});
- await page.reload();await page.locator('.screen-main').waitFor({timeout:20000});result.main=await page.locator('.hero .title-art').evaluate(i=>i.complete&&i.naturalWidth>0);
+ await page.reload();await page.locator('.screen-main').waitFor({timeout:20000});result.main=await page.locator('.hero .title-art').evaluate(i=>i.decode().then(()=>i.naturalWidth>0));
  await navigate(page,base,'nature-map');await waitForScene(page,'.map-host');result.map={canvas:await page.locator('.map-host canvas').count()};
  await navigate(page,base,'fungi-field');await waitForScene(page,'.expedition-canvas-host');result.inquiry={canvas:await page.locator('.expedition-canvas-host canvas,.link-board').count()};
  const study=precached.map(f=>f[0]).filter(f=>f.startsWith('assets/study/'));

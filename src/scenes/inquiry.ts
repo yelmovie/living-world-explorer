@@ -107,7 +107,12 @@ export function inquiryScene(ctx:Context,stage:Stage){
  };
  // Link boards never need Phaser, so they load their own small renderer.
  const scene=():Promise<typeof import('../renderers/inquiry2d').mountInquiry>=>task.kind==='microscope'?import('../renderers/simple-microscope').then(m=>m.mountMicroscope):task.id==='M1-4'?import('../renderers/fungi-sort').then(m=>m.mountFungiSort):linking?import('../renderers/link-board').then(m=>m.mountLinkBoard):import('../renderers/inquiry2d').then(m=>m.mountInquiry);
- void scene().then(async mount=>{await document.fonts.ready;if(disposed)return;view=mount(host,task,r,{assigned:()=>{selectedCard='';sourcePreview.hidden=true;sourcePreview.replaceChildren();updateStatus();},changed:()=>{save();controls();},open:source,feedback:info,ready:(ok)=>{ready=ok;view?.setPlaybackRate(playbackRate);if(demoButton)demoButton.disabled=!ok;speed.disabled=!ok;tools.inert=!ok||demoStep>=0;next.disabled=!ok||demoStep>=0;if(ok)loading.remove();else{loading.replaceChildren(paragraph('관찰 이미지를 준비하지 못했어요. 연결을 확인하고 다시 열어요.'),button('이미지 다시 준비',ctx.render));}}},reducedMotion(ctx.state.settings.reduced));ctx.cleanup(view.dispose);}).catch(()=>{loading.replaceChildren(paragraph('장면을 열지 못했어요.'),button('다시 열기',ctx.render));});
+ void scene().then(async mount=>{await document.fonts.ready;if(disposed)return;view=mount(host,task,r,{assigned:()=>{selectedCard='';sourcePreview.hidden=true;sourcePreview.replaceChildren();updateStatus();},changed:()=>{save();controls();},open:source,feedback:info,ready:(ok)=>{
+  if(disposed)return;
+  ready=ok;view?.setPlaybackRate(playbackRate);if(demoButton)demoButton.disabled=!ok;speed.disabled=!ok;tools.inert=!ok||demoStep>=0;next.disabled=!ok||demoStep>=0;
+  if(ok){loading.remove();ctx.host.dispatchEvent(new Event('activity-ready',{bubbles:true}));}
+  else{loading.replaceChildren(paragraph('관찰 이미지를 준비하지 못했어요. 연결을 확인하고 다시 열어요.'),button('이미지 다시 준비',ctx.render));}
+ }},reducedMotion(ctx.state.settings.reduced));ctx.cleanup(view.dispose);}).catch(()=>{loading.replaceChildren(paragraph('장면을 열지 못했어요.'),button('다시 열기',ctx.render));});
  const openLadder=()=>{
   const dialog=modal('세균은 얼마나 작을까요?',[ladderPlacement(r.assignments.ladder==='smallest',()=>{r.assignments.ladder='smallest';save();playEffect('success');controls();})]);
   dialog.classList.add('ladder-dialog');

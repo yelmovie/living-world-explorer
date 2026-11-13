@@ -18,6 +18,45 @@
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="/assets/ui/icon-192.png">
   <link rel="apple-touch-icon" href="/assets/ui/icon-192.png">
+  <style>
+    body { margin: 0; }
+    .startup-cover { min-height: 100svh; width: 100%; box-sizing: border-box; display: grid; place-content: center; gap: 1rem; padding: 1.5rem; text-align: center; color: #214534; background: #f8f3e4; font: 1.125rem/1.5 system-ui, sans-serif; }
+    .startup-cover h1 { margin: 0; font: 700 clamp(2rem, 5vw, 3.5rem)/1.2 system-ui, sans-serif; }
+    .startup-cover p { margin: 0; }
+    .startup-cover a { display: inline-grid; place-items: center; min-height: 44px; color: inherit; }
+  </style>
 </head>
-<body><div id="app"></div><script type="module" src="/src/main.ts"></script></body>
+<body>
+  <div id="app">
+    <main class="startup-cover">
+      <h1>생명 코드 연구소</h1>
+      <p role="status">모아가 연구소를 준비하고 있어요.</p>
+      <p hidden><a href="">다시 열기</a></p>
+      <noscript>연구소를 열려면 브라우저에서 자바스크립트를 켜 주세요.</noscript>
+    </main>
+  </div>
+  <script>
+    (() => {
+      const cover = document.querySelector('.startup-cover');
+      const status = cover.querySelector('[role=status]');
+      const retry = cover.querySelector('a').parentElement;
+      const update = (message, allowRetry) => {
+        if (!cover.isConnected) return;
+        status.textContent = message;
+        retry.hidden = !allowRetry;
+      };
+      setTimeout(() => {
+        if (retry.hidden) update('연결이 느려 조금 더 걸리고 있어요.', false);
+      }, 3000);
+      setTimeout(() => {
+        if (retry.hidden) update('연구소가 아직 열리지 않았어요. 잠시 더 기다리거나 다시 열어 주세요.', true);
+      }, 12000);
+      window.addEventListener('error', event => {
+        if (event.target instanceof HTMLScriptElement && event.target.type === 'module')
+          update('연구소를 열지 못했어요. 연결을 확인하고 다시 열어 주세요.', true);
+      }, true);
+    })();
+  </script>
+  <script type="module" src="/src/main.ts"></script>
+</body>
 </html>

@@ -8,7 +8,7 @@ type Direction='up'|'down'|'left'|'right';
 let previousVisit:{attemptId:string;completed:boolean[]}|undefined;
 
 /** The map is a ground-plane road network. DOM labels and the canvas share these coordinates. */
-export function mountMap(host:HTMLElement,position:Point,completed:boolean[],attemptId:string,onArrive:(index:number,point:Point)=>void,reduced:boolean,onMove?:(point:Point,companion:Point)=>void,onManual?:()=>void,canTap=()=>true){
+export function mountMap(host:HTMLElement,position:Point,completed:boolean[],attemptId:string,onArrive:(index:number,point:Point)=>void,reduced:boolean,onMove?:(point:Point,companion:Point)=>void,onManual?:()=>void,canTap=()=>true,onReady?:()=>void){
  let requested:number|undefined;let navigate:(index:number)=>void=()=>{};let walk:(direction:Direction)=>void=()=>{};let nudge:(direction:Direction)=>void=()=>{};let stop:()=>void=()=>{};let cancel:()=>void=()=>{};let disposed=false;
  class Village extends Phaser.Scene{
   private hero!:Phaser.GameObjects.Container;
@@ -80,7 +80,7 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],att
    this.input.keyboard?.on('keydown',(e:KeyboardEvent)=>{if(document.querySelector('dialog[open]')||e.ctrlKey||e.metaKey||e.altKey||(e.target instanceof HTMLElement&&(e.target.isContentEditable||e.target.closest('input,textarea,select'))))return;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD'].includes(e.code)){e.preventDefault();onManual?.();this.keys.add(e.code);this.route=[];this.destination=undefined;}});
    this.input.keyboard?.on('keyup',(e:KeyboardEvent)=>this.keys.delete(e.code));
    const blur=()=>{this.keys.clear();this.held=undefined;};document.addEventListener('visibilitychange',blur);window.addEventListener('blur',blur);this.events.once('shutdown',()=>{document.removeEventListener('visibilitychange',blur);window.removeEventListener('blur',blur);});
-   this.syncCamera();if(requested!==undefined)navigate(requested);
+   this.syncCamera();onReady?.();if(requested!==undefined)navigate(requested);
   }
   private restoration(index:number){
    const spot=locations[index];
