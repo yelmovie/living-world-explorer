@@ -5,7 +5,7 @@ import {artFor,artFrame,artKey,artTime,taskArt} from '../src/artAssets';
 import {emptyRecord} from '../src/inquiry-model';
 
 describe('학습 자료의 의미와 표본 이미지 연결',()=>{
- it('지도 악당과 실제 생물을 혼동하지 않도록 안내한다',()=>{expect(settingsContent.student.join(' ')).toContain('실제 균류나 세균을 뜻하지 않아요');});
+ it('설명용 모형은 표본을 근거로 살펴보도록 안내한다',()=>{expect(settingsContent.student.join(' ')).toContain('설명용 모형은 실제 생물 전체를 대표하지 않아요');});
  const item=(task:string,id:string)=>inquiryTasks.find(t=>t.id===task)!.items.find(i=>i.id===id)!;
  it('죽은 나무와 버섯의 관찰 특징을 서로 다른 그림으로 표시한다',()=>{
   expect(artKey(item('M1-1','log'))).toBe('deadwood');

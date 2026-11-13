@@ -40,6 +40,38 @@ const buildings:BuildingLight[]=[
   ]}
 ];
 
+// The glass, doorways, and research equipment share map coordinates with the painting.
+// They are permanent parts of the facility, independent of the brief route-light effect.
+const fixtures = [
+  {x:326,y:126,color:'#f5b470',path:(c:CanvasRenderingContext2D)=>{c.moveTo(-12,3);c.quadraticCurveTo(-9,-12,0,-12);c.quadraticCurveTo(10,-12,12,3);c.closePath();c.rect(-2,3,4,8);}},
+  {x:962,y:119,color:'#9ee7d6',path:(c:CanvasRenderingContext2D)=>{c.moveTo(0,-11);c.quadraticCurveTo(-12,2,-9,7);c.quadraticCurveTo(0,17,9,7);c.quadraticCurveTo(12,2,0,-11);c.closePath();}},
+  {x:1068,y:308,color:'#ffcf89',path:(c:CanvasRenderingContext2D)=>{c.moveTo(-11,-8);c.quadraticCurveTo(-4,-9,0,-4);c.quadraticCurveTo(5,-9,11,-8);c.lineTo(11,8);c.quadraticCurveTo(5,7,0,11);c.quadraticCurveTo(-4,6,-11,8);c.closePath();}},
+  {x:995,y:510,color:'#ffb765',path:(c:CanvasRenderingContext2D)=>{c.moveTo(0,-10);c.bezierCurveTo(13,4,9,11,0,11);c.bezierCurveTo(-10,10,-14,0,-3,-6);c.lineTo(-3,0);c.quadraticCurveTo(2,-3,0,-10);c.closePath();}},
+  {x:267,y:455,color:'#a7efa5',path:(c:CanvasRenderingContext2D)=>{c.moveTo(-9,8);c.quadraticCurveTo(-11,-11,11,-10);c.quadraticCurveTo(12,10,-9,8);c.closePath();}},
+  {x:640,y:198,color:'#ffe599',path:(c:CanvasRenderingContext2D)=>{c.moveTo(0,-17);c.lineTo(11,-4);c.lineTo(9,12);c.lineTo(0,17);c.lineTo(-9,12);c.lineTo(-11,-4);c.closePath();}},
+];
+
+function drawFixture(context:CanvasRenderingContext2D,index:number){
+  const {x,y,color,path}=fixtures[index];
+  context.save();
+  context.translate(x,y);
+  context.shadowColor=color;
+  context.shadowBlur=14;
+  context.fillStyle='#34483b';
+  context.strokeStyle=color;
+  context.lineWidth=2.3;
+  context.beginPath();
+  context.ellipse(0,0,index===5?21:16,index===5?23:16,0,0,Math.PI*2);
+  context.fill();
+  context.stroke();
+  context.shadowBlur=0;
+  context.beginPath();
+  path(context);
+  context.fillStyle=color;
+  context.fill();
+  context.restore();
+}
+
 export function drawBuildingLights(context:CanvasRenderingContext2D,completed:boolean[]){
   const repaired=completed.filter(Boolean).length;
   context.fillStyle=`rgba(34,53,61,${.18*(1-repaired/5)})`;
@@ -51,13 +83,13 @@ export function drawBuildingLights(context:CanvasRenderingContext2D,completed:bo
     context.translate(x,y);
     context.scale(rx,ry);
     const wash=context.createRadialGradient(0,0,0,0,0,1);
-    wash.addColorStop(0,lit?'rgba(255,198,76,.42)':'rgba(27,51,67,.22)');
-    wash.addColorStop(.55,lit?'rgba(255,193,71,.22)':'rgba(27,51,67,.13)');
+    wash.addColorStop(0,lit?'rgba(255,198,76,.42)':'rgba(27,51,67,.54)');
+    wash.addColorStop(.55,lit?'rgba(255,193,71,.22)':'rgba(27,51,67,.34)');
     wash.addColorStop(1,'transparent');
     context.fillStyle=wash;
     context.fillRect(-1,-1,2,2);
     context.restore();
-    context.fillStyle=lit?'rgba(255,219,122,.47)':'rgba(26,45,58,.74)';
+    context.fillStyle=lit?'rgba(255,219,122,.69)':'rgba(26,45,58,.83)';
     context.shadowColor=lit?'#ffb64a':'transparent';
     context.shadowBlur=lit?12:0;
     for(const pane of panes){
@@ -68,5 +100,6 @@ export function drawBuildingLights(context:CanvasRenderingContext2D,completed:bo
       context.fill();
     }
     context.shadowBlur=0;
+    if(lit)drawFixture(context,index);
   });
 }

@@ -1,5 +1,5 @@
-import {bindDirectionPad} from './map-controls.js';
-import { mountMapVillains } from './map-villains.js';
+import {bindDirectionPad,mapKeyDirection} from './map-controls.js';
+import {bindMapZoom} from './map-gestures.js';
 import {revisedEvidenceCount} from './experience';
 import {needsStorageWarning} from './storage-status';
 import './styles.css';
@@ -64,36 +64,85 @@ function main(ctx:Context){
 function map(ctx:Context){
  const done=stageIds.map(s=>validEvidence(ctx.attempt,s,state.settings.admin));const unlocked=(i:number)=>state.settings.admin||(i===5?done.every(Boolean):i===0||done[i-1]);
  const camera=el('div','map-camera');const land=el('div','map-landscape');const host=el('div','map-host');land.style.backgroundImage=`url('${mapAssets.terrain}')`;land.style.backgroundSize='100% 100%';const overlay=el('div','map-overlay');land.append(host,overlay);camera.append(land);ctx.host.append(camera);
- ctx.cleanup(mountMapVillains(overlay,{key:'living-world:map-villains:v1',power:'생명빛 파동',reduced:reducedMotion(state.settings.reduced),preview:state.settings.admin,stages:mapNodes.filter(n=>n.index<5).map(n=>({name:n.label,x:[41,55,71,77,39][n.index],y:[16,17,43,86,77][n.index],ready:done[n.index],token:ctx.attempt.id+':'+(ctx.attempt.evidence[stageIds[n.index]]?.created||'pending')})),sound:final=>playEffect(final?'success':'snap'),locked:()=>playEffect('hint')}));
- const arrival=el('div','map-arrival');ctx.host.append(arrival);let selected=-1,arrived=-1;let disposed=false;let m:ReturnType<typeof import('./renderers/map').mountMap>|undefined;let position={...ctx.attempt.mapPosition};
- let mode:'follow'|'hand'|'overview'='follow',pan={x:0,y:0},translation={x:0,y:0};
- const frame=(point:typeof position)=>{position=point;const cw=camera.clientWidth,ch=camera.clientHeight;const w=(mode==='overview'?Math.min:Math.max)(cw,ch*16/9),h=w*9/16;land.style.width=`${w}px`;land.style.height=`${h}px`;const clampAxis=(size:number,span:number,at:number)=>span<=size?(size-span)/2:Math.max(size-span,Math.min(0,at));const x=clampAxis(cw,w,mode==='hand'?pan.x:cw*.5-point.x/MAP_WIDTH*w),y=clampAxis(ch,h,mode==='hand'?pan.y:ch*.55-point.y/MAP_HEIGHT*h);translation={x,y};land.style.transform=`translate3d(${x}px,${y}px,0)`;};
+ const arrival=el('div','map-arrival');ctx.host.append(arrival);let selected=-1,guided=-1;let disposed=false;let m:ReturnType<typeof import('./renderers/map').mountMap>|undefined;let position={...ctx.attempt.mapPosition};
+ const residentButtons:{marker:HTMLButtonElement;feet:readonly [number,number]}[]=[];
+ let companion={x:position.x,y:Math.min(MAP_HEIGHT-18,position.y+34)};
+ const nextIndex=done.findIndex(v=>!v),next=nextIndex<0?5:nextIndex;
+ const place=(i:number)=>stages[i]?.place||'중앙 연구소';
+ const toPlace=(i:number)=>{const name=place(i),tail=(name.charCodeAt(name.length-1)-0xac00)%28;return name+(tail&&tail!==8?'으로':'로');};
+ const nextButton=button(`${toPlace(next)} 가기`,()=>choose(next,true),state.settings.reduced?'primary map-next':'primary map-next map-next-cue');
+ nextButton.insertAdjacentHTML('beforeend','<svg class="map-direction-cue" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>');
+ ctx.host.append(nextButton);
+ const setGuided=(i:number)=>{guided=i;nextButton.setAttribute('aria-busy',String(i>=0));nextButton.setAttribute('aria-disabled',String(i>=0));};
+ const clearSelection=()=>{selected=-1;setGuided(-1);arrival.replaceChildren();overlay.querySelectorAll('.map-node').forEach((b,j)=>b.classList.toggle('current',j===next));};
+ const cancelTravel=()=>{if(selected>=0||guided>=0){m?.cancel();clearSelection();}};
+ const cancelGuidedByKey=(e:KeyboardEvent)=>{if(mapKeyDirection(e)&&!e.ctrlKey&&!e.altKey&&!e.metaKey&&!e.isComposing&&!document.querySelector('dialog[open]')&&!(e.target instanceof HTMLElement&&(e.target.isContentEditable||e.target.closest('input,textarea,select')))){cancelTravel();if(mode!=='follow')setMode('follow',false);}};
+ document.addEventListener('keydown',cancelGuidedByKey,true);ctx.cleanup(()=>document.removeEventListener('keydown',cancelGuidedByKey,true));
+ let mode:'follow'|'hand'|'overview'='follow',pan={x:0,y:0},translation={x:0,y:0},zoom=1;
+ let cameraW=0,cameraH=0,landW=0,landH=0,lastFrame=0,followFrame=0;
+ let returnView:{mode:'follow'|'hand',zoom:number,center:{x:number;y:number}}|undefined;
+ const currentCenter=()=>({x:(cameraW/2-translation.x)/(landW||1),y:(cameraH*.55-translation.y)/(landH||1)});
+ const span=()=>Math.max(camera.clientWidth,camera.clientHeight*MAP_WIDTH/MAP_HEIGHT)*1.06*zoom;
+ const poseAt=(at:{x:number;y:number})=>{const w=span(),h=w*MAP_HEIGHT/MAP_WIDTH;return{x:camera.clientWidth/2-at.x*w,y:camera.clientHeight*.55-at.y*h};};
+ const reduced=()=>reducedMotion(state.settings.reduced);
+ const followLater=()=>{if(followFrame||disposed||mode!=='follow'||reduced())return;followFrame=requestAnimationFrame(now=>{followFrame=0;frame(position,companion,now);m?.bounds();});};
+ const frame=(point:typeof position,friend=companion,now=performance.now())=>{
+  position=point;companion=friend;
+  const cw=camera.clientWidth,ch=camera.clientHeight,ratio=MAP_WIDTH/MAP_HEIGHT;
+  // Slight overscan leaves the hand tool room to pan even on a 16:9 screen.
+  if(!cw||!ch)return;
+  const resized=cw!==cameraW||ch!==cameraH;
+  const w=mode==='overview'?Math.min(Math.max(1,cw-32),Math.max(1,ch-148)*ratio):span(),h=w/ratio;
+  if(resized&&landW&&mode==='hand')pan=poseAt(currentCenter());
+  if(w!==landW||h!==landH){land.style.width=w+'px';land.style.height=h+'px';land.style.maxHeight='none';}
+  cameraW=cw;cameraH=ch;landW=w;landH=h;
+  const clampAxis=(size:number,span:number,at:number)=>span<=size?(size-span)/2:Math.max(size-span,Math.min(0,at));
+  const tx=clampAxis(cw,w,mode==='hand'?pan.x:cw*.5-point.x/MAP_WIDTH*w),ty=clampAxis(ch,h,mode==='hand'?pan.y:ch*.55-point.y/MAP_HEIGHT*h);
+  const first=resized||!lastFrame||mode!=='follow'||reduced(),a=first?1:1-Math.exp(-Math.max(1,Math.min(50,now-lastFrame))/115);
+  const settled=Math.hypot(tx-translation.x,ty-translation.y)<.3;
+  const x=settled?tx:clampAxis(cw,w,translation.x+(tx-translation.x)*a),y=settled?ty:clampAxis(ch,h,translation.y+(ty-translation.y)*a);
+  lastFrame=now;translation={x,y};if(mode==='hand')pan={x,y};if(!first&&!settled)followLater();land.style.transform=`translate3d(${x}px,${y}px,0)`;
+
+  residentButtons.forEach(({marker,feet})=>marker.classList.toggle('is-near',Math.hypot(point.x-feet[0],point.y-feet[1])<160));
+ };
  const tools=el('div','map-view-tools');tools.setAttribute('role','group');tools.setAttribute('aria-label','지도 보기');
- const setMode=(next:typeof mode)=>{if(next==='hand')pan={...translation};mode=next;m?.stop();camera.classList.toggle('hand-on',mode==='hand');camera.classList.toggle('overview-on',mode==='overview');hand.setAttribute('aria-pressed',String(mode==='hand'));overview.setAttribute('aria-pressed',String(mode==='overview'));frame(position);m?.resize();};
- const hand=iconButton('hand','손으로 지도 움직이기',()=>setMode(mode==='hand'?'follow':'hand'),'map-view-icon');
- const overview=iconButton('expand','지도 전체 보기',()=>setMode(mode==='overview'?'follow':'overview'),'map-view-icon');
+ const setMode=(next:typeof mode,stop=true)=>{
+  if(mode===next)return;
+  const wasOverview=mode==='overview';
+  if(next==='overview'&&mode!=='overview')returnView={mode,zoom,center:currentCenter()};
+  if(next==='hand')pan={...translation};
+  mode=next;
+  if(wasOverview&&returnView?.mode===next){zoom=returnView.zoom;translation=poseAt(returnView.center);if(next==='hand')pan={...translation};}
+  if(stop)m?.stop();camera.classList.toggle('hand-on',mode==='hand');camera.classList.toggle('overview-on',mode==='overview');hand.setAttribute('aria-pressed',String(mode==='hand'));overview.setAttribute('aria-pressed',String(mode==='overview'));overview.setAttribute('aria-label',mode==='overview'?'이전 지도 보기':'지도 전체 보기');frame(position);m?.resize();};
+ const hand=iconButton('hand','손으로 지도 이동',()=>{cancelTravel();setMode(mode==='hand'?'follow':'hand');},'map-view-icon');
+ const overview=iconButton('expand','지도 전체 보기',()=>{cancelTravel();setMode(mode==='overview'?returnView?.mode??'follow':'overview');},'map-view-icon');
  for(const b of [hand,overview]){b.querySelector('span')?.remove();b.setAttribute('aria-pressed','false');tools.append(b);}ctx.host.append(tools);
- camera.tabIndex=0;camera.setAttribute('aria-label','지도. 손 모드에서 방향키로 둘러보기');camera.style.touchAction='none';
+ camera.tabIndex=0;camera.setAttribute('aria-label','탐험 지도. 끌어서 둘러보거나 방향키로 걸을 수 있어요.');camera.style.touchAction='none';
  let grab:{id:number;x:number;y:number;start:typeof pan}|undefined;
- camera.addEventListener('pointerdown',e=>{if(mode!=='hand'||e.button!==0)return;e.preventDefault();e.stopPropagation();m?.stop();grab={id:e.pointerId,x:e.clientX,y:e.clientY,start:{...translation}};camera.setPointerCapture(e.pointerId);camera.focus({preventScroll:true});camera.classList.add('grabbing');},true);
- camera.addEventListener('pointermove',e=>{if(!grab||grab.id!==e.pointerId)return;e.preventDefault();e.stopPropagation();pan={x:grab.start.x+e.clientX-grab.x,y:grab.start.y+e.clientY-grab.y};frame(position);},true);
+ const gestures=new AbortController();ctx.cleanup(()=>{gestures.abort();cancelAnimationFrame(followFrame);});
+ bindMapZoom(camera,{signal:gestures.signal,enabled:()=>!disposed&&!document.hidden&&mode!=='overview'&&!document.querySelector('dialog[open]'),
+  onStart:()=>{grab=undefined;camera.classList.remove('grabbing');cancelTravel();m?.cancel();setMode('hand');},
+  onZoom:(start,end,ratio)=>{const point={x:(start.x-translation.x)/landW,y:(start.y-translation.y)/landH};
+   zoom=Math.min(1.75,Math.max(.95,zoom*ratio));const w=span();pan={x:end.x-point.x*w,y:end.y-point.y*w*MAP_HEIGHT/MAP_WIDTH};frame(position);m?.resize();}
+ });
+ camera.addEventListener('pointerdown',e=>{if(mode==='overview'||e.button!==0||!e.isPrimary||document.querySelector('dialog[open]'))return;grab={id:e.pointerId,x:e.clientX,y:e.clientY,start:{...translation}};if(mode==='hand'&&!(e.target as Element).closest('button')){e.preventDefault();e.stopPropagation();camera.setPointerCapture(e.pointerId);}},true);
+ camera.addEventListener('pointermove',e=>{if(!grab||grab.id!==e.pointerId)return;const dx=e.clientX-grab.x,dy=e.clientY-grab.y;if(mode!=='hand'&&Math.hypot(dx,dy)<8)return;e.preventDefault();e.stopPropagation();if(!camera.classList.contains('grabbing')){cancelTravel();m?.cancel();setMode('hand');camera.setPointerCapture(e.pointerId);camera.focus({preventScroll:true});camera.classList.add('grabbing');}pan={x:grab.start.x+dx,y:grab.start.y+dy};frame(position);m?.bounds();},true);
  const release=()=>{grab=undefined;camera.classList.remove('grabbing');};camera.addEventListener('pointerup',release);camera.addEventListener('pointercancel',release);camera.addEventListener('lostpointercapture',release);
- camera.addEventListener('click',e=>{if(mode==='hand'){e.preventDefault();e.stopPropagation();}},true);
- camera.addEventListener('keydown',e=>{if(mode!=='hand'||!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key))return;e.preventDefault();e.stopPropagation();pan={x:translation.x+(e.key==='ArrowLeft'?48:e.key==='ArrowRight'?-48:0),y:translation.y+(e.key==='ArrowUp'?48:e.key==='ArrowDown'?-48:0)};frame(position);},true);
+ camera.addEventListener('click',e=>{if(mode==='hand'&&e.detail!==0&&!(e.target as Element).closest('button')){e.preventDefault();e.stopPropagation();}},true);
 
  let conversation:HTMLDialogElement|undefined;
- const talk=(stage:Stage)=>{if(!conversation?.open)conversation=residentConversation(stage,ctx.attempt);};
+ const talk=(stage:Stage)=>{cancelTravel();if(!conversation?.open)conversation=residentConversation(stage,ctx.attempt);};
  ctx.cleanup(()=>{if(conversation?.open)conversation.close();});
- const panel=(i:number)=>{arrival.replaceChildren();const s=stages[i];arrival.append(el('span','map-arrival-title',s?.place||'중앙 연구소'),button(unlocked(i)?'연구소 들어가기':'앞선 연구를 먼저 완성해요',()=>go(s?.entry||'final-report'),'primary',!unlocked(i)||arrived!==i));if(s&&done[i])arrival.append(button(residents[s.id].name+'에게 말 걸기',()=>talk(s.id)));};
- const choose=(i:number)=>{setMode('follow');selected=i;arrived=-1;arrival.replaceChildren(button('모아와 함께 이동 중…',()=>{},'secondary',true));if(done[i])arrival.append(button('복구한 연구소 바로 입장',()=>go(stages[i].entry),'primary'));overlay.querySelectorAll('.map-node').forEach((b,j)=>b.classList.toggle('current',j===i));m?.move(i);};
+ const enter=(i:number)=>{if(unlocked(i))go(stages[i]?.entry||'final-report');};
+ const panel=(i:number)=>{arrival.replaceChildren();const s=stages[i];arrival.append(el('span','map-arrival-title',s?.place||'중앙 연구소'),button(unlocked(i)?'연구소 들어가기':'앞선 연구를 먼저 완성해요',()=>go(s?.entry||'final-report'),'primary',!unlocked(i)||selected!==i));if(s&&done[i])arrival.append(button(residents[s.id].name+'에게 말 걸기',()=>talk(s.id)));};
+ const choose=(i:number,auto=false)=>{if(!unlocked(i)||(auto&&guided>=0))return;cancelTravel();setMode('follow');selected=i;setGuided(auto?i:-1);overlay.querySelectorAll('.map-node').forEach((b,j)=>b.classList.toggle('current',j===i));m?.move(i);};
  mapNodes.forEach(node=>{const state=done[node.index]?'복구 완료':unlocked(node.index)?'열림':'잠김';const b=iconButton(done[node.index]?'check':unlocked(node.index)?'unlock':'lock',node.label,()=>choose(node.index),`map-node ${done[node.index]?'restored':''} ${unlocked(node.index)?'':'locked'}`);if(node.index<5)b.prepend(stageBadge(node.index,'map-badge'));b.title=state;b.style.left=`${node.percentX}%`;b.style.top=`${Math.max(6,node.percentY-(done[node.index]?16:9))}%`;b.setAttribute('aria-label',`${node.index+1}. ${node.label} · ${state}`);overlay.append(b);});
- for(const [i,stage] of stageIds.entries())if(done[i])overlay.append(residentMarker(stage,()=>talk(stage)));
- const helper=button('',()=>{const i=done.findIndex(v=>!v);modal('같이 탐험해요',[paragraph(`다음은 ${i===-1?'중앙 연구소':stages[i].place}예요. 건물 이름이나 길을 누르면 함께 걸어가요. 방향키로도 움직일 수 있어요.`),paragraph(done.some(Boolean)?`돌아온 이웃 ${done.filter(Boolean).length}명 · 지도에서 이웃의 이름을 누르면 이야기를 나눌 수 있어요.`:'연구소 한 곳을 복구할 때마다 이웃 한 명이 돌아와요.'),button('내 발견 도감',()=>{document.querySelector<HTMLDialogElement>('dialog[open]')?.close();records();})]);},'map-companion-help');const portrait=el('img');portrait.src='assets/characters/companion-portrait.webp';portrait.alt='길잡이 토끼 토토';helper.setAttribute('aria-label','토토의 지도 힌트');helper.append(portrait,el('span','','힌트'));ctx.host.append(helper);
+ for(const [i,stage] of stageIds.entries())if(done[i]){const marker=residentMarker(stage,()=>talk(stage));residentButtons.push({marker,feet:residents[stage].feet});overlay.append(marker);}
+ const helper=button('',()=>{cancelTravel();const i=done.findIndex(v=>!v);modal('같이 탐험해요',[paragraph(`다음은 ${i===-1?'중앙 연구소':stages[i].place}예요. 건물 이름이나 길을 누르면 함께 걸어가요. 방향키로도 움직일 수 있어요.`),paragraph(done.some(Boolean)?`돌아온 이웃 ${done.filter(Boolean).length}명 · 지도에서 이웃의 이름을 누르면 이야기를 나눌 수 있어요.`:'연구소 한 곳을 복구할 때마다 이웃 한 명이 돌아와요.'),button('내 발견 도감',()=>{document.querySelector<HTMLDialogElement>('dialog[open]')?.close();records();})]);},'map-companion-help');const portrait=el('img');portrait.src='assets/characters/companion-portrait.webp';portrait.alt='길잡이 토끼 토토';helper.setAttribute('aria-label','토토의 지도 힌트');helper.append(portrait,el('span','','힌트'));ctx.host.append(helper);
  const directions=el('div','map-directions');directions.setAttribute('aria-label','길 따라 이동');for(const [label,dir,name] of [['↑','up','위'],['←','left','왼쪽'],['↓','down','아래'],['→','right','오른쪽']] as const){const b=button(label,()=>{},'direction');b.setAttribute('aria-label',`${name} 방향으로 걷기`);b.dataset.mapDirection=dir;directions.append(b);}ctx.host.append(directions);
- const pad=bindDirectionPad(directions,'[data-map-direction]',b=>b.dataset.mapDirection as 'up'|'down'|'left'|'right',{blocked:()=>disposed||document.hidden||!!document.querySelector('dialog[open]'),press:d=>{setMode('follow');m?.walk(d);},release:()=>m?.stop(),tap:d=>{setMode('follow');m?.nudge(d);}});ctx.cleanup(pad.destroy);
- const next=done.findIndex(v=>!v);const nextButton=button(next===-1?'중앙 연구소로 가기':`${stages[next].place}로 가기`,()=>choose(next===-1?5:next),'primary map-next');ctx.host.append(nextButton);
+ const pad=bindDirectionPad(directions,'[data-map-direction]',b=>b.dataset.mapDirection as 'up'|'down'|'left'|'right',{blocked:()=>disposed||document.hidden||!!document.querySelector('dialog[open]'),press:d=>{cancelTravel();setMode('follow');m?.walk(d);},release:()=>m?.stop(),tap:d=>{cancelTravel();setMode('follow');m?.nudge(d);}});ctx.cleanup(pad.destroy);
  const ro=new ResizeObserver(()=>{frame(position);m?.resize();});ro.observe(camera);ctx.cleanup(()=>{disposed=true;ro.disconnect();});frame(position);
- void import('./renderers/map').then(({mountMap})=>{if(disposed)return;m=mountMap(host,position,done,ctx.attempt.id,(i,p)=>{ctx.attempt.mapPosition=p;persist();arrived=i;selected=i;panel(i);},reducedMotion(state.settings.reduced),frame);ctx.cleanup(m.dispose);if(selected>=0)m.move(selected);}).catch(()=>{notice('지도 장면을 다시 열어주세요.');});
+ void import('./renderers/map').then(({mountMap})=>{if(disposed)return;m=mountMap(host,position,done,ctx.attempt.id,(i,p)=>{const auto=i===guided;ctx.attempt.mapPosition=p;persist();clearSelection();if(!unlocked(i))return;if(auto){enter(i);return;}selected=i;panel(i);},reducedMotion(state.settings.reduced),frame,clearSelection,()=>mode==='follow');ctx.cleanup(m.dispose);if(selected>=0)m.move(selected);}).catch(()=>{if(!disposed){clearSelection();notice('지도 장면을 다시 열어주세요.');}});
 }
 function report(ctx:Context){const a=ctx.attempt;const head=el('div','activity-heading');head.append(heading('우리의 발견을 모아 소개해요'));ctx.host.append(head);const grid=el('div','workspace');const work=el('section','workbench');const side=el('aside','tool-panel');grid.append(work,side);ctx.host.append(grid);const tabs=el('div','report-tabs');tabs.setAttribute('aria-label','확인할 연구 기록');ctx.host.insertBefore(tabs,grid);
  const hasRecord=(id:Stage)=>validEvidence(a,id,ctx.state.settings.admin);
