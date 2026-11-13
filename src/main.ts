@@ -49,7 +49,8 @@ function showStorageWarning(){if(needsStorageWarning(storageMessage)&&storageMes
 function persist(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>void save(state).then(showStorageWarning),120);}
 function allowed(route:string){const a=active(state);if(state.settings.admin||['main','nature-map'].includes(route))return true;const i=stages.findIndex(s=>s.entry===route||s.exit===route);if(i>=0)return (i===0||validEvidence(a,stages[i-1].id,false))&&(route===stages[i].entry||validEvidence(a,stages[i].id,false)||completedTasks(a.inquiry,stages[i].id).length>=2);return canEnter(a,route,false);}
 function go(route:string){if(!routes.includes(route))route='main';if(!allowed(route)){notice('먼저 앞선 발견 기록을 완성해요.');route='nature-map';}active(state).route=route;history.replaceState(state.settings.admin?{teacherPreview:true}:null,'',`#/${route}`);persist();render();app.scrollTop=0;}
-function complete(stage:Stage){const a=active(state),first=!validEvidence(a,stage,state.settings.admin);if(first&&!inquiryComplete(a.inquiry,stage)){notice('네 가지 발견 기록을 먼저 완성해요.');return;}if(first)a.evidence[stage]={stage,attemptId:a.id,origin:state.settings.admin?'demo':'learner',created:new Date().toISOString(),validationVersion:2,summary:stages.find(s=>s.id===stage)!.summary,draft:structuredClone(a.draft),inquiry:structuredClone(a.inquiry)};playEffect('success');void save(state).then(()=>{go('nature-map');if(first)showConcept(stage,state.settings,()=>reward(stage,()=>{
+let dialogueStage:Stage|null=null;
+function complete(stage:Stage){const a=active(state),first=!validEvidence(a,stage,state.settings.admin);if(first&&!inquiryComplete(a.inquiry,stage)){notice('네 가지 발견 기록을 먼저 완성해요.');return;}if(first)a.evidence[stage]={stage,attemptId:a.id,origin:state.settings.admin?'demo':'learner',created:new Date().toISOString(),validationVersion:2,summary:stages.find(s=>s.id===stage)!.summary,draft:structuredClone(a.draft),inquiry:structuredClone(a.inquiry)};if(first&&!state.settings.admin)dialogueStage=stage;playEffect('success');void save(state).then(()=>{go('nature-map');if(first)showConcept(stage,state.settings,()=>reward(stage,()=>{
  const marker=app.querySelector<HTMLButtonElement>(`.map-resident[data-stage="${stage}"]`);
  marker?.focus({preventScroll:true});marker?.click();
 }));else if(habitEarned(a,stage))notice(`'${habits[stageIds.indexOf(stage)].name}' 배지를 받았어요. 발견 도감에서 볼 수 있어요.`);});}
@@ -156,8 +157,9 @@ function map(ctx:Context){
   mode=next;
   if(wasOverview&&returnView?.mode===next){zoom=returnView.zoom;translation=poseAt(returnView.center);if(next==='hand')pan={...translation};}
   if(stop)m?.stop();camera.classList.toggle('hand-on',mode==='hand');camera.classList.toggle('overview-on',mode==='overview');hand.setAttribute('aria-pressed',String(mode==='hand'));overview.setAttribute('aria-pressed',String(mode==='overview'));overview.setAttribute('aria-label',mode==='overview'?'이전 지도 보기':'지도 전체 보기');frame(position);m?.resize();};
+ const clearStage=dialogueStage;dialogueStage=null;
  const encounters=mountMapEncounters({
-  host:camera,stages:state.settings.admin?[]:mapVillainStages.filter((_,i)=>done[i]),progress:ctx.attempt.mapHits,
+  requiredFoes:5,host:camera,clearStage:()=>clearStage,stages:state.settings.admin?[]:mapVillainStages.filter((_,i)=>done[i]),progress:ctx.attempt.mapHits,
   onSave:patch=>{ctx.attempt.mapHits={...ctx.attempt.mapHits,...patch};void save(state).then(showStorageWarning);},
   blocked:()=>disposed||mode!=='follow'||guided>=0||ctx.host.dataset.mapReady!=='true',
   reduced,art:{left:'assets/map-encounter/map-villain-poses-left.webp',frames:6,nativeFacing:1},palette:'#bd84ff',reach:102,contact:24,
