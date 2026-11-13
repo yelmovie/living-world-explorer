@@ -1,4 +1,5 @@
 import {recoverInquiry} from './inquiry-model';
+import {normalizeMapHits} from './map-encounters.js';
 import {tasksFor} from './curriculum';
 import {makeState,makeAttempt,type State,type Attempt,stageIds,captureValid} from './model';
 import {routes} from './content';
@@ -24,6 +25,7 @@ export function restoreAttempt(raw:unknown):Attempt{
  // Historical accepted snapshots keep their original validation policy. A stricter
  // image mask must never erase an older student's completed lab or rewards.
  a.evidence=Object.fromEntries(Object.entries(v.evidence||{}).filter(([key,e])=>stageIds.includes(key as typeof stageIds[number])&&e?.stage===key&&e.attemptId===a.id&&['learner','demo'].includes(e.origin)&&(e.inquiry?tasksFor(e.stage).every(t=>!!recoverInquiry(e.inquiry).records[t.id]?.completedAt):validDraft(e.draft)&&missing(e.stage,e.draft).length===0)).map(([key,e])=>[key,{...e,...(e.inquiry?{inquiry:recoverInquiry(e.inquiry)}:{})}]));
+ if('mapHits' in v)a.mapHits=normalizeMapHits(v.mapHits,stageIds.filter(id=>a.evidence[id]));
  a.report=[...new Set((Array.isArray(v.report)?v.report:[]).filter(s=>stageIds.includes(s)&&a.evidence[s]))];
  a.ports=[...new Set((Array.isArray(v.ports)?v.ports:[]).filter(s=>stageIds.includes(s)&&a.evidence[s]))];
  a.activated=v.activated===true&&a.report.length===5&&a.ports.length===5;

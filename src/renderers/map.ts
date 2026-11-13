@@ -2,13 +2,14 @@ import {stepAlongRoad,MAP_VECTORS} from '../map-controls.js';
 import Phaser from 'phaser';
 import {drawBuildingLights} from './map-lighting';
 import type {Point} from '../model';
+import type {MapReaction,MapReactions} from '../map-encounters.js';
 import {MAP_WIDTH,MAP_HEIGHT,mapSpawn,locations,pathSegments,pathGraph,destinationNodeIds,routeBetween,nearestRoadPoint,mapAssets} from '../mapData';
 export {locations} from '../mapData';
 type Direction='up'|'down'|'left'|'right';
 let previousVisit:{attemptId:string;completed:boolean[]}|undefined;
 
 /** The map is a ground-plane road network. DOM labels and the canvas share these coordinates. */
-export function mountMap(host:HTMLElement,position:Point,completed:boolean[],attemptId:string,onArrive:(index:number,point:Point)=>void,reduced:boolean,onMove?:(point:Point,companion:Point)=>void,onManual?:()=>void,canTap=()=>true,onReady?:()=>void){
+export function mountMap(host:HTMLElement,position:Point,completed:boolean[],attemptId:string,onArrive:(index:number,point:Point)=>void,reduced:boolean,onMove?:(point:Point,companion:Point)=>void,onManual?:()=>void,canTap=()=>true,onReady?:()=>void,encounters?:(hero:Point,ally:Point)=>MapReactions){
  let requested:number|undefined;let navigate:(index:number)=>void=()=>{};let walk:(direction:Direction)=>void=()=>{};let nudge:(direction:Direction)=>void=()=>{};let stop:()=>void=()=>{};let cancel:()=>void=()=>{};let disposed=false;
  class Village extends Phaser.Scene{
   private hero!:Phaser.GameObjects.Container;
@@ -93,10 +94,15 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],att
    const direction=Math.abs(dx)>Math.abs(dy)?dx>0?'right':'left':dy>0?'down':'up';const previous=friend?this.friendDirection:this.direction;if(previous===direction)return;
    const image=friend?this.friendImage:this.heroImage;image.setTexture(`${friend?'friend':'moa'}-${direction}`);image.setScale((friend?65:92)/image.height);if(friend)this.friendDirection=direction;else this.direction=direction;
   }
+  private react(image:Phaser.GameObjects.Image,pose:MapReaction|null|undefined,friend=false){
+   const face=pose?.direction===-1?'left':'right',name=friend?'friend':'moa';
+   if(pose){image.setTexture(`${name}-${face}`).setScale((friend?65:92)/image.height);image.x=pose.dx;image.y=0;image.angle=reduced?0:(pose.kind==='hurt'?-pose.direction:pose.direction)*[0,7,5,0][pose.frame];image.setTint(pose.kind==='hurt'?0xffd5cc:0xf4e3ff);}
+   else if(image.angle||image.x||image.isTinted){image.setTexture(`${name}-${friend?this.friendDirection:this.direction}`).setScale((friend?65:92)/image.height);image.x=0;image.angle=0;image.clearTint();}
+  }
   private arrive(){if(this.destination===undefined)return;const index=this.destination;this.destination=undefined;this.route=[];this.heroImage.y=0;this.syncCamera();onArrive(index,{x:this.hero.x,y:this.hero.y});}
   update(_time:number,delta:number){
    if(!this.hero||disposed)return;
-   const blocked=document.hidden||!!document.querySelector('dialog[open]');if(blocked){this.keys.clear();this.held=undefined;this.tweens.pauseAll();return;}this.tweens.resumeAll();
+   const blocked=document.hidden||!!document.querySelector('dialog[open]');if(blocked){this.keys.clear();this.held=undefined;this.tweens.pauseAll();encounters?.(this.hero,this.friend);return;}this.tweens.resumeAll();
    const seconds=Math.min(delta,50)/1000;this.elapsed+=seconds;const start={x:this.hero.x,y:this.hero.y};let next:Point|undefined;
    const dx=(this.keys.has('ArrowRight')||this.keys.has('KeyD')||this.held==='right'?1:0)-(this.keys.has('ArrowLeft')||this.keys.has('KeyA')||this.held==='left'?1:0);
    const dy=(this.keys.has('ArrowDown')||this.keys.has('KeyS')||this.held==='down'?1:0)-(this.keys.has('ArrowUp')||this.keys.has('KeyW')||this.held==='up'?1:0);
@@ -110,6 +116,7 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],att
    const fdx=friendTarget.x-this.friend.x,fdy=friendTarget.y-this.friend.y,friendMoved=Math.hypot(fdx,fdy)>.4;if(friendMoved){this.face(fdx,fdy,true);this.friend.setPosition(friendTarget.x,friendTarget.y);}
    if(this.moving||friendMoved)this.syncCamera();
    this.friendImage.y=!reduced&&this.moving?-Math.abs(Math.sin(this.elapsed*16+.8))*4:0;this.hero.setDepth(this.hero.y+100);this.friend.setDepth(this.friend.y+100);
+   const reactions=encounters?.(this.hero,this.friend);this.react(this.heroImage,reactions?.hero);this.react(this.friendImage,reactions?.ally,true);
    if(this.destination!==undefined&&!this.route.length){this.arrive();if(disposed)return;}
    locations.forEach((p,index)=>{const inside=Math.hypot(p.x-this.hero.x,p.y-this.hero.y)<20;if(inside&&!this.insideDoors.has(index)&&(dx||dy)&&this.moving){this.insideDoors.add(index);this.keys.clear();this.held=undefined;onArrive(index,{x:this.hero.x,y:this.hero.y});}else if(!inside)this.insideDoors.delete(index);});
   }

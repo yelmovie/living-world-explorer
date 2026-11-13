@@ -1,4 +1,6 @@
 import {bindDirectionPad,mapKeyDirection} from './map-controls.js';
+import {mountMapEncounters} from './map-encounters.js';
+import {mapVillainStages} from './map-villain-content';
 import {bindMapZoom} from './map-gestures.js';
 import {revisedEvidenceCount} from './experience';
 import {needsStorageWarning} from './storage-status';
@@ -154,6 +156,18 @@ function map(ctx:Context){
   mode=next;
   if(wasOverview&&returnView?.mode===next){zoom=returnView.zoom;translation=poseAt(returnView.center);if(next==='hand')pan={...translation};}
   if(stop)m?.stop();camera.classList.toggle('hand-on',mode==='hand');camera.classList.toggle('overview-on',mode==='overview');hand.setAttribute('aria-pressed',String(mode==='hand'));overview.setAttribute('aria-pressed',String(mode==='overview'));overview.setAttribute('aria-label',mode==='overview'?'이전 지도 보기':'지도 전체 보기');frame(position);m?.resize();};
+ const encounters=mountMapEncounters({
+  host:camera,stages:state.settings.admin?[]:mapVillainStages.filter((_,i)=>done[i]),progress:ctx.attempt.mapHits,
+  onSave:patch=>{ctx.attempt.mapHits={...ctx.attempt.mapHits,...patch};void save(state).then(showStorageWarning);},
+  blocked:()=>disposed||mode!=='follow'||guided>=0||ctx.host.dataset.mapReady!=='true',
+  reduced,art:{left:'assets/map-encounter/map-villain-left.webp',frames:6,nativeFacing:1},palette:'#bd84ff',reach:102,contact:24,
+  tone:(kind,hits)=>playEffect(kind==='finish'?'core-wake':kind==='contact'?'pipette-drop':hits===1?'snap':'capture'),
+ });
+ ctx.cleanup(encounters.destroy);
+ const encounterFrame=(hero:typeof position,ally:typeof companion)=>encounters.update({
+  hero,ally,scale:landW/MAP_WIDTH,
+  project:point=>({x:translation.x+point.x*landW/MAP_WIDTH,y:translation.y+point.y*landH/MAP_HEIGHT}),
+ });
  const hand=iconButton('hand','손으로 지도 이동',()=>{cancelTravel();setMode(mode==='hand'?'follow':'hand');},'map-view-icon');
  const overview=iconButton('expand','지도 전체 보기',()=>{cancelTravel();setMode(mode==='overview'?returnView?.mode??'follow':'overview');},'map-view-icon');
  for(const b of [hand,overview]){b.querySelector('span')?.remove();b.setAttribute('aria-pressed','false');tools.append(b);}ctx.host.append(tools);
@@ -187,7 +201,7 @@ function map(ctx:Context){
   if(mapRecovery.contains(document.activeElement))nextButton.focus({preventScroll:true});
   mapRecovery.hidden=true;
   ctx.host.dataset.mapReady='true';
- });ctx.cleanup(m.dispose);if(selected>=0)m.move(selected);}).catch(()=>{
+ },encounterFrame);ctx.cleanup(m.dispose);if(selected>=0)m.move(selected);}).catch(()=>{
   if(disposed)return;
   clearMapTimers();clearSelection();
   for(const control of [nextButton,camera,helper,directions,tools])control.inert=true;
