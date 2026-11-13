@@ -14,6 +14,7 @@ let unlocked = false;
 let explicitQuiet = false;
 let installed = false;
 let track: MusicTrack = 'main';
+let film: {track:MusicTrack;playing:boolean} | undefined;
 let music: HTMLAudioElement | undefined;
 let musicTrack: MusicTrack | undefined;
 const effectVoices = new Set<AudioScheduledSourceNode>();
@@ -23,18 +24,26 @@ const samples=new Map<EffectName,AudioBuffer>();
 let samplesRequested=false;let lastEffect=0;
 let observer: MutationObserver | undefined;
 let narration:HTMLAudioElement|undefined;
+export type NarrationState='playing'|'ended'|'stopped'|'unavailable';
+let narrationState:((state:NarrationState)=>void)|undefined;
 /** Every playable ID is backed by a shipped, validated character recording. */
-function clearNarration(){const previous=narration;narration=undefined;if(previous){previous.onended=previous.onerror=null;previous.pause();previous.removeAttribute('src');previous.load();}}
+function clearNarration(){
+ const previous=narration,onState=narrationState;narration=undefined;narrationState=undefined;
+ if(previous){previous.onended=previous.onerror=null;previous.pause();previous.removeAttribute('src');previous.load();onState?.('stopped');}
+}
 export function stopNarration(){clearNarration();sync();}
-export function playNarration(id:string):boolean{
+export function playNarration(id:string,onState?:(state:NarrationState)=>void):boolean{
  if(!settings.sound||document.hidden||explicitQuiet)return false;
  clearNarration();
  const key=/^M[1-5]$/.test(id)?id+'-welcome':id,recording=narrationRecordings[key];
  // Unknown IDs must not create broken requests or leave the previous line playing.
  if(!recording){sync();return false;}
- const audio=new Audio(recording.src);audio.preload='none';narration=audio;
- audio.onended=audio.onerror=()=>{if(narration===audio){narration=undefined;sync();}};
- stopMusic();void audio.play().catch(()=>{if(narration===audio){narration=undefined;sync();}});return true;
+ const audio=new Audio(recording.src);audio.preload='none';narration=audio;narrationState=onState;
+ const finish=(state:NarrationState)=>{if(narration===audio){narration=undefined;narrationState=undefined;sync();onState?.(state);}};
+ audio.onended=()=>finish('ended');audio.onerror=()=>finish('unavailable');
+ stopMusic();
+ void audio.play().then(()=>{if(narration===audio)onState?.('playing');}).catch(()=>finish('unavailable'));
+ return true;
 }
 
 
@@ -90,15 +99,16 @@ function musicElement(ctx: AudioContext) {
 }
 function sync() {
   if (!settings.sound || document.hidden || explicitQuiet) {stopVoices(effectVoices);clearNarration();}
-  if (!settings.bgm || !unlocked || quiet() || narration) {stopMusic();return;}
+  if (!settings.bgm || !unlocked || quiet() || narration || (film && !film.playing)) {stopMusic();return;}
   const ctx = engine();
   if (!ctx || !musicGain) return;
   const volume = Number.isFinite(settings.bgmVolume) ? Math.max(0, Math.min(100, settings.bgmVolume!)) / 100 : .35;
-  musicGain.gain.setTargetAtTime(volume * MUSIC_MAX_GAIN, ctx.currentTime, .05);
+  musicGain.gain.setTargetAtTime(volume * MUSIC_MAX_GAIN * (film ? .82 : 1), ctx.currentTime, .05);
   const element = musicElement(ctx);
   if (!element) return;
-  if (musicTrack !== track) {element.src = tracks[track];musicTrack = track;}
-  const start = () => {if (context === ctx && unlocked && !narration && element.paused && settings.bgm && !quiet()) void element.play().catch(() => {});};
+  const desiredTrack = film?.track ?? track;
+  if (musicTrack !== desiredTrack) {element.src = tracks[desiredTrack];musicTrack = desiredTrack;}
+  const start = () => {if (context === ctx && unlocked && !narration && element.paused && settings.bgm && !quiet() && (!film || film.playing)) void element.play().catch(() => {});};
   if (ctx.state === 'suspended') void ctx.resume().then(start).catch(() => {});else start();
 }
 function preloadEffects(){
@@ -119,6 +129,19 @@ function install() {
 export function syncAudio(value: AudioSettings) {settings = value;install();if(unlocked&&settings.sound)preloadEffects();sync();}
 export function setAudioQuiet(value: boolean) {explicitQuiet = value;sync();}
 export function setMusicTrack(value: MusicTrack) {if (track === value) return;track = value;sync();}
+export function scoreStoryFilm(video: HTMLVideoElement, theme: MusicTrack) {
+  const session = {track: theme, playing: false};
+  film = session;
+  stopNarration();
+  const events = new AbortController();
+  const update = (playing: boolean) => {session.playing = playing; if (film === session) sync();};
+  for (const event of ['pause', 'waiting', 'seeking', 'ended']) video.addEventListener(event, () => update(false), {signal: events.signal});
+  video.addEventListener('playing', () => update(true), {signal: events.signal});
+  return () => {
+    events.abort();
+    if (film === session) {film = undefined; sync();}
+  };
+}
 export function anySound(value: AudioSettings) {return !!(value.sound || value.bgm);}
 export function toggleMasterSound(value: AudioSettings) {const enabled = !anySound(value);value.sound = enabled;value.bgm = enabled;syncAudio(value);}
 export function playEffect(name: EffectName = 'click') {
@@ -143,7 +166,7 @@ export function playEffect(name: EffectName = 'click') {
 }
 export function disposeAudio() {
   stopNarration();stopMusic();stopVoices(effectVoices);
-  observer?.disconnect();observer = undefined;
+  observer?.disconnect();observer = undefined;film = undefined;
   document.removeEventListener('pointerdown', firstGesture);
   document.removeEventListener('keydown', firstGesture);
   document.removeEventListener('visibilitychange', visibility);

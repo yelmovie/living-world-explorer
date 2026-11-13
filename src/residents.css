@@ -50,15 +50,49 @@
   transform:skewY(-27deg);
 }
 .map-resident:is(:hover,:focus-visible) .resident-name {background:var(--cream-56);text-decoration:underline}
-.modal.resident-dialog {max-width:570px}
-.resident-conversation {display:grid;grid-template-columns:clamp(88px,14vw,152px) 1fr;align-items:center;gap:clamp(12px,2vw,22px)}
-.resident-portrait {width:100%;height:clamp(112px,25vh,180px);object-fit:contain;filter:drop-shadow(0 3px 2px rgb(71 47 22 / 15%))}
-.resident-lines {min-width:0}
-.resident-lines .eyebrow {color:var(--ink-strong)}
-.resident-lines .resident-line {margin-top:8px;font-size:clamp(17px,1.7vw,22px);line-height:1.52}
+/* Dialogue stays on the real map, with one registered portrait frame above the paper. */
+.modal.resident-dialog {
+  position:fixed;inset:auto 0 max(14px,env(safe-area-inset-bottom));margin:0 auto;
+  width:min(1060px,94vw);max-width:none;max-height:calc(100dvh - 20px);
+  padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;
+  overflow:visible;backdrop-filter:none;-webkit-backdrop-filter:none;
+}
+.modal.resident-dialog::backdrop {background:rgb(19 35 26 / 54%)}
+.resident-conversation {position:relative;isolation:isolate}
+.resident-portrait {
+  position:absolute;right:6%;bottom:calc(100% - 16px);
+  width:min(49vw,47dvh,375px);aspect-ratio:5 / 6;
+  background:var(--resident-poses) left bottom / 200% 100% no-repeat;
+  filter:drop-shadow(0 5px 4px #152c264a);pointer-events:none;
+}
+@media (prefers-reduced-motion:no-preference){
+  html:not(.reduced) .resident-conversation[data-speaking=true] .resident-portrait {animation:resident-talk .76s step-end infinite}
+}
+@keyframes resident-talk {0%,62%{background-position-x:100%}35%,100%{background-position-x:0%}}
+.resident-lines {
+  position:relative;min-width:0;padding:clamp(16px,2.5vw,28px);
+  border:2px solid var(--brass-deep,#966a36);border-radius:16px;
+  background:linear-gradient(#fffbec,#f5e7c8);color:var(--ink-strong,#302921);
+  box-shadow:0 10px 28px #152c2655;
+}
+.resident-dialog-heading {display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:5px}
+.resident-dialog-heading h2 {margin:0;color:inherit;font-size:clamp(24px,2.8vw,34px);line-height:1.2}
+.resident-dialog-heading .eyebrow {color:var(--ink-strong);margin:0}
+.resident-lines .resident-line {margin:0 0 12px;font-size:clamp(18px,2.2vw,25px);line-height:1.5;word-break:keep-all;overflow-wrap:anywhere}
 .resident-replies,.resident-reward-actions {display:flex;gap:8px;flex-wrap:wrap}
 .resident-replies button,.resident-reward-actions button {flex:1 1 auto;min-height:46px}
-.resident-replies [aria-pressed=true] {background:var(--stage-m1-soft,var(--sage-76));border-color:var(--forest-551)}
+.resident-replies [aria-pressed=true],.resident-replies .is-queued {background:var(--stage-m1-soft,var(--sage-76));border-color:var(--forest-551)}
+.resident-dialog-controls {display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px;margin-top:7px}
+.resident-dialog-controls button {min-height:42px;padding:5px 10px}
+.resident-queue {margin:4px 0 0;font-size:14px}
+.resident-queue:empty {display:none}
+@media(max-height:520px) {
+  .modal.resident-dialog {bottom:8px}
+  .resident-portrait {width:min(34vw,36dvh,220px)}
+  .resident-lines {padding:12px 15px}
+  .resident-lines .resident-line {line-height:1.35;margin-bottom:7px}
+  .resident-replies button,.resident-dialog-controls button {min-height:40px}
+}
 .modal.resident-reward {overflow:auto}
 .resident-reward .reward-body {gap:10px}
 .resident-reward .reward-image {height:clamp(105px,24vh,195px)}
@@ -70,7 +104,9 @@
   @keyframes resident-arrives {from{opacity:0;transform:translateY(7px)}}
 }
 @media (max-height:520px) {
-  .modal.resident-reward,.modal.resident-dialog {padding:14px 20px;gap:8px}
+  .modal.resident-reward {padding:14px 20px;gap:8px}
   .resident-reward .reward-body {gap:6px}
-  .resident-portrait {height:90px}
 }
+
+/* The owl faces straight ahead. The other right-side poses face into the map. */
+.resident-portrait[data-facing="inward"] { scale: -1 1; }

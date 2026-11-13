@@ -134,3 +134,8 @@ SOFTWARE.
 | `assets/ui/slide-flat.webp` | 표본 한 방울을 올리는 얇고 평평한 유리판 |
 
 사용 계정과 생성 서비스의 적용 이용 조건 확인은 납품 권리 검토에 포함한다.
+
+## 2026-11-12 지도 주민 대화
+
+- `public/assets/map/residents/dialogue/`: 기존 다섯 주민의 의상과 소품을 참조해 Codex GPT 이미지 도구로 생성한 두 표정 시트. 지도 아이콘은 기존 그림 그대로다.
+- `public/assets/audio/voice/M[1–5]-*.mp3`: 한국어 대사 20개를 ElevenLabs v4로 다시 생성. 생성 ID, 음색, 전사, 길이와 해시는 같은 폴더의 `elevenlabs-residents-20261112.json` 참고. 이전 Momo 목록은 과거 제작 이력으로 남긴다.
