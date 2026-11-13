@@ -32,6 +32,10 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],att
     this.load.image(`moa-${d}`,`assets/map/moa-${d}.webp`);
     this.load.image(`friend-${d}`,`assets/map/companion-${d}.webp`);
    }
+   if(completed.some(Boolean))for(const [asset,url] of Object.entries(import.meta.glob<string>('/public/assets/map-encounter/map-*-reaction.webp',{eager:true,import:'default',query:'?url'}))){
+    const role=asset.includes('-hero-')?'moa':'friend';
+    this.load.spritesheet(`${role}-reaction`,url,{frameWidth:256,frameHeight:256});
+   }
   }
   create(){
    if(this.textures.exists('village'))this.add.image(MAP_WIDTH/2,MAP_HEIGHT/2,'village').setDisplaySize(MAP_WIDTH,MAP_HEIGHT);
@@ -96,8 +100,14 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],att
   }
   private react(image:Phaser.GameObjects.Image,pose:MapReaction|null|undefined,friend=false){
    const face=pose?.direction===-1?'left':'right',name=friend?'friend':'moa';
+   const atlas=`${name}-reaction`,height=friend?65:92;
+   if(pose&&this.textures.exists(atlas)){
+    const row=(pose.kind==='hurt'?2:0)+(pose.direction>0?1:0);
+    image.setTexture(atlas,row*4+pose.frame).setOrigin(.5,240/256).setScale(height/208);
+    image.x=pose.dx;image.y=0;image.angle=0;image.clearTint();return;
+   }
    if(pose){image.setTexture(`${name}-${face}`).setScale((friend?65:92)/image.height);image.x=pose.dx;image.y=0;image.angle=reduced?0:(pose.kind==='hurt'?-pose.direction:pose.direction)*[0,7,5,0][pose.frame];image.setTint(pose.kind==='hurt'?0xffd5cc:0xf4e3ff);}
-   else if(image.angle||image.x||image.isTinted){image.setTexture(`${name}-${friend?this.friendDirection:this.direction}`).setScale((friend?65:92)/image.height);image.x=0;image.angle=0;image.clearTint();}
+   else if(image.texture.key===atlas||image.angle||image.x||image.isTinted){image.setOrigin(.5,1);image.setTexture(`${name}-${friend?this.friendDirection:this.direction}`).setScale((friend?65:92)/image.height);image.x=0;image.angle=0;image.clearTint();}
   }
   private arrive(){if(this.destination===undefined)return;const index=this.destination;this.destination=undefined;this.route=[];this.heroImage.y=0;this.syncCamera();onArrive(index,{x:this.hero.x,y:this.hero.y});}
   update(_time:number,delta:number){
