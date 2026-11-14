@@ -125,3 +125,9 @@
 #app[data-route="nature-map"] .screen-nature-map .map-camera.overview-on .map-node .ui-icon {
   width:16px; height:16px;
 }
+
+
+.screen-nature-map .map-view-tools{left:auto;right:24px;top:auto;bottom:100px;flex-direction:row;align-items:center}
+.screen-nature-map .map-view-tools:has(~.map-arrival:not(:empty)){bottom:170px}
+@media (max-width:900px),(max-height:630px){.screen-nature-map .map-view-tools{right:12px;bottom:82px}}
+@media (max-width:600px){.screen-nature-map .map-view-tools{bottom:88px}}

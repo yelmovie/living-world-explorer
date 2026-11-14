@@ -8,7 +8,7 @@ const dialogue=[
   ["요구르트와 곰팡이 사건을 구분했어? 이름표를 섞어 놨는데!", "다음엔 요구르트 통에 내 이름을 써 두지!", "앗, 유산균 이름표가 제자리로!", "내가 뒤집은 사건 카드가 펼쳐졌어!", "흥, 기록은 가져. 요구르트는 남겨 줘!"],
   ["네 해결 장치를 시험까지 했다고? 내 흐림 필터도 뚫렸잖아!", "내 장난에도 시험 기록이 필요하겠군!", "앗, 조립 부품이 제자리로!", "시험 결과가 또렷해지잖아!", "쳇, BIO 작업실은 돌려줄게!"],
 ];
-const approaches=[{x:392,y:221},{x:847,y:215},{x:1032,y:411},{x:817,y:580},{x:314,y:540}];
+const approaches=[{x:380,y:214},{x:875,y:197},{x:1062,y:408},{x:847,y:582},{x:299,y:539}];
 export const mapVillainStages=stageIds.map((id,i)=>({
  id,name:'초점 도깨비 렌즈',...nearestRoadPoint(approaches[i]??locations[i]),
  lines:dialogue[i].slice(0,2),prop:['cap','pane','file','label','lens'][i],hit:dialogue[i].slice(2,4),finish:dialogue[i][4],
