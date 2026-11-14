@@ -73,7 +73,8 @@ export function residentConversation(stage:Stage, attempt:Attempt){
   const r=residents[stage];
   const scene=el('div','resident-conversation');
   const portrait=el('div','resident-portrait');
-  portrait.style.setProperty('--resident-poses',`url("assets/map/residents/dialogue/${r.art}.webp")`);
+  const poses = new URL(`assets/map/residents/dialogue/${r.art}.webp`, document.baseURI);
+  portrait.style.setProperty('--resident-poses',`url("${poses.href}")`);
   portrait.setAttribute('aria-hidden','true');
   if(r.art!=='duri')portrait.dataset.facing='inward';
   const copy=el('div','resident-lines');
