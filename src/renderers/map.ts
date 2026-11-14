@@ -1,6 +1,7 @@
 import {stepAlongRoad,MAP_VECTORS} from '../map-controls.js';
 import Phaser from 'phaser';
 import {drawBuildingLights} from './map-lighting';
+import {outlinedSprite} from './sprite-outline';
 import type {Point} from '../model';
 import type {MapReaction,MapReactions} from '../map-encounters.js';
 import {MAP_WIDTH,MAP_HEIGHT,mapSpawn,locations,pathSegments,pathGraph,destinationNodeIds,routeBetween,nearestRoadPoint,mapAssets} from '../mapData';
@@ -26,6 +27,10 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],att
   private elapsed=0;
   private direction='down';
   private friendDirection='down';
+  private styleSprite(image:Phaser.GameObjects.Image,key:string,height:number){
+   const outline=outlinedSprite(this.textures,key,height);
+   image.setTexture(outline.key).setOrigin(outline.originX,outline.originY).setScale(outline.scale);
+  }
   preload(){
    this.load.image('village',mapAssets.terrain);
    for(const d of ['down','right','up','left']){
@@ -64,8 +69,8 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],att
    const valid=Number.isFinite(position.x)&&Number.isFinite(position.y)&&position.x>=0&&position.y>=0&&position.x<=MAP_WIDTH&&position.y<=MAP_HEIGHT;
    const spawn=nearestRoadPoint(valid?position:mapSpawn);
    this.hero=this.add.container(spawn.x,spawn.y);this.hero.add(this.add.ellipse(0,-2,37,13,0x203e2f,.3));
-   this.heroImage=this.add.image(0,0,'moa-down').setOrigin(.5,1);this.heroImage.setScale(92/this.heroImage.height);this.hero.add(this.heroImage);
-   this.friend=this.add.container(spawn.x,Math.min(MAP_HEIGHT-18,spawn.y+34));this.friend.add(this.add.ellipse(0,-2,25,10,0x203e2f,.23));this.friendImage=this.add.image(0,0,'friend-down').setOrigin(.5,1);this.friendImage.setScale(65/this.friendImage.height);this.friend.add(this.friendImage);
+   this.heroImage=this.add.image(0,0,'moa-down');this.styleSprite(this.heroImage,'moa-down',92);this.hero.add(this.heroImage);
+   this.friend=this.add.container(spawn.x,Math.min(MAP_HEIGHT-18,spawn.y+34));this.friend.add(this.add.ellipse(0,-2,25,10,0x203e2f,.23));this.friendImage=this.add.image(0,0,'friend-down');this.styleSprite(this.friendImage,'friend-down',65);this.friend.add(this.friendImage);
    this.pathHistory=[{x:this.friend.x,y:this.friend.y},{...spawn}];locations.forEach((p,i)=>{if(Math.hypot(p.x-spawn.x,p.y-spawn.y)<24)this.insideDoors.add(i);});
    reopened.forEach(i=>this.restoration(i));
    previousVisit={attemptId,completed:[...completed]};
@@ -96,7 +101,7 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],att
   private syncCamera(){onMove?.({x:this.hero.x,y:this.hero.y},{x:this.friend.x,y:this.friend.y});this.scale.updateBounds();}
   private face(dx:number,dy:number,friend=false){
    const direction=Math.abs(dx)>Math.abs(dy)?dx>0?'right':'left':dy>0?'down':'up';const previous=friend?this.friendDirection:this.direction;if(previous===direction)return;
-   const image=friend?this.friendImage:this.heroImage;image.setTexture(`${friend?'friend':'moa'}-${direction}`);image.setScale((friend?65:92)/image.height);if(friend)this.friendDirection=direction;else this.direction=direction;
+   const image=friend?this.friendImage:this.heroImage;this.styleSprite(image,`${friend?'friend':'moa'}-${direction}`,friend?65:92);if(friend)this.friendDirection=direction;else this.direction=direction;
   }
   private react(image:Phaser.GameObjects.Image,pose:MapReaction|null|undefined,friend=false){
    const face=pose?.direction===-1?'left':'right',name=friend?'friend':'moa';
@@ -106,8 +111,8 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],att
     image.setTexture(atlas,row*4+pose.frame).setOrigin(.5,240/256).setScale(height/208);
     image.x=pose.dx;image.y=0;image.angle=0;image.clearTint();return;
    }
-   if(pose){image.setTexture(`${name}-${face}`).setScale((friend?65:92)/image.height);image.x=pose.dx;image.y=0;image.angle=reduced?0:(pose.kind==='hurt'?-pose.direction:pose.direction)*[0,7,5,0][pose.frame];image.setTint(pose.kind==='hurt'?0xffd5cc:0xf4e3ff);}
-   else if(image.texture.key===atlas||image.angle||image.x||image.isTinted){image.setOrigin(.5,1);image.setTexture(`${name}-${friend?this.friendDirection:this.direction}`).setScale((friend?65:92)/image.height);image.x=0;image.angle=0;image.clearTint();}
+   if(pose){this.styleSprite(image,`${name}-${face}`,friend?65:92);image.x=pose.dx;image.y=0;image.angle=reduced?0:(pose.kind==='hurt'?-pose.direction:pose.direction)*[0,7,5,0][pose.frame];image.setTint(pose.kind==='hurt'?0xffd5cc:0xf4e3ff);}
+   else if(image.texture.key===atlas||image.angle||image.x||image.isTinted){image.setOrigin(.5,1);this.styleSprite(image,`${name}-${friend?this.friendDirection:this.direction}`,friend?65:92);image.x=0;image.angle=0;image.clearTint();}
   }
   private arrive(){if(this.destination===undefined)return;const index=this.destination;this.destination=undefined;this.route=[];this.heroImage.y=0;this.syncCamera();onArrive(index,{x:this.hero.x,y:this.hero.y});}
   update(_time:number,delta:number){

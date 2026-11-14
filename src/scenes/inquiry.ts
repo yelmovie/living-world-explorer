@@ -27,7 +27,7 @@ import '../inquiry-simplified.css';
 
 let playbackRate=1;
 const backgrounds:Record<Stage,string>={M1:'fungi',M2:'water',M3:'archive',M4:'village',M5:'workshop'};
-export function mentor(task:InquiryTask,record:InquiryRecord){const box=el('div','buddy-card');const pic=el('img');pic.src='assets/characters/companion-portrait.webp';pic.alt='토끼 길잡이 토토';const talk=el('div','buddy-speech');talk.hidden=true;let level=0;const text=paragraph('');const more=button('다른 힌트',()=>{level=(level+1)%3;draw();playEffect('hint');},'text-button');const draw=()=>{text.textContent=[task.mentor,task.instruction,guidance(task,record).action][level];};talk.append(text,more,button('자료·관찰 조건',()=>modal('자료와 관찰 조건',[sourceNotes(task)]),'text-button'));const b=button('',()=>{talk.hidden=!talk.hidden;level=0;draw();b.setAttribute('aria-expanded',String(!talk.hidden));playEffect('hint');},'buddy-toggle');b.setAttribute('aria-label','토토의 힌트');b.setAttribute('aria-expanded','false');b.append(pic,el('span','','토토에게 힌트'));box.append(b,talk);return box;}
+export function mentor(task:InquiryTask,record:InquiryRecord){const box=el('div','buddy-card');const pic=el('img');pic.src='assets/characters/companion-portrait.webp';pic.alt='토끼 길잡이 토토';const talk=el('div','buddy-speech');talk.hidden=true;let level=0;const text=paragraph('');const more=button('다른 힌트',()=>{level=Math.min(2,level+1);draw();playEffect('hint');},'text-button');const draw=()=>{text.textContent=[guidance(task,record).action, task.kind==='microscope'?'관찰 사진과 확대된 모습을 나란히 살펴봐요.':'화면의 자료를 다시 열고 표시나 기록을 살펴봐요.',task.kind==='connect'||task.kind==='sort'||task.kind==='collect'?'카드를 다시 누르고 읽어 봐요. 고른 칸의 제목과 카드에서 본 특징을 비교해요.':'방금 조작한 결과와 앞 기록에서 달라진 점을 찾아봐요. 그 차이를 고른 설명과 비교해요.'][level];more.disabled=level===2;};talk.append(text,more,button('자료·관찰 조건',()=>modal('자료와 관찰 조건',[sourceNotes(task)]),'text-button'));const b=button('',()=>{talk.hidden=!talk.hidden;level=0;draw();b.setAttribute('aria-expanded',String(!talk.hidden));playEffect('hint');},'buddy-toggle');b.setAttribute('aria-label','토토의 힌트');b.setAttribute('aria-expanded','false');b.append(pic,el('span','','토토에게 힌트'));box.append(b,talk);return box;}
 export function inquiryScene(ctx:Context,stage:Stage){
  const progress=ctx.attempt.inquiry;const list=tasksFor(stage);let index=progress.current[stage]??0;index=Math.max(0,Math.min(3,index));const task=list[index];const r=progress.records[task.id]??=prepareInquiry(task);let disposed=false;ctx.cleanup(()=>disposed=true);
  const linking=['collect','connect','sort'].includes(task.kind);ctx.host.classList.add('expedition-shell',`stage-${stage}`);ctx.host.classList.toggle('link-task',linking);ctx.host.dataset.stage=stage;ctx.host.dataset.kind=task.kind;ctx.host.style.setProperty('--facility-image',`url('/assets/places/${backgrounds[stage]}.webp')`);
@@ -315,14 +315,14 @@ export function inquiryScene(ctx:Context,stage:Stage){
  // Optional help stays outside the notebook, leaving its height to the current operation.
  const links=el('div','panel-links');links.append(button('도움말',()=>{
   const terms=Object.keys(scienceTerms).filter(term=>(task.mentor+' '+task.success).includes(term)).slice(0,4);
-  const nodes:Node[]=[emphasizeScience(paragraph(task.mentor)),...terms.length?[termChips(terms)]:[],sourceNotes(task)];
+  const nodes:Node[]=[paragraph(guidance(task,r).action),paragraph('고른 자료의 특징과 관찰 결과를 비교해요. 답은 직접 골라요.'),...(ready&&terms.length?[termChips(terms)]:[]),sourceNotes(task)];
   if(task.kind==='microscope'){const lens=magnifyFor(task.organism,r.v===2);if(lens)nodes.unshift(emphasizeScience(paragraph(lens.captions[r.level])));nodes.push(button(r.zoom>1?'원래 크기로 보기':'확대해서 보기',()=>{r.zoom=r.zoom===1?1.5:1;paint();document.querySelector<HTMLDialogElement>('dialog[open]')?.close();}));}
   if(task.kind==='sample'&&r.assignments.site)nodes.push(button('장소 다시 고르기',()=>{r.assignments.site='';r.sequence=0;paint();controls();document.querySelector<HTMLDialogElement>('dialog[open]')?.close();}));
   if(['timeline','track'].includes(task.kind))nodes.push(button('나란히 보기',()=>{view?.setReveal(undefined);document.querySelector<HTMLDialogElement>('dialog[open]')?.close();}),button('두 시점 다시 고르기',()=>{r.pins=[0];r.marks=[];r.level=0;r.time=task.kind==='timeline'?3:5;view?.setPreview(true);paint();controls();document.querySelector<HTMLDialogElement>('dialog[open]')?.close();}));
   if(task.kind==='review')for(const item of task.items)nodes.push(button(item.label,()=>modal(item.label,[emphasizeScience(paragraph(item.detail))])));
   if(task.kind==='publish'&&r.assignments.action)nodes.push(button('문장틀로 소개하기',()=>{r.note=introduction(task,r);paint();controls();document.querySelector<HTMLDialogElement>('dialog[open]')?.close();}));
-  if(task.kind==='build'||task.kind==='publish')nodes.unshift(emphasizeScience(paragraph(task.items.filter(i=>i.target).map(i=>i.detail).join('\n'))));
-  const model=modelButton(task.id);if(model)nodes.push(model);modal('탐구 도움말',nodes);
+  if(ready&&(task.kind==='build'||task.kind==='publish'))nodes.unshift(emphasizeScience(paragraph(task.items.filter(i=>i.target).map(i=>i.detail).join('\n'))));
+  const model=ready?modelButton(task.id):null;if(model)nodes.push(model);modal('탐구 도움말',nodes);
  },'text-button'));
  if(!linking&&task.kind!=='microscope'){
   const assist=button('버튼으로 조작',alternative,'text-button');

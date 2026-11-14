@@ -28,23 +28,6 @@
  #app>.expedition-shell.link-task.link-task .link-board[data-layout=center]{grid-template-rows:max-content max-content}
  #app>.expedition-shell.link-task.link-task .link-board[data-layout=center] .link-stack{flex:none;grid-auto-rows:minmax(128px,auto)}
 }
-/* Map world stays between navigation lanes, so moving labels never pass below HUD controls. */
-.screen-nature-map .map-camera{inset:78px 0 142px}
-.screen-nature-map .map-view-tools{top:auto;left:16px;bottom:26px;flex-direction:column}
-@media(min-width:601px){
- .screen-nature-map .map-companion-help{left:76px;bottom:26px;width:56px;min-height:104px;padding:4px;font-size:16px;justify-content:center}
- .screen-nature-map .map-companion-help img{width:44px;height:64px}
- .screen-nature-map .map-directions{left:144px}
-}
-@media(max-width:600px){
- .screen-nature-map .map-directions{left:72px;bottom:16px;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(2,44px);gap:4px}
- .screen-nature-map .map-directions>.button{width:44px;height:44px;min-height:44px}
- .screen-nature-map .map-next,.screen-nature-map .map-arrival{right:10px;max-width:calc(100% - 224px);font-size:16px;padding:8px;bottom:16px}
- .screen-nature-map .map-view-tools{left:12px;bottom:16px;gap:4px}
- .screen-nature-map .map-view-icon{width:44px;height:44px;min-width:44px;min-height:44px}
- .screen-nature-map .map-camera{bottom:128px}
-}
-@media(max-width:600px){.screen-nature-map .map-companion-help{left:auto;right:12px;top:78px;bottom:auto;width:48px;min-height:48px;height:48px;padding:4px}.screen-nature-map .map-companion-help img{width:36px;height:36px}.screen-nature-map .map-companion-help span{display:none}.screen-nature-map .map-camera{top:136px}}
 /* Shared card rhythm: rounded containers; equal sibling spacing without changing learning diagrams. */
 :root{--card-corner:18px;--card-gap:12px}
 #app :is(.discovery-card,.claim-card,.impact-card,.source-card,.report-card,.result-card,.mentor-card,.tool-panel,.expedition-panel,.link-card,.link-target){border-radius:var(--card-corner)}
@@ -52,20 +35,93 @@
 @media(max-height:560px){#app :is(.source-grid,.link-stack){gap:8px}}
 .tool-panel{padding:16px}
 .discovery-card{padding:16px}
-/* Phone overview uses a readable destination shelf rather than shrinking touch targets together. */
-@media(max-width:600px){
- .screen-nature-map .map-camera.overview-on .map-landscape{width:100%!important;height:100%!important;transform:none!important}
- .screen-nature-map .map-camera.overview-on .map-host{opacity:.35;pointer-events:none}
- .screen-nature-map .map-camera.overview-on .map-overlay{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:12px;padding:12px;overflow:auto;pointer-events:auto}
- .screen-nature-map .map-camera.overview-on .map-overlay>.map-node,.screen-nature-map .map-camera.overview-on .map-overlay>.map-resident,.screen-nature-map .map-camera.overview-on .map-overlay>.mv-target{position:relative;left:auto!important;top:auto!important;transform:none!important;width:100%;height:86px;min-height:64px;max-width:100%;margin:0}
- .screen-nature-map .map-camera.overview-on .map-node{font-size:16px;padding:6px;white-space:normal}
- .screen-nature-map .map-camera.overview-on .map-badge{width:32px;height:32px}
- .screen-nature-map .map-camera.overview-on .mv-status{position:sticky;grid-column:1/-1}
-}
 #app .map-node{color:var(--ink-strong)}
-@media(max-width:600px){
- .screen-nature-map .map-camera.overview-on .map-landscape{background-size:cover!important}
- .screen-nature-map .map-camera.overview-on .map-node{order:1}
- .screen-nature-map .map-camera.overview-on .map-resident{order:2;background:var(--glass-face);border:1px solid var(--glass-line)}
- .screen-nature-map .map-camera.overview-on .mv-target{order:3;background:rgba(238,245,226,.75);border:1px solid var(--glass-line);border-radius:18px}
+/* Fill the viewport with scenery; keep navigation as a separate overlay. */
+#app[data-route="nature-map"] .screen-nature-map {
+  --map-key:52px; --map-key-gap:7px; --map-cta-h:60px;
+  --map-left:calc(16px + env(safe-area-inset-left,0px));
+  --map-right:calc(16px + env(safe-area-inset-right,0px));
+  --map-bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  --map-pad-width:calc(3 * var(--map-key) + 2 * var(--map-key-gap));
+  --map-pad-height:calc(2 * var(--map-key) + var(--map-key-gap));
+  --map-cta-font:22px;
+}
+@media (min-width:1450px) and (min-height:900px) {
+  #app[data-route="nature-map"] .screen-nature-map { --map-key:64px; --map-key-gap:10px; --map-cta-font:25px; }
+}
+@media (max-width:640px), (max-height:620px) {
+  #app[data-route="nature-map"] .screen-nature-map { --map-key:44px; --map-key-gap:4px; --map-cta-h:52px; --map-cta-font:18px; }
+}
+#app[data-route="nature-map"] { max-width:none; padding:0; overflow:hidden; }
+#app[data-route="nature-map"] .toolbar {
+  top:calc(16px + env(safe-area-inset-top,0px));
+  left:calc(16px + env(safe-area-inset-left,0px));
+  right:calc(16px + env(safe-area-inset-right,0px));
+}
+#app[data-route="nature-map"] .screen-nature-map { width:100%; height:100dvh; min-height:100dvh; padding:0; overflow:hidden; }
+#app[data-route="nature-map"] .screen-nature-map .map-camera { inset:0; background:var(--map-camera-art) center / cover; }
+#app[data-route="nature-map"] .screen-nature-map .map-camera.overview-on { background-image:linear-gradient(#183b2a66,#183b2a66),var(--map-camera-art); }
+#app[data-route="nature-map"] .screen-nature-map .map-view-tools {
+  position:static; flex-direction:row; gap:8px; pointer-events:auto;
+}
+#app[data-route="nature-map"] .screen-nature-map .map-view-icon[aria-pressed="true"] {
+  background:#245b46; color:#fff; border-color:#123e2e; box-shadow:0 3px 0 #123e2e;
+}
+#app[data-route="nature-map"] .screen-nature-map .map-directions {
+  grid-template:repeat(2,var(--map-key)) / repeat(3,var(--map-key));
+  gap:var(--map-key-gap); padding:0; border:0; background:transparent; box-shadow:none;
+  pointer-events:none;
+}
+#app[data-route="nature-map"] .screen-nature-map .map-directions > .button {
+  display:grid; place-items:center; width:var(--map-key); height:var(--map-key);
+  min-width:var(--map-key); min-height:var(--map-key); padding:0;
+  color:#233e33; background:#fff6dc; border:2px solid #667b58;
+  border-radius:14px; box-shadow:0 3px 0 #3d5947; backdrop-filter:none;
+  -webkit-backdrop-filter:none; font-weight:800; pointer-events:auto; transition:none;
+}
+#app[data-route="nature-map"] .screen-nature-map .map-directions > .button:is(:active,[data-map-held],.is-held,.is-pressed) {
+  background:#245b46; color:#fff; border-color:#123e2e;
+  box-shadow:0 1px 0 #123e2e; transform:none; translate:0 2px; filter:none;
+}
+#app[data-route="nature-map"] .screen-nature-map .map-directions > .button:focus-visible { outline:3px solid #165fba; outline-offset:2px; }
+#app[data-route="nature-map"] .screen-nature-map .map-directions { left:var(--map-left); bottom:var(--map-bottom); }
+#app[data-route="nature-map"] .screen-nature-map .map-destination {
+  position:absolute; z-index:20; display:flex; flex-direction:column; align-items:flex-end;
+  gap:12px; pointer-events:none;
+  right:var(--map-right); bottom:var(--map-bottom);
+  max-width:min(480px,calc(100% - var(--map-left) - var(--map-right) - var(--map-pad-width) - 10px));
+}
+#app[data-route="nature-map"] .screen-nature-map :is(.map-next,.map-arrival) {
+  position:static; max-width:100%; pointer-events:auto;
+}
+#app[data-route="nature-map"] .screen-nature-map :is(.map-next,.map-arrival > .button.primary) {
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  min-height:var(--map-cta-h); min-width:0; padding:8px clamp(10px,2vw,22px);
+  font-size:var(--map-cta-font); line-height:1.2; text-align:center;
+  white-space:normal; word-break:keep-all; overflow-wrap:anywhere;
+  color:#463813; background:linear-gradient(#ffe391,#f4c95f);
+  border:2px solid #a8802f; border-radius:16px; box-shadow:0 5px 0 #8c6a24;
+  backdrop-filter:none; -webkit-backdrop-filter:none;
+}
+#app[data-route="nature-map"] .screen-nature-map :is(.map-next,.map-arrival > .button.primary) > svg { flex:none; width:22px; height:22px; }
+#app[data-route="nature-map"] .screen-nature-map :is(.map-next,.map-arrival > .button.primary):hover:not(:disabled,[aria-disabled="true"]) { background:linear-gradient(#ffeba9,#f9d473); }
+#app[data-route="nature-map"] .screen-nature-map :is(.map-next,.map-arrival > .button.primary):active:not(:disabled,[aria-disabled="true"]) { box-shadow:0 1px 0 #8c6a24; }
+#app[data-route="nature-map"] .screen-nature-map :is(.map-next,.map-arrival > .button.primary)[aria-busy="true"] { color:#463813; background:#fff3c8; border-color:#a8802f; filter:none; opacity:1; }
+#app[data-route="nature-map"] .screen-nature-map :is(.map-next,.map-arrival > .button.primary):focus-visible { outline:3px solid #165fba; outline-offset:3px; }
+#app[data-route="nature-map"] .screen-nature-map .map-arrival > .button { max-width:100%; }
+
+#app[data-route="nature-map"] .screen-nature-map .map-companion-help {
+  right:auto; bottom:auto; width:44px; height:44px; min-width:44px; min-height:44px;
+  padding:0; background:#fff6dc; color:#233e33; border:2px solid #667b58;
+  border-radius:15px 15px 15px 5px; box-shadow:0 3px 0 #3d5947;
+  font:800 24px/1 system-ui,sans-serif; transition:none;
+}
+#app[data-route="nature-map"] .screen-nature-map .map-companion-help:hover:not(:disabled) {
+  background:#fff0c8; transform:none;
+}
+#app[data-route="nature-map"] .screen-nature-map .map-camera.overview-on .map-node {
+  padding:5px 7px; gap:4px; min-width:0; min-height:44px; font-size:clamp(12px,2vw,19px);
+}
+#app[data-route="nature-map"] .screen-nature-map .map-camera.overview-on .map-node .ui-icon {
+  width:16px; height:16px;
 }

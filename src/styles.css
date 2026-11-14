@@ -508,6 +508,12 @@ button>svg{pointer-events:none}
 
 .screen-main{position:relative;background:linear-gradient(90deg,var(--sage-55-a18),var(--cream-22-a15),var(--sage-67-a18)),url('/assets/places/greenhouse.webp') center/cover;padding:var(--hud-top) 6% 24px;justify-content:center;isolation:isolate}
 
+.screen-main:not(.home-dressed){background:linear-gradient(140deg,#dbe9cd,#f8f3e4)}
+.screen-main:not(.home-dressed) :is(.hero>p,.button){font-family:system-ui,sans-serif}
+.map-recovery{position:absolute;z-index:30;inset:50% auto auto 50%;transform:translate(-50%,-50%);width:min(30rem,calc(100% - 2rem));padding:clamp(12px,3vw,24px);text-align:center;background:var(--paper-face);color:var(--ink-strong);border:2px solid var(--paper-line);border-radius:var(--radius-md);box-shadow:var(--shadow-card)}
+.map-recovery p{margin-bottom:12px}
+.map-recovery .button{margin:4px}
+
 .hero{display:flex;flex-direction:column;align-items:center;gap:24px;max-width:780px;margin:auto;position:relative;z-index:2;text-align:center;width:min(650px,62%)}
 
 .hero h1{font-size:clamp(44px,5vw,76px);color:var(--forest-627);text-shadow:0 2px 0 var(--cream-23),0 0 24px var(--cream-29)}
@@ -1923,9 +1929,15 @@ button.step{min-width:48px;min-height:48px}
 [data-map-pad]:focus-visible { outline:3px solid #165fba; outline-offset:3px; }
 [data-map-pad]:disabled { opacity:.5; }
 
-.map-recovery{position:absolute;z-index:30;inset:50% auto auto 50%;transform:translate(-50%,-50%);width:min(30rem,calc(100% - 2rem));padding:clamp(12px,3vw,24px);text-align:center;background:var(--paper-face);color:var(--ink-strong);border:2px solid var(--paper-line);border-radius:var(--radius-md);box-shadow:var(--shadow-card)}
-.map-recovery p{margin-bottom:12px}
-.map-recovery .button{margin:4px}
-
-.screen-main:not(.home-dressed){background:linear-gradient(140deg,#dbe9cd,#f8f3e4)}
-.screen-main:not(.home-dressed) :is(.hero>p,.button){font-family:system-ui,sans-serif}
+/* Pulse only the next-destination arrow. The label and tap target stay still. */
+@media (prefers-reduced-motion: no-preference) {
+  .map-next-cue:not(:disabled):not([aria-disabled="true"]) > :is(svg:last-child, .map-direction-cue) {
+    animation: map-direction-pulse 1.45s ease-in-out 4;
+  }
+}
+@keyframes map-direction-pulse {
+  0%, 100% { opacity: 1; translate: 0; }
+  50% { opacity: .55; translate: 4px 0; }
+}
+.map-lock-icon { flex: none; vertical-align: middle; }
+.map-next .map-direction-cue { margin-inline-start: 6px; vertical-align: middle; }

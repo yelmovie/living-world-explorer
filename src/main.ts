@@ -1,7 +1,7 @@
-import {bindDirectionPad,mapKeyDirection} from './map-controls.js';
 import {mountMapEncounters} from './map-encounters.js';
 import {mapVillainStages} from './map-villain-content';
 import {bindMapZoom} from './map-gestures.js';
+import {bindDirectionPad,mapKeyDirection} from './map-controls.js';
 import {revisedEvidenceCount} from './experience';
 import {needsStorageWarning} from './storage-status';
 import './styles.css';
@@ -86,7 +86,8 @@ function main(ctx:Context){
 function map(ctx:Context){
  const done=stageIds.map(s=>validEvidence(ctx.attempt,s,state.settings.admin));const unlocked=(i:number)=>state.settings.admin||(i===5?done.every(Boolean):i===0||done[i-1]);
  const camera=el('div','map-camera');const land=el('div','map-landscape');const host=el('div','map-host');camera.style.setProperty('--map-camera-art',`url('${new URL(mapAssets.terrain,document.baseURI).href}')`);land.style.backgroundImage='var(--map-camera-art)';land.style.backgroundSize='100% 100%';const overlay=el('div','map-overlay');land.append(host,overlay);camera.append(land);ctx.host.append(camera);
- const arrival=el('div','map-arrival');ctx.host.append(arrival);let selected=-1,guided=-1;let disposed=false;let m:ReturnType<typeof import('./renderers/map').mountMap>|undefined;let position={...ctx.attempt.mapPosition};
+ const destination=el('div','map-destination');ctx.host.append(destination);
+ const arrival=el('div','map-arrival');destination.append(arrival);let selected=-1,guided=-1;let disposed=false;let m:ReturnType<typeof import('./renderers/map').mountMap>|undefined;let position={...ctx.attempt.mapPosition};
  const residentButtons:{marker:HTMLButtonElement;feet:readonly [number,number]}[]=[];
  let companion={x:position.x,y:Math.min(MAP_HEIGHT-18,position.y+34)};
  const nextIndex=done.findIndex(v=>!v),next=nextIndex<0?5:nextIndex;
@@ -94,7 +95,7 @@ function map(ctx:Context){
  const toPlace=(i:number)=>{const name=place(i),tail=(name.charCodeAt(name.length-1)-0xac00)%28;return name+(tail&&tail!==8?'으로':'로');};
  const nextButton=button(`${toPlace(next)} 가기`,()=>choose(next,true),state.settings.reduced?'primary map-next':'primary map-next map-next-cue');
  nextButton.insertAdjacentHTML('beforeend','<svg class="map-direction-cue" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>');
- ctx.host.append(nextButton);
+ destination.append(nextButton);
  const mapRecovery=el('section','map-recovery');
  const mapStatus=paragraph('지도를 준비하고 있어요.');
  mapStatus.setAttribute('role','status');
@@ -145,7 +146,10 @@ function map(ctx:Context){
   const settled=Math.hypot(tx-translation.x,ty-translation.y)<.3;
   const x=settled?tx:clampAxis(cw,w,translation.x+(tx-translation.x)*a),y=settled?ty:clampAxis(ch,h,translation.y+(ty-translation.y)*a);
   lastFrame=now;translation={x,y};if(mode==='hand')pan={x,y};if(!first&&!settled)followLater();land.style.transform=`translate3d(${x}px,${y}px,0)`;
-
+  const fx=x+friend.x/MAP_WIDTH*w,fy=y+friend.y/MAP_HEIGHT*h;
+  helper.style.left=`${Math.max(22,Math.min(cw-62,fx+14))}px`;
+  helper.style.top=`${Math.max(64,Math.min(ch-50,fy-75*h/MAP_HEIGHT))}px`;
+  helper.hidden=fx<0||fx>cw||fy<0||fy>ch;
   residentButtons.forEach(({marker,feet})=>marker.classList.toggle('is-near',Math.hypot(point.x-feet[0],point.y-feet[1])<160));
  };
  const tools=el('div','map-view-tools');tools.setAttribute('role','group');tools.setAttribute('aria-label','지도 보기');
@@ -172,7 +176,7 @@ function map(ctx:Context){
  });
  const hand=iconButton('hand','손으로 지도 이동',()=>{cancelTravel();setMode(mode==='hand'?'follow':'hand');},'map-view-icon');
  const overview=iconButton('expand','지도 전체 보기',()=>{cancelTravel();setMode(mode==='overview'?returnView?.mode??'follow':'overview');},'map-view-icon');
- for(const b of [hand,overview]){b.querySelector('span')?.remove();b.setAttribute('aria-pressed','false');tools.append(b);}ctx.host.append(tools);
+ for(const b of [hand,overview]){b.querySelector('span')?.remove();b.setAttribute('aria-pressed','false');tools.append(b);}destination.prepend(tools);
  camera.tabIndex=0;camera.setAttribute('aria-label','탐험 지도. 끌어서 둘러보거나 방향키로 걸을 수 있어요.');camera.style.touchAction='none';
  let grab:{id:number;x:number;y:number;start:typeof pan}|undefined;
  const gestures=new AbortController();ctx.cleanup(()=>{gestures.abort();cancelAnimationFrame(followFrame);});
@@ -190,15 +194,14 @@ function map(ctx:Context){
  const talk=(stage:Stage)=>{cancelTravel();if(!conversation?.open)conversation=residentConversation(stage,ctx.attempt);};
  ctx.cleanup(()=>{if(conversation?.open)conversation.close();});
  const enter=(i:number)=>{if(unlocked(i))go(stages[i]?.entry||'final-report');};
- const panel=(i:number)=>{arrival.replaceChildren();const s=stages[i];arrival.append(el('span','map-arrival-title',s?.place||'중앙 연구소'),button(unlocked(i)?'연구소 들어가기':'앞선 연구를 먼저 완성해요',()=>go(s?.entry||'final-report'),'primary',!unlocked(i)||selected!==i));if(s&&done[i])arrival.append(button(residents[s.id].name+'에게 말 걸기',()=>talk(s.id)));};
  const choose=(i:number,auto=false)=>{if(!unlocked(i)||(auto&&guided>=0))return;cancelTravel();setMode('follow');selected=i;setGuided(auto?i:-1);overlay.querySelectorAll('.map-node').forEach((b,j)=>b.classList.toggle('current',j===i));m?.move(i);};
- mapNodes.forEach(node=>{const state=done[node.index]?'복구 완료':unlocked(node.index)?'열림':'잠김';const b=iconButton(done[node.index]?'check':unlocked(node.index)?'unlock':'lock',node.label,()=>choose(node.index),`map-node ${done[node.index]?'restored':''} ${unlocked(node.index)?'':'locked'}`);if(node.index<5)b.prepend(stageBadge(node.index,'map-badge'));b.title=state;b.style.left=`${node.percentX}%`;b.style.top=`${Math.max(6,node.percentY-(done[node.index]?16:9))}%`;b.setAttribute('aria-label',`${node.index+1}. ${node.label} · ${state}`);overlay.append(b);});
+ mapNodes.forEach(node=>{const state=done[node.index]?'복구 완료':unlocked(node.index)?'열림':'잠김';const b=iconButton(unlocked(node.index)?'unlock':'lock',node.label,()=>choose(node.index),`map-node ${done[node.index]?'restored':''} ${unlocked(node.index)?'':'locked'} ${node.index===next?'current':''}`);b.style.left=`${node.percentX}%`;b.style.top=`${Math.max(6,node.percentY-(done[node.index]?16:9))}%`;b.setAttribute('aria-label',`${node.index+1}. ${node.label} · ${state}`);if(!unlocked(node.index))b.setAttribute('aria-disabled','true');overlay.append(b);});
  for(const [i,stage] of stageIds.entries())if(done[i]){const marker=residentMarker(stage,()=>talk(stage));residentButtons.push({marker,feet:residents[stage].feet});overlay.append(marker);}
- const helper=button('',()=>{cancelTravel();const i=done.findIndex(v=>!v);modal('같이 탐험해요',[paragraph(`다음은 ${i===-1?'중앙 연구소':stages[i].place}예요. 건물 이름이나 길을 누르면 함께 걸어가요. 방향키로도 움직일 수 있어요.`),paragraph(done.some(Boolean)?`돌아온 이웃 ${done.filter(Boolean).length}명 · 지도에서 이웃의 이름을 누르면 이야기를 나눌 수 있어요.`:'연구소 한 곳을 복구할 때마다 이웃 한 명이 돌아와요.'),button('내 발견 도감',()=>{document.querySelector<HTMLDialogElement>('dialog[open]')?.close();records();})]);},'map-companion-help');const portrait=el('img');portrait.src='assets/characters/companion-portrait.webp';portrait.alt='길잡이 토끼 토토';helper.setAttribute('aria-label','토토의 지도 힌트');helper.append(portrait,el('span','','힌트'));ctx.host.append(helper);
+ const helper=button('…',()=>{cancelTravel();const i=done.findIndex(v=>!v);modal('같이 탐험해요',[paragraph(`다음은 ${i===-1?'중앙 연구소':stages[i].place}예요. 건물 이름이나 길을 누르면 함께 걸어가요. 방향키로도 움직일 수 있어요.`),paragraph(done.some(Boolean)?'지도에서 이웃의 이름을 누르면 이야기를 나눌 수 있어요.':'연구소 한 곳을 복구할 때마다 이웃 한 명이 돌아와요.'),button('내 발견 도감',()=>{document.querySelector<HTMLDialogElement>('dialog[open]')?.close();records();})]);},'map-companion-help');helper.setAttribute('aria-label','토토의 지도 힌트');helper.title='토토의 지도 힌트';ctx.host.append(helper);
  const directions=el('div','map-directions');directions.setAttribute('aria-label','길 따라 이동');for(const [label,dir,name] of [['↑','up','위'],['←','left','왼쪽'],['↓','down','아래'],['→','right','오른쪽']] as const){const b=button(label,()=>{},'direction');b.setAttribute('aria-label',`${name} 방향으로 걷기`);b.dataset.mapDirection=dir;directions.append(b);}ctx.host.append(directions);
  const pad=bindDirectionPad(directions,'[data-map-direction]',b=>b.dataset.mapDirection as 'up'|'down'|'left'|'right',{blocked:()=>disposed||document.hidden||!!document.querySelector('dialog[open]'),press:d=>{cancelTravel();setMode('follow');m?.walk(d);},release:()=>m?.stop(),tap:d=>{cancelTravel();setMode('follow');m?.nudge(d);}});ctx.cleanup(pad.destroy);
  const ro=new ResizeObserver(()=>{frame(position);m?.resize();});ro.observe(camera);ctx.cleanup(()=>{disposed=true;ro.disconnect();});frame(position);
- void loadMap().then(({mountMap})=>{if(disposed)return;m=mountMap(host,position,done,ctx.attempt.id,(i,p)=>{const auto=i===guided;ctx.attempt.mapPosition=p;persist();clearSelection();if(!unlocked(i))return;if(auto){enter(i);return;}selected=i;panel(i);},reducedMotion(state.settings.reduced),frame,clearSelection,()=>mode==='follow',()=>{
+ void loadMap().then(({mountMap})=>{if(disposed)return;m=mountMap(host,position,done,ctx.attempt.id,(i,p)=>{const auto=i===guided;ctx.attempt.mapPosition=p;persist();clearSelection();if(!unlocked(i))return;if(auto){enter(i);return;}selected=i;arrival.append(button(`${place(i)} 들어가기`,()=>enter(i),'primary'));},reducedMotion(state.settings.reduced),frame,clearSelection,()=>mode==='follow',()=>{
   clearMapTimers();
   if(mapRecovery.contains(document.activeElement))nextButton.focus({preventScroll:true});
   mapRecovery.hidden=true;
@@ -206,7 +209,7 @@ function map(ctx:Context){
  },encounterFrame);ctx.cleanup(m.dispose);if(selected>=0)m.move(selected);}).catch(()=>{
   if(disposed)return;
   clearMapTimers();clearSelection();
-  for(const control of [nextButton,camera,helper,directions,tools])control.inert=true;
+  for(const control of [destination,camera,helper,directions])control.inert=true;
   mapStatus.textContent='지도를 불러오지 못했어요. 탐구부터 시작할 수 있어요.';
   retryMap.hidden=false;
   mapRecovery.hidden=false;

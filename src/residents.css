@@ -50,6 +50,7 @@
   transform:skewY(-27deg);
 }
 .map-resident:is(:hover,:focus-visible) .resident-name {background:var(--cream-56);text-decoration:underline}
+.map-resident:not(.is-near,:focus-visible) .resident-name {visibility:hidden}
 /* Dialogue stays on the real map, with one registered portrait frame above the paper. */
 .modal.resident-dialog {
   position:fixed;inset:auto 0 max(14px,env(safe-area-inset-bottom));margin:0 auto;
