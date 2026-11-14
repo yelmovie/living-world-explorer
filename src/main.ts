@@ -171,8 +171,9 @@ function map(ctx:Context){
   project:point=>({x:translation.x+point.x*landW/MAP_WIDTH,y:translation.y+point.y*landH/MAP_HEIGHT}),
  });
  const hand=iconButton('hand','손으로 지도 이동',()=>{cancelTravel();setMode(mode==='hand'?'follow':'hand');},'map-view-icon');
+ hand.setAttribute('data-map-hand','');
  const overview=iconButton('expand','지도 전체 보기',()=>{cancelTravel();setMode(mode==='overview'?returnView?.mode??'follow':'overview');},'map-view-icon');
- for(const b of [hand,overview]){b.querySelector('span')?.remove();b.setAttribute('aria-pressed','false');tools.append(b);}ctx.host.append(tools);
+ for(const b of [overview,hand]){b.querySelector('span')?.remove();b.setAttribute('aria-pressed','false');tools.append(b);}ctx.host.append(tools);
  camera.tabIndex=0;camera.setAttribute('aria-label','탐험 지도. 끌어서 둘러보거나 방향키로 걸을 수 있어요.');camera.style.touchAction='none';
  let grab:{id:number;x:number;y:number;start:typeof pan}|undefined;
  const gestures=new AbortController();ctx.cleanup(()=>{gestures.abort();cancelAnimationFrame(followFrame);});
