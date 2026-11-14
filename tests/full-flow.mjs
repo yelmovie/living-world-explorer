@@ -56,7 +56,7 @@ async function completeTask(task,replay=false){
   if(task.stage==='M1'){
    await reward.getByRole('button',{name:'솔비에게 말 걸기'}).click();
    const talk=page.locator('.resident-dialog');await talk.getByRole('button',{name:'노트에 뭘 그렸어?'}).click();
-   assert.match(await talk.locator('.resident-line').innerText(),/갓 아래/);await talk.getByRole('button',{name:'닫기'}).click();
+   assert.match(await talk.locator('.resident-line').innerText(),/갓 아래/);await talk.getByRole('button',{name:'지도로 돌아가기',exact:true}).click();
    assert.ok(await page.locator('.map-resident[data-stage="M1"]').evaluate(b=>b===document.activeElement));
   }else await reward.getByRole('button',{name:'다음 장소 탐험'}).click();
   await page.locator('.screen-nature-map').waitFor();
@@ -67,7 +67,7 @@ async function completeTask(task,replay=false){
 }
 try{
  await mkdir('.tmp/screens',{recursive:true});await navigate(page,base,'main');if(!process.env.RESUME_FLOW){await btn('탐험 시작').click();await skipFilm(page);await btn('다음').click();await btn('다음').click();await btn('탐험 지도로').click();await waitForScene(page,'.map-host');assert.equal(await page.locator('.map-resident').count(),0);
- await btn('버섯숲 표본실로 가기').click();await btn('연구소 들어가기').click();
+ await btn('버섯숲 표본실로 가기').click();await page.locator('.screen-fungi-field').waitFor();
  // Empty submission must stay on the activity and explain what is missing.
  await btn('발견 기록하기').click();assert.ok((await page.locator('.inquiry-feedback').innerText()).length>0);assert.equal(await page.locator('.discovery-dialog').count(),0);
  for(let stage=1;stage<=5;stage++){

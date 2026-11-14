@@ -6,7 +6,7 @@ import {launchBrowser,navigate,teacherTools,waitForScene,waitSaved} from './brow
 async function windowColors(page){
   return page.locator('.map-host canvas').evaluate(canvas=>{
     const ctx=canvas.getContext('2d');
-    return [[305,138],[966,118],[1140,347],[1004,518],[171,444],[704,321]].map(([x,y])=>
+    return [[305,138],[966,118],[1140,347],[1010,521],[171,444],[704,321]].map(([x,y])=>
       Array.from(ctx.getImageData(x,y,1,1).data).slice(0,3));
   });
 }
@@ -16,7 +16,7 @@ try{
   const page=await browser.newPage({viewport:{width:1280,height:720},hasTouch:true});
   const errors=[],images=new Set();
   page.on('pageerror',e=>errors.push(e.message));
-  page.on('response',r=>{if(r.url().includes('/map/residents/')&&r.ok())images.add(r.url());});
+  page.on('response',r=>{if(/\/map\/residents\/[^/]+\.webp$/.test(r.url())&&r.ok())images.add(r.url());});
   await navigate(page,base,'nature-map');
   await waitForScene(page,'.map-host');
   const markers=page.locator('.map-resident');
@@ -60,6 +60,10 @@ try{
     await marker.focus();await page.keyboard.press('Enter');
     const dialog=page.locator('.resident-dialog'),line=dialog.locator('.resident-line');
     await dialog.waitFor();
+    await dialog.locator('.resident-portrait').evaluate(async portrait=>{
+      const url=getComputedStyle(portrait).getPropertyValue('--resident-poses').trim();
+      const image=new Image();image.src=url.match(/^url\("(.+)"\)$/)[1];await image.decode();
+    });
     assert.equal(await dialog.getAttribute('aria-describedby'),await line.getAttribute('id'));
     const welcome=await line.innerText();
     const questions=dialog.locator('.resident-replies button');
