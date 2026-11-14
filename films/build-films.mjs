@@ -115,12 +115,11 @@ ${labelHtml}`, 'full');
     <title>${f.id} 개념 영상 · ${esc(f.place)}</title>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
     <style>
-      @font-face{font-family:"Lab Display";src:url('assets/fonts/jua-korean-400.woff2') format('woff2');font-weight:400;unicode-range:U+1100-11FF,U+3130-318F,U+A960-A97F,U+AC00-D7AF,U+D7B0-D7FF}
-      @font-face{font-family:"Lab Display";src:url('assets/fonts/jua-latin-400.woff2') format('woff2');font-weight:400;unicode-range:U+0000-00FF,U+2000-206F}
+      @font-face{font-family:NanumSquareNeo;src:url('assets/fonts/NanumSquareNeoTTF-cBd.woff2') format('woff2');font-weight:700}
       :root{--ink:${INK};--paper:${PAPER};--grid:${GRID};--gold:${GOLD};--accent:${f.accent};--soft:${f.soft}}
       *{margin:0;padding:0;box-sizing:border-box}
       html,body{width:${W}px;height:${H}px;overflow:hidden;background:var(--paper)}
-      #root{position:relative;width:100%;height:100%;font-family:"Lab Display",sans-serif;color:var(--ink)}
+      #root{position:relative;width:100%;height:100%;font-family:NanumSquareNeo,sans-serif;font-weight:700;color:var(--ink)}
       .full{position:absolute;inset:0}
       .paper{background-color:var(--paper);background-image:linear-gradient(var(--grid) 2px,transparent 2px),linear-gradient(90deg,var(--grid) 2px,transparent 2px);background-size:60px 60px;background-position:-2px -2px}
       .tag{position:absolute;background:#fff;border:4px solid var(--ink);border-radius:18px;padding:10px 24px;font-size:44px;line-height:1.15;white-space:nowrap;box-shadow:0 8px 0 rgba(33,63,48,.16)}
@@ -172,7 +171,7 @@ for (const f of films) {
   await writeFile(join(dir, 'index.html'), out.html);
   for (const p of out.images) await copyFile(join(pub, p + '.webp'), join(dir, 'assets/img', p.split('/').pop() + '.webp'));
   for (const s of out.sounds) await copyFile(join(pub, 'audio', s + '.wav'), join(dir, 'assets/sfx', s + '.wav'));
-  for (const font of ['jua-korean-400.woff2', 'jua-latin-400.woff2', 'Jua-OFL.txt']) await copyFile(join(here, 'fonts', font), join(dir, 'assets/fonts', font));
+  for (const font of ['NanumSquareNeoTTF-cBd.woff2', 'NanumSquareNeo-OFL.txt']) await copyFile(join(pub, 'fonts', font), join(dir, 'assets/fonts', font));
   await writeFile(join(dir, 'hyperframes.json'), JSON.stringify({$schema: 'https://hyperframes.heygen.com/schema/hyperframes.json', paths: {blocks: 'compositions', components: 'compositions/components', assets: 'assets'}, media: {autoProxy: true}, authoringSkill: 'hyperframes'}, null, 2) + '\n');
   await writeFile(join(dir, 'meta.json'), JSON.stringify({id: 'concept-' + f.id, name: `${f.id} 개념 영상 · ${f.place}`}, null, 2) + '\n');
   console.log('built', dir);

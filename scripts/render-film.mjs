@@ -1,8 +1,9 @@
-// Renders the intro/final films: grades the source clip, burns in Jua captions and motion graphics
+// Renders the intro/final films: grades the source clip, burns in NanumSquare Neo captions and motion graphics
 // drawn frame by frame in a headless browser, mixes project sound effects, and writes public/assets/film/.
 // Usage: node scripts/render-film.mjs [intro|final]   (FFMPEG_PATH overrides the ffmpeg binary)
 import {spawn,spawnSync} from 'node:child_process';
 import {existsSync,mkdirSync,readFileSync,writeFileSync} from 'node:fs';
+import sharp from 'sharp';
 import {launchBrowser} from '../tests/browser.mjs';
 
 const ffmpeg=process.env.FFMPEG_PATH||(existsSync('D:/DevCaches/tools/ffmpeg/bin/ffmpeg.exe')?'D:/DevCaches/tools/ffmpeg/bin/ffmpeg.exe':'ffmpeg');
@@ -57,7 +58,7 @@ function overlayProgram(name,cues,total,freezeAt){
  const out=v=>1-Math.pow(1-v,3);
  const back=v=>{const c=1.70158;return 1+(c+1)*Math.pow(v-1,3)+c*Math.pow(v-1,2);};
  const rand=seed=>()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
- const font=size=>`${size}px Jua,"Malgun Gothic",sans-serif`;
+ const font=size=>`700 ${size}px NanumSquareNeo,"Malgun Gothic",sans-serif`;
  const bars=h=>{if(h<=0)return;g.fillStyle='#000';g.fillRect(0,0,W,h);g.fillRect(0,H-h,W,h);};
  function caption(t,a,b,text,y=H-BAR/2,size=50){
   const alpha=Math.min(span(t,a,a+.25),1-span(t,b-.25,b));if(alpha<=0)return;
@@ -163,14 +164,13 @@ async function render(name){
  const extra=film.total-film.srcEnd,frames=Math.round(film.total*FPS);
  const freeze=name==='final'?`<img id="freeze" src="${freezeFrame(name,film.srcEnd)}">`:'';
  const html=`<!doctype html><style>
- @font-face{font-family:Jua;src:url(${dataUrl('public/assets/fonts/jua-korean-400.woff2','font/woff2')}) format('woff2');unicode-range:U+1100-11FF,U+3130-318F,U+A960-A97F,U+AC00-D7AF,U+D7B0-D7FF}
- @font-face{font-family:Jua;src:url(${dataUrl('public/assets/fonts/jua-latin-400.woff2','font/woff2')}) format('woff2');unicode-range:U+0000-00FF,U+2000-206F}
+ @font-face{font-family:NanumSquareNeo;src:url(${dataUrl('public/assets/fonts/NanumSquareNeoTTF-cBd.woff2','font/woff2')}) format('woff2');font-weight:700}
  img{display:none}</style><canvas width="1920" height="1080"></canvas>
  <img id="logo" src="${dataUrl('public/assets/ui/logo.webp','image/webp')}">
  ${[1,2,3,4,5].map((n,i)=>`<img id="badge${i}" src="${dataUrl(`public/assets/ui/badge-M${n}.webp`,'image/webp')}">`).join('')}${freeze}`;
  const browser=await launchBrowser();const page=await browser.newPage();
  await page.setContent(html,{waitUntil:'load'});
- await page.evaluate(async()=>{await Promise.all([document.fonts.load('50px Jua','연구 BIO 1/5'),...[...document.images].map(i=>i.decode())]);});
+ await page.evaluate(async()=>{await Promise.all([document.fonts.load('700 50px NanumSquareNeo','연구 BIO 1/5'),...[...document.images].map(i=>i.decode())]);});
  await page.evaluate(`(${overlayProgram})(${JSON.stringify(name)},${JSON.stringify(film.cues)},${film.total},${film.srcEnd})`);
 
  const glitch=film.glitch.length?`,rgbashift=rh=-16:bh=16:enable='${film.glitch.map(([a,b])=>`between(t,${a},${b})`).join('+')}'`:'';
@@ -179,12 +179,12 @@ async function render(name){
  const graph=[
   `[0:v]trim=end=${film.srcEnd},setpts=PTS-STARTPTS,fps=${FPS},${GRADE}${glitch},tpad=stop_mode=${film.hold?'clone':'add'}:stop_duration=${extra}:color=black[base]`,
   `[1:v]scale=out_color_matrix=bt709,format=yuva420p[ui]`,
-  `[base][ui]overlay=0:0:eof_action=endall,format=yuv420p[v]`,
+  `[base][ui]overlay=0:0:eof_action=endall,scale=1280:720:flags=lanczos,format=yuv420p[v]`,
   `[0:a]atrim=end=${film.srcEnd},asetpts=PTS-STARTPTS,volume=7dB[amb]`,
   ...mix,
   `[amb]${film.sfx.map((_,i)=>`[s${i}]`).join('')}amix=inputs=${film.sfx.length+1}:normalize=0:duration=longest,alimiter=limit=0.7:level=0,apad,atrim=end=${film.total},afade=t=out:st=${film.total-.5}:d=0.5[a]`
  ].join(';');
- const encoder=spawn(ffmpeg,['-y','-hide_banner','-loglevel','error','-i',`${SOURCE}/${name}.mp4`,'-f','image2pipe','-framerate',String(FPS),'-c:v','png','-i','pipe:0',...sounds,'-filter_complex',graph,'-map','[v]','-map','[a]','-c:v','libx264','-preset','slow','-crf','24','-profile:v','high','-level','4.1','-pix_fmt','yuv420p','-colorspace','bt709','-color_primaries','bt709','-color_trc','bt709','-c:a','aac','-b:a','128k','-map_metadata','-1','-movflags','+faststart',`${OUT}/${name}.mp4`],{stdio:['pipe','inherit','inherit']});
+ const encoder=spawn(ffmpeg,['-y','-hide_banner','-loglevel','error','-i',`${SOURCE}/${name}.mp4`,'-f','image2pipe','-framerate',String(FPS),'-c:v','png','-i','pipe:0',...sounds,'-filter_complex',graph,'-map','[v]','-map','[a]','-filter_threads','2','-c:v','libx264','-preset','slow','-crf','24','-profile:v','high','-level','4.1','-pix_fmt','yuv420p','-colorspace','bt709','-color_primaries','bt709','-color_trc','bt709','-c:a','aac','-b:a','128k','-map_metadata','-1','-movflags','+faststart',`${OUT}/${name}.mp4`],{stdio:['pipe','inherit','inherit']});
  const done=new Promise((ok,fail)=>encoder.on('close',code=>code?fail(Error(`ffmpeg exited ${code}`)):ok()));
  for(let frame=0;frame<frames;frame++){
   const png=Buffer.from(await page.evaluate(t=>window.drawFrame(t),frame/FPS),'base64');
@@ -195,8 +195,9 @@ async function render(name){
 
  const stamp=s=>{const m=Math.floor(s/60),r=(s%60).toFixed(3).padStart(6,'0');return `00:${String(m).padStart(2,'0')}:${r}`;};
  writeFileSync(`${OUT}/${name}.vtt`,`WEBVTT\n\n${film.cues.map(([a,b,text])=>`${stamp(a)} --> ${stamp(b)}\n${text.replace(/[[\]]/g,'')}`).join('\n\n')}\n`);
- const poster=spawnSync(ffmpeg,['-y','-v','error','-ss',String(film.poster),'-i',`${OUT}/${name}.mp4`,'-frames:v','1','-vf','scale=1280:-2','-c:v','libwebp','-quality','80',`${OUT}/${name}.webp`]);
+ const poster=spawnSync(ffmpeg,['-v','error','-ss',String(film.poster),'-i',`${OUT}/${name}.mp4`,'-frames:v','1','-vf','scale=1280:-2','-f','image2pipe','-c:v','png','pipe:1'],{maxBuffer:1<<24});
  if(poster.status)throw Error(String(poster.stderr));
+ await sharp(poster.stdout).webp({quality:80}).toFile(`${OUT}/${name}.webp`);
 }
 
 for(const name of process.argv[2]?[process.argv[2]]:Object.keys(films))await render(name);
