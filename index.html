@@ -18,10 +18,13 @@
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="/assets/ui/icon-192.png">
   <link rel="apple-touch-icon" href="/assets/ui/icon-192.png">
+  <link rel="preload" href="/assets/fonts/NanumSquareNeoTTF-bRg.woff2" as="font" type="font/woff2" crossorigin>
   <style>
+    @font-face { font-family: NanumSquareNeo; src: url(/assets/fonts/NanumSquareNeoTTF-bRg.woff2) format("woff2"); font-style: normal; font-weight: 400; font-display: swap; }
+    @font-face { font-family: NanumSquareNeo; src: url(/assets/fonts/NanumSquareNeoTTF-cBd.woff2) format("woff2"); font-style: normal; font-weight: 700; font-display: swap; }
     body { margin: 0; }
-    .startup-cover { min-height: 100svh; width: 100%; box-sizing: border-box; display: grid; place-content: center; gap: 1rem; padding: 1.5rem; text-align: center; color: #214534; background: #f8f3e4; font: 1.125rem/1.5 system-ui, sans-serif; }
-    .startup-cover h1 { margin: 0; font: 700 clamp(2rem, 5vw, 3.5rem)/1.2 system-ui, sans-serif; }
+    .startup-cover { min-height: 100svh; width: 100%; box-sizing: border-box; display: grid; place-content: center; gap: 1rem; padding: 1.5rem; text-align: center; color: #214534; background: #f8f3e4; font: 1.125rem/1.5 NanumSquareNeo, system-ui, sans-serif; }
+    .startup-cover h1 { margin: 0; font: 700 clamp(2rem, 5vw, 3.5rem)/1.2 NanumSquareNeo, system-ui, sans-serif; }
     .startup-cover p { margin: 0; }
     .startup-cover a { display: inline-grid; place-items: center; min-height: 44px; color: inherit; }
   </style>

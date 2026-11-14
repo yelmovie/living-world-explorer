@@ -509,7 +509,6 @@ button>svg{pointer-events:none}
 .screen-main{position:relative;background:linear-gradient(90deg,var(--sage-55-a18),var(--cream-22-a15),var(--sage-67-a18)),url('/assets/places/greenhouse.webp') center/cover;padding:var(--hud-top) 6% 24px;justify-content:center;isolation:isolate}
 
 .screen-main:not(.home-dressed){background:linear-gradient(140deg,#dbe9cd,#f8f3e4)}
-.screen-main:not(.home-dressed) :is(.hero>p,.button){font-family:system-ui,sans-serif}
 .map-recovery{position:absolute;z-index:30;inset:50% auto auto 50%;transform:translate(-50%,-50%);width:min(30rem,calc(100% - 2rem));padding:clamp(12px,3vw,24px);text-align:center;background:var(--paper-face);color:var(--ink-strong);border:2px solid var(--paper-line);border-radius:var(--radius-md);box-shadow:var(--shadow-card)}
 .map-recovery p{margin-bottom:12px}
 .map-recovery .button{margin:4px}
