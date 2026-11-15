@@ -13,8 +13,10 @@ export function guidance(task:InquiryTask,r:InquiryRecord,selectedCard=''){
   total=items.length;done=items.filter(it=>r.opened.includes(it.id)&&(r.assignments[it.id]||'')===it.target).length;
   const card=items.find(it=>it.id===selectedCard);
   const pending=items.find(it=>!r.opened.includes(it.id)||it.target!==r.assignments[it.id]);
-  if(card)action=task.id==='M1-4'?`‘${card.label}’의 특징을 살펴보고, 어울리는 분류 칸을 눌러요.`:`‘${card.label}’ 내용을 읽고, 어울리는 기록 칸을 눌러 연결해요.`;
-  else if(pending)action=r.opened.includes(pending.id)&&r.assignments[pending.id]?`‘${pending.label}’ 자료를 다시 눌러 읽고, 연결한 칸을 살펴봐요.`:`‘${pending.label}’ 자료를 눌러 살펴봐요.`;
+  if(task.id==='M1-4'){
+   if(card)action=`‘${card.label}’의 특징을 살펴보고, 어울리는 분류 칸을 눌러요.`;
+   else if(pending)action=`‘${pending.label}’ 자료를 눌러 살펴봐요.`;
+  }else if(pending)action='자료를 읽고 답을 골라요. 맞히면 ‘다음 문제’를 눌러요.';
   if(task.id==='M3-2'&&r.v===2){
    total++;done+=Number(r.assignments.ladder==='smallest');
    if(!pending&&!card&&r.assignments.ladder!=='smallest')action='이제 ‘크기 사다리에 세균 놓기’를 눌러요.';

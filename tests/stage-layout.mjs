@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
-import {launchBrowser,button,navigate,teacherTools,linkCard,linkTarget,setRange,waitSaved} from './browser.mjs';
+import {launchBrowser,button,navigate,teacherTools,setRange,waitSaved} from './browser.mjs';
 import {inquiryTasks,stageRoutes} from './curriculum.mjs';
 
 const base=process.env.APP_URL||'http://127.0.0.1:5176';
@@ -8,7 +8,7 @@ const out=process.env.STAGE_LAYOUT_OUT||'.tmp/stage-layout';
 const sizes=process.env.STAGE_LAYOUT_SIZES?JSON.parse(process.env.STAGE_LAYOUT_SIZES):[[1920,1080],[1366,768],[1280,800],[1280,720],[1024,768],[1024,600],[915,412],[830,515],[375,812]];
 const browser=await launchBrowser();
 const page=await browser.newPage({viewport:{width:1280,height:800},hasTouch:true});
-const errors=[],failures=[],screens=[];
+const errors=[],failures=[],screens=[];let fatalError;
 page.on('pageerror',e=>errors.push(e.message));
 page.on('response',r=>{if(r.status()>=400)errors.push(r.status()+' '+r.url());});
 page.on('request',r=>{
@@ -42,7 +42,7 @@ try{
     const scrollable=node=>{for(let p=node.parentElement;p;p=p.parentElement)if(/auto|scroll/.test(getComputedStyle(p).overflowY)&&p.scrollHeight>p.clientHeight+1)return true;return false;};
     const issues=[],hud=[...document.querySelectorAll('.toolbar button')];
     const title=document.querySelector('.expedition-header'),view=document.querySelector('.expedition-canvas-host');
-    const visual=rect(view.querySelector('.link-board,canvas')||view);
+    const visual=rect(view.querySelector('.quiz-board,canvas')||view);
     if(document.documentElement.scrollWidth>innerWidth+1)issues.push('horizontal overflow');
     for(const n of hud)if(!viewport(n)||hud.some(b=>n!==b&&overlap(rect(n),rect(b))))issues.push('toolbar: '+n.textContent);
     if(hud.some(b=>overlap(rect(b),rect(title))))issues.push('heading covered');
@@ -95,7 +95,7 @@ try{
     for(const node of document.querySelectorAll('.link-name,.link-target-name')){
      if(node.clientHeight&&node.scrollHeight>node.clientHeight+2&&/hidden|clip/.test(getComputedStyle(node).overflowY))issues.push('clipped label: '+node.textContent);
     }
-    const positions=Array.from(document.querySelectorAll('#app,.link-board')).map(n=>[n,n.scrollTop,n.scrollLeft]);
+    const positions=Array.from(document.querySelectorAll('#app,.quiz-board')).map(n=>[n,n.scrollTop,n.scrollLeft]);
     for(const node of document.querySelectorAll('.link-card,.link-target')){
      const canScroll=scrollable(node);
      if(canScroll)node.scrollIntoView({behavior:'instant',block:'center',inline:'nearest'});
@@ -132,17 +132,15 @@ try{
  assert.equal(await page.getByRole('button',{name:'상한 우유',exact:true}).isEnabled(),true);
  if(!await visible(feedback))failures.push({task:'M3-4',issues:['retry feedback out of view']});
  await page.screenshot({path:out+'/915-M3-4-feedback.png'});
- // An incorrect visual link can be corrected with two keyboard activations.
+ // A wrong quiz answer can be retried directly with the keyboard.
  await open(inquiryTasks[0]);
- await linkCard(page,'log').press('Enter');
- await linkTarget(page,'mold').press('Enter');
- await page.locator('.link-line.is-wrong').waitFor();
- assert.match(await linkCard(page,'log').getAttribute('aria-label'),/다시 확인|연결됨/);
- await linkCard(page,'log').press('Enter');
- await linkTarget(page,'mushroom').press('Enter');
- await page.locator('.link-line.is-right').waitFor({state:'attached'});
- assert.match(await linkCard(page,'log').getAttribute('aria-label'),/확인 완료/);
- await page.screenshot({path:out+'/915-M1-1-connected.png'});
+ await page.locator('[data-quiz-answer="mold"]').press('Enter');
+ assert.match(await page.locator('.quiz-feedback').innerText(),/다시 골라/);
+ assert.ok(await button(page,'다음 문제').isDisabled());
+ await page.locator('[data-quiz-answer="mushroom"]').press('Enter');
+ assert.match(await page.locator('.quiz-feedback').innerText(),/맞았어요/);
+ assert.ok(await button(page,'다음 문제').isEnabled());
+ await page.screenshot({path:out+'/915-M1-1-answered.png'});
  // A pinned comparison and correct mark still need a source; it stays read when the task is revisited.
  await open(inquiryTasks.find(t=>t.id==='M4-1'));
  await page.getByRole('button',{name:/^이후 고정/}).click();
@@ -174,10 +172,15 @@ try{
  await page.emulateMedia({reducedMotion:'reduce'});
  await button(page,'홈').click();
  assert.equal(await page.locator('html').getAttribute('class'),'reduced');
+}catch(error){
+ fatalError=error;console.error(error);
 }finally{
  await writeFile(out+'/results.json',JSON.stringify({screens,failures,errors},null,2));
- await browser.close();
+ await Promise.race([browser.close(),new Promise(resolve=>setTimeout(resolve,5000))]);
 }
+if(fatalError){console.error(fatalError);process.exit(1);}
 assert.deepEqual(errors,[]);
 assert.deepEqual(failures,[]);
-console.log('PASS: '+screens.length+' activity screens; visible retry feedback; keyboard links; research gate; case switching; fold navigation; reduced motion');
+console.log('PASS: '+screens.length+' activity screens; visible retry feedback; keyboard quizzes; research gate; case switching; fold navigation; reduced motion');
+
+process.exit(0);

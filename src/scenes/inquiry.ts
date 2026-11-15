@@ -22,16 +22,15 @@ import {activityIllustration} from '../experience';
 import {prepareInquiry,validTrackPair,validTimelinePair,reflectClaim,introduction} from '../inquiry-preparation';
 import {chooseCase} from '../inquiry-actions';
 import {mountScopeDecor} from '../renderers/scope-view';
-import '../link-board.css';
 import '../inquiry-controls.css';
 import '../inquiry-simplified.css';
 
 const AUTO_RATE=2;
 const backgrounds:Record<Stage,string>={M1:'fungi',M2:'water',M3:'archive',M4:'village',M5:'workshop'};
-export function mentor(task:InquiryTask,record:InquiryRecord){const box=el('div','buddy-card');const pic=el('img');pic.src='assets/characters/companion-portrait.webp';pic.alt='토끼 길잡이 토토';const talk=el('div','buddy-speech');talk.hidden=true;let level=0;const text=paragraph('');const more=button('다른 힌트',()=>{level=Math.min(2,level+1);draw();playEffect('hint');},'text-button');const draw=()=>{text.textContent=[guidance(task,record).action, task.kind==='microscope'?'관찰 사진과 확대된 모습을 나란히 살펴봐요.':'화면의 자료를 다시 열고 표시나 기록을 살펴봐요.',task.kind==='connect'||task.kind==='sort'||task.kind==='collect'?'카드를 다시 누르고 읽어 봐요. 고른 칸의 제목과 카드에서 본 특징을 비교해요.':'방금 조작한 결과와 앞 기록에서 달라진 점을 찾아봐요. 그 차이를 고른 설명과 비교해요.'][level];more.disabled=level===2;};talk.append(text,more,button('자료·관찰 조건',()=>modal('자료와 관찰 조건',[sourceNotes(task)]),'text-button'));const b=button('',()=>{talk.hidden=!talk.hidden;level=0;draw();b.setAttribute('aria-expanded',String(!talk.hidden));playEffect('hint');},'buddy-toggle');b.setAttribute('aria-label','토토의 힌트');b.setAttribute('aria-expanded','false');b.append(pic,el('span','','토토에게 힌트'));box.append(b,talk);return box;}
+export function mentor(task:InquiryTask,record:InquiryRecord){const box=el('div','buddy-card');const pic=el('img');pic.src='assets/characters/companion-portrait.webp';pic.alt='토끼 길잡이 토토';const talk=el('div','buddy-speech');talk.hidden=true;let level=0;const text=paragraph('');const more=button('다른 힌트',()=>{level=Math.min(2,level+1);draw();playEffect('hint');},'text-button');const draw=()=>{text.textContent=[guidance(task,record).action, task.kind==='microscope'?'관찰 사진과 확대된 모습을 나란히 살펴봐요.':'화면의 자료를 다시 열고 표시나 기록을 살펴봐요.',task.kind==='connect'||task.kind==='sort'||task.kind==='collect'?'자료를 다시 읽고, 고른 답이 자료의 내용과 어울리는지 살펴봐요.':'방금 조작한 결과와 앞 기록에서 달라진 점을 찾아봐요. 그 차이를 고른 설명과 비교해요.'][level];more.disabled=level===2;};talk.append(text,more,button('자료·관찰 조건',()=>modal('자료와 관찰 조건',[sourceNotes(task)]),'text-button'));const b=button('',()=>{talk.hidden=!talk.hidden;level=0;draw();b.setAttribute('aria-expanded',String(!talk.hidden));playEffect('hint');},'buddy-toggle');b.setAttribute('aria-label','토토의 힌트');b.setAttribute('aria-expanded','false');b.append(pic,el('span','','토토에게 힌트'));box.append(b,talk);return box;}
 export function inquiryScene(ctx:Context,stage:Stage){
  const progress=ctx.attempt.inquiry;const list=tasksFor(stage);let index=progress.current[stage]??0;index=Math.max(0,Math.min(3,index));const task=list[index];const r=progress.records[task.id]??=prepareInquiry(task);let disposed=false;ctx.cleanup(()=>disposed=true);
- const linking=['collect','connect','sort'].includes(task.kind);ctx.host.classList.add('expedition-shell',`stage-${stage}`);ctx.host.classList.toggle('link-task',linking);ctx.host.dataset.stage=stage;ctx.host.dataset.kind=task.kind;ctx.host.style.setProperty('--facility-image',`url('/assets/places/${backgrounds[stage]}.webp')`);
+ const linking=['collect','connect','sort'].includes(task.kind),quiz=linking&&task.id!=='M1-4';ctx.host.classList.add('expedition-shell',`stage-${stage}`);ctx.host.classList.toggle('link-task',linking&&!quiz);ctx.host.classList.toggle('quiz-task',quiz);ctx.host.dataset.stage=stage;ctx.host.dataset.kind=task.kind;ctx.host.style.setProperty('--facility-image',`url('/assets/places/${backgrounds[stage]}.webp')`);
  const head=el('div','expedition-header');const emblem=activityIllustration(task,'mission-emblem');const titles=el('div','mission-titles');titles.append(el('span','eyebrow',`MISSION ${stage.slice(1).padStart(2,'0')} · ${stages.find(s=>s.id===stage)!.title} · ${index+1}번째 발견`),heading(task.title));if(task.kind!=='summary')titles.append(paragraph(researchCases[stage].question,'case-brief'));head.append(emblem,titles);ctx.host.append(head);
  const grid=el('div','expedition-workspace');const work=el('section','expedition-work');const host=el('div','expedition-canvas-host');host.setAttribute('aria-label',task.title+' 탐구 장면');const badge=el('span','model-badge',task.kind==='build'?'관계 설명 모형':'관찰·조사 모형');work.append(host);if(!linking)work.append(badge);const side=el('aside','expedition-panel');grid.append(work);if(task.kind!=='summary')grid.append(side);ctx.host.append(grid);
  let running=false,ready=false;
@@ -71,6 +70,10 @@ export function inquiryScene(ctx:Context,stage:Stage){
   if(sourceNext.textContent!==g.action)sourceNext.textContent=g.action;
   status.classList.toggle('ready',g.ready);ctx.host.classList.toggle('record-ready',g.ready);
   if(task.kind==='track'&&recordButton)recordButton.disabled=!ready||demoStep>=0||!g.ready;
+  if(quiz){
+   if(recordButton)recordButton.disabled=!ready||!g.ready;
+   side.hidden=task.id!=='M3-2'||r.v!==2||!task.items.every(it=>r.assignments[it.id]===it.target);
+  }
  };
  const save=()=>{feedback.textContent='';r.submitted=false;ctx.save();updateStatus();};
  const paint=()=>{view?.refresh();save();};
@@ -79,6 +82,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
   const it=task.items.find(i=>i.id===id);if(!it||running||disposed)return;
   if(task.kind==='review'&&!r.assignments.initial)return info('새 자료를 보기 전 생각을 먼저 골라요.');
   if(!r.opened.includes(id))r.opened.push(id);
+  if(quiz){save();return;}
   feedback.textContent='';
   if(['collect','connect','sort','build'].includes(task.kind)){
    selectedCard=id;if(fromList)view?.arm(id);
@@ -103,8 +107,8 @@ export function inquiryScene(ctx:Context,stage:Stage){
   save();
   if(task.kind==='review'){controls();view?.refresh();}
  };
- // Link boards never need Phaser, so they load their own small renderer.
- const scene=():Promise<typeof import('../renderers/inquiry2d').mountInquiry>=>task.kind==='summary'?import('../renderers/pond-summary').then(m=>(host,_task,_record,hooks)=>m.mountPondSummary(host,progress.records,hooks)):task.kind==='microscope'?import('../renderers/simple-microscope').then(m=>m.mountMicroscope):task.id==='M1-4'?import('../renderers/fungi-sort').then(m=>m.mountFungiSort):linking?import('../renderers/link-board').then(m=>m.mountLinkBoard):import('../renderers/inquiry2d').then(m=>m.mountInquiry);
+ // DOM quizzes and observations load their own small renderers.
+ const scene=():Promise<typeof import('../renderers/inquiry2d').mountInquiry>=>task.kind==='summary'?import('../renderers/pond-summary').then(m=>(host,_task,_record,hooks)=>m.mountPondSummary(host,progress.records,hooks)):task.kind==='microscope'?import('../renderers/simple-microscope').then(m=>m.mountMicroscope):task.id==='M1-4'?import('../renderers/fungi-sort').then(m=>m.mountFungiSort):quiz?import('../renderers/quiz-board').then(m=>m.mountQuizBoard):import('../renderers/inquiry2d').then(m=>m.mountInquiry);
  void scene().then(async mount=>{await document.fonts.ready;if(disposed)return;view=mount(host,task,r,{assigned:()=>{selectedCard='';sourcePreview.hidden=true;sourcePreview.replaceChildren();updateStatus();},changed:()=>{save();controls();},open:source,feedback:info,ready:(ok)=>{
   if(disposed)return;
   ready=ok;if(demoButton)demoButton.disabled=!ok;tools.inert=!ok||demoStep>=0;next.disabled=!ok||demoStep>=0;updateStatus();
@@ -112,7 +116,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
   else{loading.replaceChildren(paragraph('관찰 이미지를 준비하지 못했어요. 연결을 확인하고 다시 열어요.'),button('이미지 다시 준비',ctx.render));}
  }},reducedMotion(ctx.state.settings.reduced));ctx.cleanup(view.dispose);}).catch(()=>{loading.replaceChildren(paragraph('장면을 열지 못했어요.'),button('다시 열기',ctx.render));});
  const openLadder=()=>{
-  const dialog=modal('세균은 얼마나 작을까요?',[ladderPlacement(r.assignments.ladder==='smallest',()=>{r.assignments.ladder='smallest';save();playEffect('success');controls();})]);
+  const dialog=modal('세균은 얼마나 작을까요?',[ladderPlacement(r.assignments.ladder==='smallest',()=>{r.assignments.ladder='smallest';save();view?.refresh();playEffect('success');controls();})]);
   dialog.classList.add('ladder-dialog');
   const title=dialog.querySelector('h2')!;title.tabIndex=-1;title.focus({preventScroll:true});dialog.scrollTop=0;
  };
@@ -361,7 +365,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
  ctx.host.append(footer);
  const stepper=el('div','activity-stepper');stepper.setAttribute('aria-label','발견 기록 진행');for(const [i,t] of list.entries()){const done=!!progress.records[t.id]?.completedAt;const step=button(String(i+1),()=>{progress.current[stage]=i;ctx.save();ctx.go(i<2?stages.find(s=>s.id===stage)!.entry:stages.find(s=>s.id===stage)!.exit);},i===index?'current':done?'done':'',!done&&i!==index&&!ctx.state.settings.admin);step.setAttribute('aria-label',`${i+1}번째 발견: ${t.title}`);if(i===index)step.setAttribute('aria-current','step');stepper.append(step);}footer.insertBefore(stepper,task.kind==='track'?null:next);
 
- if(linking)left.append(badge);
+ if(linking&&!quiz)left.append(badge);
 }
 
 /** 새 낱말 chips: the concept words a discovery introduced. */

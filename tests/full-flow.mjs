@@ -14,6 +14,18 @@ const alternative=async()=>{await btn('변화 위치 고르기').click();return 
 async function tapCanvas(p,x,y){const rect=await p.locator('.expedition-canvas-host canvas').boundingBox();assert.ok(rect);await p.touchscreen.tap(rect.x+x*rect.width,rect.y+y*rect.height);}
 async function touch(x,y){await tapCanvas(page,x/960,y/540);}
 async function connectAll(task){
+ if(await page.locator('.quiz-board').count()){
+  while(true){
+   const id=await page.locator('.quiz-board').getAttribute('data-quiz-item');
+   const item=task.items.find(it=>it.id===id);
+   if(!item)throw Error('unknown quiz item');
+   const answer=page.locator(`[data-quiz-answer="${item.target}"]`);
+   if(await answer.getAttribute('aria-pressed')!=='true')await answer.tap();
+   if(await btn('다음 문제').isHidden())break;
+   await btn('다음 문제').tap();
+  }
+  return;
+ }
  const saved=await readSaved(page),record=saved?.learner.inquiry.records[task.id];
  for(const [i,item] of task.items.entries()){
   if(task.kind==='build'&&!item.target)continue;
@@ -105,8 +117,11 @@ async function completeTask(task,replay=false){
 try{
  await mkdir('.tmp/screens',{recursive:true});await navigate(page,base,'main');if(!process.env.RESUME_FLOW){await btn('탐험 시작').click();await skipFilm(page);await btn('다음').click();await btn('다음').click();await btn('탐험 지도로').click();await waitForScene(page,'.map-host');assert.equal(await page.locator('.map-resident').count(),0);
  await btn('버섯숲 표본실로 가기').click();await page.locator('.screen-fungi-field').waitFor();
- // Empty submission must stay on the activity and explain what is missing.
- await btn('발견 기록하기').click();assert.ok((await page.locator('.inquiry-feedback').innerText()).length>0);assert.equal(await page.locator('.discovery-dialog').count(),0);
+ // Quiz records stay disabled until every question has a correct answer.
+ await page.locator('.inquiry-loading').waitFor({state:'detached'});
+ assert.ok(await btn('발견 기록하기').isDisabled());assert.equal(await page.locator('.discovery-dialog').count(),0);
+ await page.locator('[data-quiz-answer="mold"]').tap();
+ assert.match(await page.locator('.quiz-feedback').innerText(),/다시 골라/);
  for(let stage=1;stage<=5;stage++){
   if(stage>1)await navigate(page,base,stageRoutes[stage-1][0]);
   for(const task of inquiryTasks.filter(t=>t.stage==='M'+stage))await completeTask(task);
@@ -122,7 +137,7 @@ try{
  await page.getByRole('button',{name:/4번째 발견:/}).click();await page.locator('.inquiry-loading').waitFor({state:'detached'});await page.getByLabel('내 소개 문장',{exact:true}).fill('시연에서만 바꾸는 소개 문장이에요.');await waitSaved(page,s=>s.preview.inquiry.records['M5-4'].note==='시연에서만 바꾸는 소개 문장이에요.');assert.equal(JSON.stringify((await readSaved(page)).learner),learnerBefore);
  let previewSettings=await teacherTools(page);await previewSettings.getByRole('button',{name:'시연 기록 초기화',exact:true}).click();await page.locator('.settings-confirm').getByRole('button',{name:'기록 지우기',exact:true}).click();await page.locator('.screen-main').waitFor();assert.equal(JSON.stringify((await waitSaved(page,s=>Object.keys(s.preview.inquiry.records).length===0)).learner),learnerBefore);previewSettings=await teacherTools(page);await previewSettings.getByRole('button',{name:'관리자 전체 해금',exact:true}).click();await previewSettings.getByRole('button',{name:'닫기',exact:true}).click();assert.equal(JSON.stringify((await waitSaved(page,s=>!s.settings.admin)).learner),learnerBefore);
  await page.reload();await page.locator('.screen-results').waitFor();assert.equal(await page.getByLabel('소개 문장',{exact:true}).inputValue(),'우리 생활에는 작은 생물의 도움이 있어요.');await page.screenshot({path:'.tmp/full-flow-results.png'});
- // Habit badges: the deliberate empty M1-1 submission counts as a miss, so only M1 needs 다시 도전. Replaying keeps evidence, report, ports and card.
+ // The deliberate wrong M1-1 answer counts as a miss, so M1 can be replayed for its habit badge.
  if(!process.env.RESUME_FLOW){await navigate(page,base,'nature-map');await btn('토토의 지도 힌트').click();await btn('내 발견 도감').click();const records=page.locator('.records-dialog');assert.equal(await records.locator('.habit-row.earned').count(),4);await records.getByRole('button',{name:'다시 도전',exact:true}).click();await btn('다시 도전 시작').click();
   for(const task of inquiryTasks.filter(t=>t.stage==='M1'))await completeTask(task,true);
   assert.match(await page.locator('.toast').innerText(),/꼼꼼한 관찰자/);const after=(await readSaved(page)).learner;assert.equal(Object.keys(after.evidence).length,5);assert.equal(after.report.length,5);assert.equal(after.ports.length,5);assert.equal(after.activated,true);assert.equal(after.cardTitle,'내가 발견한 생물의 작용');

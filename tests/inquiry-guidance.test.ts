@@ -15,7 +15,7 @@ describe('현재 근거에 맞춘 길잡이',()=>{
    expect(action).not.toMatch(/왼쪽|가운데|오른쪽/);
   }
  });
- it('읽지 않은 자료의 정답 배치를 완료로 안내하지 않는다',()=>{const t=task('M1-1'),r=emptyRecord();r.assignments=Object.fromEntries(t.items.map(i=>[i.id,i.target]));expect(guidance(t,r).ready).toBe(false);expect(guidance(t,r).done).toBe(0);expect(guidance(t,r).action).toContain('자료를 눌러');r.opened=t.items.map(i=>i.id);expect(guidance(t,r).ready).toBe(true);});
+ it('읽지 않은 자료의 정답 배치를 완료로 안내하지 않는다',()=>{const t=task('M1-1'),r=emptyRecord();r.assignments=Object.fromEntries(t.items.map(i=>[i.id,i.target]));expect(guidance(t,r).ready).toBe(false);expect(guidance(t,r).done).toBe(0);expect(guidance(t,r).action).toContain('자료를 읽고 답을 골라');r.opened=t.items.map(i=>i.id);expect(guidance(t,r).ready).toBe(true);});
  it('맨눈 → 돋보기 → 현미경 순서로 안내하고, 현미경 전에는 촬영을 안내하지 않는다',()=>{const t=task('M1-2'),r=emptyRecord();r.focus=65;expect(guidance(t,r).action).toContain('돋보기');r.level=1;expect(guidance(t,r).action).toContain('주름');expect(guidance(t,r).action).not.toContain('사진 촬영');expect(guidance(t,r).ready).toBe(false);});
  it('초점이 맞아도 관찰 사진을 남기기 전에는 기록 준비로 안내하지 않는다',()=>{const t=task('M1-2'),r=emptyRecord();r.focus=65;r.level=2;expect(guidance(t,r).action).toContain('관찰 사진');expect(guidance(t,r).ready).toBe(false);r.capture=true;expect(guidance(t,r).ready).toBe(true);});
  it('B만 고정하면 먼저 A를 고정하도록 안내한다',()=>{const r=emptyRecord();r.pins[1]=5;expect(guidance(task('M2-3'),r).action).toContain('A 고정');expect(guidance(task('M2-3'),r).ready).toBe(false);});
