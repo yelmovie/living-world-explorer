@@ -24,14 +24,14 @@ const samples=new Map<EffectName,AudioBuffer>();
 let samplesRequested=false;let lastEffect=0;
 let observer: MutationObserver | undefined;
 let narration:HTMLAudioElement|undefined;
-export type NarrationState='playing'|'ended'|'stopped'|'unavailable';
+export type NarrationState='loading'|'playing'|'waiting'|'ended'|'stopped'|'unavailable';
 let narrationState:((state:NarrationState)=>void)|undefined;
 /** Every playable ID is backed by a shipped, validated character recording. */
 function clearNarration(){
  const previous=narration,onState=narrationState;narration=undefined;narrationState=undefined;
- if(previous){previous.onended=previous.onerror=null;previous.pause();previous.removeAttribute('src');previous.load();onState?.('stopped');}
+ if(previous){previous.onended=previous.onerror=previous.onplaying=previous.onwaiting=previous.onpause=null;previous.pause();previous.removeAttribute('src');previous.load();onState?.('stopped');}
 }
-export function stopNarration(){clearNarration();sync();}
+export function stopNarration(owner?:(state:NarrationState)=>void){if(owner&&narrationState!==owner)return;clearNarration();sync();}
 export function playNarration(id:string,onState?:(state:NarrationState)=>void):boolean{
  if(!settings.sound||document.hidden||explicitQuiet)return false;
  clearNarration();
@@ -41,8 +41,12 @@ export function playNarration(id:string,onState?:(state:NarrationState)=>void):b
  const audio=new Audio(recording.src);audio.preload='none';narration=audio;narrationState=onState;
  const finish=(state:NarrationState)=>{if(narration===audio){narration=undefined;narrationState=undefined;sync();onState?.(state);}};
  audio.onended=()=>finish('ended');audio.onerror=()=>finish('unavailable');
+ audio.onplaying=()=>{if(narration===audio)onState?.('playing');};
+ audio.onwaiting=()=>{if(narration===audio)onState?.('waiting');};
+ audio.onpause=()=>{if(!audio.ended)finish('stopped');};
  stopMusic();
- void audio.play().then(()=>{if(narration===audio)onState?.('playing');}).catch(()=>finish('unavailable'));
+ onState?.('loading');
+ void audio.play().catch(()=>finish('unavailable'));
  return true;
 }
 

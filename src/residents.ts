@@ -1,4 +1,4 @@
-import {playNarration,stopNarration} from './audio';
+import {mountDialogueSpeech} from './character-dialogue';
 import './residents.css';
 import type {Attempt, Stage} from './model';
 import {MAP_WIDTH, MAP_HEIGHT} from './mapData';
@@ -78,49 +78,28 @@ export function residentConversation(stage:Stage, attempt:Attempt){
   portrait.setAttribute('aria-hidden','true');
   if(r.art!=='duri')portrait.dataset.facing='inward';
   const copy=el('div','resident-lines');
-  const line=paragraph(r.welcome,'resident-line');
-  line.setAttribute('aria-live','polite');line.setAttribute('aria-atomic','true');
+  const line=el('div','resident-line');
   const replies=el('div','resident-replies');
   replies.setAttribute('aria-label','주민에게 물어보기');
   const status=paragraph('','resident-queue');
   status.setAttribute('role','status');
-  let active=false,queued:HTMLButtonElement|undefined;
+  let queued:HTMLButtonElement|undefined;
   const queue=(next?:HTMLButtonElement)=>{
     queued=next;
     for(const b of replies.querySelectorAll('button'))b.classList.toggle('is-queued',b===next);
     status.textContent=next?'지금 이야기가 끝나면 이어서 들려줄게.':'';
   };
-  const speak=(voice:string)=>{
-    scene.dataset.speaking='false';
-    active=playNarration(voice,state=>{
-      scene.dataset.speaking=String(state==='playing');
-      active=state==='playing';
-      if(state==='stopped'){queue();return;}
-      if(!active&&queued&&dialog.open&&!document.hidden){
-        const next=queued;queue();next.click();
-      }
-    });
-    return active;
-  };
   for(const [question,[answer,voice]] of [[r.question,memory(stage,attempt)],['이제 무슨 일을 해?',[r.work,stage+'-work']]] as [string,[string,string]][]){
     const choice=button(question,()=>{
-      if(active){queue(choice);return;}
-      line.textContent=answer;
+      if(speech.isVoiceBusy()){queue(choice);return;}
       for(const b of replies.querySelectorAll('button'))b.setAttribute('aria-pressed',String(b===choice));
-      speak(voice);
+      speech.show(answer,voice);
     });
     choice.setAttribute('aria-pressed','false');
     replies.append(choice);
   }
-  const listen=button('인사 다시 듣기',()=>{
-    if(active){queue(listen);return;}
-    line.textContent=r.welcome;
-    for(const b of replies.querySelectorAll('button'))b.setAttribute('aria-pressed','false');
-    if(!speak(stage+'-welcome'))status.textContent='소리가 꺼져 있어요. 지도에서 소리를 켜면 들을 수 있어요.';
-  },'secondary');
   const close=button('지도로 돌아가기',()=>dialog.close(),'secondary resident-dialog-close');
   const controls=el('div','resident-dialog-controls');
-  controls.append(listen,close);
   const headingRow=el('div','resident-dialog-heading');
   headingRow.append(el('span','eyebrow',r.role));
   copy.append(headingRow,line,replies,controls,status);
@@ -128,7 +107,14 @@ export function residentConversation(stage:Stage, attempt:Attempt){
   const dialog=modal(r.name,[scene],{description:line,showClose:false});
   dialog.classList.add('resident-dialog');
   headingRow.prepend(dialog.querySelector('h2')!);
-  dialog.addEventListener('close',()=>{queue();stopNarration();},{once:true});
-  speak(stage+'-welcome');
+  const speech=mountDialogueSpeech(dialog,line,scene,state=>{
+    const next=queued;
+    queue();
+    if(state!=='stopped'&&dialog.open&&!document.hidden)next?.click();
+  });
+  controls.append(speech.listen,close);
+  copy.append(speech.status);
+  replies.querySelector('button')?.focus();
+  speech.show(r.welcome,stage+'-welcome');
   return dialog;
 }

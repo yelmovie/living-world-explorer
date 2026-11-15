@@ -1,0 +1,46 @@
+/* Keep the paper at its final height while the displayed line is being written. */
+.dialogue-reveal {
+  position:relative;display:block;width:100%;min-height:0;margin:0;padding:0;
+  border:0;border-radius:4px;background:none;box-shadow:none;
+  color:inherit;font:inherit;line-height:inherit;text-align:left;
+  word-break:keep-all;overflow-wrap:anywhere;transform:none;
+}
+.dialogue-reveal:focus-visible {outline:2px solid var(--forest-551);outline-offset:3px}
+.dialogue-reveal:not([aria-disabled=true]) {cursor:pointer}
+.dialogue-reveal[aria-disabled=true] {cursor:default}
+.dialogue-line-layout {display:block;visibility:hidden}
+.dialogue-line-visual {position:absolute;inset:0}
+.dialogue-readable {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.modal .dialogue-voice-status {margin:4px 0 0;font-size:14px;line-height:1.4}
+.dialogue-voice-status:empty {display:none}
+
+.intro-story {position:relative;isolation:isolate}
+.modal.story-dialog::backdrop {background:rgb(17 30 23 / 62%);backdrop-filter:blur(2px)}
+.story-character {
+  position:absolute;right:7%;bottom:calc(100% - 2px);
+  width:min(55vw,35dvh,320px);aspect-ratio:321/405;object-fit:cover;object-position:center top;
+  display:block;filter:drop-shadow(0 5px 6px var(--forest-623-a15));pointer-events:none;
+}
+.story-paper {padding:clamp(14px,2.2vw,24px)}
+.story-speaker {display:flex;align-items:center;gap:.35rem .8rem;flex-wrap:wrap}
+.story-speaker strong {
+  padding:5px 10px;border-radius:8px;color:var(--cream-10,#fff8e4);background:var(--forest-551);
+  line-height:1.25;font-size:clamp(16px,1.6vw,22px);
+}
+.story-speaker h2 {margin:0;color:inherit;font-size:clamp(15px,1.65vw,23px);line-height:1.25}
+.story-counter {order:1;margin-inline-start:auto;font-weight:700;white-space:nowrap}
+.story-copy {margin-block:8px 10px}
+.story-copy h3 {margin:0 0 5px;font-size:clamp(19px,2.2vw,30px);line-height:1.25}
+.story-line {font-size:clamp(18px,2vw,25px);line-height:1.45}
+.story-controls,.story-actions {display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.story-actions {margin-inline-start:auto}
+.story-controls .button {min-height:44px;padding:6px 12px;font-size:clamp(15px,1.6vw,21px)}
+.large-text .story-line,.large-text .resident-lines .resident-line {font-size:max(24px,1.7vw)}
+@media(max-height:520px) {
+  .story-character {width:min(41vw,32dvh,200px)}
+  .story-paper {padding:12px 15px}
+  .story-copy {margin-block:6px}
+}
+@media(max-width:420px) {
+  .story-speaker h2 {order:2;flex-basis:100%}
+}

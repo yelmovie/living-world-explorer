@@ -12,12 +12,20 @@ beforeEach(()=>{
 });
 afterEach(()=>vi.unstubAllGlobals());
 describe('NPC 인사 재생 수명',()=>{
- it('표정은 실제 음성 재생이 시작될 때 켜지고 종료하면 꺼진다',async()=>{
+ it('재생이 준비되거나 버퍼링 중이면 말하는 표정을 표시하지 않는다',async()=>{
   const a=await import('../src/audio');a.syncAudio({sound:true});const observe=vi.fn();
-  expect(a.playNarration('M1',observe)).toBe(true);expect(observe).not.toHaveBeenCalled();
-  await Promise.resolve();expect(observe).toHaveBeenLastCalledWith('playing');
-  (clips[0] as typeof clips[number]&{onended:()=>void}).onended();
-  expect(observe.mock.calls).toEqual([['playing'],['ended']]);
+  expect(a.playNarration('M1',observe)).toBe(true);
+  const clip=clips[0] as typeof clips[number]&{onplaying:()=>void;onwaiting:()=>void;onended:()=>void};
+  await Promise.resolve();expect(observe.mock.calls).toEqual([['loading']]);
+  clip.onplaying();clip.onwaiting();clip.onplaying();clip.onended();
+  expect(observe.mock.calls).toEqual([['loading'],['playing'],['waiting'],['playing'],['ended']]);
+ });
+ it('이전 대화창을 닫을 때 새 대화창의 음성을 끊지 않는다',async()=>{
+  const a=await import('../src/audio');a.syncAudio({sound:true});
+  const previous=vi.fn(),current=vi.fn();
+  a.playNarration('story-1',previous);a.playNarration('M1',current);
+  a.stopNarration(previous);expect(clips[1].paused).toBe(false);
+  a.stopNarration(current);expect(clips[1].paused).toBe(true);
  });
  it('음소거 때 생성·재생하지 않는다',async()=>{const a=await import('../src/audio');a.syncAudio({sound:false});expect(a.playNarration('M1')).toBe(false);expect(clips).toHaveLength(0);});
  it('다시 듣기는 이전 음성을 중단한다',async()=>{const a=await import('../src/audio');a.syncAudio({sound:true});expect(a.playNarration('M1')).toBe(true);a.playNarration('M2');expect(clips[0].pause).toHaveBeenCalled();expect(clips[1].src).toBe('assets/audio/voice/M2-welcome.mp3');a.stopNarration();expect(clips[1].pause).toHaveBeenCalled();});

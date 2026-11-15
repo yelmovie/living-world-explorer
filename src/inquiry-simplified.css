@@ -41,11 +41,6 @@
 .fungi-sort-tray>strong{font-size:clamp(20px,2.1vw,30px)}
 .sort-tray-items{font-size:clamp(14px,1.4vw,20px);line-height:1.35}
 .fungi-sort-tray.is-over{background:#d9e9bc;border-color:#398867;border-style:solid}
-.story-dialog{padding:clamp(14px,3vw,28px)!important}
-.story-dialog .story-page{grid-template-columns:minmax(100px,.6fr) minmax(0,1.5fr);min-height:0;gap:14px;align-items:center}
-.story-dialog .story-page img{height:clamp(180px,38vh,350px)}
-.story-dialog .story-copy{padding:16px;gap:10px}
-.story-dialog .story-page p{font-size:clamp(18px,2vw,26px)}
 @media(min-width:660px) and (max-height:640px){
  #app>.expedition-shell.link-task{padding-top:62px;gap:6px}
  #app>.expedition-shell.link-task .expedition-panel{max-height:72px;padding:5px 12px}
@@ -70,7 +65,6 @@
  .fungi-sort-trays{gap:6px;min-height:120px}.fungi-sort-tray{padding:6px;gap:6px}.fungi-sort-tray>strong{font-size:17px}.sort-tray-items{font-size:16px}
  .simple-observation{min-height:280px}
  #app>.expedition-shell:has(.simple-observation){grid-template-rows:auto minmax(320px,1fr) auto auto;overflow-y:auto}
- .story-dialog .story-page{grid-template-columns:100px minmax(0,1fr);gap:8px}.story-dialog .story-page img{height:180px}.story-dialog .story-copy{padding:12px}
 }
 /* 2026-11-10: phone landscape (about 412px tall). Keep cards, trays and the observation picture on screen without scrolling. */
 @media(min-width:660px) and (max-height:480px){
