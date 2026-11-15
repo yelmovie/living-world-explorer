@@ -61,6 +61,7 @@ export function taskArt(task:InquiryTask,record?:InquiryRecord):InquiryArt[]{
   return [artFor(kind)!];
  }
  if(task.kind==='sample')return [artFor('pond')!];
+ if(task.kind==='summary')return [artFor('spirogyra')!,artFor('paramecium')!];
  const selected=task.kind==='publish'?task.items.find(item=>item.id===record?.assignments.case):undefined;
  const items=selected?[selected]:task.kind==='build'?task.items.filter(item=>item.target==='output'):task.items;
  const pictures=items.map(item=>{const kind=artKey(item);return artFor(kind,artTime(kind,item.detail,item.id));}).filter((art):art is InquiryArt=>!!art);

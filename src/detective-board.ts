@@ -4,6 +4,7 @@ import {researchCases,caseReady,type CaseClue} from './detective-cases';
 import type {Stage} from './model';
 import {playEffect} from './audio';
 import './detective-board.css';
+const zoneLabels={supports:'관찰한 내용',limit:'더 살펴볼 점'} as const;
 
 export function openDetectiveBoard(ctx:Context,stage:Stage,finish?:()=>void){
  const data=researchCases[stage],record=ctx.attempt.inquiry.records[`${stage}-4`];
@@ -21,20 +22,19 @@ export function openDetectiveBoard(ctx:Context,stage:Stage,finish?:()=>void){
  const zones=el('div','detective-zones');
  const progress=paragraph('','detective-progress');
  const returnLabel=finish?'조사 결과 전달하기':'관찰로 돌아가기';
- const pending=data.clues.find(clue=>!placements[clue.id]);
- const message=paragraph(solved?`${data.result} ‘${returnLabel}’를 눌러 이어가요.`:pending?`‘${pending.label}’ 단서를 눌러 자세히 살펴봐요. 연결한 단서도 다시 눌러 바꿀 수 있어요.`:'연결한 단서를 다시 살펴보고 ‘증거로 사건 설명하기’를 눌러요.','detective-message');
+ const message=paragraph('','detective-message');
  message.id=`detective-message-${stage}`;
  message.setAttribute('role','status');
  message.setAttribute('aria-atomic','true');
  const clueButtons=new Map<string,HTMLButtonElement>();
  const placementLabels=new Map<string,HTMLSpanElement>();
 
- const report=button('증거로 사건 설명하기',()=>{
+ const report=button('연결 확인하기',()=>{
   if(closed)return;
   const wrong=data.clues.find(clue=>placements[clue.id]!==clue.role);
   if(wrong){
    selected=wrong.id;
-   message.textContent=`${wrong.label} 단서를 다시 살펴봐요. ${wrong.detail} 어느 칸에 연결하면 좋을까요?`;
+   message.textContent=`‘${wrong.label}’ 카드의 연결을 다시 확인해요. ${wrong.detail}`;
    refresh();
    clueButtons.get(wrong.id)?.focus();
    playEffect('retry');
@@ -44,7 +44,7 @@ export function openDetectiveBoard(ctx:Context,stage:Stage,finish?:()=>void){
   selected='';
   record.assignments.case_solved='yes';
   ctx.save();
-  message.textContent=`${data.result} ‘${returnLabel}’를 눌러 이어가요.`;
+  message.textContent='';
   refresh();
   done.focus();
   playEffect('success');
@@ -59,7 +59,7 @@ export function openDetectiveBoard(ctx:Context,stage:Stage,finish?:()=>void){
  function refresh(){
   const connected=data.clues.filter(clue=>placements[clue.id]).length;
   const next=data.clues.find(clue=>!placements[clue.id]);
-  progress.textContent=solved?`조사 완료 · 단서 ${data.clues.length}개를 설명했어요.`:selected?`2단계 · 아래 두 칸 중 한 곳을 눌러요. (${connected}/${data.clues.length})`:next?`1단계 · ‘${next.label}’ 단서를 눌러요. (${connected}/${data.clues.length})`:'3단계 · ‘증거로 사건 설명하기’를 눌러요.';
+  progress.textContent=solved?'연결 완료':`연결 ${connected} / ${data.clues.length}`;
   board.dataset.solved=String(solved);
   board.dataset.step=solved?'done':selected?'place':next?'observe':'check';
   for(const clue of data.clues){
@@ -68,7 +68,7 @@ export function openDetectiveBoard(ctx:Context,stage:Stage,finish?:()=>void){
    current.dataset.next=String(!solved&&!selected&&next?.id===clue.id);
    current.setAttribute('aria-pressed',String(selected===clue.id));
    const role=placements[clue.id];
-   placementLabels.get(clue.id)!.textContent=role==='supports'?'연결됨 · 설명의 근거':role==='limit'?'연결됨 · 단정할 수 없음':selected===clue.id?'선택한 단서':next?.id===clue.id?'다음 단서 · 눌러 조사':'눌러 조사';
+   placementLabels.get(clue.id)!.textContent=role==='supports'||role==='limit'?zoneLabels[role]:'';
   }
   report.disabled=connected<data.clues.length;
   report.hidden=solved;
@@ -78,7 +78,7 @@ export function openDetectiveBoard(ctx:Context,stage:Stage,finish?:()=>void){
  function inspect(clue:CaseClue){
   if(closed)return;
   selected=clue.id;
-  message.textContent=`‘${clue.label}’ 단서를 살펴봐요. ${clue.detail} 아래 두 칸 중 어울리는 곳을 눌러 연결해요.`;
+  message.textContent=clue.detail;
   refresh();
  }
 
@@ -86,7 +86,7 @@ export function openDetectiveBoard(ctx:Context,stage:Stage,finish?:()=>void){
   if(closed)return;
   const clue=data.clues.find(candidate=>candidate.id===selected);
   if(!clue){
-   message.textContent='먼저 조사할 단서를 눌러 골라요.';
+   message.textContent='카드를 먼저 골라요.';
    return;
   }
   placements[clue.id]=role;
@@ -96,8 +96,7 @@ export function openDetectiveBoard(ctx:Context,stage:Stage,finish?:()=>void){
   selected='';
   ctx.save();
   refresh();
-  const next=data.clues.find(candidate=>!placements[candidate.id]);
-  message.textContent=`${clue.label} 단서를 ${role==='supports'?'설명의 근거':'단정할 수 없는 점'}에 연결했어요. ${next?`이제 ‘${next.label}’ 단서를 눌러요.`:'‘증거로 사건 설명하기’를 눌러 연결한 근거를 확인해요.'}`;
+  message.textContent='';
   playEffect('snap');
  }
 
@@ -123,7 +122,8 @@ export function openDetectiveBoard(ctx:Context,stage:Stage,finish?:()=>void){
   placementLabels.set(clue.id,placement);
   cards.append(card);
  }
- for(const [role,label] of [['supports','설명을 뒷받침하는 증거'],['limit','이것만으로는 단정 못 해요']] as const){
+ for(const role of ['supports','limit'] as const){
+  const label=zoneLabels[role];
   const zone=button(label,()=>place(role),'detective-zone');
   zone.dataset.zone=role;
   zone.setAttribute('aria-describedby',message.id);

@@ -37,7 +37,7 @@ const inspect=async(name,shot=false)=>{
     for(const text of range.getClientRects())if(text.width&&(text.left<box.left-2||text.top<box.top-2||text.right>box.right+2||text.bottom>box.bottom+2))issues.push('clipped label '+n.textContent.slice(0,40));
    }
   }
-  const canvas=document.querySelector('.expedition-canvas-host canvas,.link-board'),r=canvas.getBoundingClientRect();
+  const canvas=document.querySelector('.expedition-canvas-host'),r=canvas.getBoundingClientRect();
   if(r.width<280||r.height<152)issues.push('small experiment '+Math.round(r.width)+'x'+Math.round(r.height));
   const texts=[...document.querySelectorAll('.expedition-shell p,.expedition-shell h2')].filter(n=>n.getClientRects().length).map(n=>n.textContent.trim()).filter(s=>s.length>=12);
   for(const text of new Set(texts))if(texts.filter(t=>t===text).length>1)issues.push('duplicate '+text);
@@ -66,13 +66,12 @@ try{
   await page.setViewportSize({width,height});
   const reset=await teacherTools(page);await reset.getByRole('button',{name:'시연 기록 초기화',exact:true}).click();await page.locator('.settings-confirm').getByRole('button',{name:'기록 지우기',exact:true}).click();
   await open('M2-1');assert.equal(await button(page,'자동재생').isVisible(),false);
-  await button(page,'물가 가까이').click();await page.getByLabel('재생 속도',{exact:true}).selectOption('2');
+  await button(page,'물가 가까이').click();assert.equal(await page.getByLabel('재생 속도',{exact:true}).count(),0);
   const before=(await waitSaved(page)).preview.inquiry.records['M2-1'];
   await button(page,'자동재생').click();await inspectState('sampling-playing');
-  await page.getByLabel('재생 속도',{exact:true}).selectOption('0.5');
-  await button(page,'멈추기').click();assert.deepEqual((await waitSaved(page)).preview.inquiry.records['M2-1'],before);
-  await page.getByLabel('재생 속도',{exact:true}).selectOption('2');const started=Date.now();await button(page,'자동재생').click();
-  await button(page,'멈추기').waitFor({state:'hidden'});assert.ok(Date.now()-started<6500,'2x speed applies to observation timers');
+  await button(page,'직접 해보기').click();assert.deepEqual((await waitSaved(page)).preview.inquiry.records['M2-1'],before);
+  const started=Date.now();await button(page,'자동재생').click();
+  await button(page,'직접 해보기').waitFor({state:'hidden'});assert.ok(Date.now()-started<6500,'2x speed applies to observation timers');
   const sampled=(await waitSaved(page)).preview.inquiry.records['M2-1'];assert.equal(sampled.sequence,3);assert.equal(sampled.assignments.site,'edge');assert.equal(sampled.completedAt,undefined);await inspectState('sampling-ready');
   await open('M2-3');await page.getByRole('button',{name:/^B 고정/}).click();await inspectState('track-comparison');
   await button(page,'현미경으로 움직임의 비밀 찾기').click();await inspectState('track-cilia');
@@ -84,16 +83,25 @@ try{
   await button(page,'상한 우유').click();await button(page,'발견 기록하기').click();assert.equal(await page.locator('.discovery-dialog').count(),0);await inspectState('review-retry');
   await button(page,'주장 다시 고르기').click();await button(page,'모든 세균이 해로운 것은 아니에요').click();await button(page,'요구르트 만들기').click();await inspectState('review-ready');
   const task=await open('M5-1');
-  await button(page,'버튼으로 조작').click();
+  await button(page,'자료 골라 연결하기').click();
   const dialog=page.getByRole('dialog');
   for(const it of task.items.filter(i=>i.target)){await dialog.getByRole('button',{name:it.label,exact:true}).click();const labels={input:'재료 병에 담기',action:'발효기에 넣기',output:'만들 음식 고르기'};await dialog.getByRole('button',{name:labels[it.target],exact:true}).click();}
   await close();await inspectState('build-prediction');await button(page,'요구르트가 될 거예요').click();await inspectState('build-ready');
-  await page.getByLabel('재생 속도',{exact:true}).selectOption('2');const runStart=Date.now();await button(page,'발효기 켜기').click();await inspectState('build-running');
-  await button(page,'예상과 같아요').waitFor();assert.ok(Date.now()-runStart<5500,'2x speed applies to fermentation');await inspectState('build-finished');await button(page,'예상과 같아요').click();await inspectState('build-reflected');
+  await button(page,'발효기 켜기').click();await inspectState('build-running');
+  await button(page,'예상과 같아요').waitFor();await inspectState('build-finished');await button(page,'예상과 같아요').click();await inspectState('build-reflected');
   await open('M5-4');await button(page,'요구르트').click();await inspectState('publish-action');await button(page,'유산균의 작용').click();await inspectState('publish-note');
   await page.getByLabel('내 소개 문장',{exact:true}).fill('유산균이 우유를 바꾸어 요구르트가 돼요.');await inspectState('publish-edited');
  }
- const preferences=await teacherTools(page);await preferences.locator('summary').filter({hasText:'앱 정보 · 배움과 보상'}).click();await preferences.getByRole('switch',{name:'큰 글씨',exact:true}).check();await close();
+ // The old large-text setting remains readable for existing saves.
+ const oldSave=await waitSaved(page);oldSave.settings.large=true;
+ await page.evaluate(saved=>new Promise((resolve,reject)=>{
+  const open=indexedDB.open('life-code-lab',1);
+  open.onerror=()=>reject(open.error);
+  open.onsuccess=()=>{const db=open.result,tx=db.transaction('state','readwrite');tx.objectStore('state').put(saved,'current');tx.oncomplete=()=>{db.close();resolve();};tx.onerror=()=>reject(tx.error);};
+ }),oldSave);
+ await page.reload();await page.locator('html.large-text').waitFor();
+ await navigate(page,base,'nature-map');
+ const legacy=await teacherTools(page);await legacy.getByRole('button',{name:'관리자 전체 해금',exact:true}).click();await close();
  for(const [width,height] of [[915,412],[375,812]]){
   await page.setViewportSize({width,height});
   const reset=await teacherTools(page);await reset.getByRole('button',{name:'시연 기록 초기화',exact:true}).click();await page.locator('.settings-confirm').getByRole('button',{name:'기록 지우기',exact:true}).click();

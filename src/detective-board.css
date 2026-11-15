@@ -71,6 +71,7 @@
  border-radius:14px;
  background:rgba(255,255,255,.8);
 }
+.detective-message:empty,.detective-clue span:empty {display:none}
 .modal .detective-progress {
  margin:0;
  padding:8px 12px;

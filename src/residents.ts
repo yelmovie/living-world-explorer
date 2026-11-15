@@ -69,10 +69,10 @@ export function residentMarker(stage:Stage, talk:()=>void){
   return marker;
 }
 
-export function residentConversation(stage:Stage, attempt:Attempt){
+export function residentConversation(stage:Stage, attempt:Attempt,enableVoice:()=>void){
   const r=residents[stage];
   const scene=el('div','resident-conversation');
-  const portrait=el('div','resident-portrait');
+  const portrait=el('div','resident-portrait dialogue-mouth');
   const poses = new URL(`assets/map/residents/dialogue/${r.art}.webp`, document.baseURI);
   portrait.style.setProperty('--resident-poses',`url("${poses.href}")`);
   portrait.setAttribute('aria-hidden','true');
@@ -111,7 +111,7 @@ export function residentConversation(stage:Stage, attempt:Attempt){
     const next=queued;
     queue();
     if(state!=='stopped'&&dialog.open&&!document.hidden)next?.click();
-  });
+  },enableVoice);
   controls.append(speech.listen,close);
   copy.append(speech.status);
   replies.querySelector('button')?.focus();

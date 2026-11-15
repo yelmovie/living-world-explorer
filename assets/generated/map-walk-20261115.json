@@ -1,0 +1,65 @@
+{
+  "date": "2026-11-15",
+  "tool": "Codex built-in image_gen",
+  "originalDirectory": "asset-bank/original/map-walk-20261115",
+  "dialoguePortrait": {
+    "source": "moa-speaking.png",
+    "reference": "public/assets/characters/moa-full.webp",
+    "output": "public/assets/characters/moa-dialogue.webp",
+    "prompt": "Use case: precise-object-edit. This reference is the exact original Moa character portrait used in a children's 2.5D game. Change exactly one detail: replace her closed little smile with a small, gently open mid-speech mouth, like quietly saying 'ah'. Slightly open natural lips, warm dark interior, no exaggerated grin, no large teeth. Put it on the exact same face center directly below the nose. Keep absolutely everything else pixel-aligned as closely as possible: same round glasses, eyes, eyelashes, cheeks, jaw, head angle, ponytail and green leaf hairpin, costume, lighting, silhouette, frame crop, empty margins and transparent background. Single front-facing upper body only. No text, no extra images, no border, no checkerboard."
+  },
+  "scopeObservers": [
+    {
+      "name": "moa",
+      "source": "moa-microscope.png",
+      "output": "public/assets/ui/moa-microscope.webp",
+      "prompt": "Use case: identity-preserve. Asset type: a singular compact illustrated character vignette for the margin of a microscope viewport in a Korean primary-school science game. Subject: Moa the girl explorer from the reference, wearing her large round glasses, brown ponytail with a green leaf clip, olive vest and cream sleeves. Position her on the LEFT of the microscope, facing right inward, leaning forward and looking with one eye into the eyepiece, one hand steadying the microscope stand. Upper-body in profile/three-quarter profile. The microscope is a compact practical classroom microscope with antique brass focus knobs and muted forest-green enamel. Input is the exact character identity and art style reference, keep face, outfit and proportions recognizable. The character clearly uses the eyepiece to look at a specimen, the eyepiece is correctly placed at eye level. A single character with a single microscope, an integrated icon-shaped cutout, in-canvas with ample clear padding. Soft illustrated light, no yellow or sepia filter, readable silhouette at 110px, matching the current polished 2.5D storybook art. True transparent alpha background: no room, no furniture, no tabletop extending around, no shadows at ground, no figures other than the one character, no signage, letters, bubbles, numbers, or borders. Not multiple poses."
+    },
+    {
+      "name": "toto",
+      "source": "toto-microscope.png",
+      "output": "public/assets/ui/toto-microscope.webp",
+      "prompt": "Use case: identity-preserve. Asset type: a singular compact illustrated character vignette for the margin of a microscope viewport in a Korean primary-school science game. Subject: Toto the small pink rabbit field assistant from the reference, with pink goggles perched above eyes, pink-and-cream explorer coat and small brown strap. Position Toto on the RIGHT of the microscope, facing left inward, one paw turning a brass focus knob and one eye leaning toward the eyepiece. Upper-body in profile/three-quarter profile. A compact classroom microscope with antique brass focus knobs and forest-green enamel. Both long ears fully inside the frame. Input is the exact character identity and art style reference, keep face, outfit and proportions recognizable. The character clearly uses the eyepiece to look at a specimen, the eyepiece is correctly placed at eye level. A single character with a single microscope, an integrated icon-shaped cutout, in-canvas with ample clear padding. Soft illustrated light, no yellow or sepia filter, readable silhouette at 110px, matching the current polished 2.5D storybook art. True transparent alpha background: no room, no furniture, no tabletop extending around, no shadows at ground, no figures other than the one character, no signage, letters, bubbles, numbers, or borders. Not multiple poses."
+    }
+  ],
+  "nakedEyeObservers": [
+    {
+      "name": "moa",
+      "source": "moa-naked-eye.png",
+      "output": "public/assets/ui/moa-naked-eye.webp",
+      "prompt": "Use case: identity-preserve. Create ONE small character vignette for the naked eye observation mode in a primary school science game. Moa the girl explorer, on the LEFT of the specimen, facing right, large round glasses, brown ponytail with green leaf, cream sleeves and olive vest. Both eyes open, looking down directly at a small clear rectangular specimen slide held near her hands. The attached picture is the exact character identity and painterly 2.5D style reference. The action is looking at the sample directly with unaided eyes. NO microscope, NO magnifying glass, no other scientific instruments, no tabletop, no background. Mid-torso framing; keep head, ears, both hands and sample fully inside frame with generous margins. A clean single compact silhouette readable at 100px, soft neutral light, true alpha transparent background. No text, no watermark, no hints, no border, no checkerboard."
+    },
+    {
+      "name": "toto",
+      "source": "toto-naked-eye.png",
+      "output": "public/assets/ui/toto-naked-eye.webp",
+      "prompt": "Use case: identity-preserve. Create ONE small character vignette for the naked eye observation mode in a primary school science game. Toto the pink rabbit helper, on the RIGHT of the specimen, facing left, naturally long pink ears and pink goggles pushed up on forehead, white pink-trimmed explorer jacket and brown strap. Both eyes open, looking directly at a small clear glass dish with one shallow water droplet, hands gently holding the dish. The attached picture is the exact character identity and painterly 2.5D style reference. The action is looking at the sample directly with unaided eyes. NO microscope, NO magnifying glass, no other scientific instruments, no tabletop, no background. Mid-torso framing; keep head, ears, both hands and sample fully inside frame with generous margins. A clean single compact silhouette readable at 100px, soft neutral light, true alpha transparent background. No text, no watermark, no hints, no border, no checkerboard."
+    }
+  ],
+  "assets": [
+    {
+      "character": "모아",
+      "reference": [
+        "public/assets/map/moa-down.webp",
+        "public/assets/map/moa-right.webp",
+        "public/assets/map/moa-up.webp"
+      ],
+      "output": "public/assets/map/moa-walk.webp",
+      "source": "moa-alt.png",
+      "firstPass": "moa.png",
+      "prompt": "Use case: identity-preserve. Asset type: one single-character game animation sprite sheet for a top-down 2.5D educational game. Inputs 1, 2, and 3 are the exact reference sprites facing toward viewer, to viewer's right, and away from viewer respectively. Subject: Moa, the human girl explorer: brown high ponytail and leaf clip, large round thin dark glasses on the face in front/profile, olive field vest over rolled cream sleeves, tan shorts and boots, small brown crossbody satchel. Do not redesign her or add a backpack. Preserve the compact chibi proportions of the three input map sprites exactly. Match the existing game’s dense painted pixel-like edges, textured volume and slightly overhead camera angle, bright readable expression. Create exactly TWELVE detached full body sprites of THIS character, in ONE rigid 4-column by 3-row atlas, landscape with 4:3 proportions. Top row all four face toward viewer (down), middle row all four face RIGHT (rightward profile, the nose points right), bottom row all four face away showing back (up, no face). Within each row from left to right: 1 leading left foot planted and right foot trailing, 2 right leg clearly lifted and passing the planted leg, 3 leading right foot planted and left foot trailing, 4 left leg clearly lifted and passing the planted leg. The two opposite stride poses MUST clearly differ, with feet and arms reversed. Silhouettes solidly separated by transparent gutters; keep rigid cell centers, same height within each row, ample empty padding on every side, feet registered to a consistent line. Keep head, clothes, proportions, accessories, camera, shading and body placement very consistent across frames. FULL genuine alpha TRANSPARENT background. No floor, no cast shadows, no checkerboard drawn in, no grid lines, no labels, no text, no extra objects and no extra figures. Deliver just this character's twelve frame atlas.",
+      "revisionPrompt": "Use case: precise-object-edit. This exact transparent twelve-frame character sheet is an existing game asset. Correct only the lower body gait in the two rightmost frames of the top row. At present every frame lifts the boot on the viewer's right, which is wrong. In column 3 plant the boot on the LEFT side of the frame clearly closest to the camera, with the boot on the RIGHT side of the frame trailing behind it. In column 4 raise the left-side boot toward the camera, with the boot on the right side planted on the ground underneath the character. These boot positions should be visibly horizontally opposite to the first two frames, while the head, ponytail, glasses, body, clothes and satchel do not change sides. Preserve the exact character identity, illustration, camera, frame count, fixed positions, full silhouettes, and the other ten frames. Leave the middle and bottom rows completely untouched. Keep genuine alpha transparency and no ground shadows, no text, no dividers, no extra artwork."
+    },
+    {
+      "character": "토토",
+      "reference": [
+        "public/assets/map/companion-down.webp",
+        "public/assets/map/companion-right.webp",
+        "public/assets/map/companion-up.webp"
+      ],
+      "output": "public/assets/map/toto-walk.webp",
+      "source": "toto.png",
+      "prompt": "Use case: identity-preserve. Asset type: one single-character game animation sprite sheet for a top-down 2.5D educational game. Inputs 1, 2, and 3 are the exact reference sprites facing toward viewer, to viewer's right, and away from viewer respectively. Subject: Toto, the small bipedal pink rabbit explorer: two tall pink ears, pink goggles on the forehead, pink explorer coat with white lapels/cuffs, small brown crossbody pouch, pink hind feet, rounded rabbit tail in back. Preserve the pink palette, crisp silhouette and compact chibi proportions of the three input map sprites exactly. A brisk four-step two-foot walk, no jumping or quadruped poses. The ears simply swing a tiny bit. Match the existing game’s dense painted pixel-like edges, textured volume and slightly overhead camera angle, bright readable expression. Create exactly TWELVE detached full body sprites of THIS character, in ONE rigid 4-column by 3-row atlas, landscape with 4:3 proportions. Top row all four face toward viewer (down), middle row all four face RIGHT (rightward profile, the nose points right), bottom row all four face away showing back (up, no face). Within each row from left to right: 1 leading left foot planted and right foot trailing, 2 right leg clearly lifted and passing the planted leg, 3 leading right foot planted and left foot trailing, 4 left leg clearly lifted and passing the planted leg. The two opposite stride poses MUST clearly differ, with feet and arms reversed. Silhouettes solidly separated by transparent gutters; keep rigid cell centers, same height within each row, ample empty padding on every side, feet registered to a consistent line. Keep head, clothes, proportions, accessories, camera, shading and body placement very consistent across frames. FULL genuine alpha TRANSPARENT background. No floor, no cast shadows, no checkerboard drawn in, no grid lines, no labels, no text, no extra objects and no extra figures. Deliver just this character's twelve frame atlas."
+    }
+  ]
+}

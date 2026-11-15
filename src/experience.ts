@@ -38,7 +38,7 @@ export function activityIllustration(task:InquiryTask,cls:string,record?:Inquiry
 }
 /** Painted research badge for stage index 0–4 (public/assets/ui/badge-M*.webp); decorative, so alt is empty. */
 export function stageBadge(index:number,cls='stage-badge'){const img=el('img',cls);img.src=`assets/ui/badge-M${index+1}.webp`;img.alt='';img.draggable=false;return img;}
-export function reward(stage:Stage,meet:()=>void){
+export function reward(stage:Stage,meet:()=>void,onClose:()=>void){
  const index=stageIds.indexOf(stage),resident=residents[stage],mission=missions[index];
  const card=el('div','reward-body');
  const art=el('img','reward-image');art.src=`assets/places/${['fungi','water','archive','village','workshop'][index]}.webp`;art.alt=stages[index].place+'의 복구된 모습';
@@ -46,6 +46,7 @@ export function reward(stage:Stage,meet:()=>void){
  card.append(scene,el('span','reward-check',mission.kit+' · '+mission.reward),paragraph(stages[index].place+'에 불이 켜졌어요! '+resident.role+' '+resident.name+'도 돌아왔어요.','resident-return-note'));
  const actions=el('div','resident-reward-actions');
  const dialog=modal('마을에 이웃이 돌아왔어!',[card,actions],{showClose:false});
+ dialog.addEventListener('close',onClose,{once:true});
  actions.append(button(resident.name+'에게 말 걸기',()=>{
    dialog.addEventListener('close',meet,{once:true});dialog.close();
  }),button('다음 장소 탐험',()=>dialog.close(),'primary'));

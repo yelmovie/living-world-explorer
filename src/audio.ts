@@ -1,6 +1,6 @@
 import {narrationRecordings} from './narration-recordings';
 /** Project BGM (main loop, ending loop) + locally hosted CC0 interaction sounds. */
-export type AudioSettings = {sound: boolean; bgm?: boolean; bgmVolume?: number};
+export type AudioSettings = {sound: boolean; voice?: boolean; bgm?: boolean; bgmVolume?: number};
 export type EffectName = 'click'|'success'|'retry'|'snap'|'capture'|'water'|'hint'|'run'|'page-turn'|'pipette-drop'|'core-wake';
 export type MusicTrack = 'main'|'ending';
 const tracks: Record<MusicTrack, string> = {main: 'assets/audio/bgm-main-theme.m4a', ending: 'assets/audio/bgm-ending-theme.m4a'};
@@ -32,8 +32,9 @@ function clearNarration(){
  if(previous){previous.onended=previous.onerror=previous.onplaying=previous.onwaiting=previous.onpause=null;previous.pause();previous.removeAttribute('src');previous.load();onState?.('stopped');}
 }
 export function stopNarration(owner?:(state:NarrationState)=>void){if(owner&&narrationState!==owner)return;clearNarration();sync();}
+export function narrationEnabled(){return settings.voice??settings.sound;}
 export function playNarration(id:string,onState?:(state:NarrationState)=>void):boolean{
- if(!settings.sound||document.hidden||explicitQuiet)return false;
+ if(!narrationEnabled()||document.hidden||explicitQuiet)return false;
  clearNarration();
  const key=/^M[1-5]$/.test(id)?id+'-welcome':id,recording=narrationRecordings[key];
  // Unknown IDs must not create broken requests or leave the previous line playing.
@@ -102,7 +103,8 @@ function musicElement(ctx: AudioContext) {
   return music;
 }
 function sync() {
-  if (!settings.sound || document.hidden || explicitQuiet) {stopVoices(effectVoices);clearNarration();}
+  if (!settings.sound || document.hidden || explicitQuiet) stopVoices(effectVoices);
+  if (!narrationEnabled() || document.hidden || explicitQuiet) clearNarration();
   if (!settings.bgm || !unlocked || quiet() || narration || (film && !film.playing)) {stopMusic();return;}
   const ctx = engine();
   if (!ctx || !musicGain) return;
@@ -146,8 +148,8 @@ export function scoreStoryFilm(video: HTMLVideoElement, theme: MusicTrack) {
     if (film === session) {film = undefined; sync();}
   };
 }
-export function anySound(value: AudioSettings) {return !!(value.sound || value.bgm);}
-export function toggleMasterSound(value: AudioSettings) {const enabled = !anySound(value);value.sound = enabled;value.bgm = enabled;syncAudio(value);}
+export function anySound(value: AudioSettings) {return !!(value.sound || value.voice || value.bgm);}
+export function toggleMasterSound(value: AudioSettings) {const enabled = !anySound(value);value.sound = value.voice = value.bgm = enabled;syncAudio(value);}
 export function playEffect(name: EffectName = 'click') {
   if (!settings.sound || document.hidden || explicitQuiet) return;
   const now=performance.now();if(now-lastEffect<65&&name==='click')return;lastEffect=now;

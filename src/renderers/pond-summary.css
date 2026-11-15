@@ -1,0 +1,31 @@
+#app>.expedition-shell[data-kind="summary"] {grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto}
+#app>.expedition-shell[data-kind="summary"] .expedition-footer {grid-area:3/1}
+.pond-summary {
+  display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:10px;height:100%;padding:8px;min-width:0;
+}
+.pond-summary-site,.pond-summary-caption {
+  justify-self:start;margin:0;padding:5px 10px;border-radius:10px;background:var(--paper-face);
+  color:var(--ink-strong);font-size:clamp(14px,1.5vw,20px);
+}
+.pond-summary-panels {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;min-height:0}
+.pond-summary-card {
+  min-width:0;display:flex;flex-direction:column;gap:8px;padding:clamp(9px,1.4vw,18px);
+  border:2px solid var(--stage-line,var(--paper-line));border-radius:16px;background:var(--paper-face);
+  overflow:auto;color:var(--ink-strong);
+}
+.pond-summary-card h3,.pond-summary-card p {margin:0;line-height:1.35;word-break:keep-all}
+.pond-summary-card h3 {font-size:clamp(18px,2.3vw,28px)}
+.pond-summary-card p {font-size:clamp(15px,1.65vw,21px)}
+.pond-summary-picture {width:100%;height:clamp(95px,34dvh,300px);object-fit:contain;border-radius:10px;background:#eef5df}
+.pond-summary-status {color:var(--stage-accent);font-size:clamp(14px,1.4vw,18px)}
+.pond-summary-moments {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+.pond-summary-moments figure {margin:0;background:#eef5df;border-radius:8px;overflow:hidden;text-align:center;color:#23483d}
+.pond-summary-moments canvas {position:static!important;display:block;width:100%;height:auto;max-height:clamp(72px,23dvh,180px);margin:0!important;object-fit:contain}
+.pond-summary-moments figcaption {font-size:clamp(13px,1.3vw,17px)}
+@media(max-width:440px) {
+ .pond-summary {gap:6px;padding:3px}
+ .pond-summary-panels {gap:5px}
+ .pond-summary-card {padding:6px;gap:5px;border-radius:10px}
+ .pond-summary-moments {grid-template-columns:minmax(0,1fr)}
+ .pond-summary-moments canvas {max-height:110px}
+}

@@ -9,6 +9,7 @@ playwright-report/
 
 .wrangler/
 graphify-out/
+asset-bank/original/
 
 # Meshy 원본 GLB(수십~수백 MB)는 D: 프로젝트에만 보관
 assets/generated/**/*.glb

@@ -11,7 +11,7 @@ const errors=[],checks=[];
 page.on('pageerror',error=>errors.push(error.message));
 page.on('response',response=>{if(response.status()>=400)errors.push(response.status()+' '+response.url());});
 const dialog=()=>page.locator('.detective-dialog');
-const report=()=>dialog().getByRole('button',{name:'증거로 사건 설명하기',exact:true});
+const report=()=>dialog().getByRole('button',{name:'연결 확인하기',exact:true});
 const done=()=>dialog().getByRole('button',{name:'관찰로 돌아가기',exact:true});
 async function connect(index,role){
  await page.locator('.detective-clue').nth(index).click();
@@ -19,7 +19,7 @@ async function connect(index,role){
 }
 async function reopen(){
  await dialog().getByRole('button',{name:'닫기',exact:true}).click();
- await page.getByRole('button',{name:'사건 증거판',exact:true}).click();
+ await page.getByRole('button',{name:'조사 기록',exact:true}).click();
 }
 async function inspect(){
  const problems=await dialog().evaluate(modal=>{
@@ -58,7 +58,13 @@ try{
   for(let stage=0;stage<5;stage++){
    await navigate(page,base,stageRoutes[stage][1]);
    await page.getByRole('button',{name:/^4번째 발견:/}).click();
-   await page.getByRole('button',{name:'사건 증거판',exact:true}).click();
+   if(stage===1){
+    await page.getByRole('heading',{name:'해캄 관찰 기록',exact:true}).waitFor();
+    await page.getByRole('heading',{name:'짚신벌레 관찰 기록',exact:true}).waitFor();
+    assert.equal(await page.getByRole('button',{name:'조사 기록',exact:true}).count(),0);
+    continue;
+   }
+   await page.getByRole('button',{name:'조사 기록',exact:true}).click();
    const first=page.locator('.detective-clue').first();
    await first.focus();await page.keyboard.press('Enter');
    assert.ok(await first.evaluate(node=>node===document.activeElement),'inspection must preserve keyboard focus');
@@ -81,7 +87,7 @@ try{
    await done().click();
    checks.push({width,height,stage:`M${stage+1}`});
   }
-  console.log('DETECTIVE',width+'x'+height,'5 cases passed');
+  console.log('DETECTIVE',width+'x'+height,'4 investigation boards and the pond summary passed');
  }
  assert.equal(JSON.stringify((await waitSaved(page)).learner),learnerBefore,'teacher case practice must preserve learner data');
  assert.deepEqual(errors,[]);

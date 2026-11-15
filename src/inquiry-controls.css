@@ -102,8 +102,6 @@
 .inquiry-playback{display:flex;align-items:center;justify-content:space-between;gap:8px;flex:none}
 .inquiry-playback[hidden],.inquiry-playback [hidden]{display:none}
 .inquiry-playback>.observation-play{flex:1;min-width:0;min-height:48px;padding:8px;font-size:var(--font-size-label);white-space:nowrap}
-.playback-speed{display:flex;align-items:center;gap:8px;font-size:var(--font-size-small);color:var(--ink-strong)}
-.playback-speed select{min-width:80px;min-height:48px;padding:8px;border:2px solid var(--paper-line);border-radius:var(--radius-sm);background:var(--paper-face);color:var(--ink-strong);font-size:var(--font-size-label);cursor:pointer}
 #app>.expedition-shell .observation-play[aria-pressed=true]{background:var(--forest-551);color:var(--ink-on-accent)}
 
 /* Every evidence card fits; source prose stays in the adjacent notebook. */
@@ -132,7 +130,6 @@
  #app>.expedition-shell .link-heading,#app>.expedition-shell .link-filed,#app>.expedition-shell .link-count{display:none}
  #app>.expedition-shell .link-card{padding-inline:8px 12px}
  #app>.expedition-shell .link-name,#app>.expedition-shell .link-target-name{font-size:18px}
- .playback-speed select{min-height:48px}
 }
 @media(min-width:1500px) and (min-height:850px){
  #app>.expedition-shell{padding:96px 24px 16px;gap:16px 24px}
@@ -168,7 +165,6 @@
  #app>.expedition-shell .link-name,#app>.expedition-shell .link-target-name{font-size:16px}
  #app:has(>.expedition-shell) .preview-banner{position:absolute;top:0;left:50%;right:auto;max-width:120px;min-height:48px;padding:4px 8px;font-size:14px;transform:translateX(-50%)}
 }
-.playback-speed>span{white-space:nowrap}
 #app>.expedition-shell .inquiry-playback>.run-play{white-space:normal}
 #app>.expedition-shell .expedition-tools .claim-decision{font-size:var(--font-size-small);line-height:1.35}
 #app>.expedition-shell .inquiry-status[hidden]{display:none}
@@ -199,5 +195,4 @@
  .large-text #app>.expedition-shell .expedition-tools .field.slider>.field-label{flex-direction:row;justify-content:space-between;align-items:center;gap:4px}
  .large-text #app>.expedition-shell .expedition-tools .button{padding-block:4px;min-height:48px}
  .large-text #app>.expedition-shell .inquiry-playback>.observation-play{padding-block:4px;min-height:48px}
- .large-text #app>.expedition-shell .playback-speed select{padding-block:4px}
 }

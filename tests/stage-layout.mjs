@@ -146,7 +146,7 @@ try{
  // A pinned comparison and correct mark still need a source; it stays read when the task is revisited.
  await open(inquiryTasks.find(t=>t.id==='M4-1'));
  await page.getByRole('button',{name:/^이후 고정/}).click();
- await button(page,'버튼으로 조작').click();
+ await button(page,'변화 위치 고르기').click();
  await setRange(page,'표시 가로 위치',.49);await setRange(page,'표시 세로 위치',.4);
  await button(page,'이 위치 표시').click();
  await page.getByRole('dialog').getByRole('button',{name:'닫기',exact:true}).click();

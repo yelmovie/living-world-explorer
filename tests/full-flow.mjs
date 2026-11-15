@@ -6,7 +6,10 @@ const base=process.env.APP_URL||'http://127.0.0.1:5176';
 const browser=await launchBrowser();const context=await browser.newContext({viewport:{width:1280,height:800},hasTouch:true,...(process.env.RESUME_FLOW?{storageState:'.tmp/learner20-state.json'}:{})});const page=await context.newPage();page.setDefaultTimeout(15000);
 const errors=[];page.on('pageerror',e=>errors.push(e.message));const checks=[];
 const btn=name=>button(page,name);
-const alternative=async()=>{await btn('버튼으로 조작').click();return page.getByRole('dialog').last();};
+const paneAt=[[305,138],[966,118],[1140,347],[1010,521],[171,444]];
+const paneColor=([x,y])=>page.locator('.map-host canvas').evaluate((c,[x,y])=>Array.from(c.getContext('2d').getImageData(x,y,1,1).data).slice(0,3),[x,y]);
+const observerArt=mode=>page.locator(`[data-${mode}-active] .scope-observer`).evaluateAll(async imgs=>{await Promise.all(imgs.map(i=>i.decode()));return imgs.map(i=>i.getAttribute('src'));});
+const alternative=async()=>{await btn('변화 위치 고르기').click();return page.getByRole('dialog').last();};
 // Phaser suppresses synthetic mouse events just after touch; keep this tablet flow on one input device.
 async function tapCanvas(p,x,y){const rect=await p.locator('.expedition-canvas-host canvas').boundingBox();assert.ok(rect);await p.touchscreen.tap(rect.x+x*rect.width,rect.y+y*rect.height);}
 async function touch(x,y){await tapCanvas(page,x/960,y/540);}
@@ -34,25 +37,54 @@ async function completeTask(task,replay=false){
  if(['collect','connect','sort'].includes(task.kind))await connectAll(task);
  if(task.id==='M3-2'){await btn('크기 사다리에 세균 놓기').click();const ladder=page.locator('.ladder-dialog');await ladder.getByRole('button',{name:'여기에 놓기'}).first().click();assert.match(await ladder.locator('.ladder-feedback').innerText(),/더 아래/);await ladder.getByRole('button',{name:'여기에 놓기'}).last().click();assert.match(await ladder.locator('.ladder-feedback').innerText(),/약 200배/);await ladder.getByRole('button',{name:'닫기',exact:true}).click();}
  if(task.kind==='microscope'){
+  if(task.id==='M2-2'){
+   await btn('눈으로 보기').click();await page.locator('[data-eye-active]').waitFor();
+   assert.deepEqual(await observerArt('eye'),['assets/ui/moa-naked-eye.webp','assets/ui/toto-naked-eye.webp']);
+   await page.screenshot({path:'.tmp/screens/pond-naked-eye.png'});
+  }
   // Simplified microscope (2026-11): 돋보기 → 현미경 button, focus, then one observation photo. No hidden gate or feature marks.
   if(await btn('현미경으로 관찰하기').count())await btn('현미경으로 관찰하기').click();
+  if(task.id==='M2-2'){
+   await page.locator('[data-scope-active]').waitFor();
+   assert.deepEqual(await observerArt('scope'),['assets/ui/moa-microscope.webp','assets/ui/toto-microscope.webp']);
+   await page.screenshot({path:'.tmp/screens/pond-microscope.png'});
+  }
   await setRange(page,'초점',65);await btn('관찰 사진 남기기').click();await btn('다시 관찰하기').waitFor();
  }
  if(task.kind==='sample'){await btn('물풀 가까이').click();for(const label of ['한 방울 채집','한 방울 옮기기'])await btn(label).click();}
  if(task.kind==='track'){await setRange(page,'관찰 시점',5);await page.getByRole('button',{name:/^B 고정/}).click();
-  // Cilia close-up: 793×496 picture fitted in 760×410 at 480,282; tap the hair rim.
-  await btn('현미경으로 움직임의 비밀 찾기').click();await btn('움직임 다시 보기').waitFor();const w=410*793/496;await tapCanvas(page,(480-w/2+.17*w)/960,(282-205+.501*410)/540);await page.getByText('현미경 · 몸 둘레 표시 1곳').waitFor();}
+  // A 440px-wide specimen fits inside the circular eyepiece without losing its cilia.
+  await btn('현미경으로 움직임의 비밀 찾기').click();await btn('움직임 다시 보기').waitFor();
+  await btn('몸 안쪽').click();assert.ok(await btn('발견 기록하기').isDisabled());
+  await btn('몸 둘레').click();assert.ok(await btn('발견 기록하기').isEnabled());
+  await btn('표시 되돌리기').click();
+  const w=440,h=w*496/793;await tapCanvas(page,(480-.33*w)/960,(282+.001*h)/540);await page.getByText('현미경 · 몸 둘레 표시 1곳').waitFor();}
  if(task.kind==='timeline'){await setRange(page,'관찰 순서',3);await page.getByRole('button',{name:/^이후 고정/}).click();await mark(...(task.organism==='bread'?[.49,.4]:[.51,.54]));
   await page.getByText('관련 조사 자료 읽기',{exact:true}).click();assert.ok(await page.locator('.process-note').isVisible());await page.getByRole('dialog').getByRole('button',{name:'닫기',exact:true}).click();}
  if(task.kind==='build'){await connectAll(task);await btn(task.id==='M5-1'?'요구르트가 될 거예요':'사례처럼 이어질 것 같아요').click();await btn(task.id==='M5-1'?'발효기 켜기':'설계 가동').click();await btn('예상과 같아요').waitFor();await btn('예상과 같아요').click();}
  if(task.kind==='review'){await btn('모든 세균이 해로울 것 같아요').click();for(const item of task.items){await btn(item.label).click();await page.locator('.source-preview').waitFor({state:'visible'});await btn('자료 확인했어요').click();}await btn('모든 세균이 해로운 것은 아니에요').click();await btn('요구르트 만들기').click();assert.match(await page.locator('.inquiry-status').innerText(),/수정/);}
- if(task.kind==='publish'){const dialog=await alternative();await dialog.getByRole('button',{name:'요구르트 소개하기',exact:true}).click();await dialog.getByRole('button',{name:'닫기',exact:true}).click();await btn('유산균의 작용').click();assert.ok((await page.getByLabel('내 소개 문장',{exact:true}).inputValue()).length>0,'selected case and action create an editable introduction');await page.getByLabel('내 소개 문장',{exact:true}).fill('특정 세균의 작용을 우유로 요구르트를 만드는 데 이용해요.');}
+ if(task.kind==='publish'){await btn('요구르트').click();await btn('유산균의 작용').click();assert.ok((await page.getByLabel('내 소개 문장',{exact:true}).inputValue()).length>0,'selected case and action create an editable introduction');await page.getByLabel('내 소개 문장',{exact:true}).fill('특정 세균의 작용을 우유로 요구르트를 만드는 데 이용해요.');}
+ if(task.kind==='summary'){
+  await page.getByRole('heading',{name:'해캄 관찰 기록',exact:true}).waitFor();
+  await page.getByRole('heading',{name:'짚신벌레 관찰 기록',exact:true}).waitFor();
+  await page.getByText('현미경 사진 기록',{exact:true}).waitFor();
+  await page.getByText('두 시점 비교 기록',{exact:true}).waitFor();
+  await page.screenshot({path:'.tmp/screens/pond-summary.png'});
+  assert.equal(await page.locator('.link-board').count(),0);await btn('정리 마치기').click();
+ }else{
  await btn('발견 기록하기').click();await page.locator('.discovery-dialog').waitFor();
  await btn(task.order===4?'연구소 복구하기':'다음 발견으로').click();
- if(task.order===4){const clues=await page.locator('[data-clue]').evaluateAll(nodes=>nodes.map((n,i)=>({id:n.dataset.clue,role:i===2?'limit':'supports'})));for(const clue of clues){await page.locator(`[data-clue="${clue.id}"]`).click();await page.locator(`[data-zone="${clue.role}"]`).click();}await btn('증거로 사건 설명하기').click();await btn('조사 결과 전달하기').click();}
+ }
+ if(task.order===4&&task.kind!=='summary'){const clues=await page.locator('[data-clue]').evaluateAll(nodes=>nodes.map((n,i)=>({id:n.dataset.clue,role:i===2?'limit':'supports'})));for(const clue of clues){await page.locator(`[data-clue="${clue.id}"]`).click();await page.locator(`[data-zone="${clue.role}"]`).click();}await btn('연결 확인하기').click();await btn('조사 결과 전달하기').click();}
  if(task.order===4&&!replay){
-  await page.locator('.concept-dialog').waitFor();await btn('복구 보상 받기').click();
+  const stageIndex=Number(task.stage.slice(1))-1;
+  await page.locator('.concept-dialog').waitFor();await waitForScene(page,'.map-host');
+  const pane=paneAt[stageIndex],dark=await paneColor(pane);
+  await btn('복구 보상 받기').click();
   const reward=page.locator('.resident-reward');
+  await reward.waitFor();
+  if(task.stage==='M1')await page.waitForTimeout(900);
+  assert.deepEqual(await paneColor(pane),dark,'the building stays dark behind the reward');
   if(task.stage==='M1'){
    await reward.getByRole('button',{name:'솔비에게 말 걸기'}).click();
    const talk=page.locator('.resident-dialog');await talk.getByRole('button',{name:'노트에 뭘 그렸어?'}).click();
@@ -60,6 +92,9 @@ async function completeTask(task,replay=false){
    assert.ok(await page.locator('.map-resident[data-stage="M1"]').evaluate(b=>b===document.activeElement));
   }else await reward.getByRole('button',{name:'다음 장소 탐험'}).click();
   await page.locator('.screen-nature-map').waitFor();
+  const lit=await page.waitForFunction(([x,y,red])=>document.querySelector('.map-host canvas').getContext('2d').getImageData(x,y,1,1).data[0]>red+65,[...pane,dark[0]],{timeout:4500});
+  await lit.dispose();
+  if(task.stage==='M1')await page.screenshot({path:'.tmp/screens/map-building-restored.png'});
   assert.equal(await page.locator('.map-resident').count(),Number(task.stage.slice(1)));
  }
  if(task.order===4&&replay){await page.locator('.screen-nature-map').waitFor();assert.equal(await page.locator('.map-resident').count(),5);}

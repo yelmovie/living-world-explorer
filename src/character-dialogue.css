@@ -13,12 +13,19 @@
 .dialogue-readable {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .modal .dialogue-voice-status {margin:4px 0 0;font-size:14px;line-height:1.4}
 .dialogue-voice-status:empty {display:none}
+.dialogue-mouth {background:var(--dialogue-poses) left bottom / 200% 100% no-repeat}
+@media (prefers-reduced-motion:no-preference){
+  html:not(.reduced) :is(.story-dialog,.resident-conversation)[data-speaking=true] .dialogue-mouth {
+    animation:dialogue-mouth .64s step-end infinite;
+  }
+}
+@keyframes dialogue-mouth {0%,58%{background-position-x:100%}31%,83%,100%{background-position-x:0%}}
 
 .intro-story {position:relative;isolation:isolate}
 .modal.story-dialog::backdrop {background:rgb(17 30 23 / 62%);backdrop-filter:blur(2px)}
 .story-character {
   position:absolute;right:7%;bottom:calc(100% - 2px);
-  width:min(55vw,35dvh,320px);aspect-ratio:321/405;object-fit:cover;object-position:center top;
+  width:min(55vw,35dvh,320px);aspect-ratio:321/405;
   display:block;filter:drop-shadow(0 5px 6px var(--forest-623-a15));pointer-events:none;
 }
 .story-paper {padding:clamp(14px,2.2vw,24px)}

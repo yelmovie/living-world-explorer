@@ -7,12 +7,14 @@ import {playEffect} from '../audio';
 import {inquiryArt,artTime,artKey,artFrame,magnifyFor,type MagnifyView} from '../artAssets';
 import {addMark,markHint,viewToImage,observedKind,featureAt} from '../observation';
 import type {ObservationFrame} from '../inquiry-playback';
+import {mountScopeDecor} from './scope-view';
 export type InquiryHooks={assigned:(id:string,target:string)=>void;changed:()=>void;open:(id:string)=>void;feedback:(text:string,kind?:'retry'|'success')=>void;ready:(ok:boolean)=>void};
 const WIDTH=960,HEIGHT=540;
 export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRecord,hooks:InquiryHooks,reduced:boolean){
  let record=learner;
  let beforeDemo:{preview:boolean;reveal:number|undefined}|undefined;
  let refresh=()=>{};let play=false;let preview=false;let disposed=false;let armed='';let reveal:number|undefined;let simulating=false;let scene:Phaser.Scene|undefined;let playbackRate=1;
+ const scope=task.kind==='track'?mountScopeDecor(host,'water'):undefined;
  const blocked=()=>disposed||document.hidden||!!document.querySelector('dialog[open]');
  // Scene colours follow the DOM tokens (styles.css stage layer), so one token edit restyles both.
  const css=(name:string,fallback:number)=>{const v=getComputedStyle(host).getPropertyValue(name).trim();return /^#[0-9a-f]{6}$/i.test(v)?parseInt(v.slice(1),16):fallback;};
@@ -44,12 +46,22 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
    this.text(x+16,y,label,28,tone.ink,218);
   }
   plate(x:number,y:number,w:number,h:number,label:string,fill=tone.paper){const box=this.card(x,y,w,h,{fill});if(label)this.text(x,y,label,22,tone.ink,w-20);return box;}
-  art(x:number,y:number,w:number,h:number,kind:string,options:Parameters<typeof draw>[2]&{fit?:'contain'}={}){
+  art(x:number,y:number,w:number,h:number,kind:string,options:Parameters<typeof draw>[2]&{fit?:'contain';softEdge?:boolean}={}){
    const name=inquiryArt[kind]?.frames?`art-${kind}-${artFrame(options.time)}`:`art-${kind}`;
    const image=this.textures.exists(name)?this.textures.get(name).getSourceImage() as CanvasImageSource:undefined;
    const source=image as {width:number;height:number}|undefined;
    const c=options.fit==='contain'?canvas(640,Math.round(640*(source?.height||360)/(source?.width||640))):canvas(Math.round(w),Math.round(h));
-   draw(c,kind,{...options,image,markerSpace:'world'});const key=`plate-${crypto.randomUUID()}`;const texture=this.textures.addCanvas(key,c)!;if(task.kind==='track'&&kind==='paramecium'&&record.level<2)this.trackSurface={canvas:c,texture};const picture=this.add.image(x,y,key);if(options.fit==='contain')picture.setScale(Math.min(w/c.width,h/c.height));return picture;}
+   draw(c,kind,{...options,image,markerSpace:'world'});
+   if(options.softEdge){
+    const g=c.getContext('2d')!;g.save();g.globalCompositeOperation='destination-in';
+    for(const vertical of [false,true]){
+     const edge=g.createLinearGradient(0,0,vertical?0:c.width,vertical?c.height:0);
+     edge.addColorStop(0,'transparent');edge.addColorStop(.025,'white');edge.addColorStop(.975,'white');edge.addColorStop(1,'transparent');
+     g.fillStyle=edge;g.fillRect(0,0,c.width,c.height);
+    }
+    g.restore();
+   }
+   const key=`plate-${crypto.randomUUID()}`;const texture=this.textures.addCanvas(key,c)!;if(task.kind==='track'&&kind==='paramecium'&&record.level<2)this.trackSurface={canvas:c,texture};const picture=this.add.image(x,y,key);if(options.fit==='contain')picture.setScale(Math.min(w/c.width,h/c.height));return picture;}
   commit(){playEffect(task.kind==='sample'?(record.sequence===3?'pipette-drop':'water'):'click');hooks.changed();this.paint();}
   // Phaser also forwards window presses, whose coordinates can be stale just after scrolling.
   // Keep outside releases available for drag cleanup, but only apply an action from the canvas.
@@ -64,7 +76,8 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
   paintObservation(){
    const isTimeline=task.kind==='timeline',isTrack=task.kind==='track';const kind=observedKind(task,record)||'mushroom';const comparing=record.pins.length===2&&Number.isFinite(record.pins[0])&&Number.isFinite(record.pins[1])&&!play&&!preview;
    // Cilia close-up: after A·B the same paramecium is shown still and large so its edge hairs can be marked.
-   if(isTrack&&record.level===2){this.drawSpecimen(480,282,760,410,kind,0,true);this.caption(480,30,'현미경 · 몸 둘레의 가는 털을 찾아 눌러요',22);return;}
+   scope?.show(record.level===2?'scope':null);
+   if(isTrack&&record.level===2){this.drawSpecimen(480,282,440,440,kind,0,true);return;}
    if(comparing&&reveal!==undefined){
     const {w,h}=this.specimenSize(750,360,kind,record.pins[0]);const left=480-w/2,top=275-h/2;this.drawSpecimen(480,275,w,h,kind,record.pins[0],false);
     const after=this.art(480,275,w,h,kind,{time:record.pins[1],focus:65,light:65,trail:isTrack,marks:record.marks});
@@ -101,6 +114,16 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
     const glass=this.add.graphics();glass.fillStyle(tone.shade,.25).fillCircle(x+4,y+10,r+40);glass.fillStyle(0xf6f3e6,1).fillCircle(x,y,r+4);
     const picture=this.art(x,y,w,h,kind,opts);const lens=this.make.graphics({},false).fillStyle(0xffffff).fillCircle(x,y,r);picture.setMask(lens.createGeometryMask());
     const frame=this.add.image(x,y,'ui-microscope-frame');frame.setDisplaySize(r*2/(LENS_HOLE*2),r*2/(LENS_HOLE*2));
+   }else if(closeUp){
+    ({w,h}=this.specimenSize(w,h,kind,time));
+    const r=230,rim=this.add.graphics();
+    rim.fillStyle(0x111917).fillCircle(x,y,r+13);
+    rim.lineStyle(4,0x5c6b5b).strokeCircle(x,y,r+10);
+    rim.lineStyle(3,0x9ba592).strokeCircle(x,y,r+2);
+    rim.fillStyle(0xe9ebd4).fillCircle(x,y,r);
+    const picture=this.art(x,y,w,h,kind,{...opts,softEdge:true});
+    const mask=this.make.graphics({},false).fillStyle(0xffffff).fillCircle(x,y,r);
+    picture.setMask(mask.createGeometryMask());
    }else{
     ({w,h}=this.specimenSize(w,h,kind,time));
     this.card(x,y,w+20,h+20,{fill:0xffffff,stroke:tone.line,radius:12});
@@ -289,6 +312,6 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
   if(!beforeDemo)return;
   record=learner;preview=beforeDemo.preview;reveal=beforeDemo.reveal;play=false;beforeDemo=undefined;refresh();
  };
- return {showFrame,endDemo,setPlaybackRate:(rate:number)=>{playbackRate=rate;if(scene)scene.tweens.timeScale=rate;},refresh:()=>{if(!disposed&&!simulating)refresh();},setPreview:(value:boolean)=>{if(disposed||simulating)return;preview=value;refresh();},setReveal:(value:number|undefined)=>{if(disposed||simulating)return;preview=false;reveal=value===undefined?undefined:Phaser.Math.Clamp(value,0,1);refresh();},animateRun:(valid:boolean,finish:()=>void)=>{if(scene instanceof Inquiry)scene.animateRun(valid,finish);else finish();},setPlaying:(value:boolean)=>{if(disposed||simulating||value&&blocked())return;if(play!==value){play=value;refresh();}},arm:(id:string)=>{if(disposed||simulating)return;armed=id;refresh();},assignCard,assign:assignCard,place:assignCard,dispose:()=>{disposed=true;play=false;document.removeEventListener('scroll',rebound,{capture:true});document.removeEventListener('pointerdown',beforePointer,true);game.destroy(true);}};
+  return {showFrame,endDemo,setPlaybackRate:(rate:number)=>{playbackRate=rate;if(scene)scene.tweens.timeScale=rate;},refresh:()=>{if(!disposed&&!simulating)refresh();},setPreview:(value:boolean)=>{if(disposed||simulating)return;preview=value;refresh();},setReveal:(value:number|undefined)=>{if(disposed||simulating)return;preview=false;reveal=value===undefined?undefined:Phaser.Math.Clamp(value,0,1);refresh();},animateRun:(valid:boolean,finish:()=>void)=>{if(scene instanceof Inquiry)scene.animateRun(valid,finish);else finish();},setPlaying:(value:boolean)=>{if(disposed||simulating||value&&blocked())return;if(play!==value){play=value;refresh();}},arm:(id:string)=>{if(disposed||simulating)return;armed=id;refresh();},assignCard,assign:assignCard,place:assignCard,dispose:()=>{disposed=true;play=false;scope?.dispose();document.removeEventListener('scroll',rebound,{capture:true});document.removeEventListener('pointerdown',beforePointer,true);game.destroy(true);}};
 }
 export type InquiryView=ReturnType<typeof mountInquiry>;

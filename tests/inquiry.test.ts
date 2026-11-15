@@ -12,7 +12,13 @@ function valid(id:string){const t=inquiryTasks.find(t=>t.id===id)!;const r=empty
 
 describe('스무 가지 탐구의 학습 근거',()=>{
  it('다섯 스테이지마다 서로 연결된 네 탐구가 있고 모두 성취기준에 연결된다',()=>{expect(inquiryTasks).toHaveLength(20);for(const s of ['M1','M2','M3','M4','M5'] as const){expect(tasksFor(s)).toHaveLength(4);expect(tasksFor(s).every(t=>/^4과12-0[123]$/.test(t.standard))).toBe(true);}});
- for(const t of inquiryTasks){it(`${t.id}: 유효한 관찰·연결·설명만 완료로 인정한다`,()=>{expect(taskIssues(t,emptyRecord()).length).toBeGreaterThan(0);expect(taskIssues(t,valid(t.id))).toEqual([]);});}
+ for(const t of inquiryTasks.filter(t=>t.kind!=='summary')){it(`${t.id}: 유효한 관찰·연결·설명만 완료로 인정한다`,()=>{expect(taskIssues(t,emptyRecord()).length).toBeGreaterThan(0);expect(taskIssues(t,valid(t.id))).toEqual([]);});}
+ it('M2-4: 관찰 정리에 추가 선 잇기는 없지만 앞 활동의 채집과 관찰 기록은 필요하다',()=>{
+  const p=emptyInquiry();const complete=(id:string)=>{p.records[id]={...valid(id),completedAt:new Date().toISOString()};};
+  complete('M2-4');expect(taskIssues(tasksFor('M2')[3],p.records['M2-4'])).toEqual([]);expect(inquiryComplete(p,'M2')).toBe(false);
+  for(const id of ['M2-1','M2-2','M2-3'])complete(id);
+  expect(inquiryComplete(p,'M2')).toBe(true);
+ });
  it('읽지 않은 정답 연결을 근거로 인정하지 않는다',()=>{const r=valid('M1-1');r.opened=[];expect(taskIssues(inquiryTasks[0],r).length).toBeGreaterThan(0);});
  it('B만 고정한 sparse 배열은 A/B 비교가 아니다',()=>{for(const id of ['M2-3','M4-1']){const r=valid(id);r.pins=[];r.pins[1]=3;expect(taskIssues(inquiryTasks.find(t=>t.id===id)!,r).length).toBeGreaterThan(0);}});
  it('흐린 촬영은 거부한다',()=>{const t=inquiryTasks.find(t=>t.id==='M1-2')!,r=valid(t.id);r.focus=10;expect(taskIssues(t,r).length).toBeGreaterThan(0);r.focus=65;expect(taskIssues(t,r)).toEqual([]);});

@@ -12,7 +12,7 @@ export type Draft = {
 };
 export type Evidence = {stage:Stage;attemptId:string;origin:'learner'|'demo';created:string;updated?:string;validationVersion?:2;summary:string;draft:Draft;inquiry?:InquiryProgress};
 export type Attempt={id:string;route:string;resumeRoute?:string|null;mapPosition:Point;mapHits?:Record<string,number>;draft:Draft;evidence:Partial<Record<Stage,Evidence>>;report:Stage[];ports:Stage[];activated:boolean;cardTitle:string;cardNote:string;canDo?:Stage[];canDoNote?:string;inquiry:InquiryProgress;presentation?:{observation:string;evidence:string;life:string}};
-export type State={version:1;settings:{sound:boolean;bgm:boolean;bgmVolume:number;large:boolean;reduced:boolean;flat:boolean;admin:boolean};learner:Attempt;preview:Attempt};
+export type State={version:1;settings:{sound:boolean;voice:boolean;bgm:boolean;bgmVolume:number;villains:boolean;large:boolean;reduced:boolean;flat:boolean;admin:boolean};learner:Attempt;preview:Attempt};
 export const stageIds:Stage[]=['M1','M2','M3','M4','M5'];
 export function makeAttempt():Attempt {return {id:crypto.randomUUID(),route:'main',mapPosition:{x:480,y:380},evidence:{},report:[],ports:[],activated:false,cardTitle:'작은 생물이 만드는 변화',cardNote:'',inquiry:emptyInquiry(),draft:{
  m1:{environment:[],organism:'mushroom',focus:25,light:65,zoom:1,pan:{x:0,y:0},captures:[],selected:'',claim:''},
@@ -21,7 +21,7 @@ export function makeAttempt():Attempt {return {id:crypto.randomUUID(),route:'mai
  m4:{caseId:'bread',time:0,a:null,b:null,marks:[],clues:{},answers:{},context:''},
  m5:{slots:['','',''],selected:'',edges:[false,false],revision:0,prediction:'',reason:'',runs:[],explanation:''}
  }};}
-export function makeState():State {return {version:1,settings:{sound:false,bgm:false,bgmVolume:30,large:false,reduced:false,flat:false,admin:false},learner:makeAttempt(),preview:makeAttempt()};}
+export function makeState():State {return {version:1,settings:{sound:false,voice:false,bgm:false,bgmVolume:30,villains:true,large:false,reduced:false,flat:false,admin:false},learner:makeAttempt(),preview:makeAttempt()};}
 export function active(s:State){return s.settings.admin?s.preview:s.learner;}
 export function validEvidence(a:Attempt,stage:Stage,admin:boolean){const e=a.evidence[stage];return !!e&&e.attemptId===a.id&&e.origin===(admin?'demo':'learner');}
 export function position(t:number):Point {return {x:0.25+t*0.045,y:0.48+Math.sin(t*.65)*.15};}

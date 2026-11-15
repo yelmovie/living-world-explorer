@@ -62,7 +62,11 @@
 #app[data-route="nature-map"] .screen-nature-map .map-camera { inset:0; background:var(--map-camera-art) center / cover; }
 #app[data-route="nature-map"] .screen-nature-map .map-camera.overview-on { background-image:linear-gradient(#183b2a66,#183b2a66),var(--map-camera-art); }
 #app[data-route="nature-map"] .screen-nature-map .map-view-tools {
-  position:static; flex-direction:row; gap:8px; pointer-events:auto;
+  position:static; flex-direction:row; gap:6px; pointer-events:auto;
+}
+#app[data-route="nature-map"] .map-encounter-status {
+  max-width:100%;padding:4px 8px;border-radius:8px;background:#283a2e;color:#fff6dc;
+  font-size:clamp(12px,1.5vw,15px);line-height:1.25;text-align:right;word-break:keep-all;
 }
 #app[data-route="nature-map"] .screen-nature-map .map-view-icon[aria-pressed="true"] {
   background:#245b46; color:#fff; border-color:#123e2e; box-shadow:0 3px 0 #123e2e;
@@ -72,14 +76,14 @@
   gap:var(--map-key-gap); padding:0; border:0; background:transparent; box-shadow:none;
   pointer-events:none;
 }
-#app[data-route="nature-map"] .screen-nature-map .map-directions > .button {
+#app[data-route="nature-map"] .screen-nature-map .map-directions > [data-map-direction] {
   display:grid; place-items:center; width:var(--map-key); height:var(--map-key);
   min-width:var(--map-key); min-height:var(--map-key); padding:0;
   color:#233e33; background:#fff6dc; border:2px solid #667b58;
   border-radius:14px; box-shadow:0 3px 0 #3d5947; backdrop-filter:none;
   -webkit-backdrop-filter:none; font-weight:800; pointer-events:auto; transition:none;
 }
-#app[data-route="nature-map"] .screen-nature-map .map-directions > .button:is(:active,[data-map-held],.is-held,.is-pressed) {
+#app[data-route="nature-map"] .screen-nature-map .map-directions > [data-map-direction]:is(:active,[data-map-held],.is-held,.is-pressed) {
   background:#245b46; color:#fff; border-color:#123e2e;
   box-shadow:0 1px 0 #123e2e; transform:none; translate:0 2px; filter:none;
 }
@@ -94,6 +98,7 @@
 #app[data-route="nature-map"] .screen-nature-map :is(.map-next,.map-arrival) {
   position:static; max-width:100%; pointer-events:auto;
 }
+#app[data-route="nature-map"] .map-arrival:empty {display:none}
 #app[data-route="nature-map"] .screen-nature-map :is(.map-next,.map-arrival > .button.primary) {
   display:inline-flex; align-items:center; justify-content:center; gap:10px;
   min-height:var(--map-cta-h); min-width:0; padding:8px clamp(10px,2vw,22px);
@@ -111,11 +116,13 @@
 #app[data-route="nature-map"] .screen-nature-map .map-arrival > .button { max-width:100%; }
 
 #app[data-route="nature-map"] .screen-nature-map .map-companion-help {
-  right:auto; bottom:auto; width:44px; height:44px; min-width:44px; min-height:44px;
+  position:static;grid-column:1;grid-row:1;display:grid;place-items:center;pointer-events:auto;
+  width:var(--map-key);height:var(--map-key);min-width:var(--map-key);min-height:var(--map-key);
   padding:0; background:#fff6dc; color:#233e33; border:2px solid #667b58;
-  border-radius:15px 15px 15px 5px; box-shadow:0 3px 0 #3d5947;
-  font:800 24px/1 system-ui,sans-serif; transition:none;
+  border-radius:14px;box-shadow:0 3px 0 #3d5947;transition:none;
 }
+#app[data-route="nature-map"] .map-companion-help .ui-icon {width:24px;height:24px}
+.map-guide-actions {display:flex;flex-wrap:wrap;gap:8px}
 #app[data-route="nature-map"] .screen-nature-map .map-companion-help:hover:not(:disabled) {
   background:#fff0c8; transform:none;
 }
@@ -127,7 +134,8 @@
 }
 
 
-.screen-nature-map .map-view-tools{left:auto;right:24px;top:auto;bottom:100px;flex-direction:row;align-items:center}
-.screen-nature-map .map-view-tools:has(~.map-arrival:not(:empty)){bottom:170px}
-@media (max-width:900px),(max-height:630px){.screen-nature-map .map-view-tools{right:12px;bottom:82px}}
-@media (max-width:600px){.screen-nature-map .map-view-tools{bottom:88px}}
+@media (max-width:420px) {
+  #app[data-route="nature-map"] .map-destination {gap:8px}
+  #app[data-route="nature-map"] .map-view-tools {gap:4px}
+  #app[data-route="nature-map"] .map-view-icon {width:44px;min-width:44px;height:44px;min-height:44px}
+}

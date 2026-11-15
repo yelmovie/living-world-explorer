@@ -42,6 +42,10 @@
 | public/assets/study/{deadwood,moldy-fruit,dough-before,dough-after,bread-1~3,leaf-1~3}.webp | 2026-10-25 기본 image_gen 생성·편집 10개. assets/generated/specimens-20261025.json에 전체 프롬프트와 파일별 기록 | 학습용 관찰 모형. 같은 식빵·낙엽·반죽의 전후 비교, 실제 실험 사진·측정 원자료 아님 |
 | public/assets/map/moa-{down,right,up,left}.webp | 2026-10-21 기본 image_gen 자체 생성 | 갈색 묶은 머리·안경·연구 조끼의 모아, 투명 2.5D 픽셀 캐릭터 |
 | public/assets/map/companion-{down,right,up,left}.webp | 2026-10-21 기본 image_gen 자체 생성 | 분홍 토끼 보조 캐릭터, 투명 2.5D 픽셀 캐릭터 |
+| public/assets/map/{moa,toto}-walk.webp | 2026-11-15 기존 지도 캐릭터를 참조해 기본 image_gen으로 새 보행 포즈 제작, `scripts/pack-map-walk.mjs`로 발 위치를 맞춰 WebP로 합성. 프롬프트와 원본 경로: `assets/generated/map-walk-20261115.json` | 캐릭터당 앞·옆·뒤 4프레임, 왼쪽으로 걸을 때 옆모습 반전 |
+| public/assets/characters/moa-dialogue.webp | 2026-11-15 기존 모아 전신 그림의 상반신과 기본 image_gen으로 생성한 말하기 입 모양을 `scripts/pack-moa-dialogue.mjs`로 2칸에 합성 | 실제 대사 녹음 재생 중에만 프레임 전환 |
+| public/assets/ui/{moa,toto}-microscope.webp | 2026-11-15 모아·토토 원본을 참조해 기본 image_gen으로 각각 생성하고 Sharp로 WebP 변환 | 둥근 현미경 시야 옆의 장식용 인물 일러스트. 표본 관찰 자료가 아님 |
+| public/assets/ui/{moa,toto}-naked-eye.webp | 2026-11-15 모아·토토 원본을 참조해 기본 image_gen으로 각각 생성하고 Sharp로 WebP 변환 | 맨눈으로 유리판·물방울을 살피는 장식용 인물 일러스트 |
 | src/renderers/core3d.ts, src/renderers/core-apparatus.ts | 2026-11-06, Three.js 기본 도형과 직접 구성한 결정 면으로 황동 링·포트·회전 장치 제작 | 중앙 연구소에서만 불러오는 실시간 3D 모형 |
 | public/assets/ui/{bio-core,bio-core-powered}.webp | 2026-11-06, Blender에서 프로젝트용 황동·초록 결정 모형을 직접 구성해 고정 카메라로 렌더링. 재현 코드 scripts/render-core-figure.py | 중앙 연구소의 가상 코어 장치, 포트 점등과 안내는 별도 DOM |
 | public/assets/ui/og-life-code-v1.jpg | 2026-11-05 기존 greenhouse.webp, logo.webp, moa-full.webp, companion-full.webp를 Sharp로 합성(1200×600) | 링크 공유용 썸네일. 신규 표본이나 현미경 사진 아님 |

@@ -61,6 +61,8 @@ export async function load():Promise<State>{
   }
   const s:State={...fallback,learner:restoreAttempt(raw.learner),preview:restoreAttempt(raw.preview),settings:{...fallback.settings}};
   for(const k of ['sound','bgm','large','reduced','flat'] as const)s.settings[k]=raw.settings?.[k]===true;
+  s.settings.voice=typeof raw.settings?.voice==='boolean'?raw.settings.voice:s.settings.sound;
+  s.settings.villains=raw.settings?.villains!==false;
   // Classroom previews are temporary. Reload always returns to the student's own attempt.
   restoredFromPreview=raw.settings?.admin===true;
   s.settings.admin=false;

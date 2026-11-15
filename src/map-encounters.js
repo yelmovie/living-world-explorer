@@ -87,6 +87,8 @@ export function mountMapEncounters({
   let clearReady=null,clearUntil=0,clearId=null,lastSpeechLayout=-Infinity;
   const attack=doc.createElement('button');
   attack.type='button';attack.className='map-encounter-attack';attack.hidden=true;
+  attack.setAttribute('aria-disabled','true');
+  attack.setAttribute('aria-label','공격 · 악당 가까이에서 사용');
   attack.setAttribute('aria-keyshortcuts','J Space');
   layer.append(attack);
   const syncDock=dockMapAttack(attack,()=>doc.querySelector('.map-view-icon[data-map-hand]'));
@@ -249,12 +251,17 @@ export function mountMapEncounters({
     }
     lastNear=current;
     const hasFocus=doc.activeElement===attack;
-    attack.hidden=!(syncDock()&&current);
+    attack.hidden=!syncDock();
+    if(attack.getAttribute('aria-disabled')!==String(!current))attack.setAttribute('aria-disabled',String(!current));
     if(current){
       const remaining=HITS-current.hits;
       const description=`${current.s.name}의 악당 공격, ${remaining}번 남음`;
       if(attack.getAttribute('aria-label')!==description)attack.setAttribute('aria-label',description);
+    }else if(attack.getAttribute('aria-label')!=='공격 · 악당 가까이에서 사용'){
+      attack.setAttribute('aria-label','공격 · 악당 가까이에서 사용');
     }
+    const title=current?'공격 (J 또는 스페이스바)':'연구소를 복구한 뒤 악당에게 다가가요.';
+    if(attack.title!==title)attack.title=title;
     if(attack.hidden&&hasFocus){host.querySelector('canvas,[tabindex="0"]')?.focus({preventScroll:true});}
     if(now-lastSpeechLayout>=110){
       lastSpeechLayout=now;

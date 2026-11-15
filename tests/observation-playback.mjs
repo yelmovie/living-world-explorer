@@ -41,9 +41,11 @@ try{
     assert.ok(await button(page,'발견 기록하기').isDisabled());
     await stop.click();
     assert.deepEqual((await waitSaved(page)).preview.inquiry.records[task.id],initial,'stop must restore '+task.id);
-    await page.getByLabel('재생 속도',{exact:true}).selectOption('2');
+    assert.equal(await page.getByLabel('재생 속도',{exact:true}).count(),0);
+    const started=Date.now();
     await start.click();
     await stop.waitFor({state:'hidden',timeout:18000});
+    assert.ok(Date.now()-started<(task.kind==='timeline'?7100:5900),'automatic playback is fixed at 2x');
     const result=(await waitSaved(page)).preview.inquiry.records[task.id];
     assert.equal(result.completedAt,undefined);
     assert.equal(result.capture,false);

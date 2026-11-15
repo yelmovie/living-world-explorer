@@ -12,7 +12,7 @@ describe('준비를 줄여도 남겨야 하는 학생의 판단',()=>{
   finishObservation(t,r);expect(r.focus).toBe(65);expect(r.capture).toBe(false);expect(taskIssues(t,r).length).toBeGreaterThan(0);
   r.capture=true;r.marks=[{x:.38,y:.17}];const saved=structuredClone(r);finishObservation(t,r);expect(r).toEqual(saved);
  });
- it('어떤 활동도 준비만으로 완료되지는 않는다',()=>{for(const t of inquiryTasks)expect(taskIssues(t,prepareInquiry(t)).length,t.id).toBeGreaterThan(0);});
+ it('정리 화면 이외의 활동은 준비만으로 완료할 수 없다',()=>{for(const t of inquiryTasks.filter(t=>t.kind!=='summary'))expect(taskIssues(t,prepareInquiry(t)).length,t.id).toBeGreaterThan(0);});
  it('두 번째 설계도에서도 생물 작용을 잘못 고르면 가동 성공이 아니다',()=>{const t=task('M5-2'),r=prepareInquiry(t);expect(r.assignments.action).toBeUndefined();assignCard(t,r,'bacterium','action');expect(designCorrect(t,r)).toBe(false);assignCard(t,r,'yeast','action');expect(designCorrect(t,r)).toBe(true);expect(taskIssues(t,r).length).toBeGreaterThan(0);});
  it('같은 순간·뒤집은 전후·B만 저장한 값으로 비교를 통과하지 않는다',()=>{for(const pins of [[1,1],[0,2],[,5]] as number[][])expect(validTrackPair({pins})).toBe(false);for(const pins of [[3,0],[1,1],[,3],[0,4],[0,1.5]] as number[][])expect(validTimelinePair({pins})).toBe(false);expect(validTrackPair({pins:[0,5]})).toBe(true);expect(validTimelinePair({pins:[0,3]})).toBe(true);});
  it('주장 유지·수정은 실제 처음 생각과 현재 주장을 따라간다',()=>{const r=prepareInquiry(task('M3-4'));r.assignments.initial='allbad';reflectClaim(r);expect(r.assignments.decision).toBeUndefined();r.assignments.claim='somehelp';reflectClaim(r);expect(r.assignments.decision).toBe('revise');r.assignments.initial='somehelp';reflectClaim(r);expect(r.assignments.decision).toBe('keep');});

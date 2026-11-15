@@ -5,6 +5,7 @@ import {validTimelinePair} from './inquiry-preparation';
 
 /** Guidance follows the saved learning evidence rather than click counts. */
 export function guidance(task:InquiryTask,r:InquiryRecord,selectedCard=''){
+ if(task.kind==='summary')return {action:'두 관찰 기록을 읽고 ‘정리 마치기’를 눌러요.',done:1,total:1,ready:true};
  const issues=taskIssues(task,r);let action=issues[0]||'발견 기록하기를 눌러 다음 탐구로 가요.';
  let done=0,total=1;
  if(['collect','connect','sort'].includes(task.kind)){
@@ -35,7 +36,7 @@ export function guidance(task:InquiryTask,r:InquiryRecord,selectedCard=''){
   const marked=r.marks.length>0&&r.marks.every(p=>markValid(task,r,p));
   total=3;done=Number(validTimelinePair(r))+Number(marked)+Number(r.opened.includes('process'));
   if(!validTimelinePair(r))action=!Number.isFinite(r.pins[0])?'‘관찰 순서’를 움직여 첫 모습을 고르고 ‘이전 고정’을 눌러요.':r.time>r.pins[0]?'‘이후 고정’을 눌러 두 모습을 나란히 비교해요.':'‘관찰 순서’를 이전보다 뒤로 옮긴 뒤 ‘이후 고정’을 눌러요.';
-  else if(!marked)action=r.marks.length?'‘도움말’에서 ‘두 시점 다시 고르기’를 눌러 표시를 지우고 다시 비교해요.':'두 사진을 비교해 달라진 곳을 찾아요. ‘이후’ 사진에서 그곳을 눌러 표시해요.';
+  else if(!marked)action=r.marks.length?'‘표시 되돌리기’를 눌러 표시를 지우고 다시 비교해요.':'두 사진을 비교해 달라진 곳을 찾아요. ‘이후’ 사진에서 그곳을 눌러 표시해요.';
   else if(!r.opened.includes('process'))action='표시한 변화를 설명해 볼까요? ‘관련 조사 자료 읽기’를 눌러 관찰과 연결해요.';
  }else if(task.kind==='build'){
   total=5;done=task.targets.filter(t=>!!r.assignments[t.id]).length+Number(r.assignments.edge1==='linked'&&r.assignments.edge2==='linked')+Number(!issues.length);
@@ -60,6 +61,6 @@ export function guidance(task:InquiryTask,r:InquiryRecord,selectedCard=''){
  }else if(task.kind==='publish'){
   total=3;done=Number(!!r.assignments.case)+Number(!!r.assignments.action)+Number(!!r.assignments.case&&r.assignments.evidence===r.assignments.case);action=!r.assignments.case?'장면에서 친구에게 소개할 사례 카드를 눌러요.':!r.assignments.action?'고른 사례를 살펴보고 ‘어떤 생물의 작용인가요?’ 아래에서 작용을 골라요.':issues.length?'사례와 작용이 어울리는지 살펴봐요. 바꾸려면 ‘작용 다시 고르기’를 눌러요.':action;
  }
- if(!issues.length&&!selectedCard)action=r.completedAt?'남겨 둔 발견을 확인했어요. ‘기록 확인하고 계속’을 눌러 이어가요.':task.order===4?'발견을 모았어요! ‘발견 기록하기’를 누른 뒤 사건 증거판에서 설명해요.':'발견을 모았어요! ‘발견 기록하기’를 눌러 연구 노트에 남겨요.';
+ if(!issues.length&&!selectedCard)action=r.completedAt?'남겨 둔 발견을 확인했어요. ‘기록 확인하고 계속’을 눌러 이어가요.':task.order===4?'발견을 모았어요! ‘발견 기록하기’를 누른 뒤 조사 기록을 확인해요.':'발견을 모았어요! ‘발견 기록하기’를 눌러 연구 노트에 남겨요.';
  return {action,done:issues.length?Math.min(done,total-1):total,total,ready:!issues.length};
 }

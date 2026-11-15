@@ -1,6 +1,6 @@
 import type {Stage,Point} from './model';
 
-export type TaskKind='collect'|'microscope'|'sample'|'track'|'connect'|'timeline'|'sort'|'build'|'publish'|'review';
+export type TaskKind='collect'|'microscope'|'sample'|'track'|'summary'|'connect'|'timeline'|'sort'|'build'|'publish'|'review';
 /** since: 2 marks a card added on 2026-10-25; records saved before that (no `v`) are judged without it. */
 export type InquiryItem={id:string;label:string;detail:string;target:string;art?:string;since?:2};
 export type InquiryTask={id:string;stage:Stage;order:number;title:string;instruction:string;mentor:string;kind:TaskKind;organism?:string;items:InquiryItem[];targets:{id:string;label:string}[];success:string;feedback:string;standard:string;caseName?:string;terms?:string[]};
