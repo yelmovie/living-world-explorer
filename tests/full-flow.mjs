@@ -61,8 +61,8 @@ async function completeTask(task,replay=false){
   const w=440,h=w*496/793;await tapCanvas(page,(480-.33*w)/960,(282+.001*h)/540);await page.getByText('현미경 · 몸 둘레 표시 1곳').waitFor();}
  if(task.kind==='timeline'){await setRange(page,'관찰 순서',3);await page.getByRole('button',{name:/^이후 고정/}).click();await mark(...(task.organism==='bread'?[.49,.4]:[.51,.54]));
   await page.getByText('관련 조사 자료 읽기',{exact:true}).click();assert.ok(await page.locator('.process-note').isVisible());await page.getByRole('dialog').getByRole('button',{name:'닫기',exact:true}).click();}
- if(task.kind==='build'){await connectAll(task);await btn(task.id==='M5-1'?'요구르트가 될 거예요':'사례처럼 이어질 것 같아요').click();await btn(task.id==='M5-1'?'발효기 켜기':'설계 가동').click();await btn('예상과 같아요').waitFor();await btn('예상과 같아요').click();}
- if(task.kind==='review'){await btn('모든 세균이 해로울 것 같아요').click();for(const item of task.items){await btn(item.label).click();await page.locator('.source-preview').waitFor({state:'visible'});await btn('자료 확인했어요').click();}await btn('모든 세균이 해로운 것은 아니에요').click();await btn('요구르트 만들기').click();assert.match(await page.locator('.inquiry-status').innerText(),/수정/);}
+ if(task.kind==='build'){await connectAll(task);await btn(task.id==='M5-1'?'요구르트가 될 거예요':'사례처럼 이어질 것 같아요').click();await btn(task.id==='M5-1'?'발효기 켜기':'설계 가동').click();await page.locator('.run-reflection[data-result="matches"]').waitFor();assert.equal(await btn('예상과 같아요').count(),0,'the game compares the prediction; no extra tap');}
+ if(task.kind==='review'){await btn('모든 세균이 해로울 것 같아요').click();for(const item of task.items){await btn(item.label).click();await page.locator('.source-preview').waitFor({state:'visible'});}assert.equal(await btn('자료 확인했어요').count(),0,'opening a source is reading it');await btn('모든 세균이 해로운 것은 아니에요').click();await btn('요구르트 만들기').click();assert.match(await page.locator('.inquiry-status').innerText(),/수정/);}
  if(task.kind==='publish'){await btn('요구르트').click();await btn('유산균의 작용').click();assert.ok((await page.getByLabel('내 소개 문장',{exact:true}).inputValue()).length>0,'selected case and action create an editable introduction');await page.getByLabel('내 소개 문장',{exact:true}).fill('특정 세균의 작용을 우유로 요구르트를 만드는 데 이용해요.');}
  if(task.kind==='summary'){
   await page.getByRole('heading',{name:'해캄 관찰 기록',exact:true}).waitFor();
@@ -73,6 +73,7 @@ async function completeTask(task,replay=false){
   assert.equal(await page.locator('.link-board').count(),0);await btn('정리 마치기').click();
  }else{
  await btn('발견 기록하기').click();await page.locator('.discovery-dialog').waitFor();
+ assert.match(await page.locator('.discovery-dialog .pip-label').innerText(),new RegExp(`발견 도장 ${task.order} / 4`));
  await btn(task.order===4?'연구소 복구하기':'다음 발견으로').click();
  }
  if(task.order===4&&task.kind!=='summary'){const clues=await page.locator('[data-clue]').evaluateAll(nodes=>nodes.map((n,i)=>({id:n.dataset.clue,role:i===2?'limit':'supports'})));for(const clue of clues){await page.locator(`[data-clue="${clue.id}"]`).click();await page.locator(`[data-zone="${clue.role}"]`).click();}await btn('연결 확인하기').click();await btn('조사 결과 전달하기').click();}
@@ -85,12 +86,13 @@ async function completeTask(task,replay=false){
   await reward.waitFor();
   if(task.stage==='M1')await page.waitForTimeout(900);
   assert.deepEqual(await paneColor(pane),dark,'the building stays dark behind the reward');
-  if(task.stage==='M1'){
-   await reward.getByRole('button',{name:'솔비에게 말 걸기'}).click();
-   const talk=page.locator('.resident-dialog');await talk.getByRole('button',{name:'노트에 뭘 그렸어?'}).click();
-   assert.match(await talk.locator('.resident-line').innerText(),/갓 아래/);await talk.getByRole('button',{name:'지도로 돌아가기',exact:true}).click();
-   assert.ok(await page.locator('.map-resident[data-stage="M1"]').evaluate(b=>b===document.activeElement));
-  }else await reward.getByRole('button',{name:'다음 장소 탐험'}).click();
+  // 2026-11-15: one step, no "talk or leave" choice; the neighbour's story follows by itself.
+  assert.equal(await reward.getByRole('button').count(),1);
+  await reward.getByRole('button',{name:/만나러 가기$/}).click();
+  const talk=page.locator('.resident-dialog');await talk.waitFor();
+  if(task.stage==='M1'){await talk.getByRole('button',{name:'노트에 뭘 그렸어?'}).click();assert.match(await talk.locator('.resident-line').innerText(),/갓 아래/);}
+  await talk.getByRole('button',{name:'지도로 돌아가기',exact:true}).click();
+  if(task.stage==='M1')assert.ok(await page.locator('.map-resident[data-stage="M1"]').evaluate(b=>b===document.activeElement));
   await page.locator('.screen-nature-map').waitFor();
   const lit=await page.waitForFunction(([x,y,red])=>document.querySelector('.map-host canvas').getContext('2d').getImageData(x,y,1,1).data[0]>red+65,[...pane,dark[0]],{timeout:4500});
   await lit.dispose();
@@ -111,7 +113,7 @@ try{
  }
  await context.storageState({path:'.tmp/learner20-state.json',indexedDB:true});}else checks.push(...inquiryTasks.map(t=>t.id));
  let saved=await waitSaved(page,s=>Object.keys(s.learner.evidence).length===5);assert.equal(Object.values(saved.learner.inquiry.records).filter(r=>r.completedAt).length,20);assert.equal(saved.learner.inquiry.rewards.length,10);
- await navigate(page,base,'final-report');for(let i=0;i<5;i++)await page.getByRole('button',{name:/^(이 )?기록 확인$/}).click();await btn('생활 사건 발표').click();assert.ok(await page.locator('dialog .album-tile').count()>=4);await page.getByRole('dialog').last().getByRole('button',{name:'닫기',exact:true}).click();await btn('발견을 코어에 연결').click();
+ await navigate(page,base,'final-report');assert.equal(await page.getByRole('button',{name:/기록 확인/}).count(),0,'no confirmation taps in the report');await btn('생활 사건 발표').click();assert.ok(await page.locator('dialog .album-tile').count()>=4);await page.getByRole('dialog').last().getByRole('button',{name:'닫기',exact:true}).click();await btn('발견을 코어에 연결').click();
  for(const name of names){await btn(name+' 포트').click();assert.equal(await page.locator('dialog[open]').count(),0,'core connects with one tap');}
  await btn('코어 가동').click();await btn('결과로 바로 가기').click();await skipFilm(page);await page.locator('.screen-results').waitFor();await page.getByLabel('소개 카드 제목',{exact:true}).fill('내가 발견한 생물의 작용');await page.getByLabel('소개 문장',{exact:true}).fill('우리 생활에는 작은 생물의 도움이 있어요.');
  const dp=page.waitForEvent('download');await btn('내 카드 저장').click();const download=await dp;await download.saveAs('.tmp/result-card.png');saved=await waitSaved(page,s=>s.learner.cardTitle==='내가 발견한 생물의 작용');

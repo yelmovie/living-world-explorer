@@ -294,13 +294,11 @@ function map(ctx:Context){
 }
 function report(ctx:Context){const a=ctx.attempt;const head=el('div','activity-heading');head.append(heading('우리의 발견을 모아 소개해요'));ctx.host.append(head);const grid=el('div','workspace');const work=el('section','workbench');const side=el('aside','tool-panel');grid.append(work,side);ctx.host.append(grid);const tabs=el('div','report-tabs');tabs.setAttribute('aria-label','확인할 연구 기록');ctx.host.insertBefore(tabs,grid);
  const hasRecord=(id:Stage)=>validEvidence(a,id,ctx.state.settings.admin);
- const confirmSlot=el('div','report-confirm-slot');
- const show=(id:Stage)=>{tabs.replaceChildren(...stages.map(s=>{const b=button(`${a.report.includes(s.id)?'✓ ':''}${s.title}`,()=>show(s.id),id===s.id?'selected':'secondary');b.prepend(stageBadge(stages.indexOf(s)));b.setAttribute('aria-pressed',String(id===s.id));return b;}));work.scrollTop=0;work.replaceChildren(inquiryEvidenceView(a.evidence[id]));confirmSlot.replaceChildren(button(a.report.includes(id)?'확인한 기록이에요':'이 기록 확인',()=>{
-   if(!hasRecord(id)||a.report.includes(id))return;
-   a.report.push(id);persist();render();app.querySelector<HTMLElement>('.report-confirm:not(:disabled),.action-bar .primary:not(:disabled)')?.focus();
-  },'primary report-confirm',!hasRecord(id)||a.report.includes(id)));
+ // 2026-11-15: every restored lab's record counts as presented when the report opens. The five "이 기록 확인" taps repeated the core ports.
+ const unread=stageIds.filter(id=>hasRecord(id)&&!a.report.includes(id));if(unread.length){a.report.push(...unread);persist();}
+ const show=(id:Stage)=>{tabs.replaceChildren(...stages.map((s,i)=>{const b=button(s.title,()=>show(s.id),id===s.id?'selected':'secondary');b.prepend(stageBadge(i));b.setAttribute('aria-pressed',String(id===s.id));return b;}));work.scrollTop=0;work.replaceChildren(inquiryEvidenceView(a.evidence[id]));
   if(ctx.state.settings.admin&&!hasRecord(id))work.append(paragraph('아직 시연 기록이 없어요. 교사용 도구에서 예시를 불러오거나 지도에서 이 연구소를 탐험해요.'),button('교사용 도구 열기',()=>settings(true),'secondary'));
- };show(stageIds.find(id=>hasRecord(id)&&!a.report.includes(id))||stageIds.find(id=>!a.report.includes(id))||'M1');
+ };show(stageIds.find(id=>hasRecord(id))||'M1');
  const presentation=()=>{
   const form=el('div','presentation-form');
   const items=tasksFor('M4').flatMap(task=>{
@@ -329,10 +327,10 @@ function report(ctx:Context){const a=ctx.attempt;const head=el('div','activity-h
    a.presentation={observation:fields.observation.value,evidence:fields.evidence.value,life:fields.life.value};persist();dialog.close();
   },'primary'),album]);
  };
- const reviewed=stageIds.filter(id=>hasRecord(id)&&a.report.includes(id)).length;
- const reportStatus=paragraph(reviewed===5?'✓ 기록 5개를 모두 확인했어요. 코어에 연결해요.':`기록 ${reviewed}/5 확인 · 위에서 연구소를 골라 발견을 확인해요.`,'report-status');
+ const gathered=stageIds.filter(id=>hasRecord(id)).length;
+ const reportStatus=paragraph(gathered===5?'다섯 연구소의 발견이 모였어요. 위에서 연구소를 눌러 다시 읽어 보고, 코어에 연결해요.':`발견 ${gathered}/5 · 지도에서 남은 연구소를 탐험해요.`,'report-status');
  const mentor=el('img','report-mentor');mentor.src='assets/characters/moa-portrait.webp';mentor.alt='모아 연구원';side.append(reportStatus,mentor,heading('내 말로 소개해요'),paragraph('관찰한 것 / 그렇게 생각한 근거 / 우리 생활과의 연결'),button('생활 사건 발표',presentation,'secondary',!hasRecord('M4')));
- const f=el('div','action-bar');f.append(button('지도로',()=>go('nature-map')),confirmSlot,button('발견을 코어에 연결',()=>go('core-restoration'),'primary',!stageIds.every(id=>hasRecord(id)&&a.report.includes(id))));ctx.host.append(f);
+ const f=el('div','action-bar');f.append(button('지도로',()=>go('nature-map')),button('발견을 코어에 연결',()=>go('core-restoration'),'primary',!stageIds.every(id=>hasRecord(id)&&a.report.includes(id))));ctx.host.append(f);
 }
 /** Moa's line plays once per visit of the session, not on every re-render. */
 let resultsVoiced=false;
@@ -356,3 +354,4 @@ if(import.meta.env.PROD&&'serviceWorker' in navigator)app.addEventListener('acti
 document.documentElement.style.removeProperty('--app-height');void load().then(s=>{state=s;const a=active(state);if(a.mapPosition.x===480&&a.mapPosition.y===380)a.mapPosition={...mapSpawn};const route=history.state?.teacherPreview||restoredFromPreview?a.route:location.hash.replace('#/','')||a.route;go(route);showStorageWarning();});
 
 import './glass-surfaces.css';
+import './upgrade-1115.css';

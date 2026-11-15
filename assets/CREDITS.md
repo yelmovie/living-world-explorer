@@ -25,6 +25,7 @@
 | 유리판 물방울 | water_drops.ogg | angeloyazar · [Object Dropping into Water](https://opengameart.org/content/object-dropping-into-water-0) · CC0 | 확인 | 한 방울 구간을 편집 |
 | 개념 영상 소리 | 개념 영상의 짧은 음 | 프로젝트 자체 합성 | PASS | 외부 음악 서비스·샘플 없음 |
 | 효과음 | 클릭·채집·촬영·성공 등 | Kenney Interface Sounds 1.0 · CC0-1.0, public/assets/audio/KENNEY-LICENSE.txt | PASS | 파일별 매핑과 경위: public/assets/audio/sources.json |
+| 효과음 2종 (2026-11-15) | 초점 맞춤(focus.wav), 연구소 불 켜짐(sparkle.wav) | Higgsfield 연결 도구의 Mirelo Text to Audio로 프로젝트용 자체 생성. 프롬프트·작업 ID·가공: assets/generated/sfx-20261115.json | 분석 도구로 확인, 사람 청취 전 | CC0 표본이 아님 |
 
 앱 외 하위 프로젝트 package.json은 현재 검색에서 발견되지 않았다. 현재 프로젝트 package.json에서 Remotion, Highcharts, ag-Grid Enterprise, Handsontable, Font Awesome Pro, Spine 런타임 의존성은 발견되지 않았다. 외부 유료 도구로 제작한 영상 파일도 현재 사용하지 않는다. AI 이미지의 원본 경위·계약 확인이 남으므로 이 문서만으로 상업 납품 검수를 완료했다고 보지 않는다.
 

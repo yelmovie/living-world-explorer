@@ -78,7 +78,7 @@ try{
   await open('M4-1');await page.getByRole('button',{name:/^이후 고정/}).click();await inspectState('timeline-paired');
   await button(page,'관련 조사 자료 읽기').click();await close();await inspectState('timeline-research-read');
   await open('M3-4');await button(page,'모든 세균이 해로울 것 같아요').click();
-  for(const label of ['새 자료: 요구르트 만들기','새 자료: 상한 우유']){await button(page,label).click();await inspectState('review-reading-'+(label.includes('요구르트')?'yogurt':'milk'));await button(page,'자료 확인했어요').click();}
+  for(const label of ['새 자료: 요구르트 만들기','새 자료: 상한 우유']){await button(page,label).click();await inspectState('review-reading-'+(label.includes('요구르트')?'yogurt':'milk'));}
   await inspectState('review-claim');await button(page,'모든 세균이 해로워요').click();await inspectState('review-evidence');
   await button(page,'상한 우유').click();await button(page,'발견 기록하기').click();assert.equal(await page.locator('.discovery-dialog').count(),0);await inspectState('review-retry');
   await button(page,'주장 다시 고르기').click();await button(page,'모든 세균이 해로운 것은 아니에요').click();await button(page,'요구르트 만들기').click();await inspectState('review-ready');
@@ -88,7 +88,7 @@ try{
   for(const it of task.items.filter(i=>i.target)){await dialog.getByRole('button',{name:it.label,exact:true}).click();const labels={input:'재료 병에 담기',action:'발효기에 넣기',output:'만들 음식 고르기'};await dialog.getByRole('button',{name:labels[it.target],exact:true}).click();}
   await close();await inspectState('build-prediction');await button(page,'요구르트가 될 거예요').click();await inspectState('build-ready');
   await button(page,'발효기 켜기').click();await inspectState('build-running');
-  await button(page,'예상과 같아요').waitFor();await inspectState('build-finished');await button(page,'예상과 같아요').click();await inspectState('build-reflected');
+  await page.locator('.run-reflection[data-result="matches"]').waitFor();await inspectState('build-finished');
   await open('M5-4');await button(page,'요구르트').click();await inspectState('publish-action');await button(page,'유산균의 작용').click();await inspectState('publish-note');
   await page.getByLabel('내 소개 문장',{exact:true}).fill('유산균이 우유를 바꾸어 요구르트가 돼요.');await inspectState('publish-edited');
  }

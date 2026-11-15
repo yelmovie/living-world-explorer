@@ -123,7 +123,7 @@ try{
  await page.setViewportSize({width:915,height:412});
  await open(inquiryTasks.find(t=>t.id==='M3-4'));
  await button(page,'모든 세균이 해로울 것 같아요').click();
- for(const label of ['새 자료: 요구르트 만들기','새 자료: 상한 우유']){await button(page,label).click();await button(page,'자료 확인했어요').click();}
+ for(const label of ['새 자료: 요구르트 만들기','새 자료: 상한 우유']){await button(page,label).click();}
  await page.getByRole('button',{name:'모든 세균이 해로워요',exact:true}).click();
  await button(page,'상한 우유').click();
  await button(page,'발견 기록하기').click();

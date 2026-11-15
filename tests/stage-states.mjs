@@ -70,9 +70,9 @@ try{
  for(const [card,target] of [['우유','재료 병에 담기'],['유산균 가루','발효기에 넣기'],['요구르트','만들 음식 고르기']]){await dialog.getByRole('button',{name:card,exact:true}).click();await dialog.getByRole('button',{name:target,exact:true}).click();}
  await dialog.getByRole('button',{name:'닫기',exact:true}).click();assert.equal(await page.locator('.toast').count(),0,'assembly feedback must not cover the fermentation scene');await button(page,'요구르트가 될 거예요').click();await button(page,'발효기 켜기').click();
  await page.waitForTimeout(4450);await inspect('915-M5-1-fermenting');
- await button(page,'예상과 같아요').click();await inspect('915-M5-1-result');
+ await page.locator('.run-reflection[data-result="matches"]').waitFor();await inspect('915-M5-1-result');
  await open('M3-4');await button(page,'모든 세균이 해로울 것 같아요').click();
- for(const name of ['새 자료: 요구르트 만들기','새 자료: 상한 우유']){await button(page,name).click();await button(page,'자료 확인했어요').click();}
+ for(const name of ['새 자료: 요구르트 만들기','새 자료: 상한 우유']){await button(page,name).click();}
  await page.locator('html').evaluate(n=>n.classList.add('large-text'));
  await button(page,'모든 세균이 해로운 것은 아니에요').click();await button(page,'요구르트 만들기').click();
  await inspect('915-M3-4-large-text');assert.deepEqual(errors,[]);

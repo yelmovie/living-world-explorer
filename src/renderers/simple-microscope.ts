@@ -8,8 +8,8 @@ import {mountScopeDecor} from './scope-view';
 /** Direct observation, without hidden targets, aiming or annotation gates. */
 export function mountMicroscope(host:HTMLElement,task:InquiryTask,learner:InquiryRecord,hooks:InquiryHooks):InquiryView{
  let record=learner,disposed=false;
- const root=el('div','simple-observation'),viewport=el('div','observation-photo'),field=el('div','scope-field'),img=el('img'),loupe=el('div','observation-loupe'),caption=paragraph('','observation-caption');
- img.draggable=false;loupe.setAttribute('aria-hidden','true');field.append(img);viewport.append(field,loupe);root.append(viewport,caption,paragraph('AI 생성 관찰 모형 · 실제 현미경 사진이 아니에요.','observation-disclosure'));host.append(root);
+ const root=el('div','simple-observation'),viewport=el('div','observation-photo'),field=el('div','scope-field'),img=el('img'),loupe=el('div','observation-loupe'),caption=paragraph('','observation-caption'),lock=el('span','focus-lock','초점이 맞았어요!');lock.setAttribute('aria-hidden','true');
+ img.draggable=false;loupe.setAttribute('aria-hidden','true');field.append(img);viewport.append(field,loupe,lock);root.append(viewport,caption,paragraph('AI 생성 관찰 모형 · 실제 현미경 사진이 아니에요.','observation-disclosure'));host.append(root);
  const decor=mountScopeDecor(viewport,task.stage==='M2'?'water':'forest');
  let active=false;
  const move=(e:PointerEvent)=>{if(!active||record.level!==1)return;const b=viewport.getBoundingClientRect(),x=Math.max(0,Math.min(b.width,e.clientX-b.left)),y=Math.max(0,Math.min(b.height,e.clientY-b.top));loupe.style.left=x+'px';loupe.style.top=y+'px';loupe.style.backgroundSize=b.width*2+'px '+b.height*2+'px';loupe.style.backgroundPosition=(-x*2+75)+'px '+(-y*2+75)+'px';};
@@ -20,7 +20,7 @@ export function mountMicroscope(host:HTMLElement,task:InquiryTask,learner:Inquir
   const art=artFor(kind,record.level===0?context?.time:0);if(!art)return;
   img.alt=art.label;img.src=art.src;loupe.style.backgroundImage='url("'+art.src+'")';loupe.hidden=record.level!==1;
   img.style.filter=record.level>=2?'blur('+Math.abs(record.focus-65)/9+'px)':'none';
-  viewport.dataset.mode=record.level===0?'eye':record.level===1?'lens':'microscope';root.dataset.captured=String(record.capture);
+  viewport.dataset.mode=record.level===0?'eye':record.level===1?'lens':'microscope';viewport.dataset.sharp=String(record.level>=2&&!record.capture&&Math.abs(record.focus-65)<=12);root.dataset.captured=String(record.capture);
   decor.show(record.level===0?'eye':record.level>=2?'scope':null,record.capture);
   caption.textContent=record.level<2?(context?.captions[record.level]||'돋보기를 움직여 생김새를 살펴봐요.'):task.organism==='mushroom'?'현미경으로 확대한 주름이에요. 주름 표면에 붙은 작은 알갱이가 포자예요.':task.organism==='mold'?'가는 실은 균사예요. 이 곰팡이의 둥근 포자주머니 안에는 포자가 들어 있어요.':'초록색 해캄은 여러 마디가 실처럼 이어져 있어요.';
  }

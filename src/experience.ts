@@ -6,6 +6,7 @@ import {tasksFor} from './curriculum';
 import type {InquiryTask,InquiryRecord} from './inquiry-model';
 import {taskArt} from './artAssets';
 import {taskIssues} from './inquiry-evaluate';
+import {playEffect} from './audio';
 
 export const missions=[
  {icon:'lens',quest:'숲의 관찰 기록이 사라졌어. 표본의 특징을 다시 찾아줘.',reward:'표본실 조명 복구',kit:'균류 관찰 패킷',action:'초점 조절 · 촬영 · 특징 표시'},
@@ -38,19 +39,19 @@ export function activityIllustration(task:InquiryTask,cls:string,record?:Inquiry
 }
 /** Painted research badge for stage index 0–4 (public/assets/ui/badge-M*.webp); decorative, so alt is empty. */
 export function stageBadge(index:number,cls='stage-badge'){const img=el('img',cls);img.src=`assets/ui/badge-M${index+1}.webp`;img.alt='';img.draggable=false;return img;}
+/** 2026-11-15: no "talk or leave" choice. After the reward the neighbour's story continues by itself. */
 export function reward(stage:Stage,meet:()=>void,onClose:()=>void){
  const index=stageIds.indexOf(stage),resident=residents[stage],mission=missions[index];
  const card=el('div','reward-body');
  const art=el('img','reward-image');art.src=`assets/places/${['fungi','water','archive','village','workshop'][index]}.webp`;art.alt=stages[index].place+'의 복구된 모습';
  const scene=el('div','reward-scene');scene.append(art,residentImage(stage,'resident-return'),stageBadge(index,'reward-stamp'));
- card.append(scene,el('span','reward-check',mission.kit+' · '+mission.reward),paragraph(stages[index].place+'에 불이 켜졌어요! '+resident.role+' '+resident.name+'도 돌아왔어요.','resident-return-note'));
+ card.append(scene,el('span','reward-check',mission.kit+' · '+mission.reward),paragraph(resident.role+' '+resident.name+'도 돌아왔어요.','resident-return-note'));
  const actions=el('div','resident-reward-actions');
- const dialog=modal('마을에 이웃이 돌아왔어!',[card,actions],{showClose:false});
- dialog.addEventListener('close',onClose,{once:true});
- actions.append(button(resident.name+'에게 말 걸기',()=>{
-   dialog.addEventListener('close',meet,{once:true});dialog.close();
- }),button('다음 장소 탐험',()=>dialog.close(),'primary'));
+ const dialog=modal(stages[index].place+'에 불이 켜졌어요!',[card,actions],{showClose:false});
+ dialog.addEventListener('close',()=>{onClose();meet();},{once:true});
+ actions.append(button(resident.name+' 만나러 가기',()=>dialog.close(),'primary'));
  dialog.classList.add('reward-modal','resident-reward');
+ playEffect('sparkle');
 }
 export function progress(ctx:Context){const row=el('div','repair-progress');row.setAttribute('aria-label','연구소 복구 진행');stages.forEach((s,i)=>{const done=validEvidence(ctx.attempt,s.id,ctx.state.settings.admin);const b=iconButton(done?'check':missions[i].icon,`${i+1}. ${s.title}${done?' 복구 완료':''}`,()=>modal(missions[i].kit,[paragraph(done?s.summary:missions[i].quest),paragraph(`완료 보상: ${missions[i].reward}`)]),done?'repair done':'repair');row.append(b);});return row;}
 const toolSelection=new Map<string,string>();

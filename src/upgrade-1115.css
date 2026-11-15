@@ -1,0 +1,48 @@
+/* 2026-11-15 upgrade: readable work surfaces, a panel that fits its tools, and a clearer discovery moment.
+   Loaded last so it settles the earlier layers instead of adding another override inside them. */
+:root{--work-face:rgba(255,253,244,.97)}
+
+/* Cards people read or drag sit on an almost solid sheet; the scenery stays visible around them, not through the words. */
+#app .link-card,#app .link-target,#app>.expedition-shell .expedition-panel,#app>.expedition-shell .inquiry-status,#app>.expedition-shell .source-preview{background:var(--work-face)}
+#app .link-target{box-shadow:0 4px 0 var(--shade-a18),inset 5px 0 0 var(--stage-accent)}
+#app .link-target .link-target-name{font-weight:800}
+
+/* The tool panel is as tall as its tools. A full-height frosted column with two buttons in it read as an unfinished screen. */
+@media(min-width:851px){
+ #app>.expedition-shell:not(.link-task) .expedition-panel{height:auto;align-self:start;max-height:100%;overflow:auto}
+ #app>.expedition-shell:not(.link-task) .expedition-panel-body{flex:0 1 auto}
+ #app>.expedition-shell:not(.link-task) .expedition-panel .track-record-next{margin-top:8px}
+}
+
+/* Source text read in place (review task): title + body, no confirmation button. */
+.source-preview>.source-title{font-family:var(--font-display);color:var(--ink-strong)}
+.run-reflection{margin:0;padding:10px 12px;border-radius:12px;border:2px solid #7fa66f;background:#eaf4dc;color:#1f4a33;font-family:var(--font-display);font-size:var(--font-size-label);line-height:1.35}
+.run-reflection[data-result=differs]{border-color:#c59a3f;background:#fff3d2;color:#5b4310}
+.run-reflection::before{content:'✓ ';font-weight:800}
+.run-reflection[data-result=differs]::before{content:'↻ '}
+
+@keyframes pip-pop{0%{transform:scale(.3)}70%{transform:scale(1.35)}100%{transform:scale(1)}}
+@media(prefers-reduced-motion:no-preference){html:not(.reduced) .discovery-pips .pip.fresh{animation:pip-pop .4s ease-out .25s both}}
+
+/* Discovery dialog: a small celebration with something to look forward to. */
+.modal.discovery-dialog{width:min(680px,calc(100vw - 32px));gap:12px;padding:20px 24px;text-align:center}
+.discovery-dialog>h2{padding-bottom:10px}
+.discovery-dialog .discovery-card{text-align:left}
+.discovery-dialog .discovery-card h2{font-size:clamp(20px,2vw,26px);line-height:1.45}
+.discovery-pips{display:flex;align-items:center;justify-content:center;gap:8px}
+.discovery-pips .pip{width:18px;height:18px;border-radius:50%;border:2px solid #9aa88a;background:#f1eedd}
+.discovery-pips .pip.on{border-color:#2f6a4c;background:#3f8a63;box-shadow:inset 0 0 0 3px #fffdf4}
+.discovery-pips .pip-label{margin-left:6px;font-size:var(--font-size-small);font-weight:700;color:#3d5947}
+.discovery-next{margin:0;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;font-size:var(--font-size-label);color:var(--ink-strong);line-height:1.35}
+.discovery-next-label{padding:3px 10px;border-radius:999px;background:#245b46;color:#fffdf4;font-size:var(--font-size-small);font-weight:800;white-space:nowrap}
+.discovery-dialog>.button.primary{align-self:center;min-width:240px;min-height:56px;font-size:var(--font-size-button)}
+@media(max-height:560px){.modal.discovery-dialog{gap:6px;padding:12px 18px}.discovery-dialog>.button.primary{min-height:48px}}
+
+.resident-reward .resident-return-note{font-size:var(--font-size-label);font-family:var(--font-body)}
+.resident-reward .resident-reward-actions .button.primary{min-height:56px;font-size:var(--font-size-button)}
+
+/* Microscope: the moment the picture turns sharp is visible and audible. */
+.observation-photo .focus-lock{position:absolute;left:50%;bottom:7%;z-index:3;translate:-50% 0;padding:6px 14px;border-radius:999px;background:#245b46;color:#fffdf4;font-family:var(--font-display);font-size:clamp(15px,1.4vw,19px);font-weight:800;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s}
+.observation-photo[data-sharp=true] .focus-lock{opacity:1}
+@keyframes focus-ring{0%{box-shadow:0 0 0 0 #9fe08a00}40%{box-shadow:0 0 0 10px #9fe08a88}100%{box-shadow:0 0 0 22px #9fe08a00}}
+@media(prefers-reduced-motion:no-preference){html:not(.reduced) .observation-photo[data-sharp=true] .scope-field{animation:focus-ring .7s ease-out 1}}

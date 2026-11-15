@@ -6,11 +6,58 @@
   "download": "https://opengameart.org/sites/default/files/kenney_interfaceSounds.zip",
   "retrieved": "2026-10-22",
   "processing": "Mono WAV 44.1kHz; maximum 0.55 seconds; tail fade; amplitude limiter.",
-  "mapping": {"click":"click_003.ogg","success":"confirmation_002.ogg","retry":"back_002.ogg","snap":"drop_003.ogg","capture":"switch_001.ogg","water":"drop_001.ogg","hint":"select_002.ogg","run":"confirmation_004.ogg"},
+  "mapping": {
+    "click": "click_003.ogg",
+    "success": "confirmation_002.ogg",
+    "retry": "back_002.ogg",
+    "snap": "drop_003.ogg",
+    "capture": "switch_001.ogg",
+    "water": "drop_001.ogg",
+    "hint": "select_002.ogg",
+    "run": "confirmation_004.ogg"
+  },
   "additionalEffects": [
-    {"file":"page-turn.wav","sourceFile":"OGG/bookFlip1.ogg","author":"Kenney","source":"https://opengameart.org/content/50-rpg-sound-effects","license":"CC0","use":"연구 노트 넘기기"},
-    {"file":"pipette-drop.wav","sourceFile":"water_drops.ogg","author":"angeloyazar","source":"https://opengameart.org/content/object-dropping-into-water-0","license":"CC0","use":"유리판 위에 한 방울 놓기"},
-    {"file":"core-wake.wav","sourceFile":"powerUp4.mp3","author":"Kenney","source":"https://opengameart.org/node/12493","license":"CC0","use":"코어 가동"}
+    {
+      "file": "page-turn.wav",
+      "sourceFile": "OGG/bookFlip1.ogg",
+      "author": "Kenney",
+      "source": "https://opengameart.org/content/50-rpg-sound-effects",
+      "license": "CC0",
+      "use": "연구 노트 넘기기"
+    },
+    {
+      "file": "pipette-drop.wav",
+      "sourceFile": "water_drops.ogg",
+      "author": "angeloyazar",
+      "source": "https://opengameart.org/content/object-dropping-into-water-0",
+      "license": "CC0",
+      "use": "유리판 위에 한 방울 놓기"
+    },
+    {
+      "file": "core-wake.wav",
+      "sourceFile": "powerUp4.mp3",
+      "author": "Kenney",
+      "source": "https://opengameart.org/node/12493",
+      "license": "CC0",
+      "use": "코어 가동"
+    }
   ],
-  "additionalProcessing":"Trimmed to one cue, mono PCM 22.05 kHz, short edge fades and peak normalization."
+  "additionalProcessing": "Trimmed to one cue, mono PCM 22.05 kHz, short edge fades and peak normalization.",
+  "generatedEffects": [
+    {
+      "file": "focus.wav",
+      "provider": "Higgsfield · Mirelo Text to Audio",
+      "generated": "2026-11-15",
+      "use": "현미경 초점이 맞는 순간",
+      "record": "assets/generated/sfx-20261115.json"
+    },
+    {
+      "file": "sparkle.wav",
+      "provider": "Higgsfield · Mirelo Text to Audio",
+      "generated": "2026-11-15",
+      "use": "연구소에 불이 켜지는 순간",
+      "record": "assets/generated/sfx-20261115.json"
+    }
+  ],
+  "generatedNote": "generatedEffects are project-generated AI audio, not Kenney CC0 samples."
 }

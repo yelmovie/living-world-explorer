@@ -30,7 +30,6 @@ try{
  assert.equal(await page.locator('.core-port:disabled').count(),5);
  assert.ok(await power.isDisabled());
  await navigate(page,base,'final-report');
- for(let i=0;i<5;i++)await button(page,'이 기록 확인').click();
  await button(page,'발견을 코어에 연결').click();
  await page.locator(`.core-figure-stage[data-renderer=${live?'three':'image'}]`).waitFor();
  await page.waitForFunction(()=>[...document.querySelectorAll('.core-figure img')].every(n=>n.complete&&n.naturalWidth));

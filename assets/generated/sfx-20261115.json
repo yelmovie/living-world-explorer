@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-15",
+  "provider": "Higgsfield connector / Mirelo Text to Audio (mirelo_text_to_audio)",
+  "storage": "Cloud-generated, downloaded directly to external T7 Shield.",
+  "purpose": "Two short interface sounds: the moment a microscope picture turns sharp, and the moment a restored lab lights up.",
+  "review": "Not heard by a person. Checked with earshot (CLAP/AST tags and meters): focus reads as a short click (scroll wheel tick z +2.8, mouse click z +2.4); sparkle reads as chimes (AudioSet Chime 0.60, magic sparkle chime z +3.1). Two takes that did not match their brief (a stamp and a marimba jingle) were discarded and are not shipped.",
+  "credits": "0.5 per take, 5 takes = 2.5 credits",
+  "jobs": [
+    {
+      "asset": "focus",
+      "jobId": "f2b0d34d-31cd-4c2b-b382-15f483e4604d",
+      "prompt": "A short crisp focus confirmation sound: one soft mechanical lens click followed by a tiny bright glassy chime, clean and gentle, no music, no voice",
+      "duration": 2,
+      "original": "assets/generated/sfx-20261115/focus-raw.mp3",
+      "originalSha256": "2df31844cc3e884f38813af03c8df223f7289fc3df7bc3234241a83c6ffa9d93",
+      "processing": "ffmpeg: 0.285–0.455 s, 4 ms fade in, 60 ms fade out, +32.5 dB, mono 44.1 kHz PCM 16-bit",
+      "output": "public/assets/audio/focus.wav",
+      "outputSha256": "7681582c92b221cc586f4faf8b7475f80c9beafe39fb5ffa934df350b213506c"
+    },
+    {
+      "asset": "sparkle",
+      "jobId": "5c36157e-afed-42d3-8cc4-9d570725c683",
+      "prompt": "Level complete success jingle, glockenspiel and marimba ascending melody, cheerful, bright, short video game win sound",
+      "duration": 3,
+      "note": "The take came out as chimes rather than a melody, so it is used as a sparkle, not as a fanfare.",
+      "original": "assets/generated/sfx-20261115/sparkle-raw.mp3",
+      "originalSha256": "18aaeb49db9ceee18e35c237b7581ee98775dc69ef2a91352ac7cec00ae6abb0",
+      "processing": "ffmpeg: 0.15–1.20 s, 4 ms fade in, 270 ms fade out, +11.5 dB, mono 44.1 kHz PCM 16-bit",
+      "output": "public/assets/audio/sparkle.wav",
+      "outputSha256": "ab5a780a9d6e71cba9d41c80134137b0f544c36424b29142a4ddfb4367d43cea"
+    }
+  ]
+}

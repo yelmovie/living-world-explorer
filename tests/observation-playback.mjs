@@ -67,7 +67,6 @@ try{
   }
   assert.equal(plays,7);
   await navigate(page,base,'final-report');
-  assert.ok(await button(page,'이 기록 확인').isDisabled());
   assert.ok(await button(page,'발견을 코어에 연결').isDisabled());
   await page.reload();
   await page.locator('.screen-fungi-field').waitFor();
