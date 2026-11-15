@@ -14,6 +14,15 @@
  #app>.expedition-shell:not(.link-task) .expedition-panel .track-record-next{margin-top:8px}
 }
 
+/* Keep the record button below the scrollable tools on small screens. */
+#app>.expedition-shell[data-kind="track"] .expedition-panel-body {
+ overflow-y:auto;
+ flex:1 1 auto;
+}
+#app>.expedition-shell[data-kind="track"] .track-record-next {
+ flex-shrink:0;
+}
+
 /* Source text read in place (review task): title + body, no confirmation button. */
 .source-preview>.source-title{font-family:var(--font-display);color:var(--ink-strong)}
 .run-reflection{margin:0;padding:10px 12px;border-radius:12px;border:2px solid #7fa66f;background:#eaf4dc;color:#1f4a33;font-family:var(--font-display);font-size:var(--font-size-label);line-height:1.35}
