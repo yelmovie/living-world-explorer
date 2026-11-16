@@ -1,0 +1,59 @@
+/* 2026-11-16: M1-2 hand lens + spore catch, M1-3 focus dial + name tags (src/renderers/scope-games.ts). */
+.scope-game{display:grid;grid-template-rows:auto minmax(0,1fr);gap:10px;height:100%;min-height:0;padding:4px 6px;color:#2c3f30;user-select:none;-webkit-user-select:none}
+.scope-tip{margin:0 auto;padding:6px 20px;border-radius:999px;background:#fffaf0ea;font-size:clamp(17px,1.6vw,21px);font-weight:700;box-shadow:0 3px 10px #3b2a1a1f}
+.scope-tip.is-done{background:#2f6e48;color:#fff}
+.scope-stage{display:flex;align-items:center;justify-content:center;gap:28px;min-height:0}
+.scope-panel{flex:0 1 300px;display:flex;flex-direction:column;gap:14px;padding:16px;border-radius:22px;background:#fffdf6f0;border:3px solid #e2d3ac;box-shadow:0 10px 22px #3b2a1a26}
+.scope-steps{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.scope-steps li{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:700;color:#8a8577}
+.scope-steps li.now{color:#2c3f30}.scope-steps li.done{color:#3f8a55}
+.scope-step-n{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:50%;background:#efe8d4;font-size:15px}
+.scope-steps li.now .scope-step-n{background:#f1c75b;box-shadow:0 0 0 4px #f1c75b55}
+.scope-steps li.done .scope-step-n{background:#3f8a55;color:#fff}
+.scope-fact{margin:0;padding:12px;border-radius:14px;background:#eef6e8;font-size:17px;line-height:1.5;word-break:keep-all;animation:scope-pop .4s cubic-bezier(.3,1.4,.5,1)}
+
+/* hand lens over the mushroom photo */
+.lens-view{position:relative;height:100%;max-width:calc(100% - 330px);aspect-ratio:793/496;border-radius:22px;overflow:hidden;border:4px solid #fffdf6;box-shadow:0 14px 30px #3b2a1a33;touch-action:none;cursor:grab}
+.lens-photo{width:100%;height:100%;object-fit:cover;pointer-events:none}
+.lens-glass{--d:clamp(130px,17vw,210px);position:absolute;width:var(--d);height:var(--d);transform:translate(-50%,-50%);border-radius:50%;background-repeat:no-repeat;box-shadow:0 0 0 3px #fff8,0 12px 24px #0005;pointer-events:none;transition:box-shadow .2s}
+.lens-glass.is-on{box-shadow:0 0 0 6px #7fd08c,0 0 30px #7fd08c}
+.lens-handle{position:absolute;width:182%;max-width:none;left:-18.4%;top:-12.6%;pointer-events:none;filter:drop-shadow(0 8px 10px #0004)}
+.lens-view.zoom-out{animation:scope-dive .9s ease-in forwards}
+@keyframes scope-dive{to{transform:scale(1.6);opacity:0;filter:blur(6px)}}
+
+/* eyepiece */
+.scope-eye{position:relative;height:100%;aspect-ratio:1;max-width:calc(100% - 330px);flex:none}
+.eye-field{position:absolute;inset:20%;border-radius:50%;overflow:hidden;background:#e9eedc;cursor:crosshair;touch-action:manipulation;animation:scope-arrive .7s ease-out}
+@keyframes scope-arrive{from{transform:scale(.6);opacity:0}}
+.eye-pic{width:100%;height:100%;object-fit:cover;transition:filter .12s;pointer-events:none}
+.eye-frame{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;filter:drop-shadow(0 12px 18px #0004)}
+.eye-marks{position:absolute;inset:0;pointer-events:none}
+.scope-spore,.scope-miss,.scope-tag{position:absolute;transform:translate(-50%,-50%)}
+.scope-spore{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;border:3px solid #f1c75b;background:#fff8d6aa;font-size:20px;animation:scope-pop .45s cubic-bezier(.3,1.6,.5,1)}
+.scope-miss{color:#c0392b;font-weight:800;font-size:30px;animation:scope-pop .3s,scope-fade .7s forwards}
+.scope-tag{transform:translate(0,-50%);padding:6px 14px 6px 22px;border-radius:6px 999px 999px 6px;background:#fffdf6;border:3px solid #3f8a55;color:#2f6e48;font-weight:800;font-size:18px;white-space:nowrap;box-shadow:0 6px 12px #0003;clip-path:polygon(12px 0,100% 0,100% 100%,12px 100%,0 50%);animation:scope-pop .45s cubic-bezier(.3,1.6,.5,1)}
+.eye-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+.eye-flash.on{animation:scope-flash .5s}
+@keyframes scope-flash{10%{opacity:.9}}
+@keyframes scope-pop{from{scale:.3;opacity:0}}
+@keyframes scope-fade{70%{opacity:1}to{opacity:0}}
+
+/* focus dial and tags */
+.focus-dial{position:relative;width:min(190px,100%);aspect-ratio:1;margin:0 auto;border-radius:50%;cursor:grab;touch-action:none}
+.focus-dial:focus-visible{outline:4px solid #f1c75b;outline-offset:4px}
+.focus-knob{width:100%;height:100%;object-fit:contain;pointer-events:none;filter:drop-shadow(0 8px 12px #0004);transition:transform .05s linear}
+.focus-dial::after{content:'돌려요';position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);padding:2px 12px;border-radius:999px;background:#2f6e48;color:#fff;font-weight:700;font-size:14px}
+.focus-meter{height:14px;border-radius:999px;background:#e5dfcd;overflow:hidden}
+.focus-meter span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#f1c75b,#3f8a55);transition:width .1s}
+.focus-buttons{display:flex;gap:8px;justify-content:center}.focus-buttons .button{min-height:44px;padding-inline:12px}
+.tag-box{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
+.name-tag{padding:10px 22px 10px 30px;border:3px solid #3f8a55;border-radius:6px 999px 999px 6px;background:#fffdf6;color:#2f6e48;font:inherit;font-weight:800;font-size:22px;cursor:grab;touch-action:none;clip-path:polygon(16px 0,100% 0,100% 100%,16px 100%,0 50%);box-shadow:0 6px 12px #0002;transition:transform .15s}
+.name-tag.is-picked{transform:translateX(10px) rotate(-3deg);border-color:#e7b23c;background:#fff6c9}
+.name-tag.is-lifted{opacity:.3}
+.name-tag.is-shake{animation:scope-shake .5s}
+@keyframes scope-shake{20%{translate:-9px 0}40%{translate:8px 0}60%{translate:-5px 0}80%{translate:3px 0}}
+.tag-ghost{position:fixed;left:0;top:0;z-index:1000;margin:0;pointer-events:none}
+@media(prefers-reduced-motion:reduce){.eye-field,.lens-view.zoom-out,.scope-spore,.scope-tag,.scope-fact{animation:none}}
+@media(max-height:640px){.scope-panel{padding:10px;gap:8px}.scope-steps li{font-size:15px}.focus-dial{width:130px}.scope-fact{font-size:15px}}
+@media(max-height:480px){.eye-field{inset:2%;border:5px solid #b8933a;box-shadow:0 8px 16px #0004}.eye-frame{display:none}.scope-tip{font-size:15px;padding:3px 14px}.scope-steps{gap:4px}.scope-steps li{font-size:13px;gap:6px}.scope-step-n{width:22px;height:22px;font-size:12px}.focus-dial{width:96px}.name-tag{font-size:17px;padding:6px 16px 6px 24px}.scope-panel{flex-basis:230px}.lens-view,.scope-eye{max-width:calc(100% - 250px)}}
+@media(max-width:659px){.scope-game{height:auto}.scope-stage{flex-direction:column;gap:14px}.lens-view{width:100%;height:auto;max-width:100%}.scope-eye{width:min(92vw,420px);height:auto;max-width:100%}.scope-panel{flex-basis:auto;width:100%}}
