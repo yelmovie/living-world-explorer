@@ -5,7 +5,8 @@ import {inquiryTasks,stageRoutes} from './curriculum.mjs';
 
 const base=process.env.APP_URL||'http://127.0.0.1:5176';
 const out=process.env.QUIZ_OUT||'.tmp/quiz-release-20261115/screens';
-const tasks=inquiryTasks.filter(t=>['M1-1','M3-1','M3-2','M3-3','M4-3','M4-4'].includes(t.id));
+// 2026-11-16: M3-1, M3-3, M4-3 and M4-4 became stamp, swipe and lamp boards (tests in stage-games.mjs).
+const tasks=inquiryTasks.filter(t=>['M1-1','M3-2'].includes(t.id));
 const sizes=process.env.QUIZ_SIZES?JSON.parse(process.env.QUIZ_SIZES):[[1280,800],[915,412],[1024,768],[375,812]];
 const browser=await launchBrowser(),errors=[];
 await mkdir(out,{recursive:true});
@@ -67,7 +68,7 @@ try{
     if(index===0){
      await page.locator(`[data-quiz-answer="${wrong.id}"]`).press('Enter');
      assert.match(await page.locator('.quiz-feedback').innerText(),/다시 골라/);
-     assert.ok(await button(page,'다음 문제').isDisabled());
+     assert.ok(await button(page,'다음 문제').isHidden(),'2026-11-16: next appears only for a solved question');
      await waitSaved(page,s=>s.preview.inquiry.records[task.id].assignments[item.id]===wrong.id);
      await open(page,task);
      assert.equal(await page.locator('.quiz-board').getAttribute('data-quiz-item'),item.id);
@@ -81,7 +82,8 @@ try{
     await page.locator(`[data-quiz-answer="${wrong.id}"]`).dispatchEvent('click');
     assert.equal(await page.locator(`[data-quiz-answer="${item.target}"]`).getAttribute('aria-pressed'),'true');
     if(index<task.items.length-1){
-     await button(page,'다음 문제').press('Enter');
+     // 2026-11-16: a right answer moves on by itself.
+     await page.waitForFunction(id=>document.querySelector('.quiz-board')?.dataset.quizItem!==id,item.id,{timeout:5000});
      assert.ok(await page.locator('.quiz-question').evaluate(n=>n===document.activeElement));
      assert.equal(await page.locator('.expedition-shell').evaluate(n=>n.scrollTop),0,'new questions start at the top');
     }
@@ -93,15 +95,16 @@ try{
     await page.locator('.ladder-dialog').getByRole('button',{name:'닫기',exact:true}).click();
    }
    assert.ok(await button(page,'발견 기록하기').isEnabled());
-   await button(page,'이전 문제').click();
-   assert.match(await page.locator('.quiz-feedback').innerText(),/맞았어요/);
+   // The finished quiz opens its record by itself; Escape closes it so the review checks can continue.
+   await page.locator('.discovery-dialog').waitFor({timeout:5000});await page.keyboard.press('Escape');await page.locator('.discovery-dialog').waitFor({state:'detached'}).catch(()=>{});
+   // Phone-landscape heights hide the 이전/다음 row (quiz-board.css); elsewhere a solved question can be revisited.
+   if(await button(page,'이전 문제').isVisible()){await button(page,'이전 문제').click();assert.match(await page.locator('.quiz-feedback').innerText(),/맞았어요/);}
    await open(page,task);
    assert.equal(await page.locator('.quiz-board').getAttribute('data-quiz-item'),task.items.at(-1).id);
    await audit(page,`${width}-${height}-${task.id}-complete`);
-   await button(page,'발견 기록하기').click();
-   await page.locator('.discovery-dialog').waitFor();
+   // The record was already saved when the quiz finished (it opened by itself above).
    await waitSaved(page,s=>!!s.preview.inquiry.records[task.id].completedAt);
-   await page.keyboard.press('Escape');
+   assert.ok(await button(page,'기록 확인하고 계속').isEnabled());
   }
   // Pre-v2 M3-2 records have only the original two questions and no size ladder.
   const task=tasks.find(t=>t.id==='M3-2');await open(page,task);
@@ -118,7 +121,7 @@ try{
   assert.ok(await button(page,'기록 확인하고 계속').isEnabled());
   assert.equal((await waitSaved(page)).learner.inquiry.records[task.id].completedAt,completion);
   assert.equal(await button(page,'크기 사다리에 세균 놓기').count(),0);
-  console.log(`${width}×${height}: six quizzes, keyboard retry, persistence, review, ladder and legacy records passed`);
+  console.log(`${width}×${height}: M1-1 and M3-2 quizzes, auto-advance, keyboard retry, persistence, review, ladder and legacy records passed`);
   await page.close();
  }
  const learner=await browser.newPage({viewport:{width:1024,height:768}});
@@ -134,7 +137,7 @@ try{
  await learner.reload();await learner.locator('.quiz-board').waitFor();
  assert.equal(await learner.locator('.quiz-board').getAttribute('data-quiz-item'),'bread');
  await learner.locator('[data-quiz-answer="mold"]').click();
- await button(learner,'발견 기록하기').click();await learner.locator('.discovery-dialog').waitFor();
+ await learner.locator('.discovery-dialog').waitFor({timeout:5000});
  assert.equal((await waitSaved(learner)).learner.inquiry.records['M1-1'].clean,false,'retry history is retained');
  await learner.close();
  console.log('Learner reload resumes the wrong or next unanswered question and preserves retry history');

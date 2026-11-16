@@ -58,7 +58,8 @@ try{
   console.log(width+'x'+height+' · 20 activities');
  }
  await page.setViewportSize({width:915,height:412});
- for(const task of inquiryTasks.filter(t=>['collect','connect','sort'].includes(t.kind))){
+ // 2026-11-16: M1-1 and M3-2 are quiz boards without link cards; the other card boards keep data-link-item/target.
+ for(const task of inquiryTasks.filter(t=>['collect','connect','sort'].includes(t.kind)&&!['M1-1','M3-2'].includes(t.id))){
   await open(task.id);
   for(const item of task.items){await page.locator(`[data-link-item="${item.id}"]`).click();await inspectState(task.id+'-'+item.id+'-selected');await page.locator(`[data-link-target="${item.target}"]`).click();await inspectState(task.id+'-'+item.id+'-linked');}
  }
@@ -75,8 +76,9 @@ try{
   const sampled=(await waitSaved(page)).preview.inquiry.records['M2-1'];assert.equal(sampled.sequence,3);assert.equal(sampled.assignments.site,'edge');assert.equal(sampled.completedAt,undefined);await inspectState('sampling-ready');
   await open('M2-3');await page.getByRole('button',{name:/^B 고정/}).click();await inspectState('track-comparison');
   await button(page,'현미경으로 움직임의 비밀 찾기').click();await inspectState('track-cilia');
-  await open('M4-1');await page.getByRole('button',{name:/^이후 고정/}).click();await inspectState('timeline-paired');
-  await button(page,'관련 조사 자료 읽기').click();await close();await inspectState('timeline-research-read');
+  // 2026-11-16: M4-1 is a time-lapse; the research note appears beside the picture after a correct mark.
+  await open('M4-1');await button(page,'▶ 빨리 감기').click();await page.waitForTimeout(3600);await inspectState('timeline-lapse');
+  {const b=await page.locator('.timeline-layer').first().boundingBox();await page.touchscreen.tap(b.x+b.width*.536,b.y+b.height*.654);await page.locator('.timeline-note').waitFor();await inspectState('timeline-research-read');}
   await open('M3-4');await button(page,'모든 세균이 해로울 것 같아요').click();
   for(const label of ['새 자료: 요구르트 만들기','새 자료: 상한 우유']){await button(page,label).click();await inspectState('review-reading-'+(label.includes('요구르트')?'yogurt':'milk'));}
   await inspectState('review-claim');await button(page,'모든 세균이 해로워요').click();await inspectState('review-evidence');

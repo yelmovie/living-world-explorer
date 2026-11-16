@@ -92,13 +92,13 @@
  .choice-lamp{grid-template-rows:auto minmax(0,1fr) minmax(0,1fr)}
  .choice-card{grid-template-columns:38% minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);width:min(600px,62%);padding:8px}
  .choice-photo{grid-row:1/3}.choice-title{font-size:18px;text-align:left}.choice-detail{font-size:14px;text-align:left}
- .lamp-card-detail{display:none}.lamp-bulb{width:54px;height:54px}
+ .lamp-card-detail{display:none}.lamp-bulb{width:46px;height:46px}.lamp{padding:6px 12px;row-gap:4px}.lamp-label{font-size:16px}.lamp-chip{font-size:12px;padding:1px 8px}
 }
 @media(max-width:659px){
  .choice-game{height:auto;min-height:0}
  .choice-stage{flex-wrap:wrap;height:auto}
  .choice-card{order:1;width:100%;height:auto;grid-template-rows:180px auto auto}
- .swipe-side{order:2;width:calc(50% - 8px);height:96px}
+ .swipe-side{order:2;width:calc(50% - 8px);height:auto;min-height:96px}.swipe-arrow{display:none}.swipe-side .choice-icon{width:48px;height:48px}
  .stamp-rack{gap:10px}.stamp-face{min-width:0;font-size:15px}
  .lamp-hand{grid-auto-flow:row;grid-template-columns:1fr 1fr}.lamp-card{min-height:150px}
  .lamp-row{grid-template-columns:1fr}

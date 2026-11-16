@@ -15,7 +15,7 @@ export async function waitForScene(page,selector){
  if(await page.locator(selector).evaluate(host=>getComputedStyle(host).display==='none'))return;
  await page.waitForFunction(selector=>{
   const host=document.querySelector(selector);
-  if(host?.querySelector('.flat-lab,.quiz-board,.simple-observation,.fungi-sort,.pond-summary'))return true;
+  if(host?.querySelector('.flat-lab,.quiz-board,.simple-observation,.fungi-sort,.pond-summary,.choice-game,.timeline-game,.scope-game,.build-game'))return true;
   const canvas=host?.querySelector('canvas');
   const context=canvas?.getContext('2d');
   if(!context||!canvas.width||!canvas.height)return false;

@@ -35,7 +35,7 @@ export function mountTimelineGame(host:HTMLElement,task:InquiryTask,record:Inqui
   // Time-lapse: four frames cross-fade with the handle; the first picture stays small in the corner for comparison.
   const thumb=el('figure','timeline-thumb');const ti=el('img');ti.src=artFor(kind,0)!.src;ti.alt='';thumb.append(ti,el('figcaption','','처음'));
   frame.append(...layers,thumb,pins);
-  const range=el('input','timeline-range');range.type='range';range.min='0';range.max='3';range.step='0.01';range.setAttribute('aria-label','시간 손잡이');
+  const range=el('input','timeline-range');range.type='range';range.min='0';range.max='3';range.step='0.01';range.value='0';range.setAttribute('aria-label','시간 손잡이');
   const marks=el('div','timeline-ticks');['처음','조금 뒤','더 뒤','나중'].forEach(t=>marks.append(el('span','',t)));
   const play=button('▶ 빨리 감기',()=>{if(timer){stop();return;}let v=0;range.value='0';set(0);play.textContent='⏸ 멈추기';timer=setInterval(()=>{v=Math.min(3,v+.04);range.value=String(v);set(v);if(v>=3)stop();},40);},'primary timeline-play');
   const stop=()=>{if(timer)clearInterval(timer);timer=undefined;play.textContent='▶ 빨리 감기';};
@@ -62,7 +62,10 @@ export function mountTimelineGame(host:HTMLElement,task:InquiryTask,record:Inqui
   if((e.target as HTMLElement).closest('.timeline-handle,.timeline-thumb'))return;
   if(!validTimelinePair(record)){totoSay(root,{text:lapse?'먼저 시간 손잡이를 끝까지 밀어 변화를 봐!':'먼저 가운데 손잡이를 밀어 처음과 나중을 비교해 봐!'});return;}
   const b=layers[0].getBoundingClientRect();const p:Point={x:(e.clientX-b.left)/b.width,y:(e.clientY-b.top)/b.height};
-  if(addMark(task,record,p)){playEffect('snap');paintPins();hooks.changed();open();say();totoSay(root,{text:lapse?'맞아! 처음엔 없던 곰팡이가 생겼어. 옆의 조사 자료도 읽어 봐.':'맞아! 그 부분이 사라졌어. 옆의 조사 자료도 읽어 봐.',mood:'cheer'});}
+  // Fingertip tolerance (about 16 px on screen): the closest changed spot near the tap counts.
+  const r=16/b.width,step=Math.min(.006,r/4);let hit:Point|undefined,bd=Infinity;
+  for(let dx=-r;dx<=r;dx+=step)for(let dy=-r*b.width/b.height;dy<=r*b.width/b.height;dy+=step){const d=Math.hypot(dx,dy*b.height/b.width);if(d>r||d>=bd)continue;const q={x:p.x+dx,y:p.y+dy};if(markValid(task,{...record,marks:[]},q)){hit=q;bd=d;}}
+  if(hit&&addMark(task,record,hit)){playEffect('snap');paintPins();hooks.changed();open();say();totoSay(root,{text:lapse?'맞아! 처음엔 없던 곰팡이가 생겼어. 옆의 조사 자료도 읽어 봐.':'맞아! 그 부분이 사라졌어. 옆의 조사 자료도 읽어 봐.',mood:'cheer'});}
   else{playEffect('retry');record.misses++;hooks.changed();const miss=el('span','timeline-miss','✕');miss.style.left=p.x*100+'%';miss.style.top=p.y*100+'%';pins.append(miss);setTimeout(()=>miss.remove(),700);totoSay(root,{text:task.hints?.[1]||'처음 사진과 비교해 달라진 곳을 다시 찾아봐!'});}
  };
  const stage=el('div','timeline-stage');stage.append(frame,note);

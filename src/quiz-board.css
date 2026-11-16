@@ -332,3 +332,6 @@
     flex: none;
   }
 }
+
+/* 2026-11-16: right answers advance by themselves, so phone-landscape heights drop the 이전/다음 row that no longer fits. */
+@media (min-width:660px) and (max-height:560px){.quiz-board .quiz-navigation{display:none}}

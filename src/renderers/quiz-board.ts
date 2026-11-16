@@ -108,7 +108,8 @@ export function mountQuizBoard(host: HTMLElement, task: InquiryTask, record: Inq
     feedback.dataset.state = solved ? 'correct' : selected ? 'retry' : 'waiting';
     feedback.textContent = solved ? '맞았어요!' : selected ? `다시 골라봐요. ${task.feedback}` : '답을 하나 골라요.';
     previous.disabled = index === 0;
-    next.hidden = index === items.length - 1;
+    // 2026-11-16: right answers advance by themselves, so '다음 문제' only shows when revisiting a solved question.
+    next.hidden = index === items.length - 1 || !solved;
     next.disabled = !solved;
     finish.hidden = index !== items.length - 1 || !items.every(correct);
     finish.textContent = task.id === 'M3-2' && record.v === 2 && record.assignments.ladder !== 'smallest'

@@ -11,7 +11,8 @@ const errors=[],checks=[];
 page.on('pageerror',error=>errors.push(error.message));
 page.on('response',response=>{if(response.status()>=400)errors.push(response.status()+' '+response.url());});
 const dialog=()=>page.locator('.detective-dialog');
-const report=()=>dialog().getByRole('button',{name:'연결 확인하기',exact:true});
+// 2026-11-16: the board checks itself once every clue is placed; wait for that instead of pressing '연결 확인하기'.
+const checked=()=>page.waitForTimeout(800);
 const done=()=>dialog().getByRole('button',{name:'관찰로 돌아가기',exact:true});
 async function connect(index,role){
  await page.locator('.detective-clue').nth(index).click();
@@ -69,19 +70,18 @@ try{
    await first.focus();await page.keyboard.press('Enter');
    assert.ok(await first.evaluate(node=>node===document.activeElement),'inspection must preserve keyboard focus');
    for(let i=0;i<3;i++)await connect(i,'supports');
-   await report().click();
+   await checked();
    assert.equal(await done().isVisible(),false,'incorrect explanation cannot finish');
    assert.ok(await page.locator('.detective-clue').nth(2).evaluate(node=>node===document.activeElement),'retry focuses the clue to reconsider');
-   await connect(2,'limit');await report().click();
+   await connect(2,'limit');await checked();
    assert.equal(await done().isVisible(),true);
    await reopen();
    assert.equal(await done().isVisible(),true,'solved state must survive reopening');
    await connect(0,'limit');
    assert.equal(await done().isVisible(),false,'editing a solved case revokes completion');
-   assert.equal(await report().isVisible(),true);
    await reopen();
    assert.equal(await done().isVisible(),false,'incorrect revision must stay incomplete after reopening');
-   await connect(0,'supports');await report().click();
+   await connect(0,'supports');await checked();
    await inspect();
    await page.screenshot({path:`${out}/${width}x${height}-M${stage+1}.png`});
    await done().click();

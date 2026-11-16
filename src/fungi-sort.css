@@ -89,6 +89,10 @@
 }
 /* M1-4 has no side panel; give its column back to the board on phone landscape. */
 @media(min-width:660px) and (max-height:480px){
- #app>.expedition-shell.link-task{grid-template-columns:minmax(0,1fr)}
- #app>.expedition-shell.link-task .expedition-footer{grid-area:3/1/4/2}
+ #app>.expedition-shell.link-task,.large-text #app>.expedition-shell.link-task{grid-template-columns:minmax(0,1fr)}
+ #app>.expedition-shell.link-task .expedition-footer,.large-text #app>.expedition-shell.link-task .expedition-footer{grid-area:3/1/4/2}
 }
+@media(min-width:660px) and (max-height:480px){#app>.expedition-shell.link-task .expedition-secondary .model-badge{display:none}}
+/* M1-4 has no side panel at any size: one column, footer full width (doubled class beats the older media rules). */
+#app>.expedition-shell.link-task.link-task,.large-text #app>.expedition-shell.link-task.link-task{grid-template-columns:minmax(0,1fr)}
+#app>.expedition-shell.link-task.link-task .expedition-footer{grid-column:1/-1}

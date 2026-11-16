@@ -13,6 +13,20 @@ const alternative=async()=>{await btn('변화 위치 고르기').click();return 
 // Phaser suppresses synthetic mouse events just after touch; keep this tablet flow on one input device.
 async function tapCanvas(p,x,y){const rect=await p.locator('.expedition-canvas-host canvas').boundingBox();assert.ok(rect);await p.touchscreen.tap(rect.x+x*rect.width,rect.y+y*rect.height);}
 async function touch(x,y){await tapCanvas(page,x/960,y/540);}
+// 2026-11-16 game boards (M1-2/3 microscopes, M1-4 sort, M3/M4 stamp·swipe·lamp, M4 time-lapse·wipe).
+const spores=[[0.482,0.3014],[0.4461,0.3708],[0.4406,0.4403]],moldTags={thread:[0.4813,0.3653],round:[0.5,0.6]},changes={bread:[0.536,0.654],leaf:[0.46,0.4486]};
+const eyePoint=p=>page.locator('.eye-field').evaluate((f,p)=>{const r=f.getBoundingClientRect(),b={left:r.left+f.clientLeft,top:r.top+f.clientTop,width:f.clientWidth,height:f.clientHeight},img=f.querySelector('img'),a=img.naturalWidth/img.naturalHeight,w=b.height*a;return [b.left+p[0]*w-(w-b.width)/2,b.top+p[1]*b.height];},p);
+async function playBoard(task){
+ if(task.id==='M1-2'){const lv=await page.locator('.lens-view').boundingBox();await page.mouse.move(lv.x+lv.width*.2,lv.y+lv.height*.85);await page.mouse.down();await page.mouse.move(lv.x+lv.width*.33,lv.y+lv.height*.42,{steps:10});await page.waitForTimeout(900);await page.mouse.up();await page.locator('.eye-field').waitFor();await page.waitForTimeout(700);for(const p of spores){const [x,y]=await eyePoint(p);await page.mouse.click(x,y);await page.waitForTimeout(250);}return true;}
+ if(task.id==='M1-3'){for(let i=0;i<12&&await page.locator('.focus-dial').count();i++){await btn('오른쪽으로 ▶').click();await page.waitForTimeout(60);}for(const [id,p] of Object.entries(moldTags)){await page.locator(`[data-tag="${id}"]`).click();const [x,y]=await eyePoint(p);await page.mouse.click(x,y);await page.waitForTimeout(250);}return true;}
+ if(task.id==='M1-4'||task.id==='M4-3'){for(const item of task.items){await linkCard(page,item.id).tap();await linkTarget(page,item.target).tap();await page.waitForTimeout(150);}return true;}
+ if(['M3-1','M3-3','M4-4'].includes(task.id)){for(let i=0;i<task.items.length;i++){const id=await page.locator('.choice-card').getAttribute('data-link-item');const item=task.items.find(it=>it.id===id);await linkTarget(page,item.target).tap();await page.waitForFunction(id=>{const c=document.querySelector('.choice-card');return !c||c.hidden||c.dataset.linkItem!==id;},id,{timeout:5000});await page.waitForTimeout(250);}return true;}
+ if(task.id==='M4-1'||task.id==='M4-2'){if(task.id==='M4-1'){await btn('▶ 빨리 감기').click();await page.waitForTimeout(3600);}else{await btn('◀ 처음 더 보기').click();await btn('나중 더 보기 ▶').click();}const b=await page.locator('.timeline-layer').first().boundingBox();const [x,y]=changes[task.organism];await page.touchscreen.tap(b.x+b.width*x,b.y+b.height*y);await page.locator('.timeline-note').waitFor();return true;}
+ if(task.id==='M5-2'||task.id==='M5-3'){const right=task.items.find(it=>it.target==='action');await linkCard(page,right.id).tap();await page.locator('.build-vessel').tap();await page.locator('[data-prediction="supported"]').tap();const act=page.locator('.build-action');await act.scrollIntoViewIfNeeded();
+  if(task.id==='M5-2'){const b=await act.boundingBox();await page.mouse.move(b.x+b.width/2,b.y+b.height/2);await page.mouse.down();await page.waitForTimeout(2900);await page.mouse.up();}else for(let i=0;i<5;i++){await act.click();await page.waitForTimeout(120);}
+  await page.locator('.build-verdict').waitFor();return true;}
+ return false;
+}
 async function connectAll(task){
  if(await page.locator('.quiz-board').count()){
   while(true){
@@ -21,8 +35,9 @@ async function connectAll(task){
    if(!item)throw Error('unknown quiz item');
    const answer=page.locator(`[data-quiz-answer="${item.target}"]`);
    if(await answer.getAttribute('aria-pressed')!=='true')await answer.tap();
-   if(await btn('다음 문제').isHidden())break;
-   await btn('다음 문제').tap();
+   // 2026-11-16: a right answer moves to the next question by itself.
+   if(await page.locator('.quiz-finish').isVisible())break;
+   await page.waitForFunction(id=>document.querySelector('.quiz-board')?.dataset.quizItem!==id,id,{timeout:5000});
   }
   return;
  }
@@ -46,9 +61,10 @@ async function connectAll(task){
 async function mark(x,y){const dialog=await alternative();await setRange(page,'표시 가로 위치',x);await setRange(page,'표시 세로 위치',y);await dialog.getByRole('button',{name:'이 위치 표시',exact:true}).click();await dialog.getByRole('button',{name:'닫기',exact:true}).click();}
 async function completeTask(task,replay=false){
  await page.getByRole('heading',{name:task.title,exact:true}).waitFor();await waitForScene(page,'.expedition-canvas-host');
- if(['collect','connect','sort'].includes(task.kind))await connectAll(task);
+ const board=await playBoard(task);
+ if(!board&&['collect','connect','sort'].includes(task.kind))await connectAll(task);
  if(task.id==='M3-2'){await btn('크기 사다리에 세균 놓기').click();const ladder=page.locator('.ladder-dialog');await ladder.getByRole('button',{name:'여기에 놓기'}).first().click();assert.match(await ladder.locator('.ladder-feedback').innerText(),/더 아래/);await ladder.getByRole('button',{name:'여기에 놓기'}).last().click();assert.match(await ladder.locator('.ladder-feedback').innerText(),/약 200배/);await ladder.getByRole('button',{name:'닫기',exact:true}).click();}
- if(task.kind==='microscope'){
+ if(task.kind==='microscope'&&!board){
   if(task.id==='M2-2'){
    await btn('눈으로 보기').click();await page.locator('[data-eye-active]').waitFor();
    assert.deepEqual(await observerArt('eye'),['assets/ui/moa-naked-eye.webp','assets/ui/toto-naked-eye.webp']);
@@ -71,9 +87,10 @@ async function completeTask(task,replay=false){
   await btn('몸 둘레').click();assert.ok(await btn('발견 기록하기').isEnabled());
   await btn('표시 되돌리기').click();
   const w=440,h=w*496/793;await tapCanvas(page,(480-.33*w)/960,(282+.001*h)/540);await page.getByText('현미경 · 몸 둘레 표시 1곳').waitFor();}
- if(task.kind==='timeline'){await setRange(page,'관찰 순서',3);await page.getByRole('button',{name:/^이후 고정/}).click();await mark(...(task.organism==='bread'?[.49,.4]:[.51,.54]));
+// Timelines are M4-1/M4-2 boards now (playBoard).
+ if(task.kind==='timeline'&&!board){await setRange(page,'관찰 순서',3);await page.getByRole('button',{name:/^이후 고정/}).click();await mark(...(task.organism==='bread'?[.49,.4]:[.51,.54]));
   await page.getByText('관련 조사 자료 읽기',{exact:true}).click();assert.ok(await page.locator('.process-note').isVisible());await page.getByRole('dialog').getByRole('button',{name:'닫기',exact:true}).click();}
- if(task.kind==='build'){await connectAll(task);await btn(task.id==='M5-1'?'요구르트가 될 거예요':'사례처럼 이어질 것 같아요').click();await btn(task.id==='M5-1'?'발효기 켜기':'설계 가동').click();await page.locator('.run-reflection[data-result="matches"]').waitFor();assert.equal(await btn('예상과 같아요').count(),0,'the game compares the prediction; no extra tap');}
+ if(task.kind==='build'&&!board){await connectAll(task);await btn(task.id==='M5-1'?'요구르트가 될 거예요':'사례처럼 이어질 것 같아요').click();await btn(task.id==='M5-1'?'발효기 켜기':'설계 가동').click();await page.locator('.run-reflection[data-result="matches"]').waitFor();assert.equal(await btn('예상과 같아요').count(),0,'the game compares the prediction; no extra tap');}
  if(task.kind==='review'){await btn('모든 세균이 해로울 것 같아요').click();for(const item of task.items){await btn(item.label).click();await page.locator('.source-preview').waitFor({state:'visible'});}assert.equal(await btn('자료 확인했어요').count(),0,'opening a source is reading it');await btn('모든 세균이 해로운 것은 아니에요').click();await btn('요구르트 만들기').click();assert.match(await page.locator('.inquiry-status').innerText(),/수정/);}
  if(task.kind==='publish'){await btn('요구르트').click();await btn('유산균의 작용').click();assert.ok((await page.getByLabel('내 소개 문장',{exact:true}).inputValue()).length>0,'selected case and action create an editable introduction');await page.getByLabel('내 소개 문장',{exact:true}).fill('특정 세균의 작용을 우유로 요구르트를 만드는 데 이용해요.');}
  if(task.kind==='summary'){
@@ -84,11 +101,13 @@ async function completeTask(task,replay=false){
   await page.screenshot({path:'.tmp/screens/pond-summary.png'});
   assert.equal(await page.locator('.link-board').count(),0);await btn('정리 마치기').click();
  }else{
- await btn('발견 기록하기').click();await page.locator('.discovery-dialog').waitFor();
+ // 2026-11-16: a finished activity opens its record by itself; the button is the fallback.
+ if(['collect','connect','sort','microscope','timeline','track','sample'].includes(task.kind)||['M5-2','M5-3'].includes(task.id))await page.locator('.discovery-dialog').waitFor({timeout:9000}).catch(()=>btn('발견 기록하기').click());else await btn('발견 기록하기').click();
+ await page.locator('.discovery-dialog').waitFor();
  assert.match(await page.locator('.discovery-dialog .pip-label').innerText(),new RegExp(`발견 도장 ${task.order} / 4`));
  await btn(task.order===4?'연구소 복구하기':'다음 발견으로').click();
  }
- if(task.order===4&&task.kind!=='summary'){const clues=await page.locator('[data-clue]').evaluateAll(nodes=>nodes.map((n,i)=>({id:n.dataset.clue,role:i===2?'limit':'supports'})));for(const clue of clues){await page.locator(`[data-clue="${clue.id}"]`).click();await page.locator(`[data-zone="${clue.role}"]`).click();}await btn('연결 확인하기').click();await btn('조사 결과 전달하기').click();}
+ if(task.order===4&&task.kind!=='summary'){const clues=await page.locator('[data-clue]').evaluateAll(nodes=>nodes.map((n,i)=>({id:n.dataset.clue,role:i===2?'limit':'supports'})));for(const clue of clues){await page.locator(`[data-clue="${clue.id}"]`).click();await page.locator(`[data-zone="${clue.role}"]`).click();}await page.waitForTimeout(800);await btn('조사 결과 전달하기').click();}
  if(task.order===4&&!replay){
   const stageIndex=Number(task.stage.slice(1))-1;
   await page.locator('.concept-dialog').waitFor();await waitForScene(page,'.map-host');

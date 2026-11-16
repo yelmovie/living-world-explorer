@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {launchBrowser,button,navigate,teacherTools,waitSaved,waitForScene,linkCard,linkTarget} from './browser.mjs';
+import {launchBrowser,button,navigate,teacherTools,waitSaved,waitForScene} from './browser.mjs';
 import {inquiryTasks,stageRoutes} from './curriculum.mjs';
 
 const base=process.env.APP_URL||'http://127.0.0.1:5176';
@@ -28,7 +28,8 @@ try{
  // A fresh preview lets the first ladder attempt be wrong before example records are loaded.
  for(const [index,[width,height]] of [[375,812],[375,812],[915,412],[1024,768]].entries()){
   await page.setViewportSize({width,height});const task=await open('M3-2');
-  if(index===0)for(const item of task.items){await linkCard(page,item.id).click();await linkTarget(page,item.target).click();}
+  // 2026-11-16: M3-2 is a quiz board; right answers move on by themselves.
+  if(index===0)for(const [i,item] of task.items.entries()){await page.locator(`[data-quiz-answer="${item.target}"]`).click();if(i<task.items.length-1)await page.waitForFunction(id=>document.querySelector('.quiz-board')?.dataset.quizItem!==id,item.id,{timeout:5000});}
   await button(page,index===0?'크기 사다리에 세균 놓기':'✓ 크기 사다리 다시 보기').click();
   const ladder=page.locator('.ladder-dialog');
   await ladder.evaluate(async node=>{await Promise.all(node.getAnimations().map(animation=>animation.finished));});
@@ -68,10 +69,11 @@ try{
  const example=await teacherTools(page);
  await example.getByRole('button',{name:'시연용 예시 기록 불러오기',exact:true}).click();
  await page.locator('dialog[open]').waitFor({state:'detached'});
- for(const id of ['M1-3','M2-3','M3-2','M4-2','M5-1']){
-  await open(id);await button(page,'도움말').click();
-  const help=page.getByRole('dialog',{name:'탐구 도움말',exact:true});
-  const chips=help.locator('.term-chip.button');assert.ok(await chips.count()>0,id+' must offer science terms');
+ // 2026-11-16: science words live on the discovery record card ('도움말' was removed in 3db7714).
+ for(const id of ['M1-2','M2-3','M4-4']){
+  await open(id);await button(page,'기록 확인하고 계속').click();
+  const card=page.locator('.discovery-dialog');await card.waitFor();
+  const chips=card.locator('.term-chip.button');assert.ok(await chips.count()>0,id+' must offer science terms');
   for(const chip of await chips.all()){
    const term=(await chip.getAttribute('aria-label')).replace(/ 뜻 보기$/,'');
    await chip.click();
@@ -79,23 +81,15 @@ try{
    assert.ok((await definition.locator('p').innerText()).length>10,'term must have an explanation');
    await definition.getByRole('button',{name:'닫기',exact:true}).click();
    await definition.waitFor({state:'detached'});
-   assert.ok(await chip.evaluate(node=>node===document.activeElement),'term close restores help focus');
+   assert.ok(await chip.evaluate(node=>node===document.activeElement),'term close restores record focus');
   }
-  await help.getByRole('button',{name:'닫기',exact:true}).click();
-  assert.ok(await button(page,'도움말').evaluate(node=>node===document.activeElement));checks.push('glossary '+id);
+  await page.keyboard.press('Escape');await card.waitFor({state:'detached'});checks.push('glossary '+id);
  }
- const task=await open('M3-2');
- const scienceSource=task.items.find(item=>item.detail.includes('세균'));
- assert.ok(scienceSource,'a bacteria explanation is available');
- await linkCard(page,scienceSource.id).click();
- assert.ok(await page.locator('.source-preview .source-next').isVisible(),'selected source keeps next action visible');
- assert.match(await page.locator('.source-next').innerText(),/칸.*눌러/);
- assert.ok(await page.locator('.source-preview .science-keyword').first().isVisible(),'scientific keyword is emphasized');
  await open('M2-1');await waitForScene(page,'.expedition-canvas-host');
  assert.equal(responses.get('/assets/ui/slide-flat.webp'),200,'sampling scene must load the new flat slide');
  assert.equal(JSON.stringify((await waitSaved(page)).learner),learnerBefore,'teacher glossary and practice preserve learner records');
  assert.deepEqual(errors,[]);
- console.log('PASS education UX',checks.join(', '),'source guidance, keyword emphasis, slide image and learner isolation');
+ console.log('PASS education UX',checks.join(', '),'slide image and learner isolation');
 }finally{
  await browser.close();
 }

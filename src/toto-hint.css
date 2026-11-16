@@ -17,6 +17,6 @@
 .toto-bubble[data-mood=cheer] .toto-bubble-name{color:#2f7a45}
 .toto-bubble-text{margin:0;font-size:20px;line-height:1.45;word-break:keep-all}
 .toto-more{margin-top:10px;min-height:44px;padding:6px 16px;border-radius:999px;border:2px solid #e59ab2;background:#ffeef3;color:#7a3550;font:inherit;font-weight:700;font-size:17px}
-.toto-close{position:absolute;top:6px;right:8px;width:40px;height:40px;border:0;border-radius:50%;background:none;color:#8a6d66;font-size:26px;line-height:1;cursor:pointer}
+.toto-close{position:absolute;top:2px;right:2px;width:48px;height:48px;border:0;border-radius:50%;background:none;color:#8a6d66;font-size:26px;line-height:1;cursor:pointer}
 @media(prefers-reduced-motion:reduce){.toto-hint.nudge .toto-hint-toggle,.toto-bubble.pop{animation:none}}
-@media(max-height:480px){.toto-hint-toggle{min-height:44px;font-size:16px}.toto-hint-toggle img{width:40px;height:40px}.toto-bubble{width:min(340px,60vw);padding:10px 14px}.toto-bubble-text{font-size:17px}}
+@media(max-height:480px){.toto-hint-label{display:none}.toto-hint-toggle{min-height:44px;font-size:16px;padding-right:2px}.toto-hint-toggle img{width:40px;height:40px}.toto-bubble{width:min(340px,60vw);padding:10px 14px}.toto-bubble-text{font-size:17px}}
