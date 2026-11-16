@@ -23,7 +23,8 @@ try{
     await page.getByRole('button',{name:new RegExp('^'+task.order+'번째 발견:')}).click();
     await page.locator('.inquiry-loading').waitFor({state:'detached'});
     const start=page.getByRole('button',{name:/자동재생/});
-    if(!['microscope','sample','track','timeline'].includes(task.kind)){
+    // 2026-11-17: M1-2/M1-3 and M4-1/M4-2 are game boards with their own play; no autoplay button there.
+    if(!['microscope','sample','track','timeline'].includes(task.kind)||['M1-2','M1-3','M4-1','M4-2'].includes(task.id)){
       assert.equal(await start.count(),0,task.id+' is a learner decision');
       continue;
     }
@@ -65,12 +66,12 @@ try{
     plays++;
     console.log(task.id+' optional playback and handoff passed');
   }
-  assert.equal(plays,7);
+  assert.equal(plays,3,"M2-1, M2-2 and M2-3 keep optional playback");
   await navigate(page,base,'final-report');
   assert.ok(await button(page,'발견을 코어에 연결').isDisabled());
   await page.reload();
   await page.locator('.screen-fungi-field').waitFor();
   assert.equal(JSON.stringify((await waitSaved(page)).learner),JSON.stringify(original));
   assert.deepEqual(errors,[]);
-  console.log('PASS: 7 optional demonstrations, 13 learner-only tasks, teacher reload isolation');
+  console.log('PASS: 3 optional demonstrations, 17 learner-only tasks, teacher reload isolation');
 }finally{await browser.close();}

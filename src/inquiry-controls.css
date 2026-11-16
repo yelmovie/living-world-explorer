@@ -196,3 +196,22 @@
  .large-text #app>.expedition-shell .expedition-tools .button{padding-block:4px;min-height:48px}
  .large-text #app>.expedition-shell .inquiry-playback>.observation-play{padding-block:4px;min-height:48px}
 }
+/* 2026-11-17: M2 observation tools fit without scrolling. Autoplay lives in the footer beside 이전 발견,
+   the three viewing modes share one row, and on short or narrow screens they read 눈 · 돋보기 · 현미경. */
+#app>.expedition-shell .observation-modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#app>.expedition-shell .observation-modes>.button{min-width:0;padding-inline:4px}
+#app>.expedition-shell .expedition-secondary>.observation-play{min-width:0;white-space:nowrap}
+@media(max-height:560px) and (min-width:660px){
+ #app>.expedition-shell .observation-modes .mode-suffix{display:none}
+}
+@media(max-width:659px){
+ #app>.expedition-shell .observation-modes .mode-suffix{display:none}
+ #app>.expedition-shell .expedition-secondary>.button.observation-play{display:inline-flex}
+ /* The panel row takes its tools' height; the picture above gives up the space instead. */
+ #app>.expedition-shell[data-stage=M2] .expedition-panel{overflow:visible;min-height:min-content;max-height:none}
+ #app>.expedition-shell[data-stage=M2] .expedition-panel-body{flex:none}
+ /* M2-2 and M2-3 on a phone: the picture shrinks before the focus tools leave the screen. */
+ #app>.expedition-shell[data-stage=M2]:is([data-kind=microscope],[data-kind=track]){grid-template-rows:auto minmax(200px,1fr) auto auto}
+ #app>.expedition-shell[data-stage=M2]:is([data-kind=microscope],[data-kind=track]) .case-brief{display:none}
+ #app>.expedition-shell[data-stage=M2] .simple-observation{min-height:0}
+}

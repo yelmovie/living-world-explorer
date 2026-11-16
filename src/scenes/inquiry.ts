@@ -61,8 +61,8 @@ export function inquiryScene(ctx:Context,stage:Stage){
  };
  const updateStatus=()=>{
   if(demoStep>=0)return;
-  playback.hidden=task.kind==='build'?!r.prediction||!!currentRun(r):!observationFrames(task,r).length;
-  if(demoButton)demoButton.hidden=playback.hidden;
+  playback.hidden=task.kind!=='build'||!r.prediction||!!currentRun(r);
+  if(demoButton)demoButton.hidden=!observationFrames(task,r).length;
   updateReadouts();
   const g=guidance(task,r,selectedCard);
   status.hidden=linking&&!sourcePreview.hidden;
@@ -143,6 +143,8 @@ export function inquiryScene(ctx:Context,stage:Stage){
       tools.querySelector<HTMLButtonElement>(`[data-view-level="${level}"]`)?.focus({preventScroll:true});
       playEffect(level===2?'capture':'click');
      },level===2&&r.level<2?'primary':'secondary');
+     // 2026-11-17: on short screens the row shows only 눈 · 돋보기 · 현미경; the full name stays as the button name.
+     const cut=label.search(/(으로|로) /);mode.replaceChildren(label.slice(0,cut),el('span','mode-suffix',label.slice(cut)));mode.setAttribute('aria-label',label);
      mode.dataset.viewLevel=String(level);mode.setAttribute('aria-pressed',String(r.level===level));modes.append(mode);
     }
     tools.append(modes);
@@ -150,7 +152,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
    if(r.level===2&&!r.capture){
     const sharp=()=>Math.abs(r.focus-65)<=12;
     const capture=button('관찰 사진 남기기',()=>{if(!sharp())return info('초점을 맞춰 선명하게 보아요.');r.capture=true;r.level=2;r.light=65;r.marks=[];paint();controls();playEffect('capture');},'primary',!sharp());
-    tools.append(slider('초점',35,95,5,r.focus,v=>{const was=sharp();r.focus=v;paint();capture.disabled=!sharp();if(!was&&sharp())playEffect('focus');}),button('초점 자동 맞춤',()=>{r.focus=65;r.light=65;paint();controls();}),capture);
+    tools.append(slider('초점',35,95,5,r.focus,v=>{const was=sharp();r.focus=v;paint();capture.disabled=!sharp();if(!was&&sharp())playEffect('focus');}),capture);
    }else if(r.capture)tools.append(paragraph(task.organism==='mushroom'?'포자는 버섯의 주름에서 만들어져요. 알맞은 조건에서 균사가 자랄 수 있어요.':task.organism==='mold'?'이 곰팡이는 균사로 이루어져 있고, 포자주머니 안에서 포자가 만들어져요.':'해캄은 초록색이고 여러 마디가 실처럼 이어져 있어요.'),button('다시 관찰하기',()=>{r.capture=false;r.marks=[];r.level=2;r.focus=65;paint();controls();}));
   }else if(task.kind==='track'&&r.level===2){
    const found=r.marks.filter(p=>markValid(task,r,p)).length;
@@ -158,11 +160,11 @@ export function inquiryScene(ctx:Context,stage:Stage){
    if(!found)choice.append(paragraph('가는 털은 어디에 있나요?'),
     button('몸 둘레',()=>{if(addMark(task,r,{x:.17,y:.501})){paint();controls();playEffect('snap');recordButton?.focus({preventScroll:true});}},'primary'),
     button('몸 안쪽',()=>info('그림에서 몸 바깥의 잔털을 살펴봐요.')));
-   tools.append(paragraph(`현미경 · 몸 둘레 표시 ${found}곳`),choice,button('표시 되돌리기',()=>{r.marks.pop();paint();controls();},'secondary',!r.marks.length),button('움직임 다시 보기',()=>{r.level=0;paint();controls();}),button('눈으로 보기',nakedWater));
+   // 2026-11-17: the question gives way to the count once a mark is placed; undo appears only when there is something to undo.
+   tools.append(found?paragraph(`현미경 · 몸 둘레 표시 ${found}곳`):choice,...r.marks.length?[button('표시 되돌리기',()=>{r.marks.pop();paint();controls();},'secondary')]:[],button('움직임 다시 보기',()=>{r.level=0;paint();controls();}));
   }else if(task.kind==='track'){
-   tools.append(button('눈으로 보기',nakedWater));
    if(!validTrackPair(r)){
-    tools.append(slider('관찰 시점',0,10,1,r.time,v=>{view?.setPlaying(false);r.time=v;view?.setPreview(true);paint();}),
+    tools.append(button('눈으로 보기',nakedWater),slider('관찰 시점',0,10,1,r.time,v=>{view?.setPlaying(false);r.time=v;view?.setPreview(true);paint();}),
      button(`A 고정${r.pins[0]===undefined?'':` · ${r.pins[0]}`}`,()=>{r.pins=[Math.round(r.time)];view?.setPreview(true);paint();controls();playEffect('capture');}),
      button(`B 고정${r.pins[1]===undefined?'':` · ${r.pins[1]}`}`,()=>{const time=Math.round(r.time);if(!Number.isFinite(r.pins[0])||Math.abs(time-r.pins[0])<3)return info('A에서 3칸 이상 떨어진 순간을 골라요.');r.pins[1]=time;view?.setPreview(false);paint();controls();playEffect('capture');}));
    }else{
@@ -313,8 +315,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
  };
  let frames=observationFrames(task,r);
  let timer:ReturnType<typeof setTimeout>|undefined;
- demoButton=['microscope','sample','timeline','track'].includes(task.kind)?button('자동재생',()=>{if(demoStep>=0)stopDemo();else{frames=observationFrames(task,r);if(frames.length)playFrame(0);}},'observation-play primary',true):undefined;
- if(demoButton)playback.prepend(demoButton);
+ demoButton=!board&&['microscope','sample','timeline','track'].includes(task.kind)?button('자동재생',()=>{if(demoStep>=0)stopDemo();else{frames=observationFrames(task,r);if(frames.length)playFrame(0);}},'observation-play secondary',true):undefined;
  function stopDemo(){
   if(demoStep<0)return;
   clearTimeout(timer);demoStep=-1;view?.setPlaybackRate(1);view?.endDemo();
@@ -363,12 +364,10 @@ export function inquiryScene(ctx:Context,stage:Stage){
   const dialog=modal(index===3?'조사 기록을 모았어요!':'새로운 발견을 기록했어요',[card,pips,onward,button(index===3?'연구소 복구하기':'다음 발견으로',()=>{dialog.close();if(index===3){openDetectiveBoard(ctx,stage,()=>ctx.complete(stage));return;}playEffect('page-turn');progress.current[stage]=index+1;ctx.save();ctx.go(index+1<2?stages.find(s=>s.id===stage)!.entry:stages.find(s=>s.id===stage)!.exit);},'primary')],{showClose:false});dialog.classList.add('discovery-dialog');
  },'primary',true);
  recordButton=next;
- footer.append(left);
- if(task.kind==='track'){
-  next.classList.add('track-record-next');side.append(next);
- }else footer.append(next);
+ if(demoButton)left.append(demoButton);
+ footer.append(left,next);
  ctx.host.append(footer);
- const stepper=el('div','activity-stepper');stepper.setAttribute('aria-label','발견 기록 진행');for(const [i,t] of list.entries()){const done=!!progress.records[t.id]?.completedAt;const step=button(String(i+1),()=>{progress.current[stage]=i;ctx.save();ctx.go(i<2?stages.find(s=>s.id===stage)!.entry:stages.find(s=>s.id===stage)!.exit);},i===index?'current':done?'done':'',!done&&i!==index&&!ctx.state.settings.admin);step.setAttribute('aria-label',`${i+1}번째 발견: ${t.title}`);if(i===index)step.setAttribute('aria-current','step');stepper.append(step);}footer.insertBefore(stepper,task.kind==='track'?null:next);
+ const stepper=el('div','activity-stepper');stepper.setAttribute('aria-label','발견 기록 진행');for(const [i,t] of list.entries()){const done=!!progress.records[t.id]?.completedAt;const step=button(String(i+1),()=>{progress.current[stage]=i;ctx.save();ctx.go(i<2?stages.find(s=>s.id===stage)!.entry:stages.find(s=>s.id===stage)!.exit);},i===index?'current':done?'done':'',!done&&i!==index&&!ctx.state.settings.admin);step.setAttribute('aria-label',`${i+1}번째 발견: ${t.title}`);if(i===index)step.setAttribute('aria-current','step');stepper.append(step);}footer.insertBefore(stepper,next);
 
  if(linking&&!quiz)left.append(badge);
  if(task.hints)left.prepend(mountTotoHint(ctx.host,task));

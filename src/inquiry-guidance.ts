@@ -26,14 +26,14 @@ export function guidance(task:InquiryTask,r:InquiryRecord,selectedCard=''){
   const feature=task.organism==='mushroom'?'주름을':task.organism==='mold'?'곰팡이의 생김새를':'해캄의 생김새를';
   if(r.capture)action=issues.length?'‘다시 관찰하기’를 눌러 초점을 확인하고 새 관찰 사진을 남겨요.':'관찰 사진을 남겼어요. 발견 기록하기를 눌러요.';
   else if(r.level<2)action=`사진 위에서 돋보기를 움직여 ${feature} 살펴본 뒤 ‘현미경으로 관찰하기’를 눌러요.`;
-  else if(Math.abs(r.focus-65)>12)action='‘초점’을 움직여 사진을 선명하게 만들어요. 어려우면 ‘초점 자동 맞춤’을 눌러요.';
+  else if(Math.abs(r.focus-65)>12)action='‘초점’을 움직여 사진을 선명하게 만들어요.';
   else action='선명한 모습을 살펴본 뒤 ‘관찰 사진 남기기’를 눌러요.';
  }else if(task.kind==='sample'){
   total=3;done=Number(!!r.assignments.site)+Number(r.sequence>=2)+Number(r.sequence===3);action=!r.assignments.site?'‘물가 가까이’와 ‘물풀 가까이’ 중 조사할 장소를 눌러요.':r.sequence<2?'‘한 방울 채집’을 눌러 물을 떠요.':r.sequence===2?'‘한 방울 옮기기’를 눌러 관찰할 표본을 준비해요.':action;
  }else if(task.kind==='track'){
   const cilia=r.v===2,paired=r.pins.length===2&&Number.isFinite(r.pins[0])&&Number.isFinite(r.pins[1])&&Math.abs(r.pins[1]-r.pins[0])>=3;
   total=cilia?3:2;done=Number(Number.isFinite(r.pins[0]))+Number(cilia?paired:!issues.length)+Number(cilia&&!issues.length);
-  action=!Number.isFinite(r.pins[0])?'‘관찰 시점’을 움직인 뒤 A 고정을 눌러요.':!paired?(Math.abs(r.time-r.pins[0])>=3?'B 고정을 눌러 두 순간을 나란히 비교해요.':'‘관찰 시점’을 A에서 3칸 이상 옮긴 뒤 B 고정을 눌러요.'):issues.length&&cilia?(r.level<2?'두 순간의 위치를 비교한 뒤 ‘현미경으로 움직임의 비밀 찾기’를 눌러요.':'확대된 몸 둘레를 살펴보고 가는 털이 보이는 곳을 눌러 표시해요.'):action;
+  action=!Number.isFinite(r.pins[0])?'‘관찰 시점’을 움직인 뒤 A 고정을 눌러요.':!paired?(Math.abs(r.time-r.pins[0])>=3?'B 고정을 눌러 두 순간을 나란히 비교해요.':'‘관찰 시점’을 A에서 3칸 이상 옮긴 뒤 B 고정을 눌러요.'):issues.length&&cilia?(r.level<2?'두 순간의 위치를 비교하고 현미경으로 더 가까이 봐요.':'확대된 몸 둘레를 살펴보고 가는 털이 보이는 곳을 눌러 표시해요.'):action;
  }else if(task.kind==='timeline'){
   const marked=r.marks.length>0&&r.marks.every(p=>markValid(task,r,p));
   total=3;done=Number(validTimelinePair(r))+Number(marked)+Number(r.opened.includes('process'));

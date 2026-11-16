@@ -43,6 +43,8 @@ node tests/core-figure.mjs
 npm run test:offline
 ```
 
+2026-11-17 확인: M2-2·M2-3 관찰 패널이 9개 화면 크기와 큰 글씨에서 넘치지 않는다. 자동재생은 아래 줄(이전 발견 옆)로, M2-3 발견 기록하기는 다른 활동처럼 아래 오른쪽으로 옮겼고, 슬라이더와 겹치던 ‘초점 자동 맞춤’은 뺐다. `inquiry-screen-fit`에 남은 실패는 M3-4·M5-4 상태 패널 넘침과 375×812 세로 화면 스크롤이다. `observation-playback`·`track-controls`를 포함한 나머지 검사는 모두 통과한다.
+
 2026-11-16 확인: `test:browser`(9개 화면 크기), `test:flow`(20개 탐구 완주와 M1 다시 도전), `test:games`, `test:offline`, `quiz-board`, `detective-browser`, `education-ux`가 통과했다. `inquiry-screen-fit`은 9개 크기 294개 화면에서 이번에 바꾼 활동은 모두 통과하고, M2-2·M2-3 관찰 패널과 M3-4·M5-4 상태 패널의 넘침(이전부터 있던 것)과 375×812 세로 화면의 스크롤만 남았다. 이전 조작을 검사하던 `interaction-review`·`streamlined-browser`·`fungi-observation`은 해당 화면이 바뀌어 삭제했고, 확인 내용은 `test:flow`·`quiz-board`·`test:games`로 옮겼다.
 
 2026-11-11 확인. `storage-safety`는 손상 원본 보존과 동시 저장 4건을 통과했다. `observation-playback`은 대상별 안내·재생 중 조작 잠금·7개 관찰 준비와 중단 시 기록 복원을 확인했다. 2026-11-09에 확인한 `interaction-review`·`streamlined-browser`(그리고 README 밖의 `stage-states`·`link-board`·`media-network`)는 화면 문구·구조가 바뀐 뒤(저장 경고 토스트 → 모달, 슬라이더·힌트 이름 등) 갱신되지 않아 실패한다. 현재 화면과 검사 선택자를 함께 대조해야 한다([고도화 계획](docs/reviews/UPGRADE-PLAN-20261109.md) 2-3). `package.json`의 네 검사와 `stage-layout.mjs`는 통과한다.

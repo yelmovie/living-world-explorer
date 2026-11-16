@@ -1860,7 +1860,7 @@ button.step{min-width:48px;min-height:48px}
  .expedition-shell .expedition-footer>.primary{margin-left:0;align-self:stretch}
  .expedition-shell .expedition-footer>.activity-stepper{grid-column:1/-1;justify-self:center}
  .toolbar .observation-play{position:absolute;top:64px;left:0;min-height:48px;width:130px;padding:8px;font-size:16px}
- #app:has(.observation-play) .expedition-shell{--hud-top:136px}
+ #app:has(.toolbar .observation-play) .expedition-shell{--hud-top:136px}
  .toolbar:has(.observation-play) .preview-banner{left:auto;right:0;top:64px;transform:none;max-width:calc(100% - 140px);font-size:16px;min-height:48px}
  .toolbar:has(.observation-play) .preview-banner:hover:not(:disabled){transform:none}
 }
