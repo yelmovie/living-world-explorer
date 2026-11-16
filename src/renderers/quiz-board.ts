@@ -17,7 +17,7 @@ const questions: Record<string, string> = {
   'M4-4': '이 상황에서 어떤 영향을 주나요?'
 };
 
-function picture(item: InquiryItem) {
+export function picture(item: InquiryItem) {
   const kind = artKey(item);
   const art = artFor(kind, artTime(kind, item.detail, item.id));
   if (art) {

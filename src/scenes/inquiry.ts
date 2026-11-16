@@ -109,7 +109,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
   if(task.kind==='review'){controls();view?.refresh();}
  };
  // DOM quizzes and observations load their own small renderers.
- const scene=():Promise<typeof import('../renderers/inquiry2d').mountInquiry>=>task.kind==='summary'?import('../renderers/pond-summary').then(m=>(host,_task,_record,hooks)=>m.mountPondSummary(host,progress.records,hooks)):task.kind==='microscope'?import('../renderers/simple-microscope').then(m=>m.mountMicroscope):task.id==='M1-4'?import('../renderers/fungi-sort').then(m=>m.mountFungiSort):quiz?import('../renderers/quiz-board').then(m=>m.mountQuizBoard):import('../renderers/inquiry2d').then(m=>m.mountInquiry);
+ const scene=():Promise<typeof import('../renderers/inquiry2d').mountInquiry>=>task.kind==='summary'?import('../renderers/pond-summary').then(m=>(host,_task,_record,hooks)=>m.mountPondSummary(host,progress.records,hooks)):task.kind==='microscope'?import('../renderers/simple-microscope').then(m=>m.mountMicroscope):task.id==='M1-4'?import('../renderers/fungi-sort').then(m=>m.mountFungiSort):['M3-1','M3-3','M4-3','M4-4'].includes(task.id)?import('../renderers/choice-games').then(m=>m.mountChoiceGame):quiz?import('../renderers/quiz-board').then(m=>m.mountQuizBoard):import('../renderers/inquiry2d').then(m=>m.mountInquiry);
  void scene().then(async mount=>{await document.fonts.ready;if(disposed)return;view=mount(host,task,r,{assigned:()=>{selectedCard='';sourcePreview.hidden=true;sourcePreview.replaceChildren();updateStatus();},changed:()=>{save();controls();},open:source,feedback:info,ready:(ok)=>{
   if(disposed)return;
   ready=ok;if(demoButton)demoButton.disabled=!ok;tools.inert=!ok||demoStep>=0;next.disabled=!ok||demoStep>=0;updateStatus();
