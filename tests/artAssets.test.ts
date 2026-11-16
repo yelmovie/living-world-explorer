@@ -9,8 +9,11 @@ describe('학습 자료의 의미와 표본 이미지 연결',()=>{
  const item=(task:string,id:string)=>inquiryTasks.find(t=>t.id===task)!.items.find(i=>i.id===id)!;
  it('죽은 나무와 버섯의 관찰 특징을 서로 다른 그림으로 표시한다',()=>{
   expect(artKey(item('M1-1','log'))).toBe('deadwood');
-  expect(artKey(item('M1-4','cap'))).toBe('mushroom');
-  expect(artKey(item('M1-4','mycelium'))).toBe('mushroomMycelium');
+  expect(artKey(item('M1-4','cap'))).toBe('fungiGills');
+  expect(artKey(item('M1-4','mycelium'))).toBe('fungiThreads');
+  // M1-4 cards have their own pictures instead of repeating the M1-2/M1-3 observation photos.
+  const observed=new Set(['mushroom','mold','mushroomSpores'].map(k=>artFor(k)!.src));
+  for(const it of inquiryTasks.find(t=>t.id==='M1-4')!.items)expect(observed.has(artFor(artKey(it))!.src),it.id).toBe(false);
  });
  it('곰팡이 핀 빵은 시간 비교의 마지막 표본과 같은 그림이다',()=>{
   const bread=item('M1-1','bread'),kind=artKey(bread);

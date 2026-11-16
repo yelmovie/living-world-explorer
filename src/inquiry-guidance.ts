@@ -14,8 +14,8 @@ export function guidance(task:InquiryTask,r:InquiryRecord,selectedCard=''){
   const card=items.find(it=>it.id===selectedCard);
   const pending=items.find(it=>!r.opened.includes(it.id)||it.target!==r.assignments[it.id]);
   if(task.id==='M1-4'){
-   if(card)action=`‘${card.label}’의 특징을 살펴보고, 어울리는 분류 칸을 눌러요.`;
-   else if(pending)action=`‘${pending.label}’ 자료를 눌러 살펴봐요.`;
+   if(card)action=`‘${card.label}’ 카드를 알맞은 칸으로 끌어 놓아요.`;
+   else if(pending)action=`‘${pending.label}’ 카드를 버섯·둘 다·곰팡이 중 알맞은 칸으로 끌어 놓아요.`;
   }else if(pending)action='자료를 읽고 답을 골라요. 맞히면 ‘다음 문제’를 눌러요.';
   if(task.id==='M3-2'&&r.v===2){
    total++;done+=Number(r.assignments.ladder==='smallest');

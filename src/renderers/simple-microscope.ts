@@ -22,7 +22,7 @@ export function mountMicroscope(host:HTMLElement,task:InquiryTask,learner:Inquir
   img.style.filter=record.level>=2?'blur('+Math.abs(record.focus-65)/9+'px)':'none';
   viewport.dataset.mode=record.level===0?'eye':record.level===1?'lens':'microscope';viewport.dataset.sharp=String(record.level>=2&&!record.capture&&Math.abs(record.focus-65)<=12);root.dataset.captured=String(record.capture);
   decor.show(record.level===0?'eye':record.level>=2?'scope':null,record.capture);
-  caption.textContent=record.level<2?(context?.captions[record.level]||'돋보기를 움직여 생김새를 살펴봐요.'):task.organism==='mushroom'?'현미경으로 확대한 주름이에요. 주름 표면에 붙은 작은 알갱이가 포자예요.':task.organism==='mold'?'가는 실은 균사예요. 이 곰팡이의 둥근 포자주머니 안에는 포자가 들어 있어요.':'초록색 해캄은 여러 마디가 실처럼 이어져 있어요.';
+  caption.textContent=record.level<2?(context?.captions[record.level]||'돋보기를 움직여 생김새를 살펴봐요.'):task.organism==='mushroom'?'현미경으로 본 주름이에요. 주름에 붙은 작은 알갱이가 포자예요.':task.organism==='mold'?'가는 실이 균사예요. 실 끝 동그란 주머니 안에 포자가 들어 있어요.':'초록색 해캄은 여러 마디가 실처럼 이어져 있어요.';
  }
  img.onload=()=>{if(!disposed)hooks.ready(true);};img.onerror=()=>{if(!disposed)hooks.ready(false);};refresh();
  const idle=()=>{};const assign=()=>false;

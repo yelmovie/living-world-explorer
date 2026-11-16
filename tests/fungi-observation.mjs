@@ -31,7 +31,9 @@ try{
  await shot('mold-discovery');await b('다음 발견으로').click();await ready();
  // Wrong link, correction, cancelled drag, and two connections to the same target.
  await linkCard(page,'cap').tap();await linkTarget(page,'mold').tap();
- let saved=await waitSaved(page,s=>s.preview.inquiry.records['M1-4'].assignments.cap==='mold');assert.equal(saved.preview.inquiry.records['M1-4'].submitted,false);
+ // 2026-11-16: a wrong card is not stored. It returns to the hand and Toto gives the card's own hint.
+ await page.locator('.toto-bubble:not([hidden])').waitFor();assert.match(await page.locator('.toto-bubble-text').innerText(),/줄무늬/);
+ let saved=await waitSaved(page);assert.notEqual(saved.preview.inquiry.records['M1-4']?.assignments.cap,'mold');
  const cdp=await context.newCDPSession(page);
  async function drag(from,to){const [a,b]=await centre(from),[c,d]=Array.isArray(to)?to:await centre(to);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{id:1,x:a,y:b}]});for(let i=1;i<=8;i++)await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{id:1,x:a+(c-a)*i/8,y:b+(d-b)*i/8}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});}
  await drag(linkCard(page,'cap'),linkTarget(page,'mushroom'));await waitSaved(page,s=>s.preview.inquiry.records['M1-4'].assignments.cap==='mushroom');

@@ -2,8 +2,9 @@ import type {Stage,Point} from './model';
 
 export type TaskKind='collect'|'microscope'|'sample'|'track'|'summary'|'connect'|'timeline'|'sort'|'build'|'publish'|'review';
 /** since: 2 marks a card added on 2026-10-25; records saved before that (no `v`) are judged without it. */
-export type InquiryItem={id:string;label:string;detail:string;target:string;art?:string;since?:2};
-export type InquiryTask={id:string;stage:Stage;order:number;title:string;instruction:string;mentor:string;kind:TaskKind;organism?:string;items:InquiryItem[];targets:{id:string;label:string}[];success:string;feedback:string;standard:string;caseName?:string;terms?:string[]};
+/** hint: what the rabbit guide Toto says when this card is placed in the wrong spot. */
+export type InquiryItem={id:string;label:string;detail:string;target:string;art?:string;since?:2;hint?:string};
+export type InquiryTask={id:string;stage:Stage;order:number;title:string;instruction:string;mentor:string;kind:TaskKind;organism?:string;items:InquiryItem[];targets:{id:string;label:string}[];success:string;feedback:string;standard:string;caseName?:string;terms?:string[];hints?:[string,string]};
 export type InquiryRun={id:string;startedAt:string;prediction:string;assignments:Record<string,string>;status:'running'|'completed'|'interrupted';result:string;reflection:string};
 export type InquiryRecord={assignments:Record<string,string>;opened:string[];marks:Point[];focus:number;light:number;zoom:number;pan:Point;time:number;pins:number[];sequence:number;prediction:string;runResult:string;reflection:string;runs:InquiryRun[];afterThought:string;note:string;capture:boolean;submitted:boolean;tries:number;completedAt?:string;level:number;misses:number;clean?:boolean;v?:2};
 /** level: magnification step of microscope tasks (0 맨눈 · 1 돋보기 · 2 현미경) and the cilia close-up of the track task (2). misses: failed submissions since the last accepted one; clean: the last accepted submission had none.

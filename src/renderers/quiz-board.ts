@@ -5,10 +5,11 @@ import {playEffect} from '../audio';
 import {canvas, draw} from '../draw';
 import {el, button} from '../ui';
 import type {InquiryHooks, InquiryView} from './inquiry2d';
+import {totoSay} from '../toto-hint';
 import '../quiz-board.css';
 
 const questions: Record<string, string> = {
-  'M1-1': '이곳에서 발견한 표본은 무엇인가요?',
+  'M1-1': '여기서 찾은 건 무엇일까요?',
   'M3-1': '확인한 자료인가요, 아직 확인하지 않은 생각인가요?',
   'M3-2': '이 자료는 세균의 어떤 특징을 알려 주나요?',
   'M3-3': '세균을 발견한 장소를 알 수 있나요?',
@@ -141,6 +142,16 @@ export function mountQuizBoard(host: HTMLElement, task: InquiryTask, record: Inq
     hooks.changed();
     refresh();
     playEffect(correct(item) ? 'snap' : 'retry');
+    // 2026-11-16 (stage M1 only for now): Toto reacts, and a right answer moves on by itself instead of waiting for '다음 문제'.
+    if (task.hints) {
+      totoSay(board, correct(item)
+        ? {text: '딩동댕! ' + (index < items.length - 1 ? '다음 사진도 볼까?' : '둘 다 찾았어! 이제 발견을 기록하자.'), mood: 'cheer'}
+        : {text: item.hint || task.hints[0], mood: 'hint'});
+      if (correct(item) && index < items.length - 1) {
+        const from = index;
+        setTimeout(() => { if (!disposed && index === from) show(index + 1, true); }, 900);
+      }
+    }
     return true;
   }
 

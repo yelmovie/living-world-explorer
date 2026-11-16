@@ -22,6 +22,7 @@ import {activityIllustration} from '../experience';
 import {prepareInquiry,validTrackPair,validTimelinePair,reflectClaim,introduction} from '../inquiry-preparation';
 import {chooseCase} from '../inquiry-actions';
 import {mountScopeDecor} from '../renderers/scope-view';
+import {mountTotoHint} from '../toto-hint';
 import '../inquiry-controls.css';
 import '../inquiry-simplified.css';
 
@@ -32,7 +33,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
  const progress=ctx.attempt.inquiry;const list=tasksFor(stage);let index=progress.current[stage]??0;index=Math.max(0,Math.min(3,index));const task=list[index];const r=progress.records[task.id]??=prepareInquiry(task);let disposed=false;ctx.cleanup(()=>disposed=true);
  const linking=['collect','connect','sort'].includes(task.kind),quiz=linking&&task.id!=='M1-4';ctx.host.classList.add('expedition-shell',`stage-${stage}`);ctx.host.classList.toggle('link-task',linking&&!quiz);ctx.host.classList.toggle('quiz-task',quiz);ctx.host.dataset.stage=stage;ctx.host.dataset.kind=task.kind;ctx.host.style.setProperty('--facility-image',`url('/assets/places/${backgrounds[stage]}.webp')`);
  const head=el('div','expedition-header');const emblem=activityIllustration(task,'mission-emblem');const titles=el('div','mission-titles');titles.append(el('span','eyebrow',`MISSION ${stage.slice(1).padStart(2,'0')} · ${stages.find(s=>s.id===stage)!.title} · ${index+1}번째 발견`),heading(task.title));if(task.kind!=='summary')titles.append(paragraph(researchCases[stage].question,'case-brief'));head.append(emblem,titles);ctx.host.append(head);
- const grid=el('div','expedition-workspace');const work=el('section','expedition-work');const host=el('div','expedition-canvas-host');host.setAttribute('aria-label',task.title+' 탐구 장면');const badge=el('span','model-badge',task.kind==='build'?'관계 설명 모형':'관찰·조사 모형');work.append(host);if(!linking)work.append(badge);const side=el('aside','expedition-panel');grid.append(work);if(task.kind!=='summary')grid.append(side);ctx.host.append(grid);
+ const grid=el('div','expedition-workspace');const work=el('section','expedition-work');const host=el('div','expedition-canvas-host');host.setAttribute('aria-label',task.title+' 탐구 장면');const badge=el('span','model-badge',task.kind==='build'?'관계 설명 모형':'관찰·조사 모형');work.append(host);if(!linking)work.append(badge);const side=el('aside','expedition-panel');grid.append(work);if(task.kind!=='summary'&&task.id!=='M1-4')grid.append(side);ctx.host.append(grid);
  let running=false,ready=false;
  const loading=el('div','inquiry-loading','관찰 이미지를 준비하고 있어요…');loading.setAttribute('role','status');work.append(loading);
  const status=el('div','inquiry-status');const counter=el('strong','inquiry-counter');
@@ -366,6 +367,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
  const stepper=el('div','activity-stepper');stepper.setAttribute('aria-label','발견 기록 진행');for(const [i,t] of list.entries()){const done=!!progress.records[t.id]?.completedAt;const step=button(String(i+1),()=>{progress.current[stage]=i;ctx.save();ctx.go(i<2?stages.find(s=>s.id===stage)!.entry:stages.find(s=>s.id===stage)!.exit);},i===index?'current':done?'done':'',!done&&i!==index&&!ctx.state.settings.admin);step.setAttribute('aria-label',`${i+1}번째 발견: ${t.title}`);if(i===index)step.setAttribute('aria-current','step');stepper.append(step);}footer.insertBefore(stepper,task.kind==='track'?null:next);
 
  if(linking&&!quiz)left.append(badge);
+ if(task.hints)left.prepend(mountTotoHint(ctx.host,task));
 }
 
 /** 새 낱말 chips: the concept words a discovery introduced. */

@@ -33,7 +33,12 @@ export const inquiryArt:Record<string,InquiryArt>={
  spirogyraLens:{src:'assets/study/spirogyra-lens.webp',label:'돋보기로 본 연못물 속 초록 실'},
  bacteriaRound:{src:'assets/study/bacteria-round.webp',label:'공 모양 세균 확대 모형'},
  bacteriaRod:{src:'assets/study/bacteria-rod.webp',label:'막대 모양 세균 확대 모형'},
- bacteriaSpiral:{src:'assets/study/bacteria-spiral.webp',label:'나선 모양 세균 확대 모형'}
+ bacteriaSpiral:{src:'assets/study/bacteria-spiral.webp',label:'나선 모양 세균 확대 모형'},
+ // 2026-11-16: own pictures for the M1-4 feature cards, so they no longer repeat the observation photos of M1-2 and M1-3 (asset-bank/original/m1-20261116).
+ fungiGills:{src:'assets/study/fungi-gills.webp',label:'아래에서 올려다본 버섯 갓의 주름'},
+ fungiSporangium:{src:'assets/study/fungi-sporangium.webp',label:'곰팡이 실 끝에 달린 동그란 포자주머니'},
+ fungiThreads:{src:'assets/study/fungi-threads.webp',label:'버섯과 곰팡이 모두 가는 실로 이루어진 몸'},
+ fungiSpores:{src:'assets/study/fungi-spores.webp',label:'버섯과 곰팡이가 포자를 퍼뜨리는 모습'}
 };
 export const artFrame=(time=0)=>Math.max(0,Math.min(3,Math.floor(Number.isFinite(time)?time:0)));
 export function artFor(kind:string|undefined,time=0){const art=kind?inquiryArt[kind]:undefined;return art?{...art,src:art.frames?.[artFrame(time)]||art.src}:undefined;}
@@ -61,6 +66,7 @@ export function taskArt(task:InquiryTask,record?:InquiryRecord):InquiryArt[]{
   return [artFor(kind)!];
  }
  if(task.kind==='sample')return [artFor('pond')!];
+ if(task.id==='M1-4')return [artFor('mushroom')!,artFor('mold')!,artFor('fungiThreads')!];
  if(task.kind==='summary')return [artFor('spirogyra')!,artFor('paramecium')!];
  const selected=task.kind==='publish'?task.items.find(item=>item.id===record?.assignments.case):undefined;
  const items=selected?[selected]:task.kind==='build'?task.items.filter(item=>item.target==='output'):task.items;
@@ -72,8 +78,8 @@ export function taskArt(task:InquiryTask,record?:InquiryRecord):InquiryArt[]{
  * lens: own picture for the 돋보기 step (new structure appears instead of a blurry enlargement). gate: the 돋보기 picture must be tapped on this feature to open the microscope. */
 export type MagnifyView={context:string;time:number;focus:{x:number;y:number};lens?:string;gate?:string;captions:[string,string,string]};
 export const magnify:Record<string,MagnifyView>={
- mushroom:{context:'deadwood',time:0,focus:{x:.74,y:.47},lens:'mushroom',captions:['맨눈 · 죽은 나무에 작은 버섯들이 자라요','돋보기 · 갓 아래 줄무늬(주름)를 크게 살펴봐요','현미경 · 주름 표면의 작은 알갱이(포자)를 살펴봐요']},
- mold:{context:'bread',time:3,focus:{x:.5,y:.5},lens:'moldLens',captions:['맨눈 · 빵 위에 거뭇한 얼룩이 보여요','돋보기 · 솜털 같은 실 위에 검은 점이 보여요','현미경 · 가는 실(균사)과 둥근 부분이 보여요']},
+ mushroom:{context:'deadwood',time:0,focus:{x:.74,y:.47},lens:'mushroom',captions:['맨눈 · 죽은 나무에 작은 버섯이 자라요','돋보기 · 갓 아래 줄무늬(주름)를 찾아봐요','현미경 · 주름에 붙은 작은 알갱이가 포자예요']},
+ mold:{context:'bread',time:3,focus:{x:.5,y:.5},lens:'moldLens',captions:['맨눈 · 빵 위에 거뭇한 얼룩이 보여요','돋보기 · 솜털 같은 실 위에 검은 점이 보여요','현미경 · 가는 실(균사)과 동그란 주머니가 보여요']},
  spirogyra:{context:'pond',time:0,focus:{x:.45,y:.62},lens:'spirogyraLens',captions:['맨눈 · 연못 물풀 사이의 물을 살펴봐요','돋보기 · 가는 초록 실이 보이지만 속은 아직 안 보여요','현미경 · 실처럼 길게 이어진 해캄이 보여요']}
 };
 /** Older records (before 2026-10-25) keep the original 돋보기 enlargement and no gate. */
