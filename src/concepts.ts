@@ -41,6 +41,8 @@ export function showConcept(stage:Stage,settings:{sound:boolean;reduced:boolean}
  function show(cue:number){focusWords(caption,cues[cue][2],conceptTerms[stage]);steps.forEach((b,i)=>conceptChapters[i].cue===cue?b.setAttribute('aria-current','step'):b.removeAttribute('aria-current'));}
  function update(){show(cueIndexAt(stage,video.currentTime));}
  video.ontimeupdate=update;
+ // 2026-11-16: at the end of the film the reward follows by itself; '처음부터 보기' stays for a second look.
+ let ended:ReturnType<typeof setTimeout>|undefined;video.onplay=()=>clearTimeout(ended);video.onended=()=>{if(onContinue)ended=setTimeout(()=>{if(dialog.open)dialog.close();},1800);};
  show(still?cues.length-1:0);
  const fallback=el('div','concept-fallback');fallback.hidden=true;fallback.append(heading('핵심 개념을 그림으로 살펴봐요'),...cues.map(([,,text])=>paragraph(text)));
  video.onerror=()=>{video.hidden=true;fallback.hidden=false;caption.hidden=true;steps.forEach(b=>b.disabled=true);};
@@ -49,7 +51,7 @@ export function showConcept(stage:Stage,settings:{sound:boolean;reduced:boolean}
  body.append(video,fallback,focus,chapters,caption,actions);
  const dialog=modal(concept.title,[body],{showClose:false});dialog.classList.add('concept-dialog');
  const hidden=()=>{if(document.hidden)video.pause();};document.addEventListener('visibilitychange',hidden);
- dialog.addEventListener('close',()=>{video.pause();video.removeAttribute('src');video.load();document.removeEventListener('visibilitychange',hidden);onContinue?.();},{once:true});
+ dialog.addEventListener('close',()=>{clearTimeout(ended);video.pause();video.removeAttribute('src');video.load();document.removeEventListener('visibilitychange',hidden);onContinue?.();},{once:true});
  if(!still)void video.play().catch(()=>{});
  return dialog;
 }

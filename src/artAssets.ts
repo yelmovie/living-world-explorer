@@ -38,7 +38,9 @@ export const inquiryArt:Record<string,InquiryArt>={
  fungiGills:{src:'assets/study/fungi-gills.webp',label:'아래에서 올려다본 버섯 갓의 주름'},
  fungiSporangium:{src:'assets/study/fungi-sporangium.webp',label:'곰팡이 실 끝에 달린 동그란 포자주머니'},
  fungiThreads:{src:'assets/study/fungi-threads.webp',label:'버섯과 곰팡이 모두 가는 실로 이루어진 몸'},
- fungiSpores:{src:'assets/study/fungi-spores.webp',label:'버섯과 곰팡이가 포자를 퍼뜨리는 모습'}
+ fungiSpores:{src:'assets/study/fungi-spores.webp',label:'버섯과 곰팡이가 포자를 퍼뜨리는 모습'},
+ // 2026-11-16: the M3-1 '누군가의 생각' card had only a canvas question mark.
+ rumorNote:{src:'assets/study/rumor-note.webp',label:'공책에 그린 무서운 세균 상상 그림과 물음표'}
 };
 export const artFrame=(time=0)=>Math.max(0,Math.min(3,Math.floor(Number.isFinite(time)?time:0)));
 export function artFor(kind:string|undefined,time=0){const art=kind?inquiryArt[kind]:undefined;return art?{...art,src:art.frames?.[artFrame(time)]||art.src}:undefined;}

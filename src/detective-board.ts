@@ -71,7 +71,7 @@ export function openDetectiveBoard(ctx:Context,stage:Stage,finish?:()=>void){
    placementLabels.get(clue.id)!.textContent=role==='supports'||role==='limit'?zoneLabels[role]:'';
   }
   report.disabled=connected<data.clues.length;
-  report.hidden=solved;
+  report.hidden=true;
   done.hidden=!solved;
  }
 
@@ -98,6 +98,8 @@ export function openDetectiveBoard(ctx:Context,stage:Stage,finish?:()=>void){
   refresh();
   message.textContent='';
   playEffect('snap');
+  // 2026-11-16: the check runs by itself once every clue has a place; no separate '연결 확인하기' tap.
+  if(data.clues.every(c=>placements[c.id]))setTimeout(()=>{if(!closed&&!solved)report.click();},450);
  }
 
  for(const clue of data.clues){

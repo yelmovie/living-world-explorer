@@ -142,15 +142,15 @@ export function mountQuizBoard(host: HTMLElement, task: InquiryTask, record: Inq
     hooks.changed();
     refresh();
     playEffect(correct(item) ? 'snap' : 'retry');
-    // 2026-11-16 (stage M1 only for now): Toto reacts, and a right answer moves on by itself instead of waiting for '다음 문제'.
+    // 2026-11-16: Toto reacts (tasks with hints), and a right answer moves on by itself instead of waiting for '다음 문제'.
     if (task.hints) {
       totoSay(board, correct(item)
-        ? {text: '딩동댕! ' + (index < items.length - 1 ? '다음 사진도 볼까?' : '둘 다 찾았어! 이제 발견을 기록하자.'), mood: 'cheer'}
+        ? {text: '딩동댕! ' + (index < items.length - 1 ? '다음 자료도 볼까?' : '다 풀었어!'), mood: 'cheer'}
         : {text: item.hint || task.hints[0], mood: 'hint'});
-      if (correct(item) && index < items.length - 1) {
-        const from = index;
-        setTimeout(() => { if (!disposed && index === from) show(index + 1, true); }, 900);
-      }
+    }
+    if (correct(item) && index < items.length - 1) {
+      const from = index;
+      setTimeout(() => { if (!disposed && index === from) show(index + 1, true); }, 900);
     }
     return true;
   }

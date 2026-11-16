@@ -13,6 +13,9 @@ import '../choice-games.css';
 export type ChoiceGame='stamp'|'swipe'|'lamp';
 export const choiceGames:Record<string,ChoiceGame>={'M3-1':'stamp','M3-3':'swipe','M4-3':'lamp','M4-4':'swipe'};
 const icons:Record<string,string>={evidence:'🔍',guess:'💭',place:'📍',other:'❓',help:'👍',problem:'⚠️'};
+/** GPT-made icons (asset-bank/original/games-20261116) for the answer sides; emoji remain only in small chips. */
+const iconArt:Record<string,string>={place:'icon-place',other:'icon-unknown',help:'icon-help',problem:'icon-problem'};
+function icon(id:string,cls='choice-icon'){const name=iconArt[id];if(!name)return el('i',cls,icons[id]||'');const img=el('img',cls);img.src=`assets/ui/game/${name}.webp`;img.alt='';img.draggable=false;return img;}
 const tones:Record<string,string>={evidence:'green',guess:'purple',place:'green',other:'grey',help:'green',problem:'orange'};
 
 export function mountChoiceGame(host:HTMLElement,task:InquiryTask,record:InquiryRecord,hooks:InquiryHooks):InquiryView{
@@ -31,7 +34,7 @@ export function mountChoiceGame(host:HTMLElement,task:InquiryTask,record:Inquiry
   if(it.target!==target){record.misses++;hooks.changed();playEffect('retry');const hint=it.hint||task.feedback;hooks.feedback(hint,'retry');totoSay(root,{text:hint,mood:'hint'});return false;}
   assignCard(task,record,id,target);hooks.assigned(id,target);hooks.changed();
   const done=items.every(placed);playEffect(done?'success':'snap');
-  const cheer=done?'다 풀었어! ‘발견 기록하기’를 눌러 기록하자.':'딩동댕! '+it.detail;
+  const cheer=done?'다 풀었어! 발견 노트에 적어 두자.':'딩동댕! '+it.detail;
   hooks.feedback(cheer,'success');totoSay(root,{text:cheer,mood:'cheer'});return true;
  }
  /** Drag a clone of node with the pointer; onDrop gets the release point. A short press is left to the click handler. */
@@ -58,7 +61,7 @@ export function mountChoiceGame(host:HTMLElement,task:InquiryTask,record:Inquiry
   const nextIndex=()=>{const i=items.findIndex(it=>!placed(it));return i<0?items.length:i;};
   let index=nextIndex();
   const stage=el('div','choice-stage');const finish=el('div','choice-finish');finish.hidden=true;
-  finish.append(el('strong','','🎉 모두 정리했어요!'),el('span','','‘발견 기록하기’를 눌러요'));
+  finish.append(el('strong','','🎉 모두 정리했어요!'),el('span','','발견 기록이 열려요'));
   const card=el('article','choice-card');const photo=el('div','choice-photo'),title=el('strong','choice-title'),detail=el('p','choice-detail'),mark=el('span','choice-mark');mark.hidden=true;
   card.append(photo,title,detail,mark);
   const tray=el('div','choice-tray');
@@ -81,7 +84,7 @@ export function mountChoiceGame(host:HTMLElement,task:InquiryTask,record:Inquiry
    const rack=el('div','stamp-rack');
    for(const t of task.targets){
     const s=el('button',`stamp-tool tone-${tone(t.id)}`);s.type='button';s.dataset.linkTarget=t.id;s.setAttribute('aria-label',t.label+' 도장 찍기');
-    s.append(el('span','stamp-knob'),el('span','stamp-face',`${icons[t.id]||''} ${t.label}`));
+    const handle=el('img','stamp-handle');handle.src='assets/ui/game/stamp-handle.webp';handle.alt='';handle.draggable=false;s.append(handle,el('span','stamp-face',`${icons[t.id]||''} ${t.label}`));
     s.onpointerdown=e=>drag(e,s,(x,y)=>card.classList.toggle('is-target',x>=0&&inside(card,x,y)),(x,y)=>{card.classList.remove('is-target');if(inside(card,x,y))decide(t.id,0);});
     s.onclick=()=>{if(s.dataset.dragged||blocked())return;decide(t.id,0);};
     rack.append(s);
@@ -90,7 +93,7 @@ export function mountChoiceGame(host:HTMLElement,task:InquiryTask,record:Inquiry
   }else{
    // targets[0] goes right, targets[1] left.
    const [rightT,leftT]=task.targets;
-   const side=(t:typeof rightT,dir:'left'|'right')=>{const b=el('button',`swipe-side ${dir} tone-${tone(t.id)}`);b.type='button';b.dataset.linkTarget=t.id;b.append(el('i','',icons[t.id]||''),el('strong','',t.label),el('span','swipe-arrow',dir==='left'?'◀':'▶'));b.onclick=()=>{if(!blocked())decide(t.id,dir==='left'?-1:1);};return b;};
+   const side=(t:typeof rightT,dir:'left'|'right')=>{const b=el('button',`swipe-side ${dir} tone-${tone(t.id)}`);b.type='button';b.dataset.linkTarget=t.id;b.append(icon(t.id),el('strong','',t.label),el('span','swipe-arrow',dir==='left'?'◀ 왼쪽으로 밀기':'오른쪽으로 밀기 ▶'));b.onclick=()=>{if(!blocked())decide(t.id,dir==='left'?-1:1);};return b;};
    const left=side(leftT,'left'),right=side(rightT,'right');
    card.onpointerdown=e=>{
     if(blocked()||e.button!==0||card.hidden)return;card.setPointerCapture(e.pointerId);const sx=e.clientX;card.classList.add('is-dragging');
@@ -107,7 +110,7 @@ export function mountChoiceGame(host:HTMLElement,task:InquiryTask,record:Inquiry
  }else{
   // lamp: every case card at once, two lamps to drop them on.
   const hand=el('div','lamp-hand');const lamps=el('div','lamp-row');
-  const zones=task.targets.map(t=>{const z=el('button',`lamp tone-${tone(t.id)}`);z.type='button';z.dataset.linkTarget=t.id;const bulb=el('span','lamp-bulb',icons[t.id]||'');const chips=el('div','lamp-chips');z.append(bulb,el('strong','lamp-label',t.label),chips);z.onclick=()=>{if(selected)drop(selected,t.id);else totoSay(root,{text:'먼저 위에서 사건 카드를 하나 골라 봐!'});};lamps.append(z);return {t,z,chips};});
+  const zones=task.targets.map(t=>{const z=el('button',`lamp tone-${tone(t.id)}`);z.type='button';z.dataset.linkTarget=t.id;const bulb=el('span','lamp-bulb');const lampImg=el('img','lamp-glass');lampImg.src=`assets/ui/game/lamp-${tone(t.id)}.webp`;lampImg.alt='';lampImg.draggable=false;bulb.append(lampImg,icon(t.id,'lamp-icon'));const chips=el('div','lamp-chips');z.append(bulb,el('strong','lamp-label',t.label),chips);z.onclick=()=>{if(selected)drop(selected,t.id);else totoSay(root,{text:'먼저 위에서 사건 카드를 하나 골라 봐!'});};lamps.append(z);return {t,z,chips};});
   let selected='';
   const drop=(id:string,target:string)=>{selected='';const zone=zones.find(z=>z.t.id===target)!;const ok=attempt(id,target);if(ok){zone.z.classList.remove('is-on');void zone.z.offsetWidth;zone.z.classList.add('is-on');}else{shake(zone.z);shake(cards.find(c=>c.it.id===id)!.b);}refresh();};
   const cards=items.map(it=>{
