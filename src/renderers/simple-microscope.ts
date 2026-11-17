@@ -5,11 +5,16 @@ import {observedKind} from '../observation';
 import {el,paragraph} from '../ui';
 import {mountScopeDecor} from './scope-view';
 
+/** Microscope steps that play a looping AI-made observation clip instead of a still (2026-11-17). */
+const liveClips:Record<string,string>={spirogyra:'assets/study/live/spirogyra-live.mp4'};
+
 /** Direct observation, without hidden targets, aiming or annotation gates. */
 export function mountMicroscope(host:HTMLElement,task:InquiryTask,learner:InquiryRecord,hooks:InquiryHooks):InquiryView{
  let record=learner,disposed=false;
  const root=el('div','simple-observation'),viewport=el('div','observation-photo'),field=el('div','scope-field'),img=el('img'),loupe=el('div','observation-loupe'),caption=paragraph('','observation-caption'),lock=el('span','focus-lock','초점이 맞았어요!');lock.setAttribute('aria-hidden','true');
- img.draggable=false;loupe.setAttribute('aria-hidden','true');field.append(img);viewport.append(field,loupe,lock);root.append(viewport,caption,paragraph('AI 생성 관찰 모형 · 실제 현미경 사진이 아니에요.','observation-disclosure'));host.append(root);
+ img.draggable=false;loupe.setAttribute('aria-hidden','true');field.append(img);viewport.append(field,loupe,lock);const disclosure=paragraph('AI 생성 관찰 모형 · 실제 현미경 사진이 아니에요.','observation-disclosure');root.append(viewport,caption,disclosure);host.append(root);
+ const clip=liveClips[task.organism||''];let video:HTMLVideoElement|undefined;
+ if(clip){video=el('video') as HTMLVideoElement;video.muted=true;video.loop=true;video.playsInline=true;video.preload='auto';video.src=clip;video.setAttribute('aria-hidden','true');video.hidden=true;field.append(video);}
  const decor=mountScopeDecor(viewport,task.stage==='M2'?'water':'forest');
  let active=false;
  const move=(e:PointerEvent)=>{if(!active||record.level!==1)return;const b=viewport.getBoundingClientRect(),x=Math.max(0,Math.min(b.width,e.clientX-b.left)),y=Math.max(0,Math.min(b.height,e.clientY-b.top));loupe.style.left=x+'px';loupe.style.top=y+'px';loupe.style.backgroundSize=b.width*2+'px '+b.height*2+'px';loupe.style.backgroundPosition=(-x*2+75)+'px '+(-y*2+75)+'px';};
@@ -20,11 +25,14 @@ export function mountMicroscope(host:HTMLElement,task:InquiryTask,learner:Inquir
   const art=artFor(kind,record.level===0?context?.time:0);if(!art)return;
   img.alt=art.label;img.src=art.src;loupe.style.backgroundImage='url("'+art.src+'")';loupe.hidden=record.level!==1;
   img.style.filter=record.level>=2?'blur('+Math.abs(record.focus-65)/9+'px)':'none';
+  // The clip plays through the eyepiece; the eye and hand-lens steps keep their stills.
+  const live=!!video&&record.level>=2;img.hidden=live;disclosure.textContent=live?'AI 생성 관찰 영상 · 실제 현미경 영상이 아니에요.':'AI 생성 관찰 모형 · 실제 현미경 사진이 아니에요.';
+  if(video){video.hidden=!live;video.style.filter=img.style.filter;if(live&&video.paused)void video.play().catch(()=>{});else if(!live&&!video.paused)video.pause();}
   viewport.dataset.mode=record.level===0?'eye':record.level===1?'lens':'microscope';viewport.dataset.sharp=String(record.level>=2&&!record.capture&&Math.abs(record.focus-65)<=12);root.dataset.captured=String(record.capture);
   decor.show(record.level===0?'eye':record.level>=2?'scope':null,record.capture);
   caption.textContent=record.level<2?(context?.captions[record.level]||'돋보기를 움직여 생김새를 살펴봐요.'):task.organism==='mushroom'?'현미경으로 본 주름이에요. 주름에 붙은 작은 알갱이가 포자예요.':task.organism==='mold'?'가는 실이 균사예요. 실 끝 동그란 주머니 안에 포자가 들어 있어요.':'초록색 해캄은 여러 마디가 실처럼 이어져 있어요.';
  }
  img.onload=()=>{if(!disposed)hooks.ready(true);};img.onerror=()=>{if(!disposed)hooks.ready(false);};refresh();
  const idle=()=>{};const assign=()=>false;
- return {refresh,showFrame:frame=>{record={...learner,...frame.patch};refresh();},endDemo:()=>{record=learner;refresh();},setPlaybackRate:idle,setPreview:idle,setReveal:idle,setPlaying:idle,arm:idle,assignCard:assign,assign,place:assign,animateRun:(_ok,finish)=>finish(),dispose:()=>{disposed=true;root.remove();}};
+ return {refresh,showFrame:frame=>{record={...learner,...frame.patch};refresh();},endDemo:()=>{record=learner;refresh();},setPlaybackRate:idle,setPreview:idle,setReveal:idle,setPlaying:idle,arm:idle,assignCard:assign,assign,place:assign,animateRun:(_ok,finish)=>finish(),dispose:()=>{disposed=true;video?.pause();video?.removeAttribute('src');root.remove();}};
 }

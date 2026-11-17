@@ -10,6 +10,8 @@ import type {ObservationFrame} from '../inquiry-playback';
 import {mountScopeDecor} from './scope-view';
 export type InquiryHooks={assigned:(id:string,target:string)=>void;changed:()=>void;open:(id:string)=>void;feedback:(text:string,kind?:'retry'|'success')=>void;ready:(ok:boolean)=>void};
 const WIDTH=960,HEIGHT=540;
+/** The filmed paramecium clip is sampled every half second over its ten seconds. */
+const LIVE_STEPS=20;
 export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRecord,hooks:InquiryHooks,reduced:boolean){
  let record=learner;
  let beforeDemo:{preview:boolean;reveal:number|undefined}|undefined;
@@ -25,6 +27,7 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
   trackElapsed=0;
   failed=false;
   preload(){this.load.on('loaderror',(file:Phaser.Loader.File)=>{if(!file.key.startsWith('ui-'))this.failed=true;});const view=task.kind==='microscope'?magnifyFor(task.organism,record.v===2):undefined;const needed=new Set([...task.items.map(artKey),task.organism,observedKind(task,record),task.kind==='sample'?'water':undefined,view?.context,view?.lens]);for(const art of needed)if(art&&inquiryArt[art]){const asset=inquiryArt[art];if(asset.frames)asset.frames.forEach((src,i)=>this.load.image(`art-${art}-${i}`,src));else this.load.image(`art-${art}`,asset.src);}
+   if(task.kind==='track')for(let i=0;i<=LIVE_STEPS;i++)this.load.image(`live-paramecium-${i}`,`assets/study/live/paramecium-${String(i).padStart(2,'0')}.webp`);
    // Decorative props are optional: a missing prop falls back to the drawn card, never blocks the activity.
    const props=['tape',...task.kind==='microscope'?['microscope-frame',...(view?['hand-lens']:[])]:[],...task.id==='M5-1'?['yogurt-maker']:[],...task.kind==='sample'?['dropper','slide','water-drop']:[]];for(const p of props)this.load.image(`ui-${p}`,`assets/ui/${p==='slide'?'slide-flat':p}.webp`);}
   create(){scene=this;this.tweens.timeScale=playbackRate;this.input.dragDistanceThreshold=12;if(this.failed){hooks.ready(false);return;}refresh=()=>this.paint();this.paint();hooks.ready(true);}
@@ -46,7 +49,10 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
    this.text(x+16,y,label,28,tone.ink,218);
   }
   plate(x:number,y:number,w:number,h:number,label:string,fill=tone.paper){const box=this.card(x,y,w,h,{fill});if(label)this.text(x,y,label,22,tone.ink,w-20);return box;}
+  /** Filmed frames for the paramecium track: two neighbours and how far between them the time falls. */
+  liveFrames(time=0){const at=Math.max(0,Math.min(10,time))/10*LIVE_STEPS,a=Math.floor(at),b=Math.min(LIVE_STEPS,a+1),get=(i:number)=>this.textures.exists(`live-paramecium-${i}`)?this.textures.get(`live-paramecium-${i}`).getSourceImage() as CanvasImageSource:undefined;const live=get(a);return live?{live,liveNext:get(b),liveMix:at-a}:{};}
   art(x:number,y:number,w:number,h:number,kind:string,options:Parameters<typeof draw>[2]&{fit?:'contain';softEdge?:boolean}={}){
+   if(kind==='paramecium'&&options.trail)options={...options,...this.liveFrames(options.time)};
    const name=inquiryArt[kind]?.frames?`art-${kind}-${artFrame(options.time)}`:`art-${kind}`;
    const image=this.textures.exists(name)?this.textures.get(name).getSourceImage() as CanvasImageSource:undefined;
    const source=image as {width:number;height:number}|undefined;
@@ -281,7 +287,7 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
    if(!play||task.kind!=='track'||simulating)return;
    record.time=(record.time+delta/1000*playbackRate)%10;this.trackElapsed+=delta;
    // Playback repaints one persistent canvas, never the text, input zones or display list.
-   if(this.trackSurface&&this.trackElapsed>=1000/30){this.trackElapsed=0;const image=this.textures.exists('art-paramecium')?this.textures.get('art-paramecium').getSourceImage() as CanvasImageSource:undefined;draw(this.trackSurface.canvas,task.organism||'paramecium',{time:record.time,focus:65,light:65,zoom:record.zoom,pan:record.pan,trail:true,image});this.trackSurface.texture.refresh();}
+   if(this.trackSurface&&this.trackElapsed>=1000/30){this.trackElapsed=0;const image=this.textures.exists('art-paramecium')?this.textures.get('art-paramecium').getSourceImage() as CanvasImageSource:undefined;draw(this.trackSurface.canvas,task.organism||'paramecium',{time:record.time,focus:65,light:65,zoom:record.zoom,pan:record.pan,trail:true,image,...this.liveFrames(record.time)});this.trackSurface.texture.refresh();}
   }
  }
  const game=new Phaser.Game({type:Phaser.CANVAS,parent:host,width:WIDTH,height:HEIGHT,transparent:true,scene:Inquiry,scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},audio:{noAudio:true},banner:false,render:{antialias:true}});

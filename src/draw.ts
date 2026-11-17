@@ -1,7 +1,7 @@
 import {position,breadSpots,type Point} from './model';
 import {imageToView} from './observation';
 export function canvas(w=720,h=450){const c=document.createElement('canvas');c.width=w;c.height=h;c.className='observation';c.setAttribute('role','img');return c;}
-export type DrawOptions={focus?:number;light?:number;zoom?:number;pan?:Point;time?:number;marks?:Point[];trail?:boolean;image?:CanvasImageSource;markerSpace?:'world'};
+export type DrawOptions={live?:CanvasImageSource;liveNext?:CanvasImageSource;liveMix?:number;focus?:number;light?:number;zoom?:number;pan?:Point;time?:number;marks?:Point[];trail?:boolean;image?:CanvasImageSource;markerSpace?:'world'};
 const motionImages=new WeakMap<object,HTMLCanvasElement>();
 function motionImage(source:CanvasImageSource){
  const cached=motionImages.get(source);if(cached)return cached;
@@ -16,7 +16,9 @@ export function draw(c:HTMLCanvasElement,kind:string,opts:DrawOptions={}){
  const sx=(x:number)=>x*w,sy=(y:number)=>y*h;
  g.filter=`blur(${Math.abs((opts.focus??65)-65)/7}px) brightness(${(opts.light??65)/65})`;
  const circle=(x:number,y:number,r:number,color:string)=>{g.beginPath();g.fillStyle=color;g.arc(sx(x),sy(y),r*w,0,Math.PI*2);g.fill();};
- if(opts.image&&!(kind==='paramecium'&&opts.trail)){g.drawImage(opts.image,0,0,w,h);
+ // 2026-11-17: a filmed frame (and a cross-fade to the next one) replaces the drawn track.
+ if(opts.live){g.drawImage(opts.live,0,0,w,h);if(opts.liveNext&&opts.liveMix){g.globalAlpha=opts.liveMix;g.drawImage(opts.liveNext,0,0,w,h);g.globalAlpha=1;}
+ }else if(opts.image&&!(kind==='paramecium'&&opts.trail)){g.drawImage(opts.image,0,0,w,h);
  }else if(kind==='mushroom'){
   g.fillStyle='#d2b595';g.beginPath();g.roundRect(sx(.45),sy(.42),sx(.1),sy(.4),18);g.fill();
   g.fillStyle='#8e513b';g.beginPath();g.ellipse(sx(.5),sy(.43),sx(.24),sy(.18),0,Math.PI,Math.PI*2);g.lineTo(sx(.74),sy(.45));g.quadraticCurveTo(sx(.5),sy(.55),sx(.26),sy(.45));g.fill();
