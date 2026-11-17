@@ -59,5 +59,88 @@
       "record": "assets/generated/sfx-20261115.json"
     }
   ],
-  "generatedNote": "generatedEffects are project-generated AI audio, not Kenney CC0 samples."
+  "generatedNote": "generatedEffects are project-generated AI audio, not Kenney CC0 samples.",
+  "mapEffects": [
+    {
+      "file": "sfx/map-swing.mp3",
+      "library": "_shared/sfx-library-20261117/sfx/bubble-02.mp3",
+      "title": "bubble_02",
+      "creator": "rubberduck",
+      "source": "https://opengameart.org/content/40-cc0-water-splash-slime-sfx",
+      "license": "CC0",
+      "use": "지도 공격 시작(뽀글 발사)",
+      "sha256": "c3bc83266b353f15"
+    },
+    {
+      "file": "sfx/map-hit-1.mp3",
+      "library": "_shared/sfx-library-20261117/sfx/hit-light-01.mp3",
+      "title": "TOONY pops.wav",
+      "creator": "mikala_oidua",
+      "source": "https://freesound.org/people/mikala_oidua/sounds/321163",
+      "license": "CC0",
+      "use": "지도 1타 명중",
+      "sha256": "d18da8f2449d5fdd"
+    },
+    {
+      "file": "sfx/map-hit-2.mp3",
+      "library": "_shared/sfx-library-20261117/sfx/hit-light-02.mp3",
+      "title": "cartoon pop or drip",
+      "creator": "AlaskaRobotics",
+      "source": "https://freesound.org/people/AlaskaRobotics/sounds/221091",
+      "license": "CC0",
+      "use": "지도 2타 명중",
+      "sha256": "794b3447b6fd7b23"
+    },
+    {
+      "file": "sfx/map-finish.mp3",
+      "library": "_shared/sfx-library-20261117/sfx/hit-heavy-04.mp3",
+      "title": "Medium Pillow Hit.wav",
+      "creator": "saturdaysoundguy",
+      "source": "https://freesound.org/people/saturdaysoundguy/sounds/388031",
+      "license": "CC0",
+      "use": "지도 3타 명중",
+      "sha256": "c4130e485b003b45"
+    },
+    {
+      "file": "sfx/map-exit.mp3",
+      "library": "_shared/sfx-library-20261117/sfx/villain-exit-01.mp3",
+      "title": "classic dizzy take slide whistle.wav",
+      "creator": "martian",
+      "source": "https://freesound.org/people/martian/sounds/403002",
+      "license": "CC0",
+      "use": "악당 퇴장",
+      "sha256": "897dd468913ef651"
+    },
+    {
+      "file": "sfx/map-hurt.mp3",
+      "library": "_shared/sfx-library-20261117/sfx/hurt-bump-01.mp3",
+      "title": "LowHit_01.wav",
+      "creator": "Faulkin",
+      "source": "https://freesound.org/people/Faulkin/sounds/336495",
+      "license": "CC0",
+      "use": "아군이 악당에 닿아 움찔",
+      "sha256": "9b67e7d2c5debc8c"
+    },
+    {
+      "file": "sfx/map-appear.mp3",
+      "library": "_shared/sfx-library-20261117/sfx/villain-appear-02.mp3",
+      "title": "Mouth Pop 1",
+      "creator": "michorvath",
+      "source": "https://freesound.org/people/michorvath/sounds/269501",
+      "license": "CC0",
+      "use": "악당이 지도에 처음 나타남",
+      "sha256": "517afe9b48143b4c"
+    },
+    {
+      "file": "sfx/map-victory.mp3",
+      "library": "_shared/sfx-library-20261117/sfx/victory-jingle-03.mp3",
+      "title": "WinGrandPiano.wav",
+      "creator": "Fupicat",
+      "source": "https://freesound.org/people/Fupicat/sounds/521643",
+      "license": "CC0",
+      "use": "모든 악당 격퇴(지도 피날레 직전)",
+      "sha256": "d4c1141ed05a5096"
+    }
+  ],
+  "mapEffectsNote": "2026-11-17 지도 악당 효과음. 과학34 공통 효과음 라이브러리(CC0만, 원본 페이지에서 라이선스 재확인)에서 골라 이름만 바꿔 복사. 가공은 라이브러리 단계의 무음 제거·페이드·음량 맞춤뿐."
 }

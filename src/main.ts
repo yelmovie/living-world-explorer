@@ -227,7 +227,7 @@ function map(ctx:Context){
   onSave:patch=>{ctx.attempt.mapHits={...ctx.attempt.mapHits,...patch};refreshEncounterStatus();void save(state).then(showStorageWarning);},
   blocked:()=>disposed||mode!=='follow'||guided>=0||ctx.host.dataset.mapReady!=='true',
   reduced,art:{left:'assets/map-encounter/map-villain-poses-left.webp',frames:6,nativeFacing:1},palette:'#bd84ff',reach:102,contact:24,
-  tone:(kind,hits)=>playEffect(kind==='finish'?'core-wake':kind==='contact'?'pipette-drop':hits===1?'snap':'capture'),
+  tone:(kind,hits)=>playEffect(kind==='swing'?'map-swing':kind==='hit'?(hits===1?'map-hit-1':'map-hit-2'):kind==='finish'?'map-finish':kind==='exit'?'map-exit':kind==='contact'?'map-hurt':kind==='appear'?'map-appear':'map-victory'),
  });
  ctx.cleanup(encounters.destroy);
  const encounterFrame=(hero:typeof position,ally:typeof companion)=>encounters.update({

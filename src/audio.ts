@@ -1,7 +1,13 @@
 import {narrationRecordings} from './narration-recordings';
 /** Project BGM (main loop, ending loop) + locally hosted CC0 interaction sounds. */
 export type AudioSettings = {sound: boolean; voice?: boolean; bgm?: boolean; bgmVolume?: number};
-export type EffectName = 'click'|'success'|'retry'|'snap'|'capture'|'water'|'hint'|'run'|'page-turn'|'pipette-drop'|'core-wake'|'focus'|'sparkle';
+export type EffectName = 'click'|'success'|'retry'|'snap'|'capture'|'water'|'hint'|'run'|'page-turn'|'pipette-drop'|'core-wake'|'focus'|'sparkle'
+  |'map-swing'|'map-hit-1'|'map-hit-2'|'map-finish'|'map-exit'|'map-hurt'|'map-appear'|'map-victory';
+// 2026-11-17 map villain cues (CC0, see public/assets/audio/sources.json). Everything else is <name>.wav.
+const effectNames: EffectName[] = ['click','success','retry','snap','capture','water','hint','run','page-turn','pipette-drop','core-wake','focus','sparkle','map-swing','map-hit-1','map-hit-2','map-finish','map-exit','map-hurt','map-appear','map-victory'];
+const effectFile = (name: EffectName) => name.startsWith('map-') ? `assets/audio/sfx/${name}.mp3` : `assets/audio/${name}.wav`;
+// The impact lands while the swing is still ringing, so these do not cut the previous effect.
+const layered = new Set<EffectName>(['map-hit-1','map-hit-2','map-finish','map-exit']);
 export type MusicTrack = 'main'|'ending';
 const tracks: Record<MusicTrack, string> = {main: 'assets/audio/bgm-main-theme.m4a', ending: 'assets/audio/bgm-ending-theme.m4a'};
 // Files are normalized to -16 LUFS. 100% BGM ≈ -36 LUFS, just under the effects (≈ -34 LUFS at .06). Tune by ear here.
@@ -19,7 +25,9 @@ let music: HTMLAudioElement | undefined;
 let musicTrack: MusicTrack | undefined;
 const effectVoices = new Set<AudioScheduledSourceNode>();
 // 2026-11-10: per-file level so short CC0 samples sit within about ±3 dB of each other (measured mean volume: run -9 dB … page-turn -28 dB).
-const effectLevel: Partial<Record<EffectName, number>> = {run:.4,success:.55,retry:.75,hint:.75,'core-wake':.85,water:1.2,'pipette-drop':1.8,capture:1.8,'page-turn':2.2,focus:1.3,sparkle:1.6};
+const effectLevel: Partial<Record<EffectName, number>> = {run:.4,success:.55,retry:.75,hint:.75,'core-wake':.85,water:1.2,'pipette-drop':1.8,capture:1.8,'page-turn':2.2,focus:1.3,sparkle:1.6,
+  // Map cues (library loudness: swing/exit/victory about -18 LUFS, hits -20, hurt -24, heavy hit -28). The appear pop stays soft.
+  'map-swing':.75,'map-hit-1':1.1,'map-hit-2':1.1,'map-finish':2,'map-exit':.8,'map-hurt':1.3,'map-appear':.7,'map-victory':.8};
 const samples=new Map<EffectName,AudioBuffer>();
 let samplesRequested=false;let lastEffect=0;
 let observer: MutationObserver | undefined;
@@ -119,7 +127,7 @@ function sync() {
 }
 function preloadEffects(){
  if(samplesRequested)return;const ctx=engine();if(!ctx)return;samplesRequested=true;
- for(const name of ['click','success','retry','snap','capture','water','hint','run','page-turn','pipette-drop','core-wake','focus','sparkle'] as EffectName[])void fetch(`assets/audio/${name}.wav`).then(r=>{if(!r.ok)throw Error('audio');return r.arrayBuffer();}).then(data=>ctx.decodeAudioData(data)).then(buffer=>{if(context===ctx)samples.set(name,buffer);}).catch(()=>{});
+ for(const name of effectNames)void fetch(effectFile(name)).then(r=>{if(!r.ok)throw Error('audio');return r.arrayBuffer();}).then(data=>ctx.decodeAudioData(data)).then(buffer=>{if(context===ctx)samples.set(name,buffer);}).catch(()=>{});
 }
 function firstGesture() {unlocked = true;if(settings.sound)preloadEffects();sync();}
 function visibility() {if (document.hidden) {stopMusic();stopVoices(effectVoices);stopNarration();}else sync();}
@@ -157,10 +165,11 @@ export function playEffect(name: EffectName = 'click') {
   const ctx = engine();
   if (!ctx || !effectGain) return;
   preloadEffects();
-  stopVoices(effectVoices);
+  if(!layered.has(name))stopVoices(effectVoices);
   // Original short motifs: lab droplets, specimen capture and the waking life core.
   const motifs: Record<EffectName, number[]> = {click:[523],success:[523,659,784],retry:[392,330],snap:[880,440],capture:[659,988],water:[784,523,392],hint:[659,784],run:[196],
-    'page-turn':[330,220],'pipette-drop':[988,659],'core-wake':[262,392,523,784],focus:[784,1175],sparkle:[784,1047,1319]};
+    'page-turn':[330,220],'pipette-drop':[988,659],'core-wake':[262,392,523,784],focus:[784,1175],sparkle:[784,1047,1319],
+    'map-swing':[392,587],'map-hit-1':[330],'map-hit-2':[294],'map-finish':[220,165],'map-exit':[523,392,262],'map-hurt':[247],'map-appear':[311,415],'map-victory':[523,659,784,1047]};
   const frequencies = motifs[name];
   const play = () => {
     if (context !== ctx || !effectGain || !settings.sound || document.hidden || explicitQuiet) return;
