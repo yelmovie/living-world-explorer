@@ -38,4 +38,14 @@
 @media(prefers-reduced-motion:reduce){.build-vessel.is-shake,.build-action,.build-slot.is-filled{animation:none}}
 @media(max-height:640px){.build-panel{padding:10px;gap:8px}.build-predictions strong{font-size:16px}.build-action{min-height:52px}.build-card>img,.build-card>canvas{max-height:80px}}
 @media(max-height:480px){.build-hand{gap:6px}.build-card{max-height:none;min-height:0;flex:1;grid-template-rows:minmax(0,1fr) auto}.build-panel{padding:6px;gap:5px}.build-predict{min-height:40px;padding-block:4px}.build-tip{font-size:15px;padding:3px 14px}.build-stage{grid-template-columns:minmax(110px,.6fr) minmax(0,1.6fr) minmax(190px,.9fr);gap:8px}.build-labels{display:none}.build-card{padding:4px;gap:2px}.build-card>img,.build-card>canvas{max-height:52px}.build-card>strong{font-size:14px}.build-predictions strong{display:none}.build-predict{min-height:44px}.build-action{min-height:44px;font-size:16px}.build-action img{width:32px;height:32px}.build-ring{width:64px;height:64px}}
-@media(max-width:659px){.build-game{height:auto}.build-stage{grid-template-columns:1fr;grid-template-rows:none;height:auto}.build-stage>.build-vessel{width:100%;height:auto}.build-hand{flex-direction:row}.build-card{max-height:none;flex:1}.build-vessel{order:-1}}
+/* 2026-11-17: phones held upright: bowl on top taking the spare height, cards and the prediction panel below, no page scroll. */
+@media(max-width:659px){
+ .build-game{gap:8px}.build-tip{font-size:16px;padding:5px 14px}
+ .build-stage{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto auto;gap:8px}
+ .build-stage>.build-vessel{order:-1;width:auto;height:100%;max-width:100%}
+ .build-hand{flex-direction:row;gap:8px}.build-card{max-height:none;flex:1;padding:6px;gap:4px}
+ .build-card>img,.build-card>canvas{max-height:60px}.build-card>strong{font-size:15px}
+ .build-panel{padding:10px;gap:8px}.build-labels{display:none}.build-predictions strong{font-size:16px}.build-predictions{display:grid;grid-template-columns:1fr 1fr}.build-predictions strong{grid-column:1/-1}
+ .build-action{min-height:52px;font-size:18px}
+ .build-game[data-phase=done] .build-predictions{display:none}.build-verdict{font-size:15px;padding:8px 10px}
+}

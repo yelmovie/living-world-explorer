@@ -95,11 +95,17 @@
  .lamp-card-detail{display:none}.lamp-bulb{width:46px;height:46px}.lamp{padding:6px 12px;row-gap:4px}.lamp-label{font-size:16px}.lamp-chip{font-size:12px;padding:1px 8px}
 }
 @media(max-width:659px){
- .choice-game{height:auto;min-height:0}
- .choice-stage{flex-wrap:wrap;height:auto}
- .choice-card{order:1;width:100%;height:auto;grid-template-rows:180px auto auto}
- .swipe-side{order:2;width:calc(50% - 8px);height:auto;min-height:96px}.swipe-arrow{display:none}.swipe-side .choice-icon{width:48px;height:48px}
- .stamp-rack{gap:10px}.stamp-face{min-width:0;font-size:15px}
- .lamp-hand{grid-auto-flow:row;grid-template-columns:1fr 1fr}.lamp-card{min-height:150px}
- .lamp-row{grid-template-columns:1fr}
+ /* 2026-11-17: the board fills the screen between the title and the bottom row; the card picture takes what is left. */
+ .choice-game{gap:8px}.choice-tip{font-size:16px;padding:4px 14px}
+ .choice-card{width:100%;height:100%;padding:10px 12px 12px}
+ .choice-title{font-size:20px}.choice-detail{font-size:16px;line-height:1.4}
+ .choice-swipe .choice-stage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:minmax(0,1fr) auto;gap:10px}
+ .choice-swipe .choice-card{grid-column:1/-1;grid-row:1}
+ .swipe-side{flex-direction:row;width:auto;height:auto;min-height:64px;padding:8px}.swipe-arrow{display:none}.swipe-side .choice-icon{width:40px;height:40px}
+ .swipe-side strong{font-size:16px}.swipe-side i.choice-icon{font-size:30px}
+ .stamp-rack{gap:10px}.stamp-face{min-width:0;font-size:15px;padding:8px 12px}.stamp-handle{width:52px;margin-bottom:-8px}
+ .choice-lamp{grid-template-rows:auto auto minmax(0,1fr) auto}
+ .lamp-hand{grid-auto-flow:row;grid-template-columns:1fr 1fr;grid-template-rows:repeat(2,minmax(0,1fr));gap:8px}.lamp-card-detail{display:none}
+ .lamp-row{grid-template-columns:1fr 1fr;gap:8px}
+ .lamp{grid-template-columns:auto minmax(0,1fr);column-gap:8px;row-gap:4px;padding:8px 10px;border-radius:20px}.lamp-bulb{width:46px;height:46px}.lamp-label{font-size:16px;word-break:keep-all}.lamp-chip{font-size:12px;padding:1px 8px}
 }

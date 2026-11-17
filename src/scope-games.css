@@ -56,4 +56,15 @@
 @media(prefers-reduced-motion:reduce){.eye-field,.lens-view.zoom-out,.scope-spore,.scope-tag,.scope-fact{animation:none}}
 @media(max-height:640px){.scope-panel{padding:10px;gap:8px}.scope-steps{gap:4px}.scope-steps li{font-size:14px}.scope-step-n{width:24px;height:24px}.focus-dial{width:96px}.focus-dial::after{display:none}.focus-meter{display:none}.scope-fact{font-size:14px}}
 @media(max-height:480px){.eye-field{inset:2%;border:5px solid #b8933a;box-shadow:0 8px 16px #0004}.eye-frame{display:none}.scope-tip{font-size:15px;padding:3px 14px}.scope-steps{display:none}.scope-game:is([data-phase=lens],[data-phase=spores]) .scope-panel{display:none}.lens-view,.scope-eye{max-width:calc(100% - 20px)}.scope-panel{flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;padding:8px}.focus-dial::after{display:none}.focus-meter{display:none}.focus-buttons{flex-direction:column}.tag-box{gap:8px}.scope-fact{font-size:13px;padding:8px}.focus-dial{width:80px;margin:0}.name-tag{font-size:17px;padding:6px 16px 6px 24px}.scope-panel{flex-basis:230px}.lens-view,.scope-eye{max-width:calc(100% - 250px)}}
-@media(max-width:659px){.scope-game{height:auto}.scope-stage{flex-direction:column;gap:14px}.lens-view{width:100%;height:auto;max-width:100%}.scope-eye{width:min(92vw,420px);height:auto;max-width:100%}.scope-panel{flex-basis:auto;width:100%}}
+/* 2026-11-17: phones held upright keep the eyepiece, steps and dial on one screen; the eyepiece takes the height that is left. */
+@media(max-width:659px){
+ .scope-tip{font-size:16px;padding:5px 14px}
+ .scope-stage{flex-direction:column;gap:10px}.lens-view{width:100%;height:auto;max-width:100%}
+ .scope-eye{flex:1 1 0;min-height:0;width:auto;height:auto;max-width:100%}
+ .scope-panel{flex:none;width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px 12px;padding:10px}
+ .scope-panel>*{grid-column:1/-1}.scope-panel>.scope-steps{grid-column:1}
+ .scope-steps{gap:4px}.scope-steps li{font-size:15px}.scope-step-n{width:24px;height:24px;font-size:13px}
+ .focus-dial{grid-column:2;grid-row:1;width:88px}.focus-dial::after,.focus-meter{display:none}
+ .tag-box{flex-direction:row;flex-wrap:wrap;gap:8px}.name-tag{font-size:18px;padding:8px 18px 8px 26px}
+ .scope-fact{font-size:15px;padding:10px}
+}
