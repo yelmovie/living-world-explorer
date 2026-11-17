@@ -4,12 +4,13 @@ import {tasksFor} from './curriculum';
 import {markValid,observedKind} from './observation';
 import {currentRun,designCorrect} from './inquiry-runs';
 import {validTrackPair,validTimelinePair} from './inquiry-preparation';
+import {isGermTask,germIssues} from './germ-lab';
 export function taskIssues(task:InquiryTask,r:InquiryRecord):string[]{
  // Records started before 2026-10-25 (no v) are judged by the rules they were finished under.
  const current=r.v===2,items=task.items.filter(i=>current||i.since!==2);
  const issues:string[]=[];const sourceRead=items.every(i=>r.opened.includes(i.id));
  if(['collect','connect','sort'].includes(task.kind)){if(!sourceRead)issues.push('먼저 각 자료를 눌러 안에 담긴 관찰 내용을 읽어요.');if(!items.every(i=>(r.assignments[i.id]||'')===i.target))issues.push(task.feedback);}
- if(task.id==='M3-2'&&current&&r.assignments.ladder!=='smallest')issues.push('크기 사다리에서 세균이 들어갈 칸을 골라 크기를 비교해요.');
+ if(isGermTask(task))issues.push(...germIssues(task,r));
  if(task.kind==='microscope'){
   if(Math.abs(r.focus-65)>12||r.light<40||r.light>85||!r.capture)issues.push(r.level<2?'‘현미경으로 관찰하기’를 눌러 더 크게 확대해요.':'초점을 맞춘 뒤 ‘관찰 사진 남기기’를 눌러요.');
 

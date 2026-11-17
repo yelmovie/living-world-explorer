@@ -11,7 +11,7 @@ import '../choice-games.css';
  * stamp: stamp each document · swipe: push each card left or right · lamp: drag case cards onto two signal lamps.
  * Data stays item → target, so saved work and evaluation are unchanged. A wrong answer is not stored. */
 export type ChoiceGame='stamp'|'swipe'|'lamp';
-export const choiceGames:Record<string,ChoiceGame>={'M3-1':'stamp','M3-3':'swipe','M4-3':'lamp','M4-4':'swipe'};
+export const choiceGames:Record<string,ChoiceGame>={'M4-3':'lamp','M4-4':'swipe'};
 const icons:Record<string,string>={evidence:'🔍',guess:'💭',place:'📍',other:'❓',help:'👍',problem:'⚠️'};
 /** GPT-made icons (asset-bank/original/games-20261116) for the answer sides; emoji remain only in small chips. */
 const iconArt:Record<string,string>={place:'icon-place',other:'icon-unknown',help:'icon-help',problem:'icon-problem'};

@@ -2,7 +2,7 @@ import type {Stage} from './model';
 export const stages:{id:Stage;title:string;place:string;verb:string;entry:string;exit:string;summary:string}[]=[
  {id:'M1',title:'균류 관찰',place:'버섯숲 표본실',verb:'조절하고 발견해요',entry:'fungi-field',exit:'fungi-microscope',summary:'관찰한 특징과 발견 장소를 연결했어요.'},
  {id:'M2',title:'한 방울 탐구',place:'연못 관찰소',verb:'따라가고 비교해요',entry:'water-sampling',exit:'protist-observation',summary:'모양·움직임·사는 곳을 비교했어요.'},
- {id:'M3',title:'세균의 단서',place:'자료 연구실',verb:'근거로 설명해요',entry:'bacteria-sources',exit:'bacteria-profile',summary:'자료를 근거로 특징과 사는 곳을 설명했어요.'},
+ {id:'M3',title:'세균의 단서',place:'자료 연구실',verb:'확대하고 채집해 찾아요',entry:'bacteria-sources',exit:'bacteria-profile',summary:'세균을 확대해 찾고, 모양을 나누고, 채집해 사는 곳을 확인했어요.'},
  {id:'M4',title:'생활 속 사건',place:'생활마을',verb:'시간을 되돌려 봐요',entry:'impact-investigation',exit:'impact-analysis',summary:'생물이 생활에 미치는 영향을 비교했어요.'},
  {id:'M5',title:'생명과학 작업실',place:'BIO 작업실',verb:'만들고 시험해요',entry:'solution-assembly',exit:'solution-run',summary:'생물의 작용을 활용하는 방법을 소개했어요.'}
 ];

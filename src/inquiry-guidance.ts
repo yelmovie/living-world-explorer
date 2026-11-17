@@ -2,10 +2,12 @@ import type {InquiryTask,InquiryRecord} from './inquiry-model';
 import {taskIssues} from './inquiry-evaluate';
 import {markValid} from './observation';
 import {validTimelinePair} from './inquiry-preparation';
+import {isGermTask,germGuidance} from './germ-lab';
 
 /** Guidance follows the saved learning evidence rather than click counts. */
 export function guidance(task:InquiryTask,r:InquiryRecord,selectedCard=''){
  if(task.kind==='summary')return {action:'두 관찰 기록을 읽고 ‘정리 마치기’를 눌러요.',done:1,total:1,ready:true};
+ if(isGermTask(task)){const g=germGuidance(task,r);return {...g,ready:g.done===g.total};}
  const issues=taskIssues(task,r);let action=issues[0]||'발견 기록하기를 눌러 다음 탐구로 가요.';
  let done=0,total=1;
  if(['collect','connect','sort'].includes(task.kind)){
@@ -16,11 +18,7 @@ export function guidance(task:InquiryTask,r:InquiryRecord,selectedCard=''){
   if(task.id==='M1-4'){
    if(card)action=`‘${card.label}’ 카드를 알맞은 칸으로 끌어 놓아요.`;
    else if(pending)action=`‘${pending.label}’ 카드를 버섯·둘 다·곰팡이 중 알맞은 칸으로 끌어 놓아요.`;
-  }else if(pending)action=['M3-1','M3-3','M4-3','M4-4'].includes(task.id)?'카드를 읽고 알맞은 쪽으로 보내요.':'자료를 읽고 답을 골라요. 맞히면 ‘다음 문제’를 눌러요.';
-  if(task.id==='M3-2'&&r.v===2){
-   total++;done+=Number(r.assignments.ladder==='smallest');
-   if(!pending&&!card&&r.assignments.ladder!=='smallest')action='이제 ‘크기 사다리에 세균 놓기’를 눌러요.';
-  }
+  }else if(pending)action=['M4-3','M4-4'].includes(task.id)?'카드를 읽고 알맞은 쪽으로 보내요.':'자료를 읽고 답을 골라요. 맞히면 ‘다음 문제’를 눌러요.';
  }else if(task.kind==='microscope'){
   total=2;done=Number(r.level>=2)+Number(r.capture);
   const feature=task.organism==='mushroom'?'주름을':task.organism==='mold'?'곰팡이의 생김새를':'해캄의 생김새를';

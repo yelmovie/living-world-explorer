@@ -66,24 +66,6 @@ export const narrationRecordings:Record<string,{src:string;text:string;speaker:s
     "speaker": "yeoul",
     "duration": 6.844
   },
-  "M3-welcome": {
-    "src": "assets/audio/voice/M3-welcome.mp3",
-    "text": "책장이 다시 열렸네! 뒤섞인 세균 자료를 네 조사 기록 덕분에 제자리에 꽂을 수 있겠어.",
-    "speaker": "duri",
-    "duration": 6.348
-  },
-  "M3-memory": {
-    "src": "assets/audio/voice/M3-memory.mp3",
-    "text": "모양 그림은 ‘생김새’ 칸에, 흙이나 물에서 발견한 기록은 ‘사는 곳’ 칸에 꽂아. 모양만 보고 어디서 왔는지 짐작할 필요가 없지.",
-    "speaker": "duri",
-    "duration": 9.561
-  },
-  "M3-work": {
-    "src": "assets/audio/voice/M3-work.mp3",
-    "text": "마을 친구들한테 자료를 빌려줘. “어디서 찾은 사실이야?” 하고 물으면 함께 책장을 펼치지.",
-    "speaker": "duri",
-    "duration": 6.922
-  },
   "M4-welcome": {
     "src": "assets/audio/voice/M4-welcome.mp3",
     "text": "마을 정원에 다시 불이 들어왔어! 네가 살펴본 그 낙엽 자리로 나도 돌아왔지.",

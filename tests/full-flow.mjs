@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {launchBrowser,waitForScene,button,navigate,teacherTools,readSaved,waitSaved,setRange,skipFilm,linkCard,linkTarget} from './browser.mjs';
+import {playGerm} from './germ-play.mjs';
 import {inquiryTasks,stageRoutes,names} from './curriculum.mjs';
 const base=process.env.APP_URL||'http://127.0.0.1:5176';
 const browser=await launchBrowser();const context=await browser.newContext({viewport:{width:1280,height:800},hasTouch:true,...(process.env.RESUME_FLOW?{storageState:'.tmp/learner20-state.json'}:{})});const page=await context.newPage();page.setDefaultTimeout(15000);
@@ -13,14 +14,15 @@ const alternative=async()=>{await btn('변화 위치 고르기').click();return 
 // Phaser suppresses synthetic mouse events just after touch; keep this tablet flow on one input device.
 async function tapCanvas(p,x,y){const rect=await p.locator('.expedition-canvas-host canvas').boundingBox();assert.ok(rect);await p.touchscreen.tap(rect.x+x*rect.width,rect.y+y*rect.height);}
 async function touch(x,y){await tapCanvas(page,x/960,y/540);}
-// 2026-11-16 game boards (M1-2/3 microscopes, M1-4 sort, M3/M4 stamp·swipe·lamp, M4 time-lapse·wipe).
+// 2026-11-16 game boards (M1-2/3 microscopes, M1-4 sort, M3 bacteria lab, M4 swipe·lamp, M4 time-lapse·wipe).
 const spores=[[0.482,0.3014],[0.4461,0.3708],[0.4406,0.4403]],moldTags={thread:[0.4813,0.3653],round:[0.5,0.6]},changes={bread:[0.536,0.654],leaf:[0.46,0.4486]};
 const eyePoint=p=>page.locator('.eye-field').evaluate((f,p)=>{const r=f.getBoundingClientRect(),b={left:r.left+f.clientLeft,top:r.top+f.clientTop,width:f.clientWidth,height:f.clientHeight},img=f.querySelector('img'),a=img.naturalWidth/img.naturalHeight,w=b.height*a;return [b.left+p[0]*w-(w-b.width)/2,b.top+p[1]*b.height];},p);
 async function playBoard(task){
  if(task.id==='M1-2'){const lv=await page.locator('.lens-view').boundingBox();await page.mouse.move(lv.x+lv.width*.2,lv.y+lv.height*.85);await page.mouse.down();await page.mouse.move(lv.x+lv.width*.33,lv.y+lv.height*.42,{steps:10});await page.waitForTimeout(900);await page.mouse.up();await page.locator('.eye-field').waitFor();await page.waitForTimeout(700);for(const p of spores){const [x,y]=await eyePoint(p);await page.mouse.click(x,y);await page.waitForTimeout(250);}return true;}
  if(task.id==='M1-3'){for(let i=0;i<12&&await page.locator('.focus-dial').count();i++){await btn('오른쪽으로 ▶').click();await page.waitForTimeout(60);}for(const [id,p] of Object.entries(moldTags)){await page.locator(`[data-tag="${id}"]`).click();const [x,y]=await eyePoint(p);await page.mouse.click(x,y);await page.waitForTimeout(250);}return true;}
  if(task.id==='M1-4'||task.id==='M4-3'){for(const item of task.items){await linkCard(page,item.id).tap();await linkTarget(page,item.target).tap();await page.waitForTimeout(150);}return true;}
- if(['M3-1','M3-3','M4-4'].includes(task.id)){for(let i=0;i<task.items.length;i++){const id=await page.locator('.choice-card').getAttribute('data-link-item');const item=task.items.find(it=>it.id===id);await linkTarget(page,item.target).tap();await page.waitForFunction(id=>{const c=document.querySelector('.choice-card');return !c||c.hidden||c.dataset.linkItem!==id;},id,{timeout:5000});await page.waitForTimeout(250);}return true;}
+ if(task.stage==='M3'){await playGerm(page,task.id);return true;}
+ if(['M4-4'].includes(task.id)){for(let i=0;i<task.items.length;i++){const id=await page.locator('.choice-card').getAttribute('data-link-item');const item=task.items.find(it=>it.id===id);await linkTarget(page,item.target).tap();await page.waitForFunction(id=>{const c=document.querySelector('.choice-card');return !c||c.hidden||c.dataset.linkItem!==id;},id,{timeout:5000});await page.waitForTimeout(250);}return true;}
  if(task.id==='M4-1'||task.id==='M4-2'){if(task.id==='M4-1'){await btn('▶ 빨리 감기').click();await page.waitForTimeout(3600);}else{await btn('◀ 처음 더 보기').click();await btn('나중 더 보기 ▶').click();}const b=await page.locator('.timeline-layer').first().boundingBox();const [x,y]=changes[task.organism];await page.touchscreen.tap(b.x+b.width*x,b.y+b.height*y);await page.locator('.timeline-note').waitFor();return true;}
  if(task.id==='M5-2'||task.id==='M5-3'){const right=task.items.find(it=>it.target==='action');await linkCard(page,right.id).tap();await page.locator('.build-vessel').tap();await page.locator('[data-prediction="supported"]').tap();const act=page.locator('.build-action');await act.scrollIntoViewIfNeeded();
   if(task.id==='M5-2'){const b=await act.boundingBox();await page.mouse.move(b.x+b.width/2,b.y+b.height/2);await page.mouse.down();await page.waitForTimeout(2900);await page.mouse.up();}else for(let i=0;i<5;i++){await act.click();await page.waitForTimeout(120);}
@@ -63,7 +65,6 @@ async function completeTask(task,replay=false){
  await page.getByRole('heading',{name:task.title,exact:true}).waitFor();await waitForScene(page,'.expedition-canvas-host');
  const board=await playBoard(task);
  if(!board&&['collect','connect','sort'].includes(task.kind))await connectAll(task);
- if(task.id==='M3-2'){await btn('크기 사다리에 세균 놓기').click();const ladder=page.locator('.ladder-dialog');await ladder.getByRole('button',{name:'여기에 놓기'}).first().click();assert.match(await ladder.locator('.ladder-feedback').innerText(),/더 아래/);await ladder.getByRole('button',{name:'여기에 놓기'}).last().click();assert.match(await ladder.locator('.ladder-feedback').innerText(),/약 200배/);await ladder.getByRole('button',{name:'닫기',exact:true}).click();}
  if(task.kind==='microscope'&&!board){
   if(task.id==='M2-2'){
    await btn('눈으로 보기').click();await page.locator('[data-eye-active]').waitFor();
@@ -102,7 +103,7 @@ async function completeTask(task,replay=false){
   assert.equal(await page.locator('.link-board').count(),0);await btn('정리 마치기').click();
  }else{
  // 2026-11-16: a finished activity opens its record by itself; the button is the fallback.
- if(['collect','connect','sort','microscope','timeline','track','sample'].includes(task.kind)||['M5-2','M5-3'].includes(task.id))await page.locator('.discovery-dialog').waitFor({timeout:9000}).catch(()=>btn('발견 기록하기').click());else await btn('발견 기록하기').click();
+ if(['collect','connect','sort','microscope','timeline','track','sample'].includes(task.kind)||['M5-2','M5-3'].includes(task.id)||task.stage==='M3')await page.locator('.discovery-dialog').waitFor({timeout:9000}).catch(()=>btn('발견 기록하기').click());else await btn('발견 기록하기').click();
  await page.locator('.discovery-dialog').waitFor();
  assert.match(await page.locator('.discovery-dialog .pip-label').innerText(),new RegExp(`발견 도장 ${task.order} / 4`));
  await btn(task.order===4?'연구소 복구하기':'다음 발견으로').click();
@@ -153,7 +154,7 @@ try{
  const dp=page.waitForEvent('download');await btn('내 카드 저장').click();const download=await dp;await download.saveAs('.tmp/result-card.png');saved=await waitSaved(page,s=>s.learner.cardTitle==='내가 발견한 생물의 작용');
  await page.reload();await page.locator('.screen-results').waitFor();assert.equal(await page.getByLabel('소개 카드 제목').inputValue(),'내가 발견한 생물의 작용');
  const learnerBefore=JSON.stringify((await readSaved(page)).learner);const settings=await teacherTools(page);await settings.getByRole('button',{name:'관리자 전체 해금',exact:true}).click();await settings.getByRole('button',{name:'시연용 예시 기록 불러오기',exact:true}).click();await page.locator('dialog[open]').waitFor({state:'detached'});await navigate(page,base,'solution-run');
- await page.getByRole('button',{name:/4번째 발견:/}).click();await page.locator('.inquiry-loading').waitFor({state:'detached'});await page.getByLabel('내 소개 문장',{exact:true}).fill('시연에서만 바꾸는 소개 문장이에요.');await waitSaved(page,s=>s.preview.inquiry.records['M5-4'].note==='시연에서만 바꾸는 소개 문장이에요.');assert.equal(JSON.stringify((await readSaved(page)).learner),learnerBefore);
+ await page.getByRole('button',{name:/4번째 발견:/}).click();await page.locator('.inquiry-loading').waitFor({state:'detached'});await page.getByLabel('내 소개 문장',{exact:true}).fill('시연에서만 바꾸는 소개 문장이에요.');await waitSaved(page,s=>s.preview.inquiry.records['M5-4'].note==='시연에서만 바꾸는 소개 문장이에요.');{const now=JSON.stringify((await readSaved(page)).learner);if(now!==learnerBefore){const a=JSON.parse(learnerBefore),b=JSON.parse(now);const walk=(x,y,p)=>{if(JSON.stringify(x)===JSON.stringify(y))return;if(x&&y&&typeof x==='object'&&typeof y==='object'){for(const k of new Set([...Object.keys(x),...Object.keys(y)]))walk(x[k],y[k],p+'.'+k);return;}console.error('LEARNER DIFF',p,JSON.stringify(x)?.slice(0,200),'=>',JSON.stringify(y)?.slice(0,200));};walk(a,b,'learner');}assert.equal(now,learnerBefore);}
  let previewSettings=await teacherTools(page);await previewSettings.getByRole('button',{name:'시연 기록 초기화',exact:true}).click();await page.locator('.settings-confirm').getByRole('button',{name:'기록 지우기',exact:true}).click();await page.locator('.screen-main').waitFor();assert.equal(JSON.stringify((await waitSaved(page,s=>Object.keys(s.preview.inquiry.records).length===0)).learner),learnerBefore);previewSettings=await teacherTools(page);await previewSettings.getByRole('button',{name:'관리자 전체 해금',exact:true}).click();await previewSettings.getByRole('button',{name:'닫기',exact:true}).click();assert.equal(JSON.stringify((await waitSaved(page,s=>!s.settings.admin)).learner),learnerBefore);
  await page.reload();await page.locator('.screen-results').waitFor();assert.equal(await page.getByLabel('소개 문장',{exact:true}).inputValue(),'우리 생활에는 작은 생물의 도움이 있어요.');await page.screenshot({path:'.tmp/full-flow-results.png'});
  // The deliberate wrong M1-1 answer counts as a miss, so M1 can be replayed for its habit badge.

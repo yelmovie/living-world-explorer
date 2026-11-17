@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {launchBrowser,button,navigate,teacherTools,waitSaved,waitForScene} from './browser.mjs';
+import {playGerm} from './germ-play.mjs';
 import {inquiryTasks,stageRoutes} from './curriculum.mjs';
 
 const base=process.env.APP_URL||'http://127.0.0.1:5176';
@@ -25,45 +26,14 @@ try{
  const settings=await teacherTools(page);
  await settings.getByRole('button',{name:'관리자 전체 해금',exact:true}).click();
  await settings.getByRole('button',{name:'닫기',exact:true}).click();
- // A fresh preview lets the first ladder attempt be wrong before example records are loaded.
+ // 2026-11-17: the size idea now lives in the M3-1 zoom dial (the old M3-2 ladder was retired with the M3 card activities).
  for(const [index,[width,height]] of [[375,812],[375,812],[915,412],[1024,768]].entries()){
-  await page.setViewportSize({width,height});const task=await open('M3-2');
-  // 2026-11-16: M3-2 is a quiz board; right answers move on by themselves.
-  if(index===0)for(const [i,item] of task.items.entries()){await page.locator(`[data-quiz-answer="${item.target}"]`).click();if(i<task.items.length-1)await page.waitForFunction(id=>document.querySelector('.quiz-board')?.dataset.quizItem!==id,item.id,{timeout:5000});}
-  await button(page,index===0?'크기 사다리에 세균 놓기':'✓ 크기 사다리 다시 보기').click();
-  const ladder=page.locator('.ladder-dialog');
-  await ladder.evaluate(async node=>{await Promise.all(node.getAnimations().map(animation=>animation.finished));});
-  const frame=await ladder.evaluate(node=>{
-   const box=node.getBoundingClientRect(),title=node.querySelector('h2').getBoundingClientRect(),close=node.querySelector('.modal-close').getBoundingClientRect();
-   return {scrollTop:node.scrollTop,titleVisible:title.top>=box.top&&title.bottom<=box.bottom,closeVisible:close.top>=box.top&&close.bottom<=box.bottom};
-  });
-  assert.ok(frame.scrollTop===0&&frame.titleVisible&&frame.closeVisible,'ladder title and close remain visible: '+JSON.stringify({width,height,frame}));
-  for(const asset of ['hair-shaft.webp','hypha-thread.webp']){
-   const image=ladder.locator(`img[src$="/${asset}"]`);
-   await image.waitFor();
-   await image.evaluate(img=>img.decode());
-   assert.ok(await image.evaluate(img=>img.complete&&img.naturalWidth>0),asset+' must decode');
-  }
-  assert.ok(await ladder.evaluate(node=>[node,...node.querySelectorAll('.size-ladder')].every(part=>part.scrollWidth<=part.clientWidth+1)),'ladder must fit horizontally');
-  for(const label of await ladder.locator('.ladder-rung small').all()){
-   await label.scrollIntoViewIfNeeded();
-   const readable=await label.evaluate(node=>{
-    const row=node.closest('.ladder-rung').getBoundingClientRect();
-    const range=document.createRange();range.selectNodeContents(node);
-    const text=range.getBoundingClientRect();
-    return /\d/.test(node.textContent)&&parseFloat(getComputedStyle(node).fontSize)>=16&&text.width>0&&text.left>=row.left-1&&text.right<=row.right+1&&text.top>=row.top-1&&text.bottom<=row.bottom+1;
-   });
-   assert.ok(readable,'numeric size labels must stay inside their rows');
-  }
-  if(index===0){
-   await ladder.getByRole('button',{name:'여기에 놓기',exact:true}).first().click();
-   assert.match(await ladder.locator('.ladder-feedback').innerText(),/더 아래/);
-   await ladder.getByRole('button',{name:'여기에 놓기',exact:true}).last().click();
-   await waitSaved(page,state=>state.preview.inquiry.records['M3-2'].assignments.ladder==='smallest');
-  }
-  assert.equal(await ladder.locator('.ladder-slot.placed').count(),1,'placement must survive reopening');
-  assert.match(await ladder.locator('.ladder-feedback').innerText(),/200배/);
-  await ladder.getByRole('button',{name:'닫기',exact:true}).click();checks.push('ladder '+width+'x'+height);
+  await page.setViewportSize({width,height});await open('M3-1');
+  if(index===0){await playGerm(page,'M3-1');await waitSaved(page,state=>state.preview.inquiry.records['M3-1'].assignments.found==='yes');await page.locator('.discovery-dialog').waitFor({timeout:9000});await page.keyboard.press('Escape');await page.locator('.discovery-dialog').waitFor({state:'detached'}).catch(()=>{});}
+  const fit=await page.evaluate(()=>{const host=document.querySelector('.expedition-canvas-host').getBoundingClientRect();return ['.zoom-view','.zoom-panel'].every(sel=>{const r=document.querySelector(sel).getBoundingClientRect();return r.width>0&&r.left>=host.left-1&&r.right<=host.right+1&&r.top>=host.top-1&&r.bottom<=host.bottom+1;});});
+  assert.ok(fit,'zoom view and dial fit the board: '+width+'x'+height);
+  assert.equal(await page.locator('.zoom-power').innerText(),'×1,000','the found state reopens at 1000×');
+  checks.push('zoom '+width+'x'+height);
  }
  await page.setViewportSize({width:1280,height:800});
  const example=await teacherTools(page);

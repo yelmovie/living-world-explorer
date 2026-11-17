@@ -10,9 +10,6 @@ import '../quiz-board.css';
 
 const questions: Record<string, string> = {
   'M1-1': '여기서 찾은 건 무엇일까요?',
-  'M3-1': '확인한 자료인가요, 아직 확인하지 않은 생각인가요?',
-  'M3-2': '이 자료는 세균의 어떤 특징을 알려 주나요?',
-  'M3-3': '세균을 발견한 장소를 알 수 있나요?',
   'M4-3': '이 상황에서 어떤 영향을 주나요?',
   'M4-4': '이 상황에서 어떤 영향을 주나요?'
 };
@@ -112,9 +109,7 @@ export function mountQuizBoard(host: HTMLElement, task: InquiryTask, record: Inq
     next.hidden = index === items.length - 1 || !solved;
     next.disabled = !solved;
     finish.hidden = index !== items.length - 1 || !items.every(correct);
-    finish.textContent = task.id === 'M3-2' && record.v === 2 && record.assignments.ladder !== 'smallest'
-      ? '문제를 다 풀었어요. 크기 사다리도 살펴봐요.'
-      : '모두 풀었어요. 발견을 기록해요.';
+    finish.textContent = '모두 풀었어요. 발견을 기록해요.';
   }
 
   function show(nextIndex: number, focus = false) {

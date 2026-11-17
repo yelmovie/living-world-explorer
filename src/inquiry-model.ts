@@ -1,6 +1,6 @@
 import type {Stage,Point} from './model';
 
-export type TaskKind='collect'|'microscope'|'sample'|'track'|'summary'|'connect'|'timeline'|'sort'|'build'|'publish'|'review';
+export type TaskKind='collect'|'microscope'|'sample'|'track'|'summary'|'connect'|'timeline'|'sort'|'build'|'publish'|'review'|'zoom'|'catch'|'culture'|'exhibit';
 /** since: 2 marks a card added on 2026-10-25; records saved before that (no `v`) are judged without it. */
 /** hint: what the rabbit guide Toto says when this card is placed in the wrong spot. */
 export type InquiryItem={id:string;label:string;detail:string;target:string;art?:string;since?:2;hint?:string};

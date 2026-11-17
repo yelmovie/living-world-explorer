@@ -5,6 +5,7 @@ import {makeState,makeAttempt,type State,type Attempt,stageIds,captureValid} fro
 import {routes,activityRoutes,stages} from './content';
 import {validDraft,recoverDraft} from './validate';
 import {missing} from './evaluate';
+import {isGermTask} from './germ-lab';
 const blobs=new Map<string,Blob>();
 let db:IDBDatabase|undefined;
 export let restoredFromPreview=false;
@@ -21,6 +22,9 @@ export function restoreAttempt(raw:unknown):Attempt{
  if(typeof v.id!=='string'||!v.draft||!['m1','m2','m3','m4','m5'].every(k=>k in v.draft))return base;
  // Invalid records never become completed missions. Keep only records from this attempt.
  const a={...base,...v,draft:recoverDraft(v.draft),inquiry:recoverInquiry(v.inquiry)};
+ // 2026-11-17: M3 became new hands-on games. Working records from the old card activities start over;
+ // finished evidence snapshots below are kept, so unlocked stages and rewards stay.
+ for(const t of tasksFor('M3'))if(isGermTask(t)&&a.inquiry.records[t.id]&&a.inquiry.records[t.id].assignments.germ!=='1')delete a.inquiry.records[t.id];
  a.route=routes.includes(v.route)?v.route:'nature-map';
  // Historical accepted snapshots keep their original validation policy. A stricter
  // image mask must never erase an older student's completed lab or rewards.

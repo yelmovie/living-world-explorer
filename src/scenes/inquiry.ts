@@ -12,7 +12,7 @@ import type {Stage,Evidence} from '../model';
 import {artFor,artTime,artKey} from '../artAssets';
 import {canvas,draw} from '../draw';
 import {addMark,markHint,markValid,observedKind} from '../observation';
-import {ladderPlacement} from '../ladder';
+import {isGermTask,germSummary} from '../germ-lab';
 import {modelButton} from '../models';
 import {currentRun,startRun,designCorrect} from '../inquiry-runs';
 import {publishRecord} from '../inquiry-records';
@@ -31,12 +31,12 @@ const backgrounds:Record<Stage,string>={M1:'fungi',M2:'water',M3:'archive',M4:'v
 export function mentor(task:InquiryTask,record:InquiryRecord){const box=el('div','buddy-card');const pic=el('img');pic.src='assets/characters/companion-portrait.webp';pic.alt='토끼 길잡이 토토';const talk=el('div','buddy-speech');talk.hidden=true;let level=0;const text=paragraph('');const more=button('다른 힌트',()=>{level=Math.min(2,level+1);draw();playEffect('hint');},'text-button');const draw=()=>{text.textContent=[guidance(task,record).action, task.kind==='microscope'?'관찰 사진과 확대된 모습을 나란히 살펴봐요.':'화면의 자료를 다시 열고 표시나 기록을 살펴봐요.',task.kind==='connect'||task.kind==='sort'||task.kind==='collect'?'자료를 다시 읽고, 고른 답이 자료의 내용과 어울리는지 살펴봐요.':'방금 조작한 결과와 앞 기록에서 달라진 점을 찾아봐요. 그 차이를 고른 설명과 비교해요.'][level];more.disabled=level===2;};talk.append(text,more,button('자료·관찰 조건',()=>modal('자료와 관찰 조건',[sourceNotes(task)]),'text-button'));const b=button('',()=>{talk.hidden=!talk.hidden;level=0;draw();b.setAttribute('aria-expanded',String(!talk.hidden));playEffect('hint');},'buddy-toggle');b.setAttribute('aria-label','토토의 힌트');b.setAttribute('aria-expanded','false');b.append(pic,el('span','','토토에게 힌트'));box.append(b,talk);return box;}
 export function inquiryScene(ctx:Context,stage:Stage){
  const progress=ctx.attempt.inquiry;const list=tasksFor(stage);let index=progress.current[stage]??0;index=Math.max(0,Math.min(3,index));const task=list[index];const r=progress.records[task.id]??=prepareInquiry(task);let disposed=false;ctx.cleanup(()=>disposed=true);
- const linking=['collect','connect','sort'].includes(task.kind),quiz=linking&&task.id!=='M1-4',lapse=task.kind==='timeline'&&['M4-1','M4-2'].includes(task.id),scope=['M1-2','M1-3'].includes(task.id),brew=['M5-2','M5-3'].includes(task.id),board=quiz||lapse||scope||brew;ctx.host.classList.add('expedition-shell',`stage-${stage}`);ctx.host.classList.toggle('link-task',linking&&!quiz);ctx.host.classList.toggle('quiz-task',board);ctx.host.dataset.stage=stage;ctx.host.dataset.kind=task.kind;ctx.host.style.setProperty('--facility-image',`url('/assets/places/${backgrounds[stage]}.webp')`);
+ const linking=['collect','connect','sort'].includes(task.kind),quiz=linking&&task.id!=='M1-4',lapse=task.kind==='timeline'&&['M4-1','M4-2'].includes(task.id),scope=['M1-2','M1-3'].includes(task.id),brew=['M5-2','M5-3'].includes(task.id),germ=isGermTask(task),board=quiz||lapse||scope||brew||germ;ctx.host.classList.add('expedition-shell',`stage-${stage}`);ctx.host.classList.toggle('link-task',linking&&!quiz);ctx.host.classList.toggle('quiz-task',board);ctx.host.dataset.stage=stage;ctx.host.dataset.kind=task.kind;ctx.host.style.setProperty('--facility-image',`url('/assets/places/${backgrounds[stage]}.webp')`);
  const head=el('div','expedition-header');const emblem=activityIllustration(task,'mission-emblem');const titles=el('div','mission-titles');titles.append(el('span','eyebrow',`MISSION ${stage.slice(1).padStart(2,'0')} · ${stages.find(s=>s.id===stage)!.title} · ${index+1}번째 발견`),heading(task.title));if(task.kind!=='summary')titles.append(paragraph(researchCases[stage].question,'case-brief'));head.append(emblem,titles);ctx.host.append(head);
- const grid=el('div','expedition-workspace');const work=el('section','expedition-work');const host=el('div','expedition-canvas-host');host.setAttribute('aria-label',task.title+' 탐구 장면');const badge=el('span','model-badge',task.kind==='build'?'관계 설명 모형':'관찰·조사 모형');work.append(host);if(!linking)work.append(badge);const side=el('aside','expedition-panel');grid.append(work);if(task.kind!=='summary'&&task.id!=='M1-4'&&!lapse&&!scope&&!brew)grid.append(side);ctx.host.append(grid);
+ const grid=el('div','expedition-workspace');const work=el('section','expedition-work');const host=el('div','expedition-canvas-host');host.setAttribute('aria-label',task.title+' 탐구 장면');const badge=el('span','model-badge',task.kind==='build'?'관계 설명 모형':'관찰·조사 모형');work.append(host);if(!linking)work.append(badge);const side=el('aside','expedition-panel');grid.append(work);if(task.kind!=='summary'&&task.id!=='M1-4'&&!lapse&&!scope&&!brew&&!germ)grid.append(side);ctx.host.append(grid);
  let running=false,ready=false;
  // 2026-11-16: finishing an activity opens its discovery record by itself; the footer button stays for revisits.
- const autoRecord=['collect','connect','sort','microscope','timeline','track','sample'].includes(task.kind)||brew;let wasReady=guidance(task,r).ready,autoTimer:ReturnType<typeof setTimeout>|undefined;ctx.cleanup(()=>clearTimeout(autoTimer));
+ const autoRecord=['collect','connect','sort','microscope','timeline','track','sample'].includes(task.kind)||brew||germ;let wasReady=guidance(task,r).ready,autoTimer:ReturnType<typeof setTimeout>|undefined;ctx.cleanup(()=>clearTimeout(autoTimer));
  const loading=el('div','inquiry-loading','관찰 이미지를 준비하고 있어요…');loading.setAttribute('role','status');work.append(loading);
  const status=el('div','inquiry-status');const counter=el('strong','inquiry-counter');
  const action=paragraph('','next-instruction');action.setAttribute('aria-live','polite');
@@ -72,12 +72,12 @@ export function inquiryScene(ctx:Context,stage:Stage){
   if(action.textContent!==instruction)action.textContent=instruction;
   if(sourceNext.textContent!==g.action)sourceNext.textContent=g.action;
   status.classList.toggle('ready',g.ready);ctx.host.classList.toggle('record-ready',g.ready);
-  if(autoRecord&&g.ready&&!wasReady&&!r.completedAt&&ready){clearTimeout(autoTimer);autoTimer=setTimeout(()=>{if(!disposed&&demoStep<0&&!running&&guidance(task,r).ready&&!document.querySelector('dialog[open]'))next.click();},task.kind==='timeline'?4500:scope||brew?3200:1700);}
+  if(autoRecord&&g.ready&&!wasReady&&!r.completedAt&&ready){clearTimeout(autoTimer);autoTimer=setTimeout(()=>{if(!disposed&&demoStep<0&&!running&&guidance(task,r).ready&&!document.querySelector('dialog[open]'))next.click();},task.kind==='timeline'?4500:scope||brew||germ?3200:1700);}
   wasReady=g.ready;
   if(task.kind==='track'&&recordButton)recordButton.disabled=!ready||demoStep>=0||!g.ready;
   if(board){
    if(recordButton)recordButton.disabled=!ready||!g.ready;
-   side.hidden=task.id!=='M3-2'||r.v!==2||!task.items.every(it=>r.assignments[it.id]===it.target);
+   side.hidden=true;
   }
  };
  const save=()=>{feedback.textContent='';r.submitted=false;ctx.save();updateStatus();};
@@ -113,18 +113,13 @@ export function inquiryScene(ctx:Context,stage:Stage){
   if(task.kind==='review'){controls();view?.refresh();}
  };
  // DOM quizzes and observations load their own small renderers.
- const scene=():Promise<typeof import('../renderers/inquiry2d').mountInquiry>=>task.kind==='summary'?import('../renderers/pond-summary').then(m=>(host,_task,_record,hooks)=>m.mountPondSummary(host,progress.records,hooks)):scope?import('../renderers/scope-games').then(m=>m.mountScopeGame):brew?import('../renderers/build-games').then(m=>m.mountBuildGame):task.kind==='microscope'?import('../renderers/simple-microscope').then(m=>m.mountMicroscope):task.id==='M1-4'?import('../renderers/fungi-sort').then(m=>m.mountFungiSort):['M3-1','M3-3','M4-3','M4-4'].includes(task.id)?import('../renderers/choice-games').then(m=>m.mountChoiceGame):lapse?import('../renderers/timeline-games').then(m=>m.mountTimelineGame):quiz?import('../renderers/quiz-board').then(m=>m.mountQuizBoard):import('../renderers/inquiry2d').then(m=>m.mountInquiry);
+ const scene=():Promise<typeof import('../renderers/inquiry2d').mountInquiry>=>task.kind==='summary'?import('../renderers/pond-summary').then(m=>(host,_task,_record,hooks)=>m.mountPondSummary(host,progress.records,hooks)):germ?import('../renderers/germ-games').then(m=>m.mountGermGame):scope?import('../renderers/scope-games').then(m=>m.mountScopeGame):brew?import('../renderers/build-games').then(m=>m.mountBuildGame):task.kind==='microscope'?import('../renderers/simple-microscope').then(m=>m.mountMicroscope):task.id==='M1-4'?import('../renderers/fungi-sort').then(m=>m.mountFungiSort):['M4-3','M4-4'].includes(task.id)?import('../renderers/choice-games').then(m=>m.mountChoiceGame):lapse?import('../renderers/timeline-games').then(m=>m.mountTimelineGame):quiz?import('../renderers/quiz-board').then(m=>m.mountQuizBoard):import('../renderers/inquiry2d').then(m=>m.mountInquiry);
  void scene().then(async mount=>{await document.fonts.ready;if(disposed)return;view=mount(host,task,r,{assigned:()=>{selectedCard='';sourcePreview.hidden=true;sourcePreview.replaceChildren();updateStatus();},changed:()=>{save();controls();},open:source,feedback:info,ready:(ok)=>{
   if(disposed)return;
   ready=ok;if(demoButton)demoButton.disabled=!ok;tools.inert=!ok||demoStep>=0;next.disabled=!ok||demoStep>=0;updateStatus();
   if(ok){loading.remove();ctx.host.dispatchEvent(new Event('activity-ready',{bubbles:true}));}
   else{loading.replaceChildren(paragraph('관찰 이미지를 준비하지 못했어요. 연결을 확인하고 다시 열어요.'),button('이미지 다시 준비',ctx.render));}
  }},reducedMotion(ctx.state.settings.reduced));ctx.cleanup(view.dispose);}).catch(()=>{loading.replaceChildren(paragraph('장면을 열지 못했어요.'),button('다시 열기',ctx.render));});
- const openLadder=()=>{
-  const dialog=modal('세균은 얼마나 작을까요?',[ladderPlacement(r.assignments.ladder==='smallest',()=>{r.assignments.ladder='smallest';save();view?.refresh();playEffect('success');controls();})]);
-  dialog.classList.add('ladder-dialog');
-  const title=dialog.querySelector('h2')!;title.tabIndex=-1;title.focus({preventScroll:true});dialog.scrollTop=0;
- };
  const nakedWater=()=>{
   const box=el('div','naked-eye-view'),field=el('div','scope-field'),img=el('img');
   img.src='assets/ui/water-drop.webp';img.alt='눈으로 본 투명한 물방울';field.append(img);box.append(field);
@@ -231,9 +226,6 @@ export function inquiryScene(ctx:Context,stage:Stage){
     },'text-button'));
    }else tools.append(choices(task.items,'',id=>{if(chooseCase(task,r,id)){paint();controls();}}));
   }else{
-   if(task.id==='M3-2'&&r.v===2){
-    const placed=r.assignments.ladder==='smallest';tools.append(button(placed?'✓ 크기 사다리 다시 보기':'크기 사다리에 세균 놓기',openLadder,placed?'secondary':'primary'));
-   }
   }
   sourcePreview.inert=running;if(running)tools.querySelectorAll<HTMLButtonElement>('button').forEach(b=>b.disabled=true);
   updateStatus();
@@ -410,7 +402,8 @@ export function inquiryEvidenceView(evidence:Evidence|undefined,compact=false){
   }else if(art){const image=el('img');image.src=art.src;image.alt=art.label;row.append(image);}
   row.append(el('strong','',task.title),emphasizeScience(paragraph(task.success)));if(task.terms?.length)row.append(termChips(task.terms));const model=modelButton(task.id,'3D로 보기');if(model)row.append(model);
   const beforeDetails=row.children.length;
-  if(task.kind==='microscope')row.append(paragraph(`내 관찰 사진 · 초점 ${record.focus} · 특징을 확대해 살펴봤어요`));
+  if(isGermTask(task))row.append(...germSummary(task,record).map(line=>paragraph(line)));
+  else if(task.kind==='microscope')row.append(paragraph(`내 관찰 사진 · 초점 ${record.focus} · 특징을 확대해 살펴봤어요`));
   else if(task.kind==='track')row.append(paragraph(`같은 시야의 두 순간 · A ${record.pins[0]} → B ${record.pins[1]} · 그림은 B의 위치예요.${record.marks.length?` 현미경에서 몸 둘레의 섬모 ${record.marks.length}곳을 찾았어요.`:''}`));
   else if(task.kind==='timeline')row.append(paragraph(`이전 관찰 ${record.pins[0]+1} → 이후 관찰 ${record.pins[1]+1} · 그림은 이후 모습과 내 표시 ${record.marks.length}곳이에요.`));
   else if(task.kind==='sample')row.append(paragraph(`${record.assignments.site==='plant'?'물풀 가까이':'물가 가까이'}에서 채집 · ${record.sequence===3?'한 방울 표본 준비 완료':'준비 순서 '+record.sequence}`));

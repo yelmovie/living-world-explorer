@@ -1,5 +1,6 @@
 import type {InquiryTask,InquiryRecord} from './inquiry-model';
 import {emptyRecord} from './inquiry-model';
+import {isGermTask} from './germ-lab';
 
 /** Prepare equipment, never the learner's observation, claim or biological action. Existing records are left intact. */
 export function prepareInquiry(task:InquiryTask):InquiryRecord{
@@ -7,6 +8,7 @@ export function prepareInquiry(task:InquiryTask):InquiryRecord{
  if(task.kind==='microscope'){r.level=task.id==='M1-2'?1:2;r.focus=45;r.light=65;}
  if(task.kind==='track'){r.pins=[0];r.time=5;}
  if(task.kind==='timeline'){r.pins=[0];r.time=3;}
+ if(isGermTask(task))r.assignments.germ='1';
  if(task.kind==='build'&&task.order>1){
   for(const slot of ['input','output']){const item=task.items.find(i=>i.target===slot);if(item)r.assignments[slot]=item.id;}
  }

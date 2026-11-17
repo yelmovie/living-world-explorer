@@ -1,9 +1,10 @@
 // 2026-11-16: the game boards that replaced repeated buttons — M1 lens/spores, focus dial/tags and Venn sort,
-// M3/M4 stamp, swipe and signal lamps, M4 time-lapse and wipe. Each is played by touch, including one wrong move
+// M3 bacteria lab games, M4 swipe and signal lamps, M4 time-lapse and wipe. Each is played by touch, including one wrong move
 // (Toto hint, nothing stored), and must open its discovery record by itself when finished.
 import assert from 'node:assert/strict';
 import {launchBrowser,navigate,teacherTools,waitSaved,linkCard,linkTarget} from './browser.mjs';
 import {inquiryTasks} from './curriculum.mjs';
+import {playGerm} from './germ-play.mjs';
 const base=process.env.APP_URL||'http://127.0.0.1:4173';
 const sizes=process.env.GAME_SIZES?JSON.parse(process.env.GAME_SIZES):[[1280,800],[915,412]];
 const routes={M1:['fungi-field','fungi-microscope'],M3:['bacteria-sources','bacteria-profile'],M4:['impact-investigation','impact-analysis']};
@@ -42,10 +43,11 @@ try{
   await open('M1-4');await drag(linkCard(page,'cap'),linkTarget(page,'mold'));assert.match(await toto(),/줄무늬/);assert.notEqual((await rec('M1-4'))?.assignments.cap,'mold');
   await drag(linkCard(page,'cap'),linkTarget(page,'mushroom'));await linkCard(page,'hypha').tap();await linkTarget(page,'mold').tap();await drag(linkCard(page,'mycelium'),linkTarget(page,'both'));await drag(linkCard(page,'spread'),linkTarget(page,'both'));
   assert.deepEqual((await rec('M1-4')).assignments,{cap:'mushroom',hypha:'mold',mycelium:'both',spread:'both'});await finished();
-  // M3-1 stamps, M3-3 and M4-4 swipes, M4-3 lamps.
-  await open('M3-1');await linkTarget(page,'guess').click();assert.match(await toto(),/관찰/);await drag(linkTarget(page,'evidence'),page.locator('.choice-card'));await page.waitForTimeout(1500);await linkTarget(page,'guess').click();
-  assert.deepEqual((await rec('M3-1')).assignments,{shape:'evidence',rumor:'guess'});await finished();
-  for(const id of ['M3-3','M4-4']){await open(id);const t=task(id);for(let i=0;i<t.items.length;i++){const cur=await page.locator('.choice-card').getAttribute('data-link-item');const it=t.items.find(x=>x.id===cur);const [x,y]=await centre(page.locator('.choice-card'));const dir=it.target===t.targets[0].id?1:-1;if(i===0){await swipe(x,y,x-dir*260,y);await page.waitForTimeout(400);assert.ok((await toto()).length>0,'wrong swipe gets a hint');}await swipe(x,y,x+dir*260,y);await page.waitForTimeout(600);}
+  // 2026-11-17: M3 bacteria lab — zoom dial, catching shapes, swab culture and the comparison exhibit, each with one wrong move first.
+  for(const id of ['M3-1','M3-2','M3-3','M3-4']){await open(id);const hints=await playGerm(page,id,{wrong:true});assert.ok(hints.every(h=>h.length>0),id+' wrong moves get a Toto hint: '+JSON.stringify(hints));
+   const r=await rec(id);assert.equal(r.misses>0,true,id+' counts the mistake');await finished();}
+  // M4-4 swipes, M4-3 lamps.
+  for(const id of ['M4-4']){await open(id);const t=task(id);for(let i=0;i<t.items.length;i++){const cur=await page.locator('.choice-card').getAttribute('data-link-item');const it=t.items.find(x=>x.id===cur);const [x,y]=await centre(page.locator('.choice-card'));const dir=it.target===t.targets[0].id?1:-1;if(i===0){await swipe(x,y,x-dir*260,y);await page.waitForTimeout(400);assert.ok((await toto()).length>0,'wrong swipe gets a hint');}await swipe(x,y,x+dir*260,y);await page.waitForTimeout(600);}
    assert.ok(t.items.every(async it=>(await rec(id)).assignments[it.id]===it.target));await finished();}
   await open('M4-3');const t43=task('M4-3');await drag(linkCard(page,'bread-case'),linkTarget(page,'help'));assert.ok((await toto()).length>0);
   for(const [i,it] of t43.items.entries()){if(i%2)await drag(linkCard(page,it.id),linkTarget(page,it.target));else{await linkCard(page,it.id).click();await linkTarget(page,it.target).click();}await page.waitForTimeout(200);}
@@ -67,7 +69,7 @@ try{
    await page.getByRole('button',{name:'다른 카드로 다시 해 보기',exact:true}).click();
    r=await run(right);assert.equal(r.runResult,'supported');assert.equal(r.reflection,'matches');await finished();
   }
-  console.log(`${width}x${height}: M1 lens·dial·sort, M3/M4 stamp·swipe·lamp, M4 time-lapse·wipe, M5 oven·compost passed`);
+  console.log(`${width}x${height}: M1 lens·dial·sort, M3 zoom·catch·culture·exhibit, M4 swipe·lamp, M4 time-lapse·wipe, M5 oven·compost passed`);
   await context.close();
  }
  // A picture that fails to load leaves a retry button instead of a dead board (moved from interaction-review.mjs).

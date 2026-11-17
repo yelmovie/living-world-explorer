@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {launchBrowser,button,navigate,teacherTools,setRange,waitSaved,waitForScene} from './browser.mjs';
+import {playGerm} from './germ-play.mjs';
 import {inquiryTasks,stageRoutes} from './curriculum.mjs';
 
 const base=process.env.APP_URL||'http://127.0.0.1:5187',out='.tmp/screen-fit-20261108';
@@ -25,6 +26,8 @@ const inspect=async(name,shot=false)=>{
    if(n.scrollHeight>n.clientHeight+3||n.scrollWidth>n.clientWidth+3)issues.push('overflow '+n.className+': '+n.clientWidth+'x'+n.clientHeight+' / '+n.scrollWidth+'x'+n.scrollHeight);
   for(const n of document.querySelectorAll('.expedition-shell button,.expedition-shell input,.expedition-shell select,.toolbar button')){
    if(!n.getClientRects().length||n.closest('[hidden],[inert]'))continue;
+   // 2026-11-17: the M3-2 bacteria swim around and may pass over each other by design.
+   if(n.closest('.catch-field'))continue;
    const box=n.getBoundingClientRect();if(!box.width||!box.height)continue;
    const center=document.elementFromPoint(box.x+box.width/2,box.y+box.height/2);
    if(!n.contains(center))issues.push('covered '+(n.getAttribute('aria-label')||n.textContent).slice(0,40));
@@ -54,7 +57,7 @@ try{
  const settings=await teacherTools(page);await settings.getByRole('button',{name:'관리자 전체 해금',exact:true}).click();await close();
  for(const [width,height] of sizes){
   await page.setViewportSize({width,height});
-  for(const task of inquiryTasks){await open(task.id);await inspect(task.id,['M1-2','M3-4','M4-1','M5-1'].includes(task.id)&&[412,800,812].includes(height));}
+  for(const task of inquiryTasks){await open(task.id);await inspect(task.id,['M1-2','M3-1','M4-1','M5-1'].includes(task.id)&&[412,800,812].includes(height));}
   console.log(width+'x'+height+' · 20 activities');
  }
  await page.setViewportSize({width:915,height:412});
@@ -79,11 +82,10 @@ try{
   // 2026-11-16: M4-1 is a time-lapse; the research note appears beside the picture after a correct mark.
   await open('M4-1');await button(page,'▶ 빨리 감기').click();await page.waitForTimeout(3600);await inspectState('timeline-lapse');
   {const b=await page.locator('.timeline-layer').first().boundingBox();await page.touchscreen.tap(b.x+b.width*.536,b.y+b.height*.654);await page.locator('.timeline-note').waitFor();await inspectState('timeline-research-read');}
-  await open('M3-4');await button(page,'모든 세균이 해로울 것 같아요').click();
-  for(const label of ['새 자료: 요구르트 만들기','새 자료: 상한 우유']){await button(page,label).click();await inspectState('review-reading-'+(label.includes('요구르트')?'yogurt':'milk'));}
-  await inspectState('review-claim');await button(page,'모든 세균이 해로워요').click();await inspectState('review-evidence');
-  await button(page,'상한 우유').click();await button(page,'발견 기록하기').click();assert.equal(await page.locator('.discovery-dialog').count(),0);await inspectState('review-retry');
-  await button(page,'주장 다시 고르기').click();await button(page,'모든 세균이 해로운 것은 아니에요').click();await button(page,'요구르트 만들기').click();await inspectState('review-ready');
+  // 2026-11-17: M3 bacteria lab states — the zoom at 100×, a loaded swab and the finished exhibit sentence.
+  await open('M3-1');await page.locator('[data-guess="100"]').click();for(let k=0;k<8;k++)await button(page,'+ 키우기').click();await inspectState('zoom-100');
+  await open('M3-3');await page.locator('.culture-place[data-place=hand]').focus();await page.keyboard.press('Enter');await inspectState('culture-loaded');
+  await open('M3-4');await playGerm(page,'M3-4');await inspectState('exhibit-sentence');
   const task=await open('M5-1');
   await button(page,'자료 골라 연결하기').click();
   const dialog=page.getByRole('dialog');
@@ -108,9 +110,7 @@ try{
   await page.setViewportSize({width,height});
   const reset=await teacherTools(page);await reset.getByRole('button',{name:'시연 기록 초기화',exact:true}).click();await page.locator('.settings-confirm').getByRole('button',{name:'기록 지우기',exact:true}).click();
   for(const task of inquiryTasks){await open(task.id);await inspect('large-'+task.id,task.id==='M1-3');}
-  await open('M3-4');await button(page,'모든 세균이 해로울 것 같아요').click();
-  for(const label of ['새 자료: 요구르트 만들기','새 자료: 상한 우유']){await button(page,label).click();await close();}
-  await inspectState('large-review-claim');await button(page,'모든 세균이 해로운 것은 아니에요').click();await inspectState('large-review-evidence');await button(page,'요구르트 만들기').click();await inspectState('large-review-ready');
+  await open('M3-4');await playGerm(page,'M3-4');await inspectState('large-exhibit-sentence');
  }
  assert.deepEqual(errors,[]);assert.deepEqual(failures,[]);
  console.log('PASS: '+screens.length+' screens, including '+states.length+' operation states; no scrolling, clipping or covered controls; speed and learner choices verified');

@@ -5,8 +5,8 @@ import {inquiryTasks,stageRoutes} from './curriculum.mjs';
 
 const base=process.env.APP_URL||'http://127.0.0.1:5176';
 const out=process.env.QUIZ_OUT||'.tmp/quiz-release-20261115/screens';
-// 2026-11-16: M3-1, M3-3, M4-3 and M4-4 became stamp, swipe and lamp boards (tests in stage-games.mjs).
-const tasks=inquiryTasks.filter(t=>['M1-1','M3-2'].includes(t.id));
+// 2026-11-16: M4-3 and M4-4 became swipe and lamp boards; 2026-11-17: M3 became the bacteria lab (both in stage-games.mjs). M1-1 is the remaining quiz.
+const tasks=inquiryTasks.filter(t=>['M1-1'].includes(t.id));
 const sizes=process.env.QUIZ_SIZES?JSON.parse(process.env.QUIZ_SIZES):[[1280,800],[915,412],[1024,768],[375,812]];
 const browser=await launchBrowser(),errors=[];
 await mkdir(out,{recursive:true});
@@ -88,12 +88,6 @@ try{
      assert.equal(await page.locator('.expedition-shell').evaluate(n=>n.scrollTop),0,'new questions start at the top');
     }
    }
-   if(task.id==='M3-2'){
-    assert.ok(await button(page,'발견 기록하기').isDisabled());
-    await button(page,'크기 사다리에 세균 놓기').click();
-    await page.locator('.ladder-dialog').getByRole('button',{name:'여기에 놓기'}).last().click();
-    await page.locator('.ladder-dialog').getByRole('button',{name:'닫기',exact:true}).click();
-   }
    assert.ok(await button(page,'발견 기록하기').isEnabled());
    // The finished quiz opens its record by itself; Escape closes it so the review checks can continue.
    await page.locator('.discovery-dialog').waitFor({timeout:5000});await page.keyboard.press('Escape');await page.locator('.discovery-dialog').waitFor({state:'detached'}).catch(()=>{});
@@ -106,22 +100,7 @@ try{
    await waitSaved(page,s=>!!s.preview.inquiry.records[task.id].completedAt);
    assert.ok(await button(page,'기록 확인하고 계속').isEnabled());
   }
-  // Pre-v2 M3-2 records have only the original two questions and no size ladder.
-  const task=tasks.find(t=>t.id==='M3-2');await open(page,task);
-  const saved=await waitSaved(page),record=saved.preview.inquiry.records[task.id];
-  delete record.v;record.assignments={small:'size',places:'habitat'};record.opened=['small','places'];
-  const completion=record.completedAt;
-  saved.settings.admin=false;saved.learner=saved.preview;
-  for(const stage of ['M1','M2']){
-   const inquiry={...saved.learner.inquiry,records:Object.fromEntries(inquiryTasks.filter(t=>t.stage===stage).map(t=>[t.id,{...record,completedAt:completion}]))};
-   saved.learner.evidence[stage]={stage,attemptId:saved.learner.id,origin:'learner',created:completion,summary:'이전 관찰 기록',draft:saved.learner.draft,inquiry};
-  }
-  await inject(page,saved);await page.reload();await page.locator('.quiz-board').waitFor();await page.locator('.inquiry-loading').waitFor({state:'detached'});
-  assert.match(await page.locator('.quiz-progress').innerText(),/문제 2 \/ 2/);
-  assert.ok(await button(page,'기록 확인하고 계속').isEnabled());
-  assert.equal((await waitSaved(page)).learner.inquiry.records[task.id].completedAt,completion);
-  assert.equal(await button(page,'크기 사다리에 세균 놓기').count(),0);
-  console.log(`${width}×${height}: M1-1 and M3-2 quizzes, auto-advance, keyboard retry, persistence, review, ladder and legacy records passed`);
+  console.log(`${width}×${height}: M1-1 quiz, auto-advance, keyboard retry, persistence and review passed`);
   await page.close();
  }
  const learner=await browser.newPage({viewport:{width:1024,height:768}});

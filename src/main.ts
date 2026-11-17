@@ -1,5 +1,6 @@
 import {mountMapEncounters} from './map-encounters.js';
 import {mapVillainStages} from './map-villain-content';
+import {isGermTask,germExample} from './germ-lab';
 import {bindMapZoom} from './map-gestures.js';
 import {bindDirectionPad,mapKeyDirection} from './map-controls.js';
 import {revisedEvidenceCount} from './experience';
@@ -105,7 +106,7 @@ function story(prepareMap=false){
 }
 async function examples(){const a=makeAttempt();for(const task of inquiryTasks){const r=emptyRecord();r.opened=task.items.map(i=>i.id);for(const it of task.items)if(['collect','connect','sort'].includes(task.kind))r.assignments[it.id]=it.target;
  r.clean=true;if(task.kind==='microscope'){r.level=2;r.focus=65;r.capture=true;r.marks=task.organism==='mushroom'?[{x:.506,y:.201}]:task.organism==='mold'?[{x:.38,y:.17},{x:.36,y:.5}]:[{x:.4,y:.3}];}
- if(task.kind==='sample'){r.sequence=3;r.assignments.site='plant';}if(task.kind==='track'){r.pins=[0,5];r.level=2;r.marks=[{x:.17,y:.501}];}if(task.id==='M3-2')r.assignments.ladder='smallest';if(task.kind==='timeline'){r.pins=[0,3];r.marks=task.organism==='bread'?[{x:.49,y:.4}]:[{x:.51,y:.54}];r.opened.push('process');}
+ if(task.kind==='sample'){r.sequence=3;r.assignments.site='plant';}if(task.kind==='track'){r.pins=[0,5];r.level=2;r.marks=[{x:.17,y:.501}];}if(isGermTask(task)){r.assignments=germExample(task);}if(task.kind==='timeline'){r.pins=[0,3];r.marks=task.organism==='bread'?[{x:.49,y:.4}]:[{x:.51,y:.54}];r.opened.push('process');}
  if(task.kind==='build'){for(const it of task.items)if(it.target)r.assignments[it.target]=it.id;r.assignments.edge1='linked';r.assignments.edge2='linked';r.prediction='supported';r.runResult='supported';r.reflection='matches';const run=startRun(r);run.status='completed';run.result=r.runResult='supported';run.reflection=r.reflection='matches';}
  if(task.kind==='review')r.assignments={initial:'allbad',claim:'somehelp',evidence:'yogurt-new',decision:'revise'};
  if(task.kind==='publish'){r.assignments.case='yogurt';r.assignments.action='lactic';r.assignments.evidence='yogurt';r.note='유산균의 도움으로 우유를 요구르트로 만들어요.';}
