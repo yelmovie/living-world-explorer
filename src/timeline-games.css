@@ -34,4 +34,11 @@
 @media(prefers-reduced-motion:reduce){.timeline-pin,.timeline-handle,.timeline-note{animation:none}}
 @media(max-height:640px){.timeline-note{flex-basis:240px;padding:10px 12px}.timeline-note p{font-size:15px}}
 @media(max-height:480px){.timeline-handle{width:44px;height:44px;font-size:11px;bottom:2px;border-width:3px}.timeline-label{font-size:13px;padding:2px 8px;top:6px}.timeline-game{gap:6px}.timeline-tip{font-size:15px;padding:3px 14px}.timeline-stage{gap:8px}.timeline-note{flex-basis:210px;padding:8px 10px}.timeline-note strong{font-size:14px;margin-bottom:2px}.timeline-note p{font-size:13px;line-height:1.4}.timeline-ticks{display:none}.timeline-controls{gap:10px}.timeline-play{min-width:0}}
-@media(max-width:659px){.timeline-game{height:auto}.timeline-stage{flex-direction:column}.timeline-frame{width:100%;height:auto}.timeline-note{flex-basis:auto}.timeline-controls{flex-wrap:wrap}.timeline-track{width:100%}}
+/* 2026-11-17: phones held upright: the picture takes the height the note and controls leave, so the page does not scroll. */
+@media(max-width:659px){
+ .timeline-game{gap:8px}.timeline-tip{font-size:16px;padding:5px 14px}
+ .timeline-stage{flex-direction:column;gap:8px}
+ .timeline-frame{flex:1 1 0;min-height:0;width:auto;height:auto;max-width:100%}
+ .timeline-note{flex:none;width:100%;padding:8px 12px}.timeline-note strong{font-size:16px;margin-bottom:2px}.timeline-note p{font-size:15px;line-height:1.4}
+ .timeline-controls{flex-wrap:wrap;gap:6px}.timeline-track{width:100%}.timeline-play{min-height:44px}
+}
