@@ -215,3 +215,21 @@
  #app>.expedition-shell[data-stage=M2]:is([data-kind=microscope],[data-kind=track]) .case-brief{display:none}
  #app>.expedition-shell[data-stage=M2] .simple-observation{min-height:0}
 }
+/* 2026-11-17: M3-4 review and M5-4 publish fit without scrolling. While a source is open its reading takes the place of the
+   progress line, the two claims sit side by side, and on phones the notebook grows under a shorter scene. */
+#app>.expedition-shell[data-kind=review] .expedition-tools[data-phase=sources]{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#app>.expedition-shell[data-kind=review] .expedition-tools[data-phase=claim] .choices{grid-template-columns:repeat(2,minmax(0,1fr))}
+#app>.expedition-shell[data-kind=publish] .expedition-tools .choices>.button:last-child:nth-child(odd){grid-column:1/-1}
+#app>.expedition-shell[data-kind=review] .expedition-tools>.text-button{grid-column:1/-1}
+/* On phones the stage title already asks the question, so the claim label steps aside (as in large text). */
+@media(max-height:480px),(max-width:659px){#app>.expedition-shell[data-kind=review] .expedition-tools[data-phase=claim] .field-label{display:none}}
+@media(max-height:640px),(max-width:659px){
+ #app>.expedition-shell[data-kind=review] .source-preview{padding:8px}
+ #app>.expedition-shell[data-kind=review] .source-preview p{font-size:16px;line-height:1.4}
+}
+@media(max-width:659px){
+ #app>.expedition-shell:is([data-kind=review],[data-kind=publish]) .expedition-panel{overflow:visible;min-height:min-content;max-height:none}
+ #app>.expedition-shell:is([data-kind=review],[data-kind=publish]) .expedition-panel-body{flex:none}
+ #app>.expedition-shell:is([data-kind=review],[data-kind=publish]){grid-template-rows:auto minmax(152px,1fr) auto auto}
+ #app>.expedition-shell:is([data-kind=review],[data-kind=publish]) .case-brief{display:none}
+}

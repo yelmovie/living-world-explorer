@@ -59,9 +59,9 @@ export function guidance(task:InquiryTask,r:InquiryRecord,selectedCard=''){
   else if(unread)action=`‘${unread.label}’ 카드를 눌러 읽어요.`;
   else if(!r.assignments.claim)action='자료를 읽은 뒤, 내 주장을 골라요.';
   else if(!r.assignments.evidence)action='내 주장을 뒷받침하는 근거를 골라요.';
-  else if(issues.length)action='고른 근거가 내 주장을 뒷받침하는지 다시 읽어요. 주장을 바꾸려면 ‘주장 다시 고르기’를 눌러요.';
+  else if(issues.length)action='고른 근거가 내 주장을 뒷받침하는지 다시 살펴봐요.';
  }else if(task.kind==='publish'){
-  total=3;done=Number(!!r.assignments.case)+Number(!!r.assignments.action)+Number(!!r.assignments.case&&r.assignments.evidence===r.assignments.case);action=!r.assignments.case?'장면에서 친구에게 소개할 사례 카드를 눌러요.':!r.assignments.action?'고른 사례를 살펴보고 ‘어떤 생물의 작용인가요?’ 아래에서 작용을 골라요.':issues.length?'사례와 작용이 어울리는지 살펴봐요. 바꾸려면 ‘작용 다시 고르기’를 눌러요.':action;
+  total=3;done=Number(!!r.assignments.case)+Number(!!r.assignments.action)+Number(!!r.assignments.case&&r.assignments.evidence===r.assignments.case);action=!r.assignments.case?'장면에서 친구에게 소개할 사례 카드를 눌러요.':!r.assignments.action?'고른 사례를 만든 생물의 작용을 골라요.':issues.length?'사례와 작용이 어울리는지 살펴봐요. 바꾸려면 ‘작용 다시 고르기’를 눌러요.':action;
  }
  if(!issues.length&&!selectedCard)action=r.completedAt?'남겨 둔 발견을 확인했어요. ‘기록 확인하고 계속’을 눌러 이어가요.':task.order===4?'발견을 모았어요! ‘발견 기록하기’를 누른 뒤 조사 기록을 확인해요.':'발견을 모았어요! ‘발견 기록하기’를 눌러 연구 노트에 남겨요.';
  return {action,done:issues.length?Math.min(done,total-1):total,total,ready:!issues.length};

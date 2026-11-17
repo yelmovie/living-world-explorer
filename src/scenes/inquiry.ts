@@ -65,7 +65,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
   if(demoButton)demoButton.hidden=!observationFrames(task,r).length;
   updateReadouts();
   const g=guidance(task,r,selectedCard);
-  status.hidden=linking&&!sourcePreview.hidden;
+  status.hidden=(linking||task.kind==='review')&&!sourcePreview.hidden;
   counter.textContent=g.ready?(task.kind==='review'?(r.assignments.decision==='revise'?'✓ 생각 수정 · 기록 준비':'✓ 생각 유지 · 기록 준비'):'✓ 기록 준비 완료'):`${g.done} / ${g.total}`;
   showMeter(g.done,g.total);
   const instruction=editingClaim?'두 자료를 떠올리며 내 주장을 다시 골라요.':editingAction?'고른 사례에 쓰인 생물의 작용을 다시 골라요.':running?(yogurt?'시계가 도는 동안 재료가 어떻게 달라지는지 살펴봐요.':'설계도에서 작용이 어느 칸까지 이어지는지 살펴봐요.'):g.action;
