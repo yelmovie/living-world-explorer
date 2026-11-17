@@ -107,7 +107,7 @@ async function completeTask(task,replay=false){
  assert.match(await page.locator('.discovery-dialog .pip-label').innerText(),new RegExp(`발견 도장 ${task.order} / 4`));
  await btn(task.order===4?'연구소 복구하기':'다음 발견으로').click();
  }
- if(task.order===4&&task.kind!=='summary'){const clues=await page.locator('[data-clue]').evaluateAll(nodes=>nodes.map((n,i)=>({id:n.dataset.clue,role:i===2?'limit':'supports'})));for(const clue of clues){await page.locator(`[data-clue="${clue.id}"]`).click();await page.locator(`[data-zone="${clue.role}"]`).click();}await page.waitForTimeout(800);await btn('조사 결과 전달하기').click();}
+ if(task.order===4&&task.kind!=='summary'){const clues=await page.locator('[data-clue]').evaluateAll(nodes=>nodes.map((n,i)=>({id:n.dataset.clue,role:i===2?'limit':'supports'})));for(const clue of clues){const card=page.locator(`[data-clue="${clue.id}"]`);for(let i=0;i<2&&await card.getAttribute('data-role')!==clue.role;i++)await card.click();}await page.waitForTimeout(800);await btn('조사 결과 전달하기').click();}
  if(task.order===4&&!replay){
   const stageIndex=Number(task.stage.slice(1))-1;
   await page.locator('.concept-dialog').waitFor();await waitForScene(page,'.map-host');

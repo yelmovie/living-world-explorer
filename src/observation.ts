@@ -11,8 +11,9 @@ export function featureAt(kind:string,p:Point):string|undefined{
  if(!Number.isFinite(p.x)||!Number.isFinite(p.y)||p.x<0||p.x>1||p.y<0||p.y>1)return;
  if(kind==='mushroom'&&polygon(p,[[.235,.39],[.27,.32],[.33,.25],[.41,.20],[.50,.18],[.61,.20],[.69,.26],[.75,.35],[.76,.43],[.72,.51],[.62,.57],[.55,.58],[.55,.40],[.45,.40],[.44,.58],[.36,.58],[.28,.53],[.235,.46]]))return 'gills';
  if(kind==='mold'){
-  if(!maskContains('mold:feature',p))return;
+  // The three spore sacs count over their whole round shape (the traced mask has gaps inside them).
   if([[.38,.17,.057,.086],[.665,.30,.060,.095],[.50,.60,.055,.09]].some(([x,y,rx,ry])=>((p.x-x)/rx)**2+((p.y-y)/ry)**2<=1))return 'round';
+  if(!maskContains('mold:feature',p))return;
   return 'thread';
  }
  if(kind==='spirogyra'&&maskContains('spirogyra:feature',p))return 'filament';

@@ -48,22 +48,6 @@
  font-size:max(16px,.85em);
  line-height:1.35;
 }
-.detective-zones {
- display:grid;
- grid-template-columns:repeat(2,minmax(0,1fr));
- gap:12px;
-}
-.detective-zone {
- min-height:60px;
- border:2px dashed #4c8177;
- border-radius:18px;
- background:rgba(213,243,230,.6);
-}
-.detective-board[data-step=place] .detective-zone {
- border-style:solid;
- border-color:var(--color-primary);
- background:var(--color-primary-soft);
-}
 .detective-message {
  min-height:2.6em;
  margin:0;
@@ -119,12 +103,6 @@
  .detective-clue img {
   height:96px;
  }
- .detective-zones {
-  grid-template-columns:1fr;
- }
- .detective-zone {
-  min-height:48px;
- }
  .modal .detective-message {
   font-size:18px;
   line-height:1.45;
@@ -149,3 +127,9 @@
   transform:translateY(-3px);
  }
 }
+/* 2026-11-17: the card shows where one tap put it; tapping again flips it. */
+.detective-clue span {align-self:center;padding:2px 12px;border-radius:999px;font-weight:700;color:#6c6a5e}
+.detective-clue[data-role=supports] span {background:#d9efdf;color:#2f6e48}
+.detective-clue[data-role=limit] span {background:#fbecc4;color:#8a5a12}
+.detective-clue[data-role=supports] {border-color:#7fbf8f}
+.detective-clue[data-role=limit] {border-color:#e2b75a}

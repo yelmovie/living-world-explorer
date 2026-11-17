@@ -19,7 +19,6 @@ export function openDetectiveBoard(ctx:Context,stage:Stage,finish?:()=>void){
  let solved=record.assignments.case_solved==='yes'&&caseReady(stage,placements);
  const board=el('div','detective-board');
  const cards=el('div','detective-clues');
- const zones=el('div','detective-zones');
  const progress=paragraph('','detective-progress');
  const returnLabel=finish?'조사 결과 전달하기':'관찰로 돌아가기';
  const message=paragraph('','detective-message');
@@ -68,18 +67,12 @@ export function openDetectiveBoard(ctx:Context,stage:Stage,finish?:()=>void){
    current.dataset.next=String(!solved&&!selected&&next?.id===clue.id);
    current.setAttribute('aria-pressed',String(selected===clue.id));
    const role=placements[clue.id];
-   placementLabels.get(clue.id)!.textContent=role==='supports'||role==='limit'?zoneLabels[role]:'';
+   placementLabels.get(clue.id)!.textContent=role==='supports'||role==='limit'?zoneLabels[role]:solved?'':'눌러서 정해요';
+   current.dataset.role=role||'';
   }
   report.disabled=connected<data.clues.length;
   report.hidden=true;
   done.hidden=!solved;
- }
-
- function inspect(clue:CaseClue){
-  if(closed)return;
-  selected=clue.id;
-  message.textContent=clue.detail;
-  refresh();
  }
 
  function place(role:CaseClue['role']){
@@ -103,9 +96,9 @@ export function openDetectiveBoard(ctx:Context,stage:Stage,finish?:()=>void){
  }
 
  for(const clue of data.clues){
-  const card=button('',()=>inspect(clue),'detective-clue');
+  // 2026-11-17: one tap on the picture sets its place, and each further tap flips it (관찰한 내용 ↔ 더 살펴볼 점); no separate place buttons.
+  const card=button('',()=>{if(closed)return;selected=clue.id;place(placements[clue.id]==='supports'?'limit':'supports');message.textContent=clue.detail;},'detective-clue');
   card.dataset.clue=clue.id;
-  card.draggable=true;
   card.setAttribute('aria-describedby',message.id);
   const art=artFor(clue.art);
   if(art){
@@ -116,31 +109,11 @@ export function openDetectiveBoard(ctx:Context,stage:Stage,finish?:()=>void){
   }
   const placement=el('span');
   card.append(el('strong','',clue.label),placement);
-  card.ondragstart=event=>{
-   inspect(clue);
-   event.dataTransfer?.setData('text/plain',clue.id);
-  };
   clueButtons.set(clue.id,card);
   placementLabels.set(clue.id,placement);
   cards.append(card);
  }
- for(const role of ['supports','limit'] as const){
-  const label=zoneLabels[role];
-  const zone=button(label,()=>place(role),'detective-zone');
-  zone.dataset.zone=role;
-  zone.setAttribute('aria-describedby',message.id);
-  zone.ondragover=event=>event.preventDefault();
-  zone.ondrop=event=>{
-   event.preventDefault();
-   const id=event.dataTransfer?.getData('text/plain');
-   if(data.clues.some(clue=>clue.id===id)){
-    selected=id!;
-    place(role);
-   }
-  };
-  zones.append(zone);
- }
- board.append(paragraph(data.question,'detective-question'),progress,cards,message,zones,report,done);
+ board.append(paragraph(data.question,'detective-question'),progress,cards,message,report,done);
  refresh();
  const dialog=modal(data.title,[board]);
  dialog.classList.add('detective-dialog');

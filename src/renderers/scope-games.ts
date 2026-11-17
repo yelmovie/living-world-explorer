@@ -33,6 +33,11 @@ export function mountScopeGame(host:HTMLElement,task:InquiryTask,record:InquiryR
   for(let dx=-r;dx<=r;dx+=step)for(let dy=-r;dy<=r;dy+=step){const d=Math.hypot(dx,dy);if(d>r||d>=bd)continue;const q={x:p.x+dx,y:p.y+dy};if(featureAt(kind,q)===want){best=q;bd=d;}}
   return best;};
  const pin=(p:Point,cls:string,text:string)=>{const m=el('span',cls,text);const v=toView(p);m.style.left=v.left+'%';m.style.top=v.top+'%';marks.append(m);return m;};
+ /** A placed name tag opens toward the side of the round lens with more room, so its word is not cut off. */
+ const fitTag=(n:HTMLElement)=>{const w=marks.clientWidth,h=marks.clientHeight,r=Math.min(w,h)/2,half=n.offsetHeight/2,y=n.offsetTop;
+  const spill=(end:number,inward:number)=>Math.max(...[[end,y],[end+inward,y-half],[end+inward,y+half]].map(([px,py])=>Math.hypot(px-w/2,py-h/2)-(r-4)));
+  const right=spill(n.offsetLeft+n.offsetWidth,-half);if(right<=0)return;
+  n.classList.add('is-flip');const left=spill(n.offsetLeft-n.offsetWidth,half);if(left>right)n.classList.remove('is-flip');};
  const miss=(x:number,y:number)=>{const b=box();const m=el('span','scope-miss','✕');m.style.left=(x-b.left)/b.width*100+'%';m.style.top=(y-b.top)/b.height*100+'%';marks.append(m);later(()=>m.remove(),700);};
  const capture=(say:string)=>{record.level=2;record.focus=65;record.light=65;record.zoom=1;record.capture=true;hooks.changed();flash.classList.add('on');playEffect('capture');later(()=>flash.classList.remove('on'),500);totoSay(root,{text:say,mood:'cheer'});paint();};
  const progress=(steps:[string,boolean][])=>{const list=el('ol','scope-steps');steps.forEach(([t,done],i)=>{const li=el('li',done?'done':steps.findIndex(s=>!s[1])===i?'now':'');li.append(el('span','scope-step-n',done?'✓':String(i+1)),el('span','',t));list.append(li);});return list;};
@@ -82,8 +87,9 @@ export function mountScopeGame(host:HTMLElement,task:InquiryTask,record:InquiryR
   const tags:{id:string;label:string;want:string;node:HTMLButtonElement}[]=[{id:'thread',label:'균사',want:'thread'},{id:'round',label:'포자주머니',want:'round'}].map(t=>{const b=el('button','name-tag');b.type='button';b.dataset.tag=t.id;b.textContent=t.label;return {...t,node:b};});
   let picked='',moldPhase='';
   const placedTag=(want:string)=>record.marks.find(m=>featureAt('mold',m)===want);
-  const tryTag=(id:string,x:number,y:number)=>{
-   const t=tags.find(t=>t.id===id)!;if(placedTag(t.want)||!sharp())return;const p=toImage(x,y);const hit=near('mold',p,t.want,.015);
+  /** Tries each point in turn (the tag's tip first, then the finger), so a tag dropped by its body still sticks. */
+  const tryTag=(id:string,x:number,y:number,...more:[number,number][])=>{
+   const t=tags.find(t=>t.id===id)!;if(placedTag(t.want)||!sharp())return;const hit=[[x,y],...more].map(([a,b])=>near('mold',toImage(a,b),t.want,.015)).find(Boolean);
    if(hit){record.marks.push(hit);hooks.changed();playEffect('snap');picked='';paint();if(placedTag('thread')&&placedTag('round'))later(()=>capture('이름표를 다 붙였어! 가는 실은 균사, 동그란 주머니 안에는 포자가 들어 있어. 찰칵!'),450);}
    else{record.misses++;hooks.changed();playEffect('retry');miss(x,y);t.node.classList.remove('is-shake');void t.node.offsetWidth;t.node.classList.add('is-shake');totoSay(root,{text:task.hints?.[1]||'이름표와 사진 속 모양을 비교해 봐!'});}
   };
@@ -91,8 +97,8 @@ export function mountScopeGame(host:HTMLElement,task:InquiryTask,record:InquiryR
    t.node.onpointerdown=e=>{if(e.button!==0||placedTag(t.want)||!sharp())return;const r=t.node.getBoundingClientRect(),dx=e.clientX-r.left,dy=e.clientY-r.top,sx=e.clientX,sy=e.clientY;let ghost:HTMLElement|undefined;const stop=new AbortController();
     window.addEventListener('pointermove',m=>{if(m.pointerId!==e.pointerId)return;if(!ghost){if(Math.hypot(m.clientX-sx,m.clientY-sy)<8)return;ghost=t.node.cloneNode(true) as HTMLElement;ghost.classList.add('tag-ghost');document.body.append(ghost);t.node.classList.add('is-lifted');}ghost.style.transform=`translate(${m.clientX-dx}px,${m.clientY-dy}px) rotate(-5deg)`;},{signal:stop.signal});
     const end=(u:PointerEvent)=>{if(u.pointerId!==e.pointerId)return;stop.abort();t.node.classList.remove('is-lifted');if(!ghost)return;ghost.remove();t.node.dataset.dragged='1';later(()=>delete t.node.dataset.dragged,350);const b=field.getBoundingClientRect();
-     // The tag's pointy end is its left middle.
-     const x=u.clientX-dx+4,y=u.clientY-dy+r.height/2;if(u.type==='pointerup'&&x>=b.left&&x<=b.right&&y>=b.top&&y<=b.bottom)tryTag(t.id,x,y);};
+     // The tag's pointy end sits half its height left of the box, at the middle.
+     const x=u.clientX-dx-r.height/2+4,y=u.clientY-dy+r.height/2;const pts=([[x,y],[u.clientX,u.clientY]] as [number,number][]).filter(([a,c])=>a>=b.left&&a<=b.right&&c>=b.top&&c<=b.bottom);if(u.type==='pointerup'&&pts.length)tryTag(t.id,pts[0][0],pts[0][1],...pts.slice(1));};
     window.addEventListener('pointerup',end,{signal:stop.signal});window.addEventListener('pointercancel',end,{signal:stop.signal});};
    t.node.onclick=()=>{if(t.node.dataset.dragged||placedTag(t.want)||!sharp())return;picked=picked===t.id?'':t.id;paint();};
   }
@@ -103,7 +109,7 @@ export function mountScopeGame(host:HTMLElement,task:InquiryTask,record:InquiryR
    const rebuild=phase!==moldPhase;moldPhase=phase;
    if(rebuild)stage.replaceChildren(eye,panel);
    tip.textContent=phase==='focus'?'🔧 초점 다이얼을 돌려 흐린 사진을 또렷하게 맞춰요':phase==='label'?'🏷 이름표를 끌어 사진 속 알맞은 곳에 붙여요':'📸 이름표를 붙이고 관찰 사진을 남겼어요!';tip.classList.toggle('is-done',phase==='done');
-   marks.replaceChildren();for(const t of tags){const m=placedTag(t.want);if(m)pin(m,'scope-tag',t.label);t.node.hidden=!!m;t.node.classList.toggle('is-picked',picked===t.id);t.node.disabled=!focused;}
+   marks.replaceChildren();for(const t of tags){const m=placedTag(t.want);if(m)fitTag(pin(m,'scope-tag',t.label));t.node.hidden=!!m;t.node.classList.toggle('is-picked',picked===t.id);t.node.disabled=!focused;}
    if(!rebuild){panel.querySelectorAll('.scope-steps li').forEach((li,i)=>{const done=[focused||record.capture,both||record.capture,record.capture][i];li.className=done?'done':'';});return;}
    const tagBox=el('div','tag-box');tagBox.append(...tags.map(t=>t.node));
    panel.replaceChildren(progress([['초점 맞추기',focused||record.capture],['이름표 2개 붙이기',both||record.capture],['관찰 사진 남기기',record.capture]]),

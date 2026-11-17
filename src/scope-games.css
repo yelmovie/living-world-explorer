@@ -27,11 +27,11 @@
 @keyframes scope-arrive{from{transform:scale(.6);opacity:0}}
 .eye-pic{width:100%;height:100%;object-fit:cover;transition:filter .12s;pointer-events:none}
 .eye-frame{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;filter:drop-shadow(0 12px 18px #0004)}
-.eye-marks{position:absolute;inset:0;pointer-events:none}
+.eye-marks{position:absolute;inset:0;pointer-events:none;container-type:size}
 .scope-spore,.scope-miss,.scope-tag{position:absolute;transform:translate(-50%,-50%)}
 .scope-spore{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;border:3px solid #f1c75b;background:#fff8d6aa;font-size:20px;animation:scope-pop .45s cubic-bezier(.3,1.6,.5,1)}
 .scope-miss{color:#c0392b;font-weight:800;font-size:30px;animation:scope-pop .3s,scope-fade .7s forwards}
-.scope-tag{transform:translate(0,-50%);padding:6px 14px 6px 22px;border-radius:6px 999px 999px 6px;background:#fffdf6;border:3px solid #3f8a55;color:#2f6e48;font-weight:800;font-size:18px;white-space:nowrap;box-shadow:0 6px 12px #0003;clip-path:polygon(12px 0,100% 0,100% 100%,12px 100%,0 50%);animation:scope-pop .45s cubic-bezier(.3,1.6,.5,1)}
+.scope-tag{transform:translate(0,-50%);margin-left:20px;padding:6px 14px 6px 8px;border-radius:0 999px 999px 0;background:#fffdf6;border:3px solid #3f8a55;border-left:0;color:#2f6e48;font-weight:800;font-size:18px;font-size:clamp(14px,7.5cqmin,18px);white-space:nowrap;filter:drop-shadow(0 5px 5px #0003);animation:scope-pop .45s cubic-bezier(.3,1.6,.5,1)}
 .eye-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
 .eye-flash.on{animation:scope-flash .5s}
 @keyframes scope-flash{10%{opacity:.9}}
@@ -47,7 +47,10 @@
 .focus-meter span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#f1c75b,#3f8a55);transition:width .1s}
 .focus-buttons{display:flex;gap:8px;justify-content:center}.focus-buttons .button{min-height:44px;padding-inline:12px}
 .tag-box{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
-.name-tag{padding:10px 22px 10px 30px;border:3px solid #3f8a55;border-radius:6px 999px 999px 6px;background:#fffdf6;color:#2f6e48;font:inherit;font-weight:800;font-size:22px;cursor:grab;touch-action:none;clip-path:polygon(16px 0,100% 0,100% 100%,16px 100%,0 50%);box-shadow:0 6px 12px #0002;transition:transform .15s}
+.name-tag{position:relative;margin-left:26px;padding:10px 22px 10px 12px;border:3px solid #3f8a55;border-left:0;border-radius:0 999px 999px 0;background:#fffdf6;color:#2f6e48;font:inherit;font-weight:800;font-size:22px;cursor:grab;touch-action:none;filter:drop-shadow(0 5px 5px #0002);transition:transform .15s}
+.name-tag::before,.scope-tag::before{content:'';position:absolute;z-index:-1;left:0;top:50%;height:calc((100% + 6px) * .7071);aspect-ratio:1;box-sizing:border-box;background:inherit;border:3px solid;border-color:inherit;border-top:0;border-right:0;border-radius:0 0 0 5px;transform:translate(-50%,-50%) rotate(45deg)}
+.scope-tag.is-flip{margin-left:-20px;transform:translate(-100%,-50%);padding:6px 8px 6px 14px;border-radius:999px 0 0 999px;border-left:3px solid #3f8a55;border-right:0}
+.scope-tag.is-flip::before{left:100%;transform:translate(-50%,-50%) rotate(225deg)}
 .name-tag.is-picked{transform:translateX(10px) rotate(-3deg);border-color:#e7b23c;background:#fff6c9}
 .name-tag.is-lifted{opacity:.3}
 .name-tag.is-shake{animation:scope-shake .5s}
@@ -55,7 +58,7 @@
 .tag-ghost{position:fixed;left:0;top:0;z-index:1000;margin:0;pointer-events:none}
 @media(prefers-reduced-motion:reduce){.eye-field,.lens-view.zoom-out,.scope-spore,.scope-tag,.scope-fact{animation:none}}
 @media(max-height:640px){.scope-panel{padding:10px;gap:8px}.scope-steps{gap:4px}.scope-steps li{font-size:14px}.scope-step-n{width:24px;height:24px}.focus-dial{width:96px}.focus-dial::after{display:none}.focus-meter{display:none}.scope-fact{font-size:14px}}
-@media(max-height:480px){.eye-field{inset:2%;border:5px solid #b8933a;box-shadow:0 8px 16px #0004}.eye-frame{display:none}.scope-tip{font-size:15px;padding:3px 14px}.scope-steps{display:none}.scope-game:is([data-phase=lens],[data-phase=spores]) .scope-panel{display:none}.lens-view,.scope-eye{max-width:calc(100% - 20px)}.scope-panel{flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;padding:8px}.focus-dial::after{display:none}.focus-meter{display:none}.focus-buttons{flex-direction:column}.tag-box{gap:8px}.scope-fact{font-size:13px;padding:8px}.focus-dial{width:80px;margin:0}.name-tag{font-size:17px;padding:6px 16px 6px 24px}.scope-panel{flex-basis:230px}.lens-view,.scope-eye{max-width:calc(100% - 250px)}}
+@media(max-height:480px){.eye-field{inset:2%;border:5px solid #b8933a;box-shadow:0 8px 16px #0004}.eye-frame{display:none}.scope-tip{font-size:15px;padding:3px 14px}.scope-steps{display:none}.scope-game:is([data-phase=lens],[data-phase=spores]) .scope-panel{display:none}.lens-view,.scope-eye{max-width:calc(100% - 20px)}.scope-panel{flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;padding:8px}.focus-dial::after{display:none}.focus-meter{display:none}.focus-buttons{flex-direction:column}.tag-box{gap:8px}.scope-fact{font-size:13px;padding:8px}.focus-dial{width:80px;margin:0}.name-tag{font-size:17px;padding:6px 16px 6px 10px;margin-left:22px}.scope-panel{flex-basis:230px}.lens-view,.scope-eye{max-width:calc(100% - 250px)}}
 /* 2026-11-17: phones held upright keep the eyepiece, steps and dial on one screen; the eyepiece takes the height that is left. */
 @media(max-width:659px){
  .scope-tip{font-size:16px;padding:5px 14px}
@@ -65,6 +68,6 @@
  .scope-panel>*{grid-column:1/-1}.scope-panel>.scope-steps{grid-column:1}
  .scope-steps{gap:4px}.scope-steps li{font-size:15px}.scope-step-n{width:24px;height:24px;font-size:13px}
  .focus-dial{grid-column:2;grid-row:1;width:88px}.focus-dial::after,.focus-meter{display:none}
- .tag-box{flex-direction:row;flex-wrap:wrap;gap:8px}.name-tag{font-size:18px;padding:8px 18px 8px 26px}
+ .tag-box{flex-direction:row;flex-wrap:wrap;gap:8px}.name-tag{font-size:18px;padding:8px 18px 8px 10px;margin-left:22px}
  .scope-fact{font-size:15px;padding:10px}
 }

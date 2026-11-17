@@ -233,3 +233,6 @@
  #app>.expedition-shell:is([data-kind=review],[data-kind=publish]){grid-template-rows:auto minmax(152px,1fr) auto auto}
  #app>.expedition-shell:is([data-kind=review],[data-kind=publish]) .case-brief{display:none}
 }
+/* 2026-11-17: viewing-mode buttons read as two tidy lines (tool name, then a smaller 으로 보기) instead of breaking mid-word. */
+#app>.expedition-shell .observation-modes>.button{flex-direction:column;gap:1px;padding:6px 4px;line-height:1.15;white-space:nowrap}
+#app>.expedition-shell .observation-modes .mode-suffix{font-size:.78em;font-weight:600;opacity:.8}

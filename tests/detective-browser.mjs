@@ -14,9 +14,11 @@ const dialog=()=>page.locator('.detective-dialog');
 // 2026-11-16: the board checks itself once every clue is placed; wait for that instead of pressing '연결 확인하기'.
 const checked=()=>page.waitForTimeout(800);
 const done=()=>dialog().getByRole('button',{name:'관찰로 돌아가기',exact:true});
+// 2026-11-17: tapping a card sets its place and each tap flips it.
 async function connect(index,role){
- await page.locator('.detective-clue').nth(index).click();
- await page.locator(`[data-zone="${role}"]`).click();
+ const card=page.locator('.detective-clue').nth(index);
+ for(let i=0;i<2&&await card.getAttribute('data-role')!==role;i++)await card.click();
+ assert.equal(await card.getAttribute('data-role'),role);
 }
 async function reopen(){
  await dialog().getByRole('button',{name:'닫기',exact:true}).click();
@@ -27,7 +29,7 @@ async function inspect(){
   const issues=[],bounds=modal.getBoundingClientRect();
   if(bounds.left<0||bounds.right>innerWidth+1||bounds.top<0||bounds.bottom>innerHeight+1)issues.push('dialog outside viewport');
   if(modal.scrollWidth>modal.clientWidth+1)issues.push('horizontal overflow');
-  for(const card of modal.querySelectorAll('.detective-clue,.detective-zone')){
+  for(const card of modal.querySelectorAll('.detective-clue')){
    const r=card.getBoundingClientRect();
    if(r.width<44||r.height<44)issues.push('small touch target');
    for(const label of card.querySelectorAll('strong,span')){
