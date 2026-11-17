@@ -45,6 +45,8 @@ npm run test:offline
 
 2026-11-17 확인: M2-2·M2-3 관찰 패널이 9개 화면 크기와 큰 글씨에서 넘치지 않는다. 자동재생은 아래 줄(이전 발견 옆)로, M2-3 발견 기록하기는 다른 활동처럼 아래 오른쪽으로 옮겼고, 슬라이더와 겹치던 ‘초점 자동 맞춤’은 뺐다. 같은 날 M3-4·M5-4 패널도 고쳤다(자료를 읽는 동안 진행 줄 대신 자료 글을 보이고, 두 주장을 나란히 놓으며, 폰에서는 장면 제목과 겹치는 ‘내 주장’ 이름표를 숨긴다). 이어서 폰 세로 화면의 게임판도 스크롤 없이 한 화면에 들어가게 고쳐, `inquiry-screen-fit`이 294개 화면 전부 통과한다(그림이 남는 높이를 쓰고, 퀴즈는 폰 가로처럼 이전·다음 줄을 숨기며, 교사용 시연의 빈 상단 줄을 없앴다). `observation-playback`·`track-controls`를 포함한 나머지 검사는 모두 통과한다.
 
+2026-11-17 M3 재설계: 자료 연구실(M3)은 카드 분류 대신 세균을 직접 다루는 실험실이다. M3-1 확대 다이얼(1000배에서 세균 찾기), M3-2 움직이는 세균을 모양별 표본병에 담기, M3-3 면봉 채집·배양 접시 비교, M3-4 버섯·짚신벌레·세균 크기 전시와 설명 문장 완성([4과12-01]). 설계와 근거는 `docs/M3-REDESIGN-20261117.md`. 예전 M3 진행 기록은 다시 시작하고 완료한 연구 기록·해금은 유지한다. 두리의 바뀐 대사 3개는 다시 녹음하기 전까지 음성 없이 나온다. M2-2 현미경 단계와 M2-3 시간 손잡이는 AI 생성 관찰 영상(`public/assets/study/live`)을 쓴다. 전체 회귀(vitest 172, 브라우저 검사 10종, 화면 맞춤 274개)를 통과했다.
+
 2026-11-16 확인: `test:browser`(9개 화면 크기), `test:flow`(20개 탐구 완주와 M1 다시 도전), `test:games`, `test:offline`, `quiz-board`, `detective-browser`, `education-ux`가 통과했다. `inquiry-screen-fit`은 9개 크기 294개 화면에서 이번에 바꾼 활동은 모두 통과하고, M2-2·M2-3 관찰 패널과 M3-4·M5-4 상태 패널의 넘침(이전부터 있던 것)과 375×812 세로 화면의 스크롤만 남았다. 이전 조작을 검사하던 `interaction-review`·`streamlined-browser`·`fungi-observation`은 해당 화면이 바뀌어 삭제했고, 확인 내용은 `test:flow`·`quiz-board`·`test:games`로 옮겼다.
 
 2026-11-11 확인. `storage-safety`는 손상 원본 보존과 동시 저장 4건을 통과했다. `observation-playback`은 대상별 안내·재생 중 조작 잠금·7개 관찰 준비와 중단 시 기록 복원을 확인했다. 2026-11-09에 확인한 `interaction-review`·`streamlined-browser`(그리고 README 밖의 `stage-states`·`link-board`·`media-network`)는 화면 문구·구조가 바뀐 뒤(저장 경고 토스트 → 모달, 슬라이더·힌트 이름 등) 갱신되지 않아 실패한다. 현재 화면과 검사 선택자를 함께 대조해야 한다([고도화 계획](docs/reviews/UPGRADE-PLAN-20261109.md) 2-3). `package.json`의 네 검사와 `stage-layout.mjs`는 통과한다.
