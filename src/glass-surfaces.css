@@ -4,7 +4,7 @@
 .button:not(.primary):not(.selected):not(.current):not(.danger):not(.text-button),.toolbar .button.icon-button,.map-view-icon{background:var(--glass-face);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
 .expedition-panel,.tool-panel,.discovery-card,.activity-stepper,.expedition-header h2{background:var(--glass-face);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
 .modal:not(.film-dialog),.buddy-speech{background:var(--glass-reading);border:1px solid var(--glass-line);box-shadow:0 16px 48px #1b352833;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-.modal:not(.film-dialog)::backdrop{background:rgba(18,42,31,.26)}
+.modal:not(.film-dialog)::backdrop{background:var(--modal-backdrop)}
 .button:not(.primary):not(.selected):not(.current):not(.danger):hover:not(:disabled){background:rgba(255,254,248,.94)}
 .button[aria-pressed=true],.map-view-icon[aria-pressed=true]{background:#e5efd4;border-color:#55794d}
 @media(prefers-reduced-transparency:reduce){:root{--glass-face:#fffdf3;--glass-reading:#fffdf6}}

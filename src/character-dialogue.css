@@ -22,7 +22,7 @@
 @keyframes dialogue-mouth {0%,58%{background-position-x:100%}31%,83%,100%{background-position-x:0%}}
 
 .intro-story {position:relative;isolation:isolate}
-.modal.story-dialog::backdrop {background:rgb(17 30 23 / 62%);backdrop-filter:blur(2px)}
+.modal.story-dialog::backdrop {background:var(--modal-backdrop);backdrop-filter:blur(2px)}
 .story-character {
   position:absolute;right:7%;bottom:calc(100% - 2px);
   width:min(55vw,35dvh,320px);aspect-ratio:321/405;
