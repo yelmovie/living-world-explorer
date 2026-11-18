@@ -26,7 +26,7 @@ export function mountTimelineGame(host:HTMLElement,task:InquiryTask,record:Inqui
  const controls=el('div','timeline-controls');
  const found=()=>record.marks.filter(p=>markValid(task,record,p)).length;
  const paintPins=()=>pins.replaceChildren(...record.marks.map(p=>{const m=el('span','timeline-pin','🔍');m.style.left=p.x*100+'%';m.style.top=p.y*100+'%';return m;}));
- const say=()=>{tip.textContent=!validTimelinePair(record)?(lapse?'⏩ 시간 손잡이를 끝까지 밀어 빵이 어떻게 변하는지 봐요':'↔ 가운데 손잡이를 좌우로 밀어 처음과 나중을 비교해요'):!found()?(lapse?'👆 처음엔 없던 곰팡이를 사진에서 콕 눌러요':'👆 처음엔 있었는데 사라진 잎 부분을 콕 눌러요'):'🎉 찾았어요! 옆의 조사 자료를 읽어 봐요';tip.classList.toggle('is-done',!!found());};
+ const say=()=>{tip.textContent=!validTimelinePair(record)?(lapse?'⏩ 시간 손잡이를 끝까지 밀어 빵이 어떻게 변하는지 봐요':'↔ 가운데 손잡이를 좌우로 밀어 처음과 나중을 비교해요'):!found()?(lapse?'👆 처음엔 없던 곰팡이를 사진에서 콕 눌러요':'👆 처음엔 있었는데 사라진 잎 부분을 콕 눌러요'):'📄 옆의 조사 자료를 읽어 봐요';};
  const open=()=>{if(!found())return;note.hidden=false;if(!record.opened.includes('process')){record.opened.push('process');hooks.changed();}};
  const compare=()=>{if(validTimelinePair(record))return;record.pins=[0,3];record.time=3;hooks.changed();playEffect('capture');totoSay(root,{text:lapse?'시간이 지나니 빵 위에 무언가 생겼지? 처음 사진과 비교해 봐!':'나중 낙엽은 처음과 뭐가 달라졌을까? 사라진 곳을 찾아봐!',mood:'cheer'});};
 
@@ -65,7 +65,7 @@ export function mountTimelineGame(host:HTMLElement,task:InquiryTask,record:Inqui
   // Fingertip tolerance (about 16 px on screen): the closest changed spot near the tap counts.
   const r=16/b.width,step=Math.min(.006,r/4);let hit:Point|undefined,bd=Infinity;
   for(let dx=-r;dx<=r;dx+=step)for(let dy=-r*b.width/b.height;dy<=r*b.width/b.height;dy+=step){const d=Math.hypot(dx,dy*b.height/b.width);if(d>r||d>=bd)continue;const q={x:p.x+dx,y:p.y+dy};if(markValid(task,{...record,marks:[]},q)){hit=q;bd=d;}}
-  if(hit&&addMark(task,record,hit)){playEffect('snap');paintPins();hooks.changed();open();say();totoSay(root,{text:lapse?'맞아! 처음엔 없던 곰팡이가 생겼어. 옆의 조사 자료도 읽어 봐.':'맞아! 그 부분이 사라졌어. 옆의 조사 자료도 읽어 봐.',mood:'cheer'});}
+  if(hit&&addMark(task,record,hit)){playEffect('snap');paintPins();hooks.changed();open();say();totoSay(root,{text:lapse?'맞아! 처음엔 없던 곰팡이가 생겼어.':'맞아! 그 부분이 사라졌어.',mood:'cheer'});}
   else{playEffect('retry');record.misses++;hooks.changed();const miss=el('span','timeline-miss','✕');miss.style.left=p.x*100+'%';miss.style.top=p.y*100+'%';pins.append(miss);setTimeout(()=>miss.remove(),700);totoSay(root,{text:task.hints?.[1]||'처음 사진과 비교해 달라진 곳을 다시 찾아봐!'});}
  };
  const stage=el('div','timeline-stage');stage.append(frame,note);

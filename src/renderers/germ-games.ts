@@ -21,7 +21,8 @@ export function mountGermGame(host:HTMLElement,task:InquiryTask,record:InquiryRe
  const tip=el('p','germ-tip');root.append(tip);
  const stage=el('div','germ-stage');root.append(stage);
  const changed=()=>{hooks.changed();paintTip();};
- const paintTip=()=>{const g=germGuidance(task,record);tip.textContent=g.done===g.total?'🎉 관찰 완료! 발견 기록이 열려요':g.action;tip.classList.toggle('is-done',g.done===g.total);};
+ // 2026-11-17: Toto's bubble celebrates; the tip only names the next step (the 「발견 기록하기」 button once done).
+ const paintTip=()=>{tip.textContent=germGuidance(task,record).action;};
  const game:Game=task.kind==='zoom'?zoomGame(stage,record,changed,root):task.kind==='catch'?catchGame(stage,record,changed,root):task.kind==='culture'?cultureGame(stage,record,changed,root):exhibitGame(stage,record,changed,root);
  paintTip();
  Promise.all([...root.querySelectorAll('img')].map(i=>i.decode().catch(()=>undefined))).then(()=>{root.inert=false;hooks.ready(true);});

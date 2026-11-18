@@ -235,4 +235,9 @@
 }
 /* 2026-11-17: viewing-mode buttons read as two tidy lines (tool name, then a smaller 으로 보기) instead of breaking mid-word. */
 #app>.expedition-shell .observation-modes>.button{flex-direction:column;gap:1px;padding:6px 4px;line-height:1.15;white-space:nowrap}
-#app>.expedition-shell .observation-modes .mode-suffix{font-size:.78em;font-weight:600;opacity:.8}
+#app>.expedition-shell .observation-modes .mode-suffix{font-size:max(18px,.78em);font-weight:600;opacity:.8}
+/* 2026-11-17 3초 규칙: on wide landscape screens the M2-1 sampling photo uses the full width; the short panel floats top right over the empty scenery. */
+@media(min-width:1260px) and (min-aspect-ratio:8/5){
+ html:not(.large-text) #app>.expedition-shell[data-kind=sample] .expedition-work{grid-area:2/1/3/3}
+ html:not(.large-text) #app>.expedition-shell[data-kind=sample] .expedition-panel{position:relative;z-index:2;align-self:start;justify-self:end;width:330px;height:auto;max-height:none}
+}

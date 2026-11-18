@@ -173,30 +173,27 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
   }
   paintSampling(){
    const site=!!record.assignments.site,collected=record.sequence>=2,prepared=record.sequence===3;
-   const rail=this.add.graphics();rail.lineStyle(3,tone.line,1).lineBetween(180,33,785,33);
-   this.phase(175,33,1,'장소 고르기',site,!site);
-   this.phase(480,33,2,'한 방울 채집',collected,site&&!collected);
-   this.phase(785,33,3,'유리판에 옮기기',prepared,collected&&!prepared);
-   this.card(325,315,620,370,{fill:0xffffff,radius:14});this.art(325,315,600,350,'water');
-   for(const [id,x,y,label] of [['edge',130,360,'물가 가까이'],['plant',390,265,'물풀 가까이']] as [string,number,number,string][]){
+   // 2026-11-17 3초 규칙: the panel's counter is the one progress display, so the water photo takes the rail's room (60%+ of a 16:10 screen).
+   this.card(385,290,760,452,{fill:0xffffff,radius:14});this.art(385,290,740,432,'water');
+   for(const [id,x,y,label] of [['edge',145,346,'물가 가까이'],['plant',465,228,'물풀 가까이']] as [string,number,number,string][]){
     const chosen=record.assignments.site===id;const ring=this.add.graphics();ring.lineStyle(5,0xffffff,.95).strokeCircle(x,y,30);ring.lineStyle(3,tone.accent,.9).strokeCircle(x,y,34);const dot=this.add.graphics();dot.fillStyle(chosen?tone.accent:0xffffff,chosen?1:.6).fillCircle(x,y,chosen?20:14);
     if(!chosen&&!reduced)this.tweens.add({targets:ring,alpha:.35,duration:900,yoyo:true,repeat:2,ease:'Sine.easeInOut'});
     this.add.zone(x,y,88,88).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard()||record.assignments.site===id)return;record.assignments.site=id;record.sequence=0;this.commit();});this.caption(x,y+58,(chosen?'✓ ':'')+label,28,tone.ink,230);}
-   const slideY=350;
-   this.card(785,slideY+14,262,214,{fill:prepared?tone.soft:tone.paper,radius:20,stroke:collected?tone.accent:tone.line,width:collected?4:2});
-   if(prepared)this.badge(887,slideY-65);if(this.textures.exists('ui-slide')){this.add.image(785,slideY,'ui-slide').setDisplaySize(230,97);}else this.plate(785,slideY,200,110,'',0xe8efe8);
-   if(record.sequence===3&&this.textures.exists('ui-water-drop'))this.add.image(785,slideY-6,'ui-water-drop').setDisplaySize(58,45);else if(record.sequence===3)this.add.circle(785,slideY-6,20,0x73b4bd);
-   this.text(785,slideY+82,prepared?'한 방울 준비 완료':collected?'여기에 한 방울 놓아요':'받침 유리판',28,tone.ink,230);
-   this.add.zone(785,slideY+14,262,214).setInteractive({useHandCursor:true}).on('pointerdown',()=>{
+   const slideX=862,slideY=346;
+   this.card(slideX,slideY+14,184,226,{fill:prepared?tone.soft:tone.paper,radius:20,stroke:collected?tone.accent:tone.line,width:collected?4:2});
+   if(prepared)this.badge(slideX+64,slideY-72);if(this.textures.exists('ui-slide')){this.add.image(slideX,slideY,'ui-slide').setDisplaySize(164,69);}else this.plate(slideX,slideY,150,80,'',0xe8efe8);
+   if(record.sequence===3&&this.textures.exists('ui-water-drop'))this.add.image(slideX,slideY-6,'ui-water-drop').setDisplaySize(50,39);else if(record.sequence===3)this.add.circle(slideX,slideY-6,18,0x73b4bd);
+   this.text(slideX,slideY+82,prepared?'받침 유리판':collected?'여기에 한 방울 놓아요':'받침 유리판',24,tone.ink,166);
+   this.add.zone(slideX,slideY+14,184,226).setInteractive({useHandCursor:true}).on('pointerdown',()=>{
     if(this.pauseGuard()||record.sequence===3)return;
     if(record.sequence!==2)return hooks.feedback(record.assignments.site?'스포이드를 먼저 눌러 물 한 방울을 담아요.':'물가나 물풀 가까이를 먼저 골라요.');
     record.sequence=3;this.commit();
    });
-   const home={x:record.sequence===2?550:300,y:168};const pipette=this.add.container(home.x,home.y);
+   const home={x:record.sequence===2?640:300,y:168};const pipette=this.add.container(home.x,home.y);
    if(this.textures.exists('ui-dropper')){if(record.sequence>0){const glow=this.add.graphics();glow.fillStyle(0x9fd3d6,.45).fillEllipse(0,-62,64,64);pipette.add(glow);}pipette.add(this.add.image(0,0,'ui-dropper').setDisplaySize(31,210));if(record.sequence===2&&this.textures.exists('ui-water-drop'))pipette.add(this.add.image(0,112,'ui-water-drop').setDisplaySize(24,19));}
    else pipette.add([this.add.rectangle(0,0,28,110,0xeaf3dc).setStrokeStyle(3,0x537d6c),this.add.ellipse(0,-62,58,60,record.sequence>0?0x72b3bc:0x4d8066),this.add.triangle(0,73,0,0,20,0,10,35,0xc1d7b8)]);
    pipette.setSize(90,220).setInteractive({useHandCursor:true});this.input.setDraggable(pipette);let dragged=false;
-   pipette.on('pointerdown',()=>{if(!this.pauseGuard())dragged=false;});pipette.on('drag',(_p:Phaser.Input.Pointer,x:number,y:number)=>{if(this.pauseGuard())return;dragged=true;pipette.setPosition(x,y);});pipette.on('dragend',()=>{if(this.pauseGuard()){if(pipette.active)pipette.setPosition(home.x,home.y);return;}if(record.sequence===2&&pipette.x>665&&pipette.y>180){record.sequence=3;this.commit();}else if(pipette.active)pipette.setPosition(home.x,home.y);});
+   pipette.on('pointerdown',()=>{if(!this.pauseGuard())dragged=false;});pipette.on('drag',(_p:Phaser.Input.Pointer,x:number,y:number)=>{if(this.pauseGuard())return;dragged=true;pipette.setPosition(x,y);});pipette.on('dragend',()=>{if(this.pauseGuard()){if(pipette.active)pipette.setPosition(home.x,home.y);return;}if(record.sequence===2&&pipette.x>740&&pipette.y>200){record.sequence=3;this.commit();}else if(pipette.active)pipette.setPosition(home.x,home.y);});
    pipette.on('pointerup',()=>{if(dragged||this.pauseGuard())return;if(!record.assignments.site){hooks.feedback('먼저 채집할 장소를 살펴봐요.');return;}if(record.sequence<2){record.sequence=2;this.commit();}});
    if(record.sequence===3)pipette.setVisible(false);
    if(record.assignments.site&&record.sequence<2){

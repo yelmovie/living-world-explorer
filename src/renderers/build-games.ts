@@ -76,8 +76,7 @@ export function mountBuildGame(host:HTMLElement,task:InquiryTask,record:InquiryR
   const phase=run?'done':!it?'pick':!record.prediction?'predict':'run';root.dataset.phase=phase;
   for(const {it:c,b} of cardNodes){b.classList.toggle('is-placed',c.id===it?.id);b.classList.toggle('is-selected',c.id===selected);b.setAttribute('aria-pressed',String(c.id===selected));b.disabled=running;}
   slotChip.textContent=it?it.label:bread?'여기에 병을 부어요':'여기에 카드를 넣어요';slotChip.classList.toggle('is-filled',!!it);
-  tip.textContent=phase==='pick'?(bread?'🫙 반죽을 부풀릴 생물 병을 그릇으로 끌어 와요':'🍂 낙엽을 바꿀 생물 카드를 상자로 끌어 와요'):phase==='predict'?'🤔 어떻게 될지 먼저 예상해요':phase==='run'?(bread?'🔥 오븐 버튼을 꾹 누르고 있어요':'🪏 상자를 톡톡 눌러 다섯 번 섞어요'):run!.result==='supported'?'🎉 실험 성공! 발견 기록이 열려요':'🔁 결과가 달랐어요. 다른 카드로 다시 해 봐요';
-  tip.classList.toggle('is-done',phase==='done'&&run!.result==='supported');
+  tip.textContent=phase==='pick'?(bread?'🫙 반죽을 부풀릴 생물 병을 그릇으로 끌어 와요':'🍂 낙엽을 바꿀 생물 카드를 상자로 끌어 와요'):phase==='predict'?'🤔 어떻게 될지 먼저 예상해요':phase==='run'?(bread?'🔥 오븐 버튼을 꾹 누르고 있어요':'🪏 상자를 톡톡 눌러 다섯 번 섞어요'):run!.result==='supported'?'👉 「발견 기록하기」를 눌러 실험을 기록해요':'🔁 결과가 달랐어요. 다른 카드로 다시 해 봐요';
   pYes.classList.toggle('selected',record.prediction==='supported');pNo.classList.toggle('selected',record.prediction==='stopped');pYes.setAttribute('aria-pressed',String(record.prediction==='supported'));pNo.setAttribute('aria-pressed',String(record.prediction==='stopped'));
   verdict.textContent=run?(run.reflection==='matches'?'내 예상과 같았어요!':'내 예상과 달랐어요. 결과를 보고 생각을 고쳐요.'):'';
   const predictBox=el('div','build-predictions');predictBox.append(el('strong','',bread?'오븐에 넣으면?':'섞어 두면?'),pYes,pNo);

@@ -79,7 +79,7 @@ export function mountFungiSort(host:HTMLElement,task:InquiryTask,record:InquiryR
   }
   count.textContent=`${n} / ${task.items.length}`;
   root.classList.toggle('is-armed',!!selected);venn.classList.toggle('is-complete',n===task.items.length);
-  const all=n===task.items.length;tip.classList.toggle('is-done',all);tipIcon.textContent=all?'🎉':'☝';tipText.textContent=all?'모두 찾았어요! 발견 기록이 열려요':'카드를 끌어서 알맞은 칸에 놓아요';
+  const all=n===task.items.length;tipIcon.textContent=all?'👉':'☝';tipText.textContent=all?'「발견 기록하기」를 눌러 기록을 남겨요':'카드를 끌어서 알맞은 칸에 놓아요';
  }
 
  const events=new AbortController();

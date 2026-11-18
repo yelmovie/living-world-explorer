@@ -65,8 +65,7 @@ export function mountScopeGame(host:HTMLElement,task:InquiryTask,record:InquiryR
   paint=()=>{
    const phase=record.capture?'done':record.level>=2?'spores':'lens';root.dataset.phase=phase;
    stage.replaceChildren(phase==='lens'?lensView:eye,panel);
-   tip.textContent=phase==='lens'?'🔍 돋보기를 끌어 갓 아래를 살펴봐요':phase==='spores'?`✨ 주름에 붙은 작은 알갱이(포자)를 콕 눌러 잡아요 · ${Math.min(3,record.marks.length)} / 3`:'📸 포자를 찾아 관찰 사진을 남겼어요!';
-   tip.classList.toggle('is-done',phase==='done');
+   tip.textContent=phase==='lens'?'🔍 돋보기를 끌어 갓 아래를 살펴봐요':phase==='spores'?`✨ 주름에 붙은 작은 알갱이(포자)를 콕 눌러 잡아요 · ${Math.min(3,record.marks.length)} / 3`:'👉 「발견 기록하기」를 눌러 기록을 남겨요';
    if(phase!=='lens'){marks.replaceChildren();record.marks.forEach(m=>pin(m,'scope-spore','✨'));}
    panel.replaceChildren(progress([['돋보기로 주름 찾기',record.level>=2],['현미경으로 포자 3개 잡기',record.capture],['관찰 사진 남기기',record.capture]]),...phase==='done'?[el('p','scope-fact','주름에 붙은 아주 작은 알갱이가 포자예요. 포자가 알맞은 곳에 닿으면 새 버섯이 자랄 수 있어요.')]:[]);
    if(phase==='lens')requestAnimationFrame(()=>placeLens(lp));
@@ -108,7 +107,7 @@ export function mountScopeGame(host:HTMLElement,task:InquiryTask,record:InquiryR
    pic.style.filter=`blur(${Math.abs(record.focus-65)/5}px)`;knob.style.transform=`rotate(${(record.focus-35)*6}deg)`;meterFill.style.width=`${Math.max(0,100-Math.abs(record.focus-65)*3.3)}%`;dial.setAttribute('aria-valuenow',String(Math.round(record.focus)));
    const rebuild=phase!==moldPhase;moldPhase=phase;
    if(rebuild)stage.replaceChildren(eye,panel);
-   tip.textContent=phase==='focus'?'🔧 초점 다이얼을 돌려 흐린 사진을 또렷하게 맞춰요':phase==='label'?'🏷 이름표를 끌어 사진 속 알맞은 곳에 붙여요':'📸 이름표를 붙이고 관찰 사진을 남겼어요!';tip.classList.toggle('is-done',phase==='done');
+   tip.textContent=phase==='focus'?'🔧 초점 다이얼을 돌려 흐린 사진을 또렷하게 맞춰요':phase==='label'?'🏷 이름표를 끌어 사진 속 알맞은 곳에 붙여요':'👉 「발견 기록하기」를 눌러 기록을 남겨요';
    marks.replaceChildren();for(const t of tags){const m=placedTag(t.want);if(m)fitTag(pin(m,'scope-tag',t.label));t.node.hidden=!!m;t.node.classList.toggle('is-picked',picked===t.id);t.node.disabled=!focused;}
    if(!rebuild){panel.querySelectorAll('.scope-steps li').forEach((li,i)=>{const done=[focused||record.capture,both||record.capture,record.capture][i];li.className=done?'done':'';});return;}
    const tagBox=el('div','tag-box');tagBox.append(...tags.map(t=>t.node));
