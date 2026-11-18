@@ -21,7 +21,7 @@ import {downloadCard} from './export';
 import {iconButton,reward,stageBadge,habits,habitEarned,canDoLines} from './experience';
 import {mapNodes,MAP_WIDTH,MAP_HEIGHT,mapSpawn,mapAssets} from './mapData';
 import {openSettings} from './settings';
-import {syncAudio,playEffect,toggleMasterSound,anySound,setMusicTrack,playNarration,stopNarration} from './audio';
+import {syncAudio,playEffect,toggleMasterSound,anySound,setMusicTrack,playNarration,playVoiceLine,stopNarration} from './audio';
 import {showConcept} from './concepts';
 import {showFilm} from './film';
 import {startRun} from './inquiry-runs';
@@ -229,6 +229,7 @@ function map(ctx:Context){
   onSave:patch=>{ctx.attempt.mapHits={...ctx.attempt.mapHits,...patch};refreshEncounterStatus();void save(state).then(showStorageWarning);},
   blocked:()=>disposed||mode!=='follow'||guided>=0||ctx.host.dataset.mapReady!=='true',
   reduced,art:{left:'assets/map-encounter/map-villain-poses-left.webp',frames:6,nativeFacing:1},palette:'#bd84ff',reach:102,contact:24,
+  voice:text=>{playVoiceLine(text);},
   tone:(kind,hits)=>playEffect(kind==='swing'?'map-swing':kind==='hit'?(hits===1?'map-hit-1':'map-hit-2'):kind==='finish'?'map-finish':kind==='exit'?'map-exit':kind==='contact'?'map-hurt':kind==='appear'?'map-appear':'map-victory'),
  });
  ctx.cleanup(encounters.destroy);

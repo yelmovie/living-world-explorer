@@ -20,3 +20,5 @@
 
 2026-11-18: M3 두리의 새 대사 3개(M3-welcome·memory·work)는 로컬 Momo의 Qwen3-TTS(Apache-2.0) 저장 가상 목소리 '현자 할아버지'로 다시 녹음했다. 대사마다 후보 3개를 만들고 Whisper large-v3-turbo 받아쓰기와 무음 구간으로 골랐다. 시드·원본 UUID·음량·해시는 public/assets/audio/voice/momo-duri-m3-20261118.json에 있고, 예전 ElevenLabs M3 기록은 elevenlabs-residents-20261112.json에서 뺐다. 실제 사람 목소리를 복제하지 않았다.
 2026-11-18: 모아 의뢰 첫 줄(story-1)을 '증거를 찾는 데 도움이 필요해요'로 고쳐 같은 로컬 Momo Qwen3-TTS preset-04로 다시 녹음했다(후보 3개 모두 받아쓰기 일치, 쉼이 가장 짧은 2번 선택). 인트로 영상 자막 7줄도 같은 모아 목소리로 녹음해 scripts/render-film.mjs로 영상에 섞었다(대사마다 후보 2~3개, Whisper 받아쓰기로 선택). 기록은 public/assets/audio/voice/momo-intro-film-20261118.json과 momo-story-update-20261111.json에 있다. 실제 사람 목소리를 복제하지 않았다.
+
+2026-11-18 (오후): 캐릭터마다 목소리를 하나로 맞추려고 ElevenLabs eleven_v4로 다시 녹음했다. 모아(Mina)는 의뢰·결과·인트로·엔딩·개념 영상 5편, 토토(Aria)는 힌트 102줄, 렌즈(Harry)는 지도 대사 25줄, 두리는 원래 목소리 Taek로 M3 3줄이다. 장면마다 한 번에 읽혀 [pause]로 나누고, Whisper 단어 시각으로 줄을 잘라 받아쓰기 유사도가 높은 테이크를 골랐다(최저 0.90, 대부분 1.00). 개념 영상은 자막 시각을 목소리에 맞춰 옮기고 필요한 줄만 최대 1.15배 빠르게 했으며, 마지막 화면을 최대 1.2초 늘렸다. 기록: public/assets/audio/voice/elevenlabs-voices-20261118.json.

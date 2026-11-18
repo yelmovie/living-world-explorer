@@ -25,10 +25,10 @@ function focusWords(node:HTMLElement,text:string,terms:string[]){
  while(remaining){const matches=terms.map(term=>({term,index:remaining.indexOf(term)})).filter(m=>m.index>=0).sort((a,b)=>a.index-b.index||b.term.length-a.term.length);const match=matches[0];if(!match){node.append(remaining);break;}node.append(remaining.slice(0,match.index),el('mark','concept-keyword',match.term));remaining=remaining.slice(match.index+match.term.length);}
 }
 /** Replays are optional; closing a clip never changes or loses learning evidence. */
-export function showConcept(stage:Stage,settings:{sound:boolean;reduced:boolean},onContinue?:()=>void){
+export function showConcept(stage:Stage,settings:{sound:boolean;voice?:boolean;reduced:boolean},onContinue?:()=>void){
  const concept=concepts[stage],{duration,cues}=conceptCaptions[stage];const still=reducedMotion(settings.reduced);
  const body=el('div','concept-body');body.dataset.reduced=String(still);
- const video=el('video','concept-video');video.src=`assets/concepts/${stage}.mp4`;video.poster=`assets/concepts/${stage}.webp`;video.controls=true;video.playsInline=true;video.preload='metadata';video.muted=!settings.sound;
+ const video=el('video','concept-video');video.src=`assets/concepts/${stage}.mp4`;video.poster=`assets/concepts/${stage}.webp`;video.controls=true;video.playsInline=true;video.preload='metadata';video.muted=!(settings.sound||settings.voice);
  // 2026-11-10: the explainer's effects were mixed about 20 dB louder than the same effects in play; match the story films (desktop/Android; iPad ignores volume).
  video.volume=.35;
  video.setAttribute('aria-label',`${concept.title} · ${duration}초 개념 영상`);

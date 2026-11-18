@@ -5,7 +5,7 @@ import {playGerm} from './germ-play.mjs';
 import {inquiryTasks,stageRoutes,names} from './curriculum.mjs';
 const base=process.env.APP_URL||'http://127.0.0.1:5176';
 const browser=await launchBrowser();const context=await browser.newContext({viewport:{width:1280,height:800},hasTouch:true,...(process.env.RESUME_FLOW?{storageState:'.tmp/learner20-state.json'}:{})});const page=await context.newPage();page.setDefaultTimeout(15000);
-const errors=[];page.on('pageerror',e=>errors.push(e.message));const checks=[];
+const errors=[],missingVoice=new Set();page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.text().startsWith('[toto-voice] missing'))missingVoice.add(m.text().slice(21));});const checks=[];
 const btn=name=>button(page,name);
 const paneAt=[[305,138],[966,118],[1140,347],[1010,521],[171,444]];
 const paneColor=([x,y])=>page.locator('.map-host canvas').evaluate((c,[x,y])=>Array.from(c.getContext('2d').getImageData(x,y,1,1).data).slice(0,3),[x,y]);
@@ -161,5 +161,5 @@ try{
   for(const task of inquiryTasks.filter(t=>t.stage==='M1'))await completeTask(task,true);
   assert.match(await page.locator('.toast').innerText(),/꼼꼼한 관찰자/);const after=(await readSaved(page)).learner;assert.equal(Object.keys(after.evidence).length,5);assert.equal(after.report.length,5);assert.equal(after.ports.length,5);assert.equal(after.activated,true);assert.equal(after.cardTitle,'내가 발견한 생물의 작용');
   await navigate(page,base,'results');assert.match(await page.locator('.habit-summary').innerText(),/5\/5/);checks.push('habit replay: M1 다시 도전 → badge, evidence kept');}
- assert.equal(errors.length,0,errors.join('; '));await writeFile('.tmp/full-flow.json',JSON.stringify({status:'PASS',errors,completed:checks,taskCount:checks.length,rewards:10,restored:true,previewIsolation:true,png:download.suggestedFilename()},null,2));console.log('FULL FLOW PASS: 20 tasks; report; core; PNG; reload; preview isolation');
+ assert.equal(errors.length,0,errors.join('; '));if(missingVoice.size)console.log('TOTO VOICE MISSING',missingVoice.size,[...missingVoice].join(' | '));await writeFile('.tmp/full-flow.json',JSON.stringify({status:'PASS',errors,completed:checks,taskCount:checks.length,rewards:10,restored:true,previewIsolation:true,png:download.suggestedFilename()},null,2));console.log('FULL FLOW PASS: 20 tasks; report; core; PNG; reload; preview isolation');
 }catch(error){process.exitCode=1;console.error('FLOW ERROR',error.stack);console.error('SAVED PREVIEW NOTE',(await readSaved(page))?.preview?.inquiry?.records?.['M5-4']?.note);console.error('INPUT',await page.getByLabel('내 소개 문장',{exact:true}).inputValue().catch(()=>''));await page.screenshot({timeout:10000,path:'.tmp/full-flow-failure.png'});console.error((await page.locator('body').innerText()).slice(0,5000));await writeFile('.tmp/full-flow.json',JSON.stringify({status:'FAIL',error:error.message,errors,completed:checks},null,2));}finally{await Promise.race([browser.close(),new Promise(resolve=>setTimeout(resolve,5000))]);process.exit(process.exitCode||0);}

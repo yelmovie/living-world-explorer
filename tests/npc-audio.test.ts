@@ -1,6 +1,6 @@
 import {beforeEach,afterEach,describe,it,expect,vi} from 'vitest';
 import {narrationRecordings} from '../src/narration-recordings';
-const shippedRecordings=import.meta.glob('../public/assets/audio/voice/*.mp3',{query:'?url',import:'default'});
+const shippedRecordings=import.meta.glob('../public/assets/audio/voice/**/*.mp3',{query:'?url',import:'default'});
 const clips:{src:string;paused:boolean;play:ReturnType<typeof vi.fn>;pause:ReturnType<typeof vi.fn>}[]=[];
 const listeners=new Map<string,()=>void>();
 beforeEach(()=>{
@@ -62,4 +62,6 @@ it('등록되지 않은 대사는 요청하지 않고 이전 인사를 멈춘다
  expect(greeting.pause).toHaveBeenCalled();expect(clips).toHaveLength(1);
 });
 
-it('every generated narration ID uses a shipped file',async()=>{const a=await import('../src/audio');a.syncAudio({sound:true});expect(Object.keys(narrationRecordings)).toHaveLength(24);for(const[id,line]of Object.entries(narrationRecordings)){expect(a.playNarration(id)).toBe(true);expect(clips.at(-1)!.src).toBe(line.src);expect(shippedRecordings).toHaveProperty('../public/'+line.src);}});
+it('every generated narration ID uses a shipped file',async()=>{const a=await import('../src/audio');a.syncAudio({sound:true});expect(Object.keys(narrationRecordings)).toHaveLength(151);for(const[id,line]of Object.entries(narrationRecordings)){expect(a.playNarration(id)).toBe(true);expect(clips.at(-1)!.src).toBe(line.src);expect(shippedRecordings).toHaveProperty('../public/'+line.src);}});
+// 2026-11-18: Toto reads every task hint aloud, and each character keeps one voice file set.
+it('every task hint and villain line has a Toto or Lens recording',async()=>{const {inquiryTasks}=await import('../src/curriculum');const {mapVillainStages}=await import('../src/map-villain-content');const texts=new Set(Object.values(narrationRecordings).map(r=>r.text));for(const t of inquiryTasks)for(const h of t.hints??[])expect(texts.has(h),t.id+' '+h).toBe(true);for(const s of mapVillainStages)for(const line of [...s.lines,...s.hit,s.finish])expect(texts.has(line),line).toBe(true);expect(new Set(Object.values(narrationRecordings).filter(r=>r.speaker==='toto').map(r=>r.src.split('/').slice(0,-1).join('/'))).size).toBe(1);});

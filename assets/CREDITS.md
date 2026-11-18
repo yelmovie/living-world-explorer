@@ -140,3 +140,9 @@ SOFTWARE.
 
 - `public/assets/map/residents/dialogue/`: 기존 다섯 주민의 의상과 소품을 참조해 Codex GPT 이미지 도구로 생성한 두 표정 시트. 지도 아이콘은 기존 그림 그대로다.
 - `public/assets/audio/voice/M[1–5]-*.mp3`: 한국어 대사 20개를 ElevenLabs v4로 다시 생성. 생성 ID, 음색, 전사, 길이와 해시는 같은 폴더의 `elevenlabs-residents-20261112.json` 참고. 생성 당시 ElevenLabs Starter 유료 요금제를 구독 중이었다(상업 이용 가능, 2026-11-18 사용자 확인). 이전 Momo 목록은 과거 제작 이력으로 남긴다.
+
+## 2026-11-18 캐릭터 목소리 통일 (ElevenLabs)
+
+- 캐릭터마다 목소리 하나로 맞췄다. 모아: Mina(`mV7RnCYPcw47zFjyhuhw`), 토토: Aria(`O2KReOFLpoR65nz6C9Se`), 초점 도깨비 렌즈: Harry(`wMrz30qBeYiSkAtnZGtn`), 두리: Taek(`rCm09Tf1yMYbOyCRLDyB`, 11-12 녹음과 같은 목소리). 솔비·여울·밤톨·보리는 11-12 ElevenLabs 녹음을 그대로 쓴다.
+- 새로 만든 것: 모아 의뢰 3줄과 결과 1줄(`story-*`, `results-1`), 두리 M3 3줄, 토토 힌트 102줄(`voice/toto/`), 렌즈 대사 25줄(`voice/lens/`), 인트로·엔딩 영상 내레이션 13줄, 개념 영상 5편 내레이션 20줄. 모두 ElevenLabs eleven_v4, Creator 유료 요금제(2026-11-18 충전) 생성이다.
+- 생성 ID, 받아쓰기, 길이, 해시와 영상 속 위치는 `public/assets/audio/voice/elevenlabs-voices-20261118.json`. 같은 날 앞서 로컬 Momo로 녹음한 모아 인트로·의뢰 음성과 두리 M3 음성은 이 녹음으로 바뀌었다.

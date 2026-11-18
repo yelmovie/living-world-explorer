@@ -1,6 +1,6 @@
 import type {InquiryTask} from './inquiry-model';
 import {el,button} from './ui';
-import {playEffect} from './audio';
+import {playEffect,playVoiceLine,voiceLineSeconds,stopNarration,type NarrationState} from './audio';
 import './toto-hint.css';
 
 /** What a renderer sends when Toto should speak by himself (a wrong drop, a correct answer). */
@@ -25,9 +25,13 @@ export function mountTotoHint(shell:HTMLElement,task:InquiryTask):HTMLElement{
   clearTimeout(timer);text.textContent=line;bubble.dataset.mood=mood;bubble.hidden=false;
   more.hidden=mood==='cheer'||level>0;toggle.setAttribute('aria-expanded','true');box.classList.remove('nudge');
   bubble.classList.remove('pop');void bubble.offsetWidth;bubble.classList.add('pop');
-  if(mood==='cheer')timer=setTimeout(hide,6500);
+  if(mood==='cheer')timer=setTimeout(hide,Math.max(6500,voiceLineSeconds(line)*1000+900));
+  // 2026-11-18: Toto reads his line aloud when it has a recording and character voices are on.
+  playVoiceLine(line,voice);
+  if(import.meta.env.DEV&&!voiceLineSeconds(line))console.warn('[toto-voice] missing',line);
  }
- function hide(){clearTimeout(timer);bubble.hidden=true;toggle.setAttribute('aria-expanded','false');}
+ const voice=(_state:NarrationState)=>{};
+ function hide(){clearTimeout(timer);bubble.hidden=true;toggle.setAttribute('aria-expanded','false');stopNarration(voice);}
  toggle.onclick=()=>{if(!bubble.hidden&&bubble.dataset.mood==='hint'){hide();return;}level=0;show(hints[0],'hint');playEffect('hint');};
  const listen=new AbortController();
  shell.addEventListener('toto-say',e=>{const say=(e as CustomEvent<TotoSay>).detail;if(say.mood!=='cheer')level=0;show(say.text,say.mood||'hint');},{signal:listen.signal});

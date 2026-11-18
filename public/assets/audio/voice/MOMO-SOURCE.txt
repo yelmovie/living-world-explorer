@@ -4,3 +4,4 @@ Fictional character presets; no real-person voice cloning.
 Character direction, source IDs, chosen seeds, transcripts, audio metrics and checksums: momo-manifest-20261110.json.
 M3 두리 lines (2026-11-18): local Momo qwen3tts, saved fictional voice 현자 할아버지, Apache-2.0; seeds, takes, ASR and checksums in momo-duri-m3-20261118.json.
 Intro film voice + story-1 rewrite (2026-11-18): local Momo qwen3tts preset-04 (모아), Apache-2.0; seeds, takes, ASR and checksums in momo-intro-film-20261118.json and momo-story-update-20261111.json.
+2026-11-18 later: story-*, results-1, M3-* and the intro film voice were replaced by ElevenLabs recordings (elevenlabs-voices-20261118.json) so each character keeps one voice; the Momo records above are history only.

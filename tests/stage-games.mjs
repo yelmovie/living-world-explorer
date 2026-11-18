@@ -3,6 +3,8 @@
 // (Toto hint, nothing stored), and must open its discovery record by itself when finished.
 import assert from 'node:assert/strict';
 import {launchBrowser,navigate,teacherTools,waitSaved,linkCard,linkTarget} from './browser.mjs';
+// Toto lines shown without a recording are reported (dev server only), not failed: new hint text can land before its voice.
+const missingVoice=new Set();
 import {inquiryTasks} from './curriculum.mjs';
 import {playGerm} from './germ-play.mjs';
 const base=process.env.APP_URL||'http://127.0.0.1:4173';
@@ -12,7 +14,7 @@ const spores=[[0.482,0.3014],[0.4461,0.3708],[0.4406,0.4403]],moldTags={thread:[
 const browser=await launchBrowser();const errors=[];
 try{
  for(const [width,height] of sizes){
-  const context=await browser.newContext({viewport:{width,height},hasTouch:true});const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+  const context=await browser.newContext({viewport:{width,height},hasTouch:true});const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.text().startsWith('[toto-voice] missing'))missingVoice.add(m.text().slice(21));});
   const rec=async id=>((await waitSaved(page)).preview.inquiry.records[id]);
   const task=id=>inquiryTasks.find(t=>t.id===id);
   const toto=()=>page.locator('.toto-bubble:not([hidden]) .toto-bubble-text').innerText();
@@ -77,5 +79,5 @@ try{
   await navigate(page,base,'nature-map');const t=await teacherTools(page);await t.getByRole('button',{name:'관리자 전체 해금',exact:true}).click();await t.getByRole('button',{name:'닫기',exact:true}).click();
   await navigate(page,base,'fungi-field');await page.getByRole('button',{name:/^2번째 발견:/}).click();
   await page.getByRole('button',{name:'이미지 다시 준비',exact:true}).waitFor();assert.match(await page.locator('.inquiry-loading').innerText(),/준비하지 못했어요/);await context.close();console.log('failed picture: retry button shown');}
- assert.deepEqual(errors,[]);console.log('PASS stage games');
+ assert.deepEqual(errors,[]);if(missingVoice.size)console.log('TOTO VOICE MISSING',missingVoice.size,[...missingVoice].join(' | '));console.log('PASS stage games');
 }finally{await browser.close();}

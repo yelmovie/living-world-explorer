@@ -62,6 +62,10 @@ export function playNarration(id:string,onState?:(state:NarrationState)=>void):b
  return true;
 }
 
+/** Toto hints and villain lines carry no id: they play when their exact on-screen text has a recording. */
+const lineIds=new Map(Object.entries(narrationRecordings).map(([id,r])=>[r.text,id]));
+export function playVoiceLine(text:string,onState?:(state:NarrationState)=>void){const id=lineIds.get(text.trim());return id?playNarration(id,onState):false;}
+export function voiceLineSeconds(text:string){const id=lineIds.get(text.trim());return id?narrationRecordings[id].duration:0;}
 
 function engine() {
   if (!context) {

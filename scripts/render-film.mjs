@@ -15,32 +15,33 @@ const films={
   srcEnd:20.6,total:24.8,poster:2.2,
   glitch:[[4.85,5.05],[5.3,5.42],[6.1,6.2]],
   cues:[
-   // 2026-11-18: cues follow 모아's voice lines below.
-   [.7,4.9,'숲과 연못, 작은 생물의 마을에 온 걸 환영해!'],
-   [5,7.4,'그런데 [연구 기록]이 뒤섞여 버렸어!'],
-   [7.5,10.4,'[빵의 곰팡이], [요구르트를 만드는 세균]…'],
-   [10.6,13,'우리 생활에 어떤 일을 할까?'],
-   [13.2,16.8,'숲과 연못에서 [관찰]하고, [근거]를 모아'],
-   [17,19.6,'[다섯 기록]으로 연구소를 깨워 줘!'],
+   // 2026-11-18: cues follow 모아's ElevenLabs lines (voice below).
+   [0.5,4.9,'숲과 연못, 작은 생물의 마을에 온 걸 환영해!'],
+   [5.0,7.69,'그런데 [연구 기록]이 뒤섞여 버렸어!'],
+   [7.79,10.66,'[빵의 곰팡이], [요구르트를 만드는 세균]…'],
+   [10.76,13.1,'우리 생활에 어떤 일을 할까?'],
+   [13.2,16.9,'숲과 연못에서 [관찰]하고, [근거]를 모아'],
+   [17.0,19.9,'[다섯 기록]으로 연구소를 깨워 줘!'],
    [21.3,23,'다섯 기록을 모아 BIO CORE를 깨워요'],
    [23,24.8,'탐험 시작!']
   ],
   sfx:[['retry',4.85,.2],...[0,1,2,3,4].map(i=>['snap',21.7+i*.18,.22]),['success',23,.3]],
-  // 모아 (local Momo Qwen3-TTS preset-04, -16 LUFS); provenance in public/assets/audio/voice/momo-intro-film-20261118.json.
-  voice:[['intro-1',.7],['intro-2',5],['intro-3',7.5],['intro-4',10.6],['intro-5',13.2],['intro-6',17],['intro-7',22.75]]
+  // 모아 (ElevenLabs eleven_v4, voice Mina); provenance in public/assets/audio/voice/elevenlabs-voices-20261118.json.
+  voice:[['intro-1',0.7,1.0],['intro-2',5.1,1.15],['intro-3',7.89,1.15],['intro-4',10.86,1.0],['intro-5',13.3,1.0],['intro-6',17.1,1.0],['intro-7',22.75,1.044]]
  },
  final:{
   // The source closes on an iris and a bright flash frame; the film holds Toto's jump (20.95s) instead.
   srcEnd:20.95,total:26.4,poster:20.95,glitch:[],hold:true,
   cues:[
-   [.9,4,'균류·원생생물·세균의 특징을 찾고,'],
-   [4.2,7.6,'도움과 피해를 [근거]로 설명했어!'],
+   [0.8,4.3,'균류·원생생물·세균의 특징을 찾고,'],
+   [4.35,8.0,'도움과 피해를 [근거]로 설명했어!'],
    [8.2,12,'관찰하고, 비교하고, [근거]를 모아'],
-   [16.7,19.3,'내 기록으로 [BIO CORE] 복구 성공!'],
-   [19.7,22.7,'내 발견을 [소개 카드]로 남겨 볼까?'],
-   [23,26.4,'이제 나도 생물 연구자!']
+   [16.7,19.7,'내 기록으로 [BIO CORE] 복구 성공!'],
+   [19.7,23.0,'내 발견을 [소개 카드]로 남겨 볼까?'],
+   [23.0,26.4,'이제 나도 생물 연구자!']
   ],
-  sfx:[...[0,1,2,3,4].map(i=>['snap',14.7+i*.3,.2]),['core-wake',16.2,.35],['success',21.4,.3],...[0,1,2,3,4].map(i=>['snap',23.5+i*.14,.2])]
+  sfx:[...[0,1,2,3,4].map(i=>['snap',14.7+i*.3,.2]),['core-wake',16.2,.35],['success',21.4,.3],...[0,1,2,3,4].map(i=>['snap',23.5+i*.14,.2])],
+  voice:[['final-1',0.9,1.094],['final-2',4.45,1.0],['final-3',8.3,1.0],['final-4',16.8,1.0],['final-5',19.8,1.0],['final-6',23.1,1.0]]
  }
 };
 
@@ -178,8 +179,8 @@ async function render(name){
 
  const glitch=film.glitch.length?`,rgbashift=rh=-16:bh=16:enable='${film.glitch.map(([a,b])=>`between(t,${a},${b})`).join('+')}'`:'';
  const voice=film.voice??[],VOICE_GAIN=.9;
- const sounds=[...film.sfx.map(([file])=>['-i',`public/assets/audio/${file}.wav`]),...voice.map(([file])=>['-i',`assets/generated/film-voice-20261118/${file}.wav`])].flat();
- const mix=[...film.sfx.map(([,at,gain])=>[at,gain]),...voice.map(([,at])=>[at,VOICE_GAIN])].map(([at,gain],i)=>`[${i+2}:a]aformat=sample_rates=44100:channel_layouts=stereo,adelay=${Math.round(at*1000)}:all=1,volume=${gain}[s${i}]`);
+ const sounds=[...film.sfx.map(([file])=>['-i',`public/assets/audio/${file}.wav`]),...voice.map(([file])=>['-i',`assets/generated/film-voice-el-20261118/${file}.wav`])].flat();
+ const mix=[...film.sfx.map(([,at,gain])=>[at,gain]),...voice.map(([,at,tempo=1])=>[at,VOICE_GAIN,tempo])].map(([at,gain,tempo=1],i)=>`[${i+2}:a]aformat=sample_rates=44100:channel_layouts=stereo${tempo!==1?`,atempo=${tempo}`:''},adelay=${Math.round(at*1000)}:all=1,volume=${gain}[s${i}]`);
  const graph=[
   `[0:v]trim=end=${film.srcEnd},setpts=PTS-STARTPTS,fps=${FPS},${GRADE}${glitch},tpad=stop_mode=${film.hold?'clone':'add'}:stop_duration=${extra}:color=black[base]`,
   `[1:v]scale=out_color_matrix=bt709,format=yuva420p[ui]`,
