@@ -17,7 +17,7 @@
 .pond-summary-card h3 {font-size:clamp(18px,2.3vw,28px)}
 .pond-summary-card p {font-size:clamp(15px,1.65vw,21px)}
 .pond-summary-picture {width:100%;height:clamp(95px,34dvh,300px);object-fit:contain;border-radius:10px;background:#eef5df}
-.pond-summary-status {color:var(--stage-accent);font-size:clamp(14px,1.4vw,18px)}
+.pond-summary-status {color:var(--stage-accent);font-size:clamp(18px,1.4vw,20px)}
 .pond-summary-moments {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
 .pond-summary-moments figure {margin:0;background:#eef5df;border-radius:8px;overflow:hidden;text-align:center;color:#23483d}
 .pond-summary-moments canvas {position:static!important;display:block;width:100%;height:auto;max-height:clamp(72px,23dvh,180px);margin:0!important;object-fit:contain}

@@ -24,7 +24,7 @@
 .observation-loupe{position:absolute;left:50%;top:45%;width:150px;height:150px;transform:translate(-50%,-50%);border:9px solid #3f7055;box-shadow:0 0 0 4px #f3d488,0 10px 20px #192d2740;border-radius:50%;background-repeat:no-repeat;background-size:200% 200%;background-position:center;pointer-events:none}
 .observation-loupe[hidden]{display:none}
 .observation-caption{margin:0;border-radius:12px;padding:8px 12px;background:#fffae9;color:#254334;font-size:clamp(17px,1.6vw,24px);line-height:1.35;text-align:center}
-.observation-disclosure{margin:0;color:#253e31;font-size:16px;text-align:center;background:#fff8e7d9;border-radius:8px;padding:3px}
+.observation-disclosure{margin:0;color:#253e31;font-size:18px;text-align:center;background:#fff8e7d9;border-radius:8px;padding:3px}
 @media(min-width:660px) and (max-height:640px){
  #app>.expedition-shell.link-task{padding-top:62px;gap:6px}
  #app>.expedition-shell.link-task .expedition-panel{max-height:72px;padding:5px 12px}
@@ -65,7 +65,7 @@
  #app>.expedition-shell.link-task .link-stack{grid-auto-rows:minmax(52px,auto)}
  #app>.expedition-shell.link-task .link-name{font-size:16px;line-height:1.2}
  .simple-observation{position:relative;grid-template-rows:minmax(0,1fr) auto;gap:4px}
- .observation-disclosure{position:absolute;left:12px;top:10px;padding:2px 8px;font-size:16px}
+ .observation-disclosure{position:absolute;left:12px;top:10px;padding:2px 8px;font-size:18px}
  .observation-caption{padding:4px 10px;font-size:16px}
 }
 .science-keyword{font-weight:700;color:#254334;background:linear-gradient(transparent 65%,#e6cf8f 65%);box-decoration-break:clone;-webkit-box-decoration-break:clone}

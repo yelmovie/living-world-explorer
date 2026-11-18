@@ -8,7 +8,7 @@
 .is-lapse .timeline-layer{transition:opacity .08s linear}
 .timeline-thumb{position:absolute;left:12px;top:12px;width:22%;margin:0;border-radius:12px;overflow:hidden;border:3px solid #fff;box-shadow:0 6px 14px #0004;pointer-events:none}
 .timeline-thumb img{display:block;width:100%}
-.timeline-thumb figcaption{position:absolute;left:6px;bottom:4px;padding:1px 8px;border-radius:999px;background:#fffdf6;font-size:14px;font-weight:700}
+.timeline-thumb figcaption{position:absolute;left:6px;bottom:4px;padding:1px 8px;border-radius:999px;background:#fffdf6;font-size:18px;font-weight:700}
 .timeline-thumb[hidden]{display:none}
 .timeline-pins{position:absolute;inset:0;pointer-events:none}
 .timeline-pin,.timeline-miss{position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;width:46px;height:46px;border-radius:50%;font-size:24px}
@@ -16,21 +16,21 @@
 .timeline-miss{color:#c0392b;font-weight:800;font-size:32px;animation:timeline-pop .3s,timeline-fade .7s forwards}
 @keyframes timeline-pop{from{transform:translate(-50%,-50%) scale(.2)}}
 @keyframes timeline-fade{70%{opacity:1}to{opacity:0}}
-.timeline-label{position:absolute;top:12px;padding:4px 14px;border-radius:999px;background:#fffdf6e8;font-weight:800;font-size:17px;pointer-events:none}
+.timeline-label{position:absolute;top:12px;padding:4px 14px;border-radius:999px;background:#fffdf6e8;font-weight:800;font-size:18px;pointer-events:none}
 .timeline-label.before{left:12px}.timeline-label.after{right:12px}
 .timeline-wipe{position:absolute;top:0;bottom:0;width:0;border-left:4px solid #fffdf6;box-shadow:0 0 12px #0006}
-.timeline-handle{position:absolute;top:auto;bottom:6px;left:0;transform:translateX(-50%);display:grid;place-items:center;width:64px;height:64px;border-radius:50%;background:#2f6e48;color:#fff;font-weight:800;font-size:15px;border:4px solid #fffdf6;box-shadow:0 6px 16px #0005;cursor:ew-resize;touch-action:none;animation:timeline-hint 1.8s ease-in-out 3}
+.timeline-handle{position:absolute;top:auto;bottom:6px;left:0;transform:translateX(-50%);display:grid;place-items:center;width:64px;height:64px;border-radius:50%;background:#2f6e48;color:#fff;font-weight:800;font-size:18px;border:4px solid #fffdf6;box-shadow:0 6px 16px #0005;cursor:ew-resize;touch-action:none;animation:timeline-hint 1.8s ease-in-out 3}
 @keyframes timeline-hint{25%{translate:-12px 0}75%{translate:12px 0}}
 .timeline-note{flex:0 1 300px;align-self:center;padding:16px 18px;border-radius:20px;background:#fffdf6;border:3px solid #e2d3ac;box-shadow:0 10px 22px #3b2a1a26;animation:timeline-pop2 .4s cubic-bezier(.3,1.4,.5,1)}
 .timeline-note[hidden]{display:none}
 .timeline-note strong{display:block;font-size:19px;margin-bottom:6px}
-.timeline-note p{margin:0;font-size:17px;line-height:1.5;word-break:keep-all}
+.timeline-note p{margin:0;font-size:18px;line-height:1.5;word-break:keep-all}
 @keyframes timeline-pop2{from{transform:translateY(16px);opacity:0}}
 .timeline-controls{display:flex;align-items:center;justify-content:center;gap:16px}
 .timeline-play{min-width:150px}
 .timeline-track{display:grid;gap:2px;width:min(560px,60%)}
 .timeline-range{width:100%;height:44px;accent-color:#2f6e48;cursor:pointer}
-.timeline-ticks{display:flex;justify-content:space-between;font-size:15px;font-weight:700;color:#4c5a4e}
+.timeline-ticks{display:flex;justify-content:space-between;font-size:18px;font-weight:700;color:#4c5a4e}
 @media(prefers-reduced-motion:reduce){.timeline-pin,.timeline-handle,.timeline-note{animation:none}}
 @media(max-height:640px){.timeline-note{flex-basis:240px;padding:10px 12px}.timeline-note p{font-size:15px}}
 @media(max-height:480px){.timeline-handle{width:44px;height:44px;font-size:11px;bottom:2px;border-width:3px}.timeline-label{font-size:13px;padding:2px 8px;top:6px}.timeline-game{gap:6px}.timeline-tip{font-size:15px;padding:3px 14px}.timeline-stage{gap:8px}.timeline-note{flex-basis:210px;padding:8px 10px}.timeline-note strong{font-size:14px;margin-bottom:2px}.timeline-note p{font-size:13px;line-height:1.4}.timeline-ticks{display:none}.timeline-controls{gap:10px}.timeline-play{min-width:0}}

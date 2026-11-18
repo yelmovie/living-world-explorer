@@ -19,7 +19,7 @@
 .scope-status {
   position:absolute;top:4%;left:3%;display:inline-flex;align-items:center;gap:6px;
   min-height:1.55em;padding:3px 8px;border:1px solid var(--scope-rim);border-radius:8px;
-  background:var(--scope-dark);color:var(--scope-light);font-size:clamp(11px,1.14vw,16px);
+  background:var(--scope-dark);color:var(--scope-light);font-size:clamp(18px,1.14vw,20px);
   font-weight:750;line-height:1.2;white-space:nowrap;
 }
 .scope-status::before {content:'';width:.45em;height:.45em;flex:none;border-radius:50%;background:#a3d393}
