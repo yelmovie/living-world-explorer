@@ -31,10 +31,10 @@
 | A 교육적 품질 | 15 | 0 | 0 | 2 | 0 |
 | B 기능 | 18 | 0 | 0 | 1 | 0 |
 | C 태블릿·UI | 22 | 2 | 0 | 1 | 0 |
-| D 성능 | 8 | 2 | 0 | 3 | 1 |
+| D 성능 | 9 | 2 | 0 | 3 | 0 |
 | E 코드 품질 | 11 | 3 | 0 | 0 | 0 |
 | F 데이터·안전 | 13 | 2 | 0 | 0 | 0 |
-| G 배포 | 18 | 0 | 0 | 1 | 1 |
+| G 배포 | 19 | 0 | 0 | 1 | 1 |
 
 ## 실행 환경 (실측)
 
@@ -99,7 +99,7 @@
 
 | # | 판정 | 근거 |
 |---|---|---|
-| D1 초기 로딩 | 배포 뒤 운영 주소 실측(아래 G 절) | |
+| D1 초기 로딩 | PASS(확인됨) | 운영 주소 3회 1.017·1.004·1.009초, 전송 약 1.08MB·요청 6·외부 0(새 컨텍스트, 캐시 끔, 서비스 워커 차단, 10Mbps·40ms·CPU 4배, `tests/startup-load.mjs`) |
 | D2·D4·D5·D7·D8·D11·D12·D14 | PASS(확인됨, 11-12) | 지연 로딩, 외부 요청 0, 오프라인 재방문 |
 | D3 영상 크기 | **WARNING(확인됨)** | `public/assets/film/intro.mp4` 7.6MB, `final.mp4` 5.8MB(오늘 `2f8de3d`에서 3.7/4.2MB → 커짐). 재생할 때만 받는다 |
 | D13 | WARNING(추정) | 11-12와 같음 |
@@ -129,7 +129,7 @@
 | # | 판정 | 근거 |
 |---|---|---|
 | G1~G9·G12·G14~G18 | PASS(11-12, 같은 Pages 프로젝트·주소) | |
-| G10·G11 | 배포 뒤 기록(아래) | |
+| G10·G11 | PASS(확인됨) | 커밋 `bba1caa`만 빌드(`deploy.sh`, `origin/main`), 운영 index·주 번들 `index-v1aTAEf7.js`·CSS `index-7TVKBHBh.css` 해시 MATCH. 운영에서 1920 M3-1 판 1539×809, 코어 아래 「코어 가동」만, 페이지 오류 0 |
 | G13 git status | PASS | 다른 세션(개념 영상 자막)의 미커밋 변경 `films/publish-films.mjs`, `public/assets/concepts/M1~5.mp4`, `src/concept-focus.css`, `src/concepts.ts`, `docs/concept-captions-20261118/`, `output/`은 커밋하지 않음. `deploy.sh`는 `origin/main`만 빌드 |
 | G19 인쇄·이미지 저장 | **NOT TESTED** | 실제 모바일 공유·인쇄 |
 | G20 롤백 대상 | PASS | 직전 운영 커밋 `2f8de3d` |
@@ -137,4 +137,6 @@
 
 ## 운영 배포 기록
 
-(배포 후 갱신)
+- 2026-11-19 07:1x KST, Cloudflare Pages `living-world-explorer` 배포 `c71f4878`, 커밋 `bba1caa2a20ede69c1e7bd75ebfb02b75c9e763a`(롤백 대상 직전 운영 `2f8de3d`).
+- `cmp.sh 08`: `assets/index-v1aTAEf7.js` build=live `f5d3ba963e72de05` MATCH, index MATCH. CSS `de50f626c18c57fe` MATCH.
+- 운영 스모크(1920×1080, 08:4x): M3-1 판 1539×809, 첫 탐구 아래 「지도로」 없음, 코어 아래 「코어 가동」만, 페이지 오류 0.
