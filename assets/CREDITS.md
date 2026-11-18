@@ -139,4 +139,4 @@ SOFTWARE.
 ## 2026-11-12 지도 주민 대화
 
 - `public/assets/map/residents/dialogue/`: 기존 다섯 주민의 의상과 소품을 참조해 Codex GPT 이미지 도구로 생성한 두 표정 시트. 지도 아이콘은 기존 그림 그대로다.
-- `public/assets/audio/voice/M[1–5]-*.mp3`: 한국어 대사 20개를 ElevenLabs v4로 다시 생성. 생성 ID, 음색, 전사, 길이와 해시는 같은 폴더의 `elevenlabs-residents-20261112.json` 참고. 이전 Momo 목록은 과거 제작 이력으로 남긴다.
+- `public/assets/audio/voice/M[1–5]-*.mp3`: 한국어 대사 20개를 ElevenLabs v4로 다시 생성. 생성 ID, 음색, 전사, 길이와 해시는 같은 폴더의 `elevenlabs-residents-20261112.json` 참고. 생성 당시 ElevenLabs Starter 유료 요금제를 구독 중이었다(상업 이용 가능, 2026-11-18 사용자 확인). 이전 Momo 목록은 과거 제작 이력으로 남긴다.
