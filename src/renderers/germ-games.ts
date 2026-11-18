@@ -30,56 +30,101 @@ export function mountGermGame(host:HTMLElement,task:InquiryTask,record:InquiryRe
  return {refresh:()=>{game.refresh?.();paintTip();},showFrame:idle,endDemo:idle,setPlaybackRate:idle,setPreview:idle,setReveal:idle,setPlaying:idle,arm:idle,assignCard:no,assign:no,place:no,animateRun:(_ok,done)=>done(),dispose:()=>{game.dispose?.();root.remove();}};
 }
 
-/** M3-1: predict the power, then turn the dial from a water drop on a slide down to bacteria beside a paramecium. */
+/** M3-1: predict the power, then turn the dial from a water drop on a slide down to bacteria beside a paramecium.
+ * 2026-11-18: real photomicrograph scenes (맨눈 → 돋보기 → 현미경 100배 → 1000배) joined by a focus pull, seen through a round eyepiece;
+ * the paramecium swims, the bacteria jiggle, and each 「+ 키우기」 or tap on the picture moves one whole power. */
+const zoomArt='assets/study/germ/';
+const zoomScenes=[{src:'zoom-1',origin:'50.1% 50.8%',grow:3.4},{src:'zoom-10',origin:'50% 48%',grow:2.6},{src:'zoom-100',origin:'66% 31%',grow:3.6},{src:'zoom-1000',origin:'50% 50%',grow:0}] as const;
+// Bacteria cut from the 1000× photograph: [x in atlas, width, height, centre x, centre y] on a 1672×941 frame, atlas 1041×62.
+const bacteria:[number,number,number,number,number][]=[[0,59,39,.4871,.1111],[63,37,38,.9064,.1286],[104,95,51,.6414,.2067],[203,98,62,.8206,.2391],[305,36,36,.2877,.2295],[345,53,52,.4369,.3369],[402,62,44,.7344,.3464],[468,38,36,.9205,.4091],[510,39,57,.3269,.4458],[553,70,52,.622,.4931],[627,36,36,.4928,.5388],[667,37,35,.7712,.5393],[708,53,55,.2844,.6477],[765,57,39,.6349,.7253],[826,44,58,.8989,.7481],[874,81,62,.4219,.7705],[959,36,37,.3367,.8486],[999,38,37,.7996,.8507]];
+const EDGE=.2;// the paramecium's edge fills the left fifth of the 1000× field
 function zoomGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTMLElement):Game{
+ const reduced=document.documentElement.classList.contains('reduced')||matchMedia('(prefers-reduced-motion: reduce)').matches;
  const view=el('div','zoom-view');view.setAttribute('role','img');view.setAttribute('aria-label','물 한 방울을 확대해 보는 관찰 창');
- const drop=img(artFor('germDrop')!.src,'zoom-layer zoom-drop'),cell=img(artFor('paramecium')!.src,'zoom-layer zoom-cell'),field=img(artFor('germField')!.src,'zoom-layer zoom-field');
+ const layers=zoomScenes.map((s,i)=>{const n=el('div',`zoom-layer zoom-scene-${i}`);n.style.transformOrigin=s.origin;n.append(img(`${zoomArt}${s.src}.webp`,'zoom-photo'));view.append(n);return n;});
+ const swim=el('div','zoom-swim');swim.append(img(`${zoomArt}zoom-paramecium.webp`,'zoom-para','헤엄치는 짚신벌레'));layers[2].append(swim);
+ const bugs=bacteria.map(([sx,w,h,cx,cy])=>{const n=el('span','zoom-bug');Object.assign(n.style,{left:`${cx*100}%`,top:`${cy*100}%`,width:`${w/1672*100}%`,aspectRatio:`${w}/${h}`,backgroundSize:`${1041/w*100}% ${62/h*100}%`,backgroundPosition:`${sx/(1041-w)*100}% 0%`});layers[3].append(n);return {n,cx,cy,x:0,y:0,vx:0,vy:0,a:0};});
+ [2,9,13].forEach(i=>bugs[i].n.classList.add('zoom-bug-hint'));
+ const eyepiece=el('div','zoom-eyepiece'),lensRing=el('div','zoom-lensring'),lens=el('span','zoom-lens');
  const power=el('b','zoom-power'),note=el('p','zoom-note'),spark=el('span','zoom-spark','✨');spark.hidden=true;
- view.append(drop,cell,field,spark,power);
+ view.append(lensRing,eyepiece,spark,lens,power);
  const panel=el('div','zoom-panel');
  const ask=el('div','zoom-ask');ask.append(el('strong','','몇 배로 확대하면 세균이 보일까?'));
  const guesses=el('div','zoom-guesses');
  const guessButtons=zoomGuesses.map(g=>{const b=button(`${g}배`,()=>{if(r.assignments.found==='yes')return;r.assignments.guess=g;playEffect('click');changed();paint();},'secondary zoom-guess');b.dataset.guess=g;guesses.append(b);return b;});
  ask.append(guesses);
  const dial=el('input','zoom-dial') as HTMLInputElement;dial.type='range';dial.min='0';dial.max='3';dial.step='0.01';dial.setAttribute('aria-label','배율 다이얼');
- const less=button('− 줄이기',()=>turnTo(Math.round(z*4-1)/4),'secondary zoom-step'),more=button('+ 키우기',()=>turnTo(Math.round(z*4+1)/4),'primary zoom-step');
+ const less=button('− 줄이기',()=>step(-1),'secondary zoom-step'),more=button('+ 키우기',()=>step(1),'primary zoom-step');
  const dialBox=el('div','zoom-dialbox');const steps=el('div','zoom-ticks');zoomSteps.forEach(s=>steps.append(el('span','',`×${s.power}`)));dialBox.append(el('strong','','배율 다이얼'),dial,steps,el('div','zoom-buttons'));dialBox.lastElementChild!.append(less,more);
  panel.append(ask,dialBox,note);stage.append(view,panel);
- let z=r.assignments.found==='yes'?3:clamp(zoomReach(r),0,3),said=-1;
- const layer=(n:HTMLElement,opacity:number,scale:number,blur=0)=>{n.style.opacity=String(clamp(opacity,0,1));n.style.transform=`scale(${scale})`;n.style.filter=blur>.05?`blur(${blur}px)`:'none';};
+ const atlas=new Image();atlas.src=`${zoomArt}zoom-bacteria-sprites.webp`;
+ let z=r.assignments.found==='yes'?3:clamp(zoomReach(r),0,3),goal=z,said=-1,raf=0,last=0,hintTimer=0,disposed=false;
+ const smooth=(v:number,a:number,b:number)=>{const t=clamp((v-a)/(b-a),0,1);return t*t*(3-2*t);};
+ const show=(n:HTMLElement,opacity:number,scale:number,blur:number)=>{n.style.opacity=String(opacity);n.style.visibility=opacity<.01?'hidden':'visible';n.style.transform=`scale(${scale})`;n.style.filter=blur>.1?`blur(${blur.toFixed(1)}px)`:'none';};
  function render(){
-  // Drop: 1× to 10× on the same picture, then it dissolves into the paramecium at 100×, which in turn gives way to the 1000× field.
-  layer(drop,1-clamp((z-1)/.5,0,1),1+z*3,clamp((z-.8)*6,0,4));
-  layer(cell,clamp((z-1)/.5,0,1)*(1-clamp((z-2.45)/.45,0,1)),z<2?.55+(z-1)*.45:1+(z-2)*2.4,clamp(Math.abs(z-2)*3-1.2,0,3));
-  layer(field,clamp((z-2.45)/.45,0,1),.75+clamp((z-2.45)/.55,0,1)*.25);
+  // Each scene grows toward its focus point and goes soft; the next power comes in out of focus and sharpens, like turning a real objective.
+  const i=Math.min(2,Math.floor(z)),t=z-i;
+  layers.forEach((n,k)=>{
+   if(k===i)show(n,1-smooth(t,.55,.95),1+smooth(t,0,1)*zoomScenes[k].grow,smooth(t,.35,.9)*7);
+   else if(k===i+1)show(n,smooth(t,.5,.9),.84+.16*smooth(t,.45,1),(1-smooth(t,.55,1))*7);
+   else show(n,0,1,0);
+  });
+  eyepiece.style.opacity=String(smooth(z,1.45,2));lensRing.style.opacity=String(smooth(z,.45,1)*(1-smooth(z,1.4,1.8)));
+  view.dataset.level=String(Math.round(z));
   power.textContent=`×${Math.round(10**z).toLocaleString()}`;dial.value=String(z);
-  const i=clamp(Math.round(z),0,3);note.textContent=Math.abs(z-i)<.12?zoomSteps[i].note:'다이얼을 돌리는 중…';
+  const near=clamp(Math.round(z),0,3);lens.textContent=zoomSteps[near].label;
+  note.textContent=Math.abs(z-near)<.12?zoomSteps[near].note:'초점을 맞추는 중…';
  }
  function paint(){
   const guessed=!!r.assignments.guess;guessButtons.forEach(b=>{b.classList.toggle('selected',b.dataset.guess===r.assignments.guess);b.setAttribute('aria-pressed',String(b.dataset.guess===r.assignments.guess));});
-  dial.disabled=less.disabled=more.disabled=!guessed;dialBox.classList.toggle('is-locked',!guessed);view.dataset.found=String(r.assignments.found==='yes');render();
+  dial.disabled=!guessed;less.disabled=!guessed||goal<=0;more.disabled=!guessed||goal>=3;dialBox.classList.toggle('is-locked',!guessed);
+  more.classList.toggle('is-next',guessed&&goal<3&&r.assignments.found!=='yes');ask.classList.toggle('is-next',!guessed);
+  view.dataset.found=String(r.assignments.found==='yes');render();
  }
- function turnTo(v:number){
-  if(!r.assignments.guess)return;z=clamp(v,0,3);const i=Math.floor(z+.02);
-  if(i>zoomReach(r)){r.assignments.reach=String(i);playEffect(i===3?'sparkle':'focus');changed();}
-  if(Math.abs(z-Math.round(z))<.05&&said!==Math.round(z)){said=Math.round(z);
+ function reached(){
+  const i=Math.floor(z+.02);if(i>zoomReach(r)){r.assignments.reach=String(i);playEffect(i===3?'sparkle':'focus');changed();}
+  if(Math.abs(z-Math.round(z))<.05&&said!==Math.round(z)){said=Math.round(z);clearTimeout(hintTimer);view.classList.remove('show-hint');
    if(said===2&&r.assignments.found!=='yes')totoSay(root,{text:r.assignments.guess==='100'?'100배야! 짚신벌레는 보이는데… 세균은 어디 있지? 더 돌려 볼까?':'짚신벌레가 보여! 세균은 이것보다 훨씬 작대.',mood:'hint'});
-   if(said===3&&r.assignments.found!=='yes')totoSay(root,{text:'짚신벌레 가장자리 옆에 아주 작은 것들이 보여! 하나를 콕 눌러 봐.',mood:'hint'});}
-  render();
+   if(said===3&&r.assignments.found!=='yes'){totoSay(root,{text:'짚신벌레 가장자리 옆에 아주 작은 것들이 보여! 하나를 콕 눌러 봐.',mood:'hint'});hintTimer=window.setTimeout(()=>view.classList.add('show-hint'),2500);}}
  }
- dial.oninput=()=>turnTo(Number(dial.value));
+ function set(v:number){z=clamp(v,0,3);reached();render();}
+ // One whole power per press; quick presses add up because they count from where the dial is heading.
+ function step(dir:number){if(!r.assignments.guess)return;goTo(clamp((dir>0?Math.floor(goal+.02):Math.ceil(goal-.02))+dir,0,3));}
+ function goTo(target:number){
+  goal=target;paint();if(reduced){set(goal);return;}
+  if(!raf){last=performance.now();raf=requestAnimationFrame(tick);}
+ }
+ function tick(now:number){
+  const dt=Math.min(.05,(now-last)/1000);last=now;
+  if(Math.abs(goal-z)>.002)set(z+(goal-z)*Math.min(1,dt*4.2)+Math.sign(goal-z)*Math.min(Math.abs(goal-z),dt*.35));
+  else if(z!==goal)set(goal);
+  if(!reduced&&z>2.3)jiggle(dt);
+  raf=disposed||(Math.abs(goal-z)<.002&&(reduced||z<=2.3))?0:requestAnimationFrame(tick);
+ }
+ // Brownian motion: each bacterium wanders a little around its place and drifts back.
+ function jiggle(dt:number){for(const b of bugs){b.vx+=(Math.random()-.5)*dt*60-b.x*dt*3;b.vy+=(Math.random()-.5)*dt*60-b.y*dt*3;b.vx*=.9;b.vy*=.9;b.x+=b.vx*dt*6;b.y+=b.vy*dt*6;b.a+=(Math.random()-.5)*dt*40;b.a*=.98;b.n.style.transform=`translate(-50%,-50%) translate(${b.x.toFixed(2)}px,${b.y.toFixed(2)}px) rotate(${b.a.toFixed(1)}deg)`;}}
+ dial.oninput=()=>{if(!r.assignments.guess)return;goal=Number(dial.value);set(goal);paint();if(!raf&&!reduced&&z>2.3){last=performance.now();raf=requestAnimationFrame(tick);}};
+ dial.onchange=()=>{if(r.assignments.guess)goTo(Math.round(Number(dial.value)));};
  const tap=(cx:number,cy:number)=>{
-  if(z<2.9||r.assignments.found==='yes')return;const b=view.getBoundingClientRect(),x=(cx-b.left)/b.width;
-  if(x<.28){r.misses++;changed();totoSay(root,{text:'그건 거대한 짚신벌레의 가장자리야! 그 옆에 떠 있는 작은 알갱이를 눌러 봐.',mood:'hint'});return;}
-  spark.hidden=false;spark.style.left=`${x*100}%`;spark.style.top=`${(cy-b.top)/b.height*100}%`;
+  if(r.assignments.found==='yes')return;
+  // No guess yet: the tip above already asks for one, so the three choices just flash again.
+  if(!r.assignments.guess){ask.classList.remove('is-next');void ask.offsetWidth;ask.classList.add('is-next');playEffect('retry');return;}
+  // Below 1000×, a tap on the picture is the same as 「+ 키우기」.
+  if(goal<3){step(1);return;}
+  if(z<3)set(3);
+  const b=view.getBoundingClientRect(),x=(cx-b.left)/b.width,y=(cy-b.top)/b.height;
+  if(x<EDGE){r.misses++;changed();totoSay(root,{text:'그건 거대한 짚신벌레의 가장자리야! 그 옆에 떠 있는 작은 알갱이를 눌러 봐.',mood:'hint'});return;}
+  const hit=bugs.reduce((best,o)=>Math.hypot(o.cx-x,(o.cy-y)*.56)<Math.hypot(best.cx-x,(best.cy-y)*.56)?o:best);
+  hit.n.classList.add('is-found');view.classList.remove('show-hint');clearTimeout(hintTimer);
+  spark.hidden=false;spark.style.left=`${hit.cx*100}%`;spark.style.top=`${hit.cy*100}%`;
   r.assignments.found='yes';r.assignments.reach='3';playEffect('success');
   totoSay(root,{text:r.assignments.guess==='1000'?'예상이 딱 맞았어! 세균은 1000배쯤 확대해야 보여.':`${r.assignments.guess}배로는 안 보였지? 세균은 1000배쯤 확대해야 보일 만큼 작아!`,mood:'cheer'});
   changed();paint();
  };
  view.onclick=e=>tap(e.clientX,e.clientY);
- view.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&z>=2.9&&r.assignments.found!=='yes'){e.preventDefault();const b=view.getBoundingClientRect();tap(b.left+b.width*.62,b.top+b.height*.4);}};view.tabIndex=0;
- paint();
- return {refresh:paint};
+ view.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();const b=view.getBoundingClientRect();tap(b.left+b.width*.62,b.top+b.height*.4);}};view.tabIndex=0;
+ paint();if(!reduced&&z>2.3){last=performance.now();raf=requestAnimationFrame(tick);}
+ return {refresh:paint,dispose:()=>{disposed=true;cancelAnimationFrame(raf);clearTimeout(hintTimer);}};
 }
 
 /** M3-2: drag (or tap, then tap a jar) moving bacteria into the jar of the same shape. */

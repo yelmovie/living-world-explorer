@@ -32,7 +32,7 @@ export const inquiryArt:Record<string,InquiryArt>={
  moldLens:{src:'assets/study/mold-lens.webp',label:'돋보기로 본 빵 위의 곰팡이'},
  spirogyraLens:{src:'assets/study/spirogyra-lens.webp',label:'돋보기로 본 연못물 속 초록 실'},
  // 2026-11-17: M3 hands-on lab (assets/generated/m3-20261117 → scripts/prepare-germ-art.mjs).
- germDrop:{src:'assets/study/germ/zoom-slide.webp',label:'유리판 위 물 한 방울'},germField:{src:'assets/study/germ/zoom-bacteria.webp',label:'1000배로 확대한 물 속 세균과 짚신벌레 가장자리 관찰 모형'},germHand:{src:'assets/study/germ/sample-hand.webp',label:'채집할 손바닥'},germKnob:{src:'assets/study/germ/sample-doorknob.webp',label:'채집할 문손잡이'},
+ germDrop:{src:'assets/study/germ/zoom-1.webp',label:'유리판 위 물 한 방울'},germField:{src:'assets/study/germ/zoom-bacteria.webp',label:'1000배로 확대한 물 속 세균과 짚신벌레 가장자리 현미경 사진'},germHand:{src:'assets/study/germ/sample-hand.webp',label:'채집할 손바닥'},germKnob:{src:'assets/study/germ/sample-doorknob.webp',label:'채집할 문손잡이'},
  bacteriaRound:{src:'assets/study/bacteria-round.webp',label:'공 모양 세균 확대 모형'},
  bacteriaRod:{src:'assets/study/bacteria-rod.webp',label:'막대 모양 세균 확대 모형'},
  bacteriaSpiral:{src:'assets/study/bacteria-spiral.webp',label:'나선 모양 세균 확대 모형'},

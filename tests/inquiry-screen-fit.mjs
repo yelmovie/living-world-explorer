@@ -83,7 +83,7 @@ try{
   await open('M4-1');await button(page,'▶ 빨리 감기').click();await page.waitForTimeout(3600);await inspectState('timeline-lapse');
   {const b=await page.locator('.timeline-layer').first().boundingBox();await page.touchscreen.tap(b.x+b.width*.536,b.y+b.height*.654);await page.locator('.timeline-note').waitFor();await inspectState('timeline-research-read');}
   // 2026-11-17: M3 bacteria lab states — the zoom at 100×, a loaded swab and the finished exhibit sentence.
-  await open('M3-1');await page.locator('[data-guess="100"]').click();for(let k=0;k<8;k++)await button(page,'+ 키우기').click();await inspectState('zoom-100');
+  await open('M3-1');await page.locator('[data-guess="100"]').click();for(let k=0;k<2;k++)await button(page,'+ 키우기').click();await page.waitForTimeout(1600);await inspectState('zoom-100');
   await open('M3-3');await page.locator('.culture-place[data-place=hand]').focus();await page.keyboard.press('Enter');await inspectState('culture-loaded');
   await open('M3-4');await playGerm(page,'M3-4');await inspectState('exhibit-sentence');
   const task=await open('M5-1');

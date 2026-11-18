@@ -8,11 +8,31 @@
 
 /* M3-1 zoom */
 .germ-zoom .germ-stage{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(220px,.8fr);gap:16px;align-items:center}
-.zoom-view{position:relative;justify-self:center;align-self:center;width:100%;height:auto;max-height:100%;aspect-ratio:16/9;border-radius:26px;overflow:hidden;background:#eef3df;border:6px solid #fffdf6;box-shadow:0 14px 30px #3b2a1a33;cursor:zoom-in}
+.zoom-view{position:relative;justify-self:center;align-self:center;width:100%;height:auto;max-height:100%;aspect-ratio:16/9;border-radius:26px;overflow:hidden;background:#0d0d0c;border:6px solid #fffdf6;box-shadow:0 14px 30px #3b2a1a33;cursor:zoom-in;isolation:isolate}
 .zoom-view[data-found=true]{cursor:default}
 .zoom-view:focus-visible{outline:4px solid #f1c75b;outline-offset:3px}
-.zoom-layer{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;transform-origin:50% 52%;will-change:transform,opacity}
-.zoom-cell{transform-origin:12% 50%}
+.zoom-layer{position:absolute;inset:0;pointer-events:none;will-change:transform,opacity,filter}
+.zoom-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+/* 2026-11-18: 100× — the paramecium cut from the photograph glides along its body and its cilia shimmer. */
+.zoom-swim{position:absolute;left:6.28%;top:20.09%;width:61.96%;transform-origin:50% 50%}
+.zoom-para{display:block;width:100%;height:auto}
+html:not(.reduced) .zoom-swim{animation:zoom-swim 9s ease-in-out infinite alternate}
+html:not(.reduced) .zoom-para{animation:zoom-beat .7s ease-in-out infinite alternate}
+@keyframes zoom-swim{0%{transform:translate(-1.5%,1.2%) rotate(.8deg)}50%{transform:translate(1%,-.4%) rotate(-.6deg)}100%{transform:translate(3.2%,-1.6%) rotate(-1.6deg)}}
+@keyframes zoom-beat{from{transform:scale(1,1)}to{transform:scale(1.006,.992)}}
+/* 1000× bacteria from one sprite sheet; JS adds the Brownian wobble. */
+.zoom-bug{position:absolute;transform:translate(-50%,-50%);background:url(/assets/study/germ/zoom-bacteria-sprites.webp) no-repeat}
+.zoom-bug::after{content:'';position:absolute;inset:-60%;border-radius:50%;border:3px solid #ffe28a;opacity:0;scale:.6}
+.zoom-view.show-hint .zoom-bug-hint::after{animation:zoom-hint 1.4s ease-out infinite}
+.zoom-bug.is-found::after{opacity:1;scale:1;border-color:#7ee0a0;animation:none}
+@keyframes zoom-hint{0%{opacity:.95;scale:.6}100%{opacity:0;scale:1.3}}
+/* Round eyepiece field of a real microscope, and a soft hand-lens edge at 10×. */
+.zoom-eyepiece{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle farthest-side at 50% 50%,transparent 90%,#000a 95.5%,#050505 99%);box-shadow:inset 0 0 60px #0006}
+.zoom-lensring{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 62% 78% at 50% 50%,transparent 70%,#2b1a0c55 100%)}
+.zoom-lens{position:absolute;left:12px;bottom:10px;padding:3px 12px;border-radius:999px;background:#fffdf4e8;color:#1f3a2d;font-weight:800;font-size:clamp(16px,1.6vw,20px)}
+.zoom-step.is-next:not(:disabled){animation:zoom-next 1.6s ease-in-out infinite}
+.zoom-ask.is-next .zoom-guess{animation:zoom-next 1.6s ease-in-out infinite}
+@keyframes zoom-next{0%,100%{box-shadow:0 0 0 0 #f1c75b00}50%{box-shadow:0 0 0 5px #f1c75bcc}}
 .zoom-power{position:absolute;right:12px;top:10px;padding:4px 14px;border-radius:999px;background:#1f3a2de0;color:#fffdf4;font-size:clamp(18px,2vw,26px);font-variant-numeric:tabular-nums}
 .zoom-spark{position:absolute;translate:-50% -50%;font-size:40px;animation:germ-pop .5s cubic-bezier(.3,1.6,.5,1);pointer-events:none}
 .zoom-panel{display:flex;flex-direction:column;gap:12px;padding:14px;border-radius:22px;background:#fffdf6f0;border:3px solid #e2d3ac;box-shadow:0 10px 22px #3b2a1a26;min-width:0}
@@ -114,7 +134,7 @@
 @keyframes germ-pop{from{scale:.3;opacity:0}}
 @keyframes germ-breathe{50%{box-shadow:0 0 0 6px #ffe08a99}}
 @keyframes germ-shake{25%{translate:-6px 0}75%{translate:6px 0}}
-@media(prefers-reduced-motion:reduce){.catch-jars.is-armed .catch-jar,.culture-dish.is-armed,.zoom-spark{animation:none}}
+@media(prefers-reduced-motion:reduce){.catch-jars.is-armed .catch-jar,.culture-dish.is-armed,.zoom-spark,.zoom-swim,.zoom-para,.zoom-step.is-next,.zoom-ask.is-next .zoom-guess{animation:none}}
 
 /* Short landscape screens */
 @media(max-height:560px) and (min-width:660px){

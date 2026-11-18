@@ -9,7 +9,9 @@ export async function playGerm(page,id,{wrong=false}={}){
  if(id==='M3-1'){
   await page.locator('[data-guess="100"]').click();
   const more=page.getByRole('button',{name:'+ 키우기',exact:true});
-  for(let i=0;i<12;i++){await more.click();await page.waitForTimeout(40);}
+  // 2026-11-18: each press moves one whole power (×1 → ×10 → ×100 → ×1000), and the button turns off at ×1000.
+  for(let i=0;i<3;i++){await more.click();await page.waitForTimeout(40);}
+  await page.waitForFunction(()=>document.querySelector('.zoom-power')?.textContent==='×1,000');
   const v=page.locator('.zoom-view');const b=await v.boundingBox();
   if(wrong){await page.mouse.click(b.x+b.width*.1,b.y+b.height*.5);hints.push(await toto(page));}
   // Upper right: clear of Toto's bubble, which sits low on the left on short screens.
