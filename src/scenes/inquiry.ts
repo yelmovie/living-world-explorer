@@ -25,6 +25,7 @@ import {mountScopeDecor} from '../renderers/scope-view';
 import {mountTotoHint} from '../toto-hint';
 import '../inquiry-controls.css';
 import '../inquiry-simplified.css';
+const withEul=(word:string)=>{const code=word.charCodeAt(word.length-1)-0xac00;return word+(code<0||code>11171?'을(를)':code%28?'을':'를');};
 
 const AUTO_RATE=2;
 const backgrounds:Record<Stage,string>={M1:'fungi',M2:'water',M3:'archive',M4:'village',M5:'workshop'};
@@ -283,7 +284,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
   const list:Node[]=[];let selected='';
   if(task.kind==='build'){
    const picked=paragraph('자료를 먼저 살펴보고 선택해요.');picked.setAttribute('role','status');list.push(picked);const buttons:HTMLButtonElement[]=[];task.items.forEach(it=>{const b=button(it.label,()=>{selected=it.id;source(it.id,true);picked.textContent=`선택한 자료: ${it.label} · ${it.detail}`;buttons.forEach(n=>n.setAttribute('aria-pressed',String(n===b)));save();});b.setAttribute('aria-pressed','false');buttons.push(b);list.push(b);});
-   for(const t of task.targets)list.push(button(putLabel(t),()=>{if(!selected){picked.textContent='먼저 자료를 골라요.';return;}view?.assignCard(selected,t.id);const it=task.items.find(i=>i.id===selected)!,correct=!!it.target&&r.assignments[it.target]===it.id;picked.textContent=correct?`✓ ${it.label}을 알맞은 칸에 연결했어요.`:task.feedback;info(picked.textContent,correct?'success':'retry');}));
+   for(const t of task.targets)list.push(button(putLabel(t),()=>{if(!selected){picked.textContent='먼저 자료를 골라요.';return;}view?.assignCard(selected,t.id);const it=task.items.find(i=>i.id===selected)!,correct=!!it.target&&r.assignments[it.target]===it.id;picked.textContent=correct?`✓ ${withEul(it.label)} 알맞은 칸에 연결했어요.`:task.feedback;info(picked.textContent,correct?'success':'retry');}));
   }else if(task.kind==='timeline'){
    const picture=artFor(observedKind(task,r),r.pins[1]??r.time);
    const pad=el('div','mark-pad');const cross=el('span','mark-cross');cross.setAttribute('aria-hidden','true');

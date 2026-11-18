@@ -10,7 +10,7 @@ export function missing(stage:Stage,d:Draft):string[]{
  const out:string[]=[];
  if(stage==='M1'){
   if(!['wood','moist'].every(x=>d.m1.environment.includes(x)))out.push('발견 장소와 주변 환경을 확인해요.');
-  for(const organism of ['mushroom','mold'])if(!d.m1.captures.some(c=>c.organism===organism&&captureValid(c)&&c.marks.some(p=>featurePoint(organism,p))))out.push(`${organism==='mold'?'곰팡이':'버섯'}를 선명하게 찍고 특징을 표시해요.`);
+  for(const organism of ['mushroom','mold'])if(!d.m1.captures.some(c=>c.organism===organism&&captureValid(c)&&c.marks.some(p=>featurePoint(organism,p))))out.push(`${organism==='mold'?'곰팡이를':'버섯을'} 선명하게 찍고 특징을 표시해요.`);
   if(d.m1.claim!=='correct')out.push('관찰 기록과 맞는 설명을 골라요.');
  }
  if(stage==='M2'){

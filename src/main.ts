@@ -149,7 +149,9 @@ function map(ctx:Context){
  let companion={x:position.x,y:Math.min(MAP_HEIGHT-18,position.y+34)};
  const nextIndex=done.findIndex(v=>!v),next=nextIndex<0?5:nextIndex;
  const place=(i:number)=>stages[i]?.place||'중앙 연구소';
- const toPlace=(i:number)=>{const name=place(i),tail=(name.charCodeAt(name.length-1)-0xac00)%28;return name+(tail&&tail!==8?'으로':'로');};
+ const tailOf=(name:string)=>(name.charCodeAt(name.length-1)-0xac00)%28;
+ const toPlace=(i:number)=>{const name=place(i),tail=tailOf(name);return name+(tail&&tail!==8?'으로':'로');};
+ const placeIs=(i:number)=>{const name=place(i);return name+(tailOf(name)?'이에요':'예요');};
  const nextButton=button(`${toPlace(next)} 가기`,()=>choose(next,true),state.settings.reduced?'primary map-next':'primary map-next map-next-cue');
  nextButton.insertAdjacentHTML('beforeend','<svg class="map-direction-cue" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>');
  destination.append(nextButton);
@@ -271,7 +273,7 @@ function map(ctx:Context){
     ctx.attempt.mapPosition={...position};persist();render();
     app.querySelector<HTMLButtonElement>('.map-companion-help')?.focus({preventScroll:true});
   })));
-  const dialog=modal('토토와 같이 탐험해요',[paragraph(`다음은 ${place(next)}예요. 아래 화살표나 키보드 방향키로 걸어요.`),
+  const dialog=modal('토토와 같이 탐험해요',[paragraph(`다음은 ${placeIs(next)}. 아래 화살표나 키보드 방향키로 걸어요.`),
     paragraph('연구소를 복구하면 이웃이 돌아와요. 악당을 만나면 가까이에서 공격 버튼이나 J·스페이스바를 눌러요.'),actions]);
  },'map-companion-help');
  helper.querySelector('span')?.remove();

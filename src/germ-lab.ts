@@ -23,8 +23,8 @@ export const cultureDays=3;
 export const exhibitOrder=['mushroom','paramecium','bacteria'] as const;
 export const exhibitBlanks=[
  {id:'size',before:'세균은 짚신벌레보다 훨씬',options:[{id:'small',label:'작고'},{id:'big',label:'크고'}],answer:'small'},
- {id:'shape',before:'',options:[{id:'many',label:'공·막대·나선처럼 여러 모양'},{id:'one',label:'한 가지 모양'}],answer:'many',after:'이 있으며,'},
- {id:'place',before:'',options:[{id:'many',label:'흙·물·손처럼 여러 곳'},{id:'water',label:'물속에만'}],answer:'many',after:'에 살아요.'}
+ {id:'shape',before:'',options:[{id:'many',label:'공·막대·나선처럼 여러 모양이'},{id:'one',label:'한 가지 모양이'}],answer:'many',after:'있으며,'},
+ {id:'place',before:'',options:[{id:'many',label:'흙·물·손처럼 여러 곳에'},{id:'water',label:'물속에만'}],answer:'many',after:'살아요.'}
 ] as const;
 
 const count=(r:InquiryRecord,key:string)=>Number(r.assignments[key])||0;
