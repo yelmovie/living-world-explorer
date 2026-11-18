@@ -12,6 +12,8 @@ type Reveal={index:number;ready:()=>boolean;started:()=>void};
 
 /** The map is a ground-plane road network. DOM labels and the canvas share these coordinates. */
 export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onArrive:(index:number,point:Point)=>void,reduced:boolean,onMove?:(point:Point,companion:Point)=>void,onManual?:()=>void,canTap=()=>true,onReady?:()=>void,encounters?:(hero:Point,ally:Point)=>MapReactions,reveal?:Reveal){
+ // A dialog or an achievement card (it makes the app inert) holds the map. Phaser listens on the window, so inert alone does not stop it.
+ const held=()=>!!document.querySelector('dialog[open]')||!!host.closest('[inert]');
  let requested:number|undefined;let navigate:(index:number)=>void=()=>{};let walk:(direction:Direction)=>void=()=>{};let nudge:(direction:Direction)=>void=()=>{};let stop:()=>void=()=>{};let cancel:()=>void=()=>{};let disposed=false;
  class Village extends Phaser.Scene{
   private hero!:Phaser.GameObjects.Container;
@@ -78,14 +80,14 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
    cancel=()=>{this.route=[];this.destination=undefined;this.keys.clear();this.held=undefined;};
    nudge=(direction:Direction)=>{const start={x:this.hero.x,y:this.hero.y};const p=stepAlongRoad(start,MAP_VECTORS[direction],12,pathSegments);this.route=Math.hypot(p.x-start.x,p.y-start.y)>.01?[p]:[];this.destination=undefined;this.held=undefined;};
    this.input.on('pointerup',(pointer:Phaser.Input.Pointer)=>{
-    if(!canTap()||pointer.event?.target!==this.game.canvas||Math.hypot(pointer.upX-pointer.downX,pointer.upY-pointer.downY)>8||document.hidden||document.querySelector('dialog[open]'))return;
+    if(!canTap()||pointer.event?.target!==this.game.canvas||Math.hypot(pointer.upX-pointer.downX,pointer.upY-pointer.downY)>8||document.hidden||held())return;
     const tap={x:pointer.worldX,y:pointer.worldY};const index=locations.findIndex(p=>Math.hypot(tap.x-p.x,tap.y-p.y)<65);
     if(index>=0){onManual?.();navigate(index);return;}
     const target=nearestRoadPoint(tap);if(Math.hypot(target.x-tap.x,target.y-tap.y)>62)return;
     const nearest=pathGraph.reduce((a,b)=>Math.hypot(target.x-a.point.x,target.y-a.point.y)<Math.hypot(target.x-b.point.x,target.y-b.point.y)?a:b);
     onManual?.();this.keys.clear();this.held=undefined;this.destination=undefined;this.route=routeBetween({x:this.hero.x,y:this.hero.y},nearest.id);this.route.push(target);
    });
-   this.input.keyboard?.on('keydown',(e:KeyboardEvent)=>{if(document.querySelector('dialog[open]')||e.ctrlKey||e.metaKey||e.altKey||(e.target instanceof HTMLElement&&(e.target.isContentEditable||e.target.closest('input,textarea,select'))))return;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD'].includes(e.code)){e.preventDefault();onManual?.();this.keys.add(e.code);this.route=[];this.destination=undefined;}});
+   this.input.keyboard?.on('keydown',(e:KeyboardEvent)=>{if(held()||e.ctrlKey||e.metaKey||e.altKey||(e.target instanceof HTMLElement&&(e.target.isContentEditable||e.target.closest('input,textarea,select'))))return;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD'].includes(e.code)){e.preventDefault();onManual?.();this.keys.add(e.code);this.route=[];this.destination=undefined;}});
    this.input.keyboard?.on('keyup',(e:KeyboardEvent)=>this.keys.delete(e.code));
    const blur=()=>{this.keys.clear();this.held=undefined;};document.addEventListener('visibilitychange',blur);window.addEventListener('blur',blur);this.events.once('shutdown',()=>{document.removeEventListener('visibilitychange',blur);window.removeEventListener('blur',blur);});
    this.syncCamera();onReady?.();if(requested!==undefined)navigate(requested);
@@ -136,7 +138,7 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
     this.restoration(reveal.index);
    }
    if(!this.hero||disposed)return;
-   const blocked=document.hidden||!!document.querySelector('dialog[open]');if(blocked){this.keys.clear();this.held=undefined;this.tweens.pauseAll();this.heroGait.distance=this.friendGait.distance=0;this.drawWalker(this.heroImage,this.heroGait,false,null);this.drawWalker(this.friendImage,this.friendGait,false,null,true);encounters?.(this.hero,this.friend);return;}this.tweens.resumeAll();
+   const blocked=document.hidden||held();if(blocked){this.keys.clear();this.held=undefined;this.tweens.pauseAll();this.heroGait.distance=this.friendGait.distance=0;this.drawWalker(this.heroImage,this.heroGait,false,null);this.drawWalker(this.friendImage,this.friendGait,false,null,true);encounters?.(this.hero,this.friend);return;}this.tweens.resumeAll();
    const seconds=Math.min(delta,50)/1000;const start={x:this.hero.x,y:this.hero.y};let next:Point|undefined;
    const dx=(this.keys.has('ArrowRight')||this.keys.has('KeyD')||this.held==='right'?1:0)-(this.keys.has('ArrowLeft')||this.keys.has('KeyA')||this.held==='left'?1:0);
    const dy=(this.keys.has('ArrowDown')||this.keys.has('KeyS')||this.held==='down'?1:0)-(this.keys.has('ArrowUp')||this.keys.has('KeyW')||this.held==='up'?1:0);

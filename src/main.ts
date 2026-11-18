@@ -29,6 +29,7 @@ import {sizeLadder} from './ladder';
 import {acceptedRecord} from './inquiry-records';
 import {residents,residentMarker,residentConversation} from './residents';
 import {mountDialogueSpeech} from './character-dialogue';
+import {rewardSlots,wonRewardCards,winRewardCard,rewardCardDue} from './reward-card-set';
 
 
 const app=document.querySelector<HTMLDivElement>('#app')!;
@@ -179,7 +180,7 @@ function map(ctx:Context){
  const setGuided=(i:number)=>{guided=i;nextButton.setAttribute('aria-busy',String(i>=0));nextButton.setAttribute('aria-disabled',String(i>=0));};
  const clearSelection=()=>{selected=-1;setGuided(-1);arrival.replaceChildren();overlay.querySelectorAll('.map-node').forEach((b,j)=>b.classList.toggle('current',j===next));};
  const cancelTravel=()=>{if(selected>=0||guided>=0){m?.cancel();clearSelection();}};
- const cancelGuidedByKey=(e:KeyboardEvent)=>{if(mapKeyDirection(e)&&!e.ctrlKey&&!e.altKey&&!e.metaKey&&!e.isComposing&&!document.querySelector('dialog[open]')&&!(e.target instanceof HTMLElement&&(e.target.isContentEditable||e.target.closest('input,textarea,select')))){cancelTravel();if(mode!=='follow')setMode('follow',false);}};
+ const cancelGuidedByKey=(e:KeyboardEvent)=>{if(mapKeyDirection(e)&&!e.ctrlKey&&!e.altKey&&!e.metaKey&&!e.isComposing&&!document.querySelector('dialog[open]')&&!app.inert&&!(e.target instanceof HTMLElement&&(e.target.isContentEditable||e.target.closest('input,textarea,select')))){cancelTravel();if(mode!=='follow')setMode('follow',false);}};
  document.addEventListener('keydown',cancelGuidedByKey,true);ctx.cleanup(()=>document.removeEventListener('keydown',cancelGuidedByKey,true));
  let mode:'follow'|'hand'|'overview'='follow',pan={x:0,y:0},translation={x:0,y:0},zoom=1;
  let cameraW=0,cameraH=0,landW=0,landH=0,lastFrame=0,followFrame=0;
@@ -226,13 +227,20 @@ function map(ctx:Context){
  const clearStage=dialogueStage;dialogueStage=null;
  const encounters=mountMapEncounters({
   requiredFoes:5,host:camera,clearStage:()=>clearStage,stages:foesOn?mapVillainStages.filter((_,i)=>done[i]):[],progress:ctx.attempt.mapHits,
-  onSave:patch=>{ctx.attempt.mapHits={...ctx.attempt.mapHits,...patch};refreshEncounterStatus();void save(state).then(showStorageWarning);},
-  blocked:()=>disposed||mode!=='follow'||guided>=0||ctx.host.dataset.mapReady!=='true',
+  onSave:patch=>{const won=wonRewardCards(ctx.attempt.mapHits,patch);ctx.attempt.mapHits={...ctx.attempt.mapHits,...patch};refreshEncounterStatus();void save(state).then(showStorageWarning);won.forEach(awardCard);},
+  blocked:()=>disposed||mode!=='follow'||guided>=0||ctx.host.dataset.mapReady!=='true'||rewardCardDue(),
   reduced,art:{left:'assets/map-encounter/map-villain-poses-left.webp',frames:6,nativeFacing:1},palette:'#bd84ff',reach:102,contact:24,
   voice:text=>{playVoiceLine(text);},
   tone:(kind,hits)=>playEffect(kind==='swing'?'map-swing':kind==='hit'?(hits===1?'map-hit-1':'map-hit-2'):kind==='finish'?'map-finish':kind==='exit'?'map-exit':kind==='contact'?'map-hurt':kind==='appear'?'map-appear':'map-victory'),
  });
  ctx.cleanup(encounters.destroy);
+ // A villain's third hit wins its achievement card. The card opens once the exit has played and makes the app inert,
+ // so the villains, the walk and the all-villains finale wait until it is put away. Leaving the map first just fills the slot.
+ function awardCard(index:number){
+  void winRewardCard(index,{delay:reduced()?520:760,hits:()=>ctx.attempt.mapHits,
+   state:()=>disposed?'gone':document.hidden||document.querySelector('dialog[open]')?'wait':'open',
+   origin:()=>{const spot=camera.querySelector(`[data-encounter="${stageIds[index]}"]`)?.getClientRects()[0];return spot?{x:spot.left,y:spot.top-30}:undefined;}});
+ }
  const encounterFrame=(hero:typeof position,ally:typeof companion)=>encounters.update({
   hero,ally,scale:landW/MAP_WIDTH,
   project:point=>({x:translation.x+point.x*landW/MAP_WIDTH,y:translation.y+point.y*landH/MAP_HEIGHT}),
@@ -279,7 +287,7 @@ function map(ctx:Context){
  },'map-companion-help');
  helper.querySelector('span')?.remove();
  const directions=el('div','map-directions');directions.setAttribute('role','group');directions.setAttribute('aria-label','길 따라 이동');for(const [label,dir,name] of [['↑','up','위'],['←','left','왼쪽'],['↓','down','아래'],['→','right','오른쪽']] as const){const b=button(label,()=>{},'direction');b.setAttribute('aria-label',`${name} 방향으로 걷기`);b.dataset.mapDirection=dir;directions.append(b);}directions.append(helper);ctx.host.append(directions);
- const pad=bindDirectionPad(directions,'[data-map-direction]',b=>b.dataset.mapDirection as 'up'|'down'|'left'|'right',{blocked:()=>disposed||document.hidden||!!document.querySelector('dialog[open]'),press:d=>{cancelTravel();setMode('follow');m?.walk(d);},release:()=>m?.stop(),tap:d=>{cancelTravel();setMode('follow');m?.nudge(d);}});ctx.cleanup(pad.destroy);
+ const pad=bindDirectionPad(directions,'[data-map-direction]',b=>b.dataset.mapDirection as 'up'|'down'|'left'|'right',{blocked:()=>disposed||document.hidden||app.inert||!!document.querySelector('dialog[open]'),press:d=>{cancelTravel();setMode('follow');m?.walk(d);},release:()=>m?.stop(),tap:d=>{cancelTravel();setMode('follow');m?.nudge(d);}});ctx.cleanup(pad.destroy);
  const ro=new ResizeObserver(()=>{frame(position);m?.resize();});ro.observe(camera);ctx.cleanup(()=>{disposed=true;ro.disconnect();});frame(position);
  const reveal=pendingMapReveal?.attemptId===ctx.attempt.id?pendingMapReveal:undefined;
  void loadMap().then(({mountMap})=>{if(disposed)return;m=mountMap(host,position,done,(i,p)=>{const auto=i===guided;ctx.attempt.mapPosition=p;persist();clearSelection();if(!unlocked(i))return;if(auto){enter(i);return;}selected=i;arrival.append(button(`${place(i)} 들어가기`,()=>enter(i),'primary'));},reducedMotion(state.settings.reduced),frame,clearSelection,()=>mode==='follow',()=>{
@@ -344,7 +352,7 @@ function results(ctx:Context){const a=ctx.attempt;ctx.host.classList.add('result
  const pickCanDo=()=>{const chosen=new Set(a.canDo||[]);const list=el('div','can-do-choices');stages.forEach((s,i)=>{const b=button(habits[i].can,()=>{if(chosen.has(s.id))chosen.delete(s.id);else chosen.add(s.id);b.classList.toggle('selected',chosen.has(s.id));b.setAttribute('aria-pressed',String(chosen.has(s.id)));},chosen.has(s.id)?'secondary selected':'secondary');b.prepend(stageBadge(i));b.setAttribute('aria-pressed',String(chosen.has(s.id)));list.append(b);});const own=el('input');own.id='can-do-own';own.maxLength=40;own.value=a.canDoNote||'';own.placeholder='예) 집에서 곰팡이가 생기는 곳을 찾아 설명할';const ownLabel=el('label','field can-do-own');ownLabel.htmlFor=own.id;ownLabel.append(el('span','field-label','내 말로 쓰기'),el('span','can-do-frame','나는 이제'),own,el('span','can-do-frame','수 있어요.'));const dialog=modal('나는 이제 이런 것을 할 수 있어요',[paragraph('해 보니 할 수 있게 된 것을 골라요. 여러 개 골라도 되고, 내 말로 써도 돼요.'),list,ownLabel,button('인증서에 넣기',()=>{a.canDo=stageIds.filter(id=>chosen.has(id));a.canDoNote=own.value.trim();persist();drawCertificate();dialog.close();},'primary')]);dialog.classList.add('can-do-dialog');};
  canDo.append(el('span','field-label','나는 이제 이런 것을 할 수 있어요'),canDoText,button('할 수 있게 된 것 고르기',pickCanDo));card.append(canDo);drawCertificate();const row=el('div','hero-actions');row.append(button('내 카드 저장',()=>void downloadCard(state).then(()=>playEffect('success'),()=>notice('카드를 다시 저장해 주세요.')),'primary'),button('인증서 인쇄',()=>window.print(),'secondary',!a.activated),button('발견 도감',records));card.append(row);layout.append(celebration,card);ctx.host.append(layout);if(a.activated)ctx.host.append(certificate);}
 function render(){if(!state)return;cleanups.forEach(f=>f());cleanups=[];app.replaceChildren();const a=active(state);app.dataset.route=a.route;document.documentElement.classList.toggle('large-text',state.settings.large);document.documentElement.classList.toggle('reduced',reducedMotion(state.settings.reduced));setMusicTrack(a.route==='results'?'ending':'main');syncAudio(state.settings);
- const header=el('header','toolbar');const left=el('div','toolbar-group');if(a.route!=='main')left.append(iconButton('home','홈',()=>go('main')),iconButton('back','이전',()=>go(back[a.route]||'nature-map')));const right=el('div','toolbar-group');right.append(soundControl(),iconButton('settings','설정',()=>settings()));header.append(left,right);app.append(header);if(state.settings.admin){const exit=button('교사용 시연 · 종료',()=>{state.settings.admin=false;persist();go(state.learner.route);},'preview-banner');exit.setAttribute('aria-label','시연 종료 · 학생 기록으로 돌아가기');header.append(exit);}
+ const header=el('header','toolbar');const left=el('div','toolbar-group');if(a.route!=='main')left.append(iconButton('home','홈',()=>go('main')),iconButton('back','이전',()=>go(back[a.route]||'nature-map')));const right=el('div','toolbar-group');if(!state.settings.admin&&a.route!=='main'&&!activityRoutes.includes(a.route))right.append(rewardSlots(a.mapHits));right.append(soundControl(),iconButton('settings','설정',()=>settings()));header.append(left,right);app.append(header);if(state.settings.admin){const exit=button('교사용 시연 · 종료',()=>{state.settings.admin=false;persist();go(state.learner.route);},'preview-banner');exit.setAttribute('aria-label','시연 종료 · 학생 기록으로 돌아가기');header.append(exit);}
  const host=el('main',`screen screen-${a.route}`);app.append(host);if(state.settings.admin)host.dataset.preview='true';const ctx:Context={host,state,attempt:a,save:persist,render,go,complete,cleanup:f=>cleanups.push(f)};
  const handlers:Record<string,(ctx:Context)=>void>={main,'nature-map':map,'final-report':report,'core-restoration':core,results};for(const s of stages){handlers[s.entry]=c=>inquiryScene(c,s.id);handlers[s.exit]=c=>inquiryScene(c,s.id);}
  try{(handlers[a.route]||main)(ctx);}catch(e){console.error(e);host.replaceChildren(heading('기록을 지키고 있어요.'),paragraph('지도로 돌아가 탐구를 다시 열어주세요.'),button('지도로',()=>go('nature-map'),'primary'));}

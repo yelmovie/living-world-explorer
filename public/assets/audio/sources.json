@@ -142,5 +142,58 @@
       "sha256": "d4c1141ed05a5096"
     }
   ],
-  "mapEffectsNote": "2026-11-17 지도 악당 효과음. 과학34 공통 효과음 라이브러리(CC0만, 원본 페이지에서 라이선스 재확인)에서 골라 이름만 바꿔 복사. 가공은 라이브러리 단계의 무음 제거·페이드·음량 맞춤뿐."
+  "mapEffectsNote": "2026-11-17 지도 악당 효과음. 과학34 공통 효과음 라이브러리(CC0만, 원본 페이지에서 라이선스 재확인)에서 골라 이름만 바꿔 복사. 가공은 라이브러리 단계의 무음 제거·페이드·음량 맞춤뿐.",
+  "cardEffects": [
+    {
+      "file": "sfx/card-whoosh.mp3",
+      "library": "_shared/sfx-library-20261117/sfx/wind-whoosh-03.mp3",
+      "title": "Slow Swosh 40",
+      "creator": "qubodup",
+      "source": "https://freesound.org/people/qubodup/sounds/60027",
+      "license": "CC0",
+      "use": "카드가 날아오고 보관함으로 날아감",
+      "sha256": "35286e952e795b77"
+    },
+    {
+      "file": "sfx/card-reveal.mp3",
+      "library": "_shared/sfx-library-20261117/sfx/reward-01.mp3",
+      "title": "Fantasy_ui_Button_3.wav",
+      "creator": "ZenithInfinitiveStudios",
+      "source": "https://freesound.org/people/ZenithInfinitiveStudios/sounds/376745",
+      "license": "CC0",
+      "use": "카드 공개(브론즈·실버·골드)",
+      "sha256": "b359edf4f8e226f6"
+    },
+    {
+      "file": "sfx/card-epic.mp3",
+      "library": "_shared/sfx-library-20261117/sfx/reward-03.mp3",
+      "title": "Achievement Happy Beeps Jingle",
+      "creator": "CogFireStudios",
+      "source": "https://freesound.org/people/CogFireStudios/sounds/619838",
+      "license": "CC0",
+      "use": "카드 공개(홀로·레전드)",
+      "sha256": "009f9d63c7daeec4"
+    },
+    {
+      "file": "sfx/card-slot.mp3",
+      "library": "_shared/sfx-library-20261117/sfx/pickup-01.mp3",
+      "title": "item-pickup-v1.wav",
+      "creator": "DeltaCode",
+      "source": "https://freesound.org/people/DeltaCode/sounds/678384",
+      "license": "CC0",
+      "use": "보관함 칸에 도착",
+      "sha256": "7c6fa70aee7b6886"
+    },
+    {
+      "file": "sfx/card-complete.mp3",
+      "library": "_shared/sfx-library-20261117/sfx/victory-jingle-01.mp3",
+      "title": "Game Success Fanfare Short",
+      "creator": "el_boss",
+      "source": "https://freesound.org/people/el_boss/sounds/677858",
+      "license": "CC0",
+      "use": "다섯 장 완성",
+      "sha256": "0c28c5d2c984b207"
+    }
+  ],
+  "cardEffectsNote": "2026-11-18 성취 카드(지도 악당 격퇴 보상) 효과음. 지도 악당 효과음과 같은 공통 라이브러리(CC0만, 원본 페이지에서 2026-11-17 라이선스 재확인)에서 이름만 바꿔 복사했고 재인코딩하지 않았다."
 }

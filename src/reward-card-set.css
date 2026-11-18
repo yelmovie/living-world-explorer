@@ -1,0 +1,5 @@
+/* Achievement card slots in the top bar. On a phone held upright the strip narrows so the bar stays on one row. */
+@media (max-width:640px){
+ .toolbar .rc-slots{gap:2px;padding:4px 5px}
+ .toolbar .rc-slot{width:18px;height:27px;border-radius:4px;font-size:11px}
+}
