@@ -29,7 +29,7 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
   preload(){this.load.on('loaderror',(file:Phaser.Loader.File)=>{if(!file.key.startsWith('ui-'))this.failed=true;});const view=task.kind==='microscope'?magnifyFor(task.organism,record.v===2):undefined;const needed=new Set([...task.items.map(artKey),task.organism,observedKind(task,record),task.kind==='sample'?'water':undefined,view?.context,view?.lens]);for(const art of needed)if(art&&inquiryArt[art]){const asset=inquiryArt[art];if(asset.frames)asset.frames.forEach((src,i)=>this.load.image(`art-${art}-${i}`,src));else this.load.image(`art-${art}`,asset.src);}
    if(task.kind==='track')for(let i=0;i<=LIVE_STEPS;i++)this.load.image(`live-paramecium-${i}`,`assets/study/live/paramecium-${String(i).padStart(2,'0')}.webp`);
    // Decorative props are optional: a missing prop falls back to the drawn card, never blocks the activity.
-   const props=['tape',...task.kind==='microscope'?['microscope-frame',...(view?['hand-lens']:[])]:[],...task.id==='M5-1'?['yogurt-maker']:[],...task.kind==='sample'?['dropper','slide','water-drop']:[]];for(const p of props)this.load.image(`ui-${p}`,`assets/ui/${p==='slide'?'slide-flat':p}.webp`);}
+   const props=['tape',...task.kind==='microscope'?['microscope-frame',...(view?['hand-lens']:[])]:[],...task.id==='M5-1'?['yogurt-maker']:[],...task.kind==='sample'?['dropper','slide','slide-drop','water-drop']:[]];for(const p of props)this.load.image(`ui-${p}`,`assets/ui/${p==='slide'?'slide-flat':p}.webp`);}
   create(){scene=this;this.tweens.timeScale=playbackRate;this.input.dragDistanceThreshold=12;if(this.failed){hooks.ready(false);return;}refresh=()=>this.paint();this.paint();hooks.ready(true);}
   wipe(){this.tweens.killAll();this.trackSurface=undefined;this.trackElapsed=0;this.children.removeAll(true);for(const name of this.textures.getTextureKeys())if(name.startsWith('plate-'))this.textures.remove(name);}
   text(x:number,y:number,text:string,size=23,color='#234b3c',width=330){return this.add.text(x,y,text,{fontFamily:'NanumSquareNeo, Malgun Gothic',fontSize:`${Math.max(28,size)}px`,color,align:'center',wordWrap:{width,useAdvancedWrap:true},lineSpacing:4}).setOrigin(.5);}
@@ -181,8 +181,10 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
     this.add.zone(x,y,88,88).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard()||record.assignments.site===id)return;record.assignments.site=id;record.sequence=0;this.commit();});this.caption(x,y+58,(chosen?'✓ ':'')+label,28,tone.ink,230);}
    const slideX=862,slideY=346;
    this.card(slideX,slideY+14,184,226,{fill:prepared?tone.soft:tone.paper,radius:20,stroke:collected?tone.accent:tone.line,width:collected?4:2});
-   if(prepared)this.badge(slideX+64,slideY-72);if(this.textures.exists('ui-slide')){this.add.image(slideX,slideY,'ui-slide').setDisplaySize(164,69);}else this.plate(slideX,slideY,150,80,'',0xe8efe8);
-   if(record.sequence===3&&this.textures.exists('ui-water-drop'))this.add.image(slideX,slideY-6,'ui-water-drop').setDisplaySize(50,39);else if(record.sequence===3)this.add.circle(slideX,slideY-6,18,0x73b4bd);
+   if(prepared)this.badge(slideX+64,slideY-72);
+   // 2026-11-18: a real wet mount is one small, flat drop, so the placed sample is drawn into the slide picture instead of a big bubble on top.
+   if(prepared&&this.textures.exists('ui-slide-drop'))this.add.image(slideX,slideY,'ui-slide-drop').setDisplaySize(164,46);
+   else{if(this.textures.exists('ui-slide'))this.add.image(slideX,slideY,'ui-slide').setDisplaySize(164,69);else this.plate(slideX,slideY,150,80,'',0xe8efe8);if(prepared)this.add.ellipse(slideX,slideY,26,10,0x9fd3d6,.7);}
    this.text(slideX,slideY+82,prepared?'받침 유리판':collected?'여기에 한 방울 놓아요':'받침 유리판',24,tone.ink,166);
    this.add.zone(slideX,slideY+14,184,226).setInteractive({useHandCursor:true}).on('pointerdown',()=>{
     if(this.pauseGuard()||record.sequence===3)return;
@@ -190,7 +192,7 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
     record.sequence=3;this.commit();
    });
    const home={x:record.sequence===2?640:300,y:168};const pipette=this.add.container(home.x,home.y);
-   if(this.textures.exists('ui-dropper')){if(record.sequence>0){const glow=this.add.graphics();glow.fillStyle(0x9fd3d6,.45).fillEllipse(0,-62,64,64);pipette.add(glow);}pipette.add(this.add.image(0,0,'ui-dropper').setDisplaySize(31,210));if(record.sequence===2&&this.textures.exists('ui-water-drop'))pipette.add(this.add.image(0,112,'ui-water-drop').setDisplaySize(24,19));}
+   if(this.textures.exists('ui-dropper')){if(record.sequence>0){const glow=this.add.graphics();glow.fillStyle(0x9fd3d6,.45).fillEllipse(0,-62,64,64);pipette.add(glow);}pipette.add(this.add.image(0,0,'ui-dropper').setDisplaySize(31,210));if(record.sequence===2&&this.textures.exists('ui-water-drop'))pipette.add(this.add.image(0,109,'ui-water-drop').setDisplaySize(13,10));}
    else pipette.add([this.add.rectangle(0,0,28,110,0xeaf3dc).setStrokeStyle(3,0x537d6c),this.add.ellipse(0,-62,58,60,record.sequence>0?0x72b3bc:0x4d8066),this.add.triangle(0,73,0,0,20,0,10,35,0xc1d7b8)]);
    pipette.setSize(90,220).setInteractive({useHandCursor:true});this.input.setDraggable(pipette);let dragged=false;
    pipette.on('pointerdown',()=>{if(!this.pauseGuard())dragged=false;});pipette.on('drag',(_p:Phaser.Input.Pointer,x:number,y:number)=>{if(this.pauseGuard())return;dragged=true;pipette.setPosition(x,y);});pipette.on('dragend',()=>{if(this.pauseGuard()){if(pipette.active)pipette.setPosition(home.x,home.y);return;}if(record.sequence===2&&pipette.x>740&&pipette.y>200){record.sequence=3;this.commit();}else if(pipette.active)pipette.setPosition(home.x,home.y);});
