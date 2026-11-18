@@ -1,7 +1,7 @@
 {
   "provider": "ElevenLabs",
   "model": "eleven_v4",
-  "count": 20,
+  "count": 17,
   "recordings": [
     {
       "key": "M1-welcome",
@@ -154,63 +154,6 @@
       "lufs": -17.2,
       "truePeak": -3.5,
       "sha256": "20ddab1c6092b744624e20e9cd1f21482e471fb84723e4170448361d584d036a"
-    },
-    {
-      "key": "M3-welcome",
-      "src": "assets/audio/voice/M3-welcome.mp3",
-      "text": "책장이 다시 열렸네! 뒤섞인 세균 자료를 네 조사 기록 덕분에 제자리에 꽂을 수 있겠어.",
-      "speaker": "duri",
-      "duration": 6.348,
-      "recognized": " 책장이 다시 열렸네. 뒤섞인 세균 자료를 네 조사 기록 덕분에 제자리에 꽂을 수 있겠어.",
-      "edits": 0,
-      "tailEdits": 0,
-      "review": false,
-      "voiceId": "rCm09Tf1yMYbOyCRLDyB",
-      "voiceName": "Taek",
-      "generationId": "KFBnRteu2rMw7YjwWLJe",
-      "source": "ElevenLabs",
-      "model": "eleven_v4",
-      "lufs": -18.5,
-      "truePeak": -2.4,
-      "sha256": "d4fb1e17b0d5de917e4d016eeefe4d533d783d23477dbc3efd1342365a22fb38"
-    },
-    {
-      "key": "M3-memory",
-      "src": "assets/audio/voice/M3-memory.mp3",
-      "text": "모양 그림은 ‘생김새’ 칸에, 흙이나 물에서 발견한 기록은 ‘사는 곳’ 칸에 꽂아. 모양만 보고 어디서 왔는지 짐작할 필요가 없지.",
-      "speaker": "duri",
-      "duration": 9.561,
-      "recognized": " 모양 그림은 생김새 칸에, 흙이나 물에서 발견한 기록은 사는 곳 칸에 꽂아. 모양만 보고 어디서 왔는지 짐작할 필요가 없지.",
-      "edits": 0,
-      "tailEdits": 0,
-      "review": false,
-      "voiceId": "rCm09Tf1yMYbOyCRLDyB",
-      "voiceName": "Taek",
-      "generationId": "XYaZxGIvj550IqxagTMT",
-      "source": "ElevenLabs",
-      "model": "eleven_v4",
-      "lufs": -19.1,
-      "truePeak": -2.3,
-      "sha256": "288468636d4693a401def4dbe51a5cc7d967c73432f47b3d3591aeeee161d040"
-    },
-    {
-      "key": "M3-work",
-      "src": "assets/audio/voice/M3-work.mp3",
-      "text": "마을 친구들한테 자료를 빌려줘. “어디서 찾은 사실이야?” 하고 물으면 함께 책장을 펼치지.",
-      "speaker": "duri",
-      "duration": 6.922,
-      "recognized": " 마을 친구들한테 자료를 빌려줘 어디서 찾은 사실이야? 하고 물으면 함께 책장을 펼치지",
-      "edits": 0,
-      "tailEdits": 0,
-      "review": false,
-      "voiceId": "rCm09Tf1yMYbOyCRLDyB",
-      "voiceName": "Taek",
-      "generationId": "mqxp8VoAEbWqkNRejPOH",
-      "source": "ElevenLabs",
-      "model": "eleven_v4",
-      "lufs": -19.4,
-      "truePeak": -2.4,
-      "sha256": "1308696a246fe20f43c6ebea1932c1c23d1eef17a1a3575db75b9af7de05ccaa"
     },
     {
       "key": "M4-welcome",
@@ -383,5 +326,6 @@
       "truePeak": -2.4,
       "sha256": "70f6db6882d9c763b0fa33b8a5a5b2eb508a556a6b9f01ed6592ad2a7e709c3b"
     }
-  ]
+  ],
+  "note": "2026-11-18: M3 (duri) lines were rewritten and re-recorded with local Momo; see momo-duri-m3-20261118.json."
 }

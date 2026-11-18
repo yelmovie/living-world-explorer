@@ -66,6 +66,24 @@ export const narrationRecordings:Record<string,{src:string;text:string;speaker:s
     "speaker": "yeoul",
     "duration": 6.844
   },
+  "M3-welcome": {
+    "src": "assets/audio/voice/M3-welcome.mp3",
+    "text": "현미경 다이얼이 다시 돌아가! 눈에 안 보인다고 없는 게 아니라는 걸 네가 보여 줬어.",
+    "speaker": "duri",
+    "duration": 8.542
+  },
+  "M3-memory": {
+    "src": "assets/audio/voice/M3-memory.mp3",
+    "text": "세균은 짚신벌레보다도 훨씬 작아서 1000배쯤 확대해야 보여. 공·막대·나선 모양이 있고, 흙·물·손·문손잡이처럼 거의 모든 곳에 살아.",
+    "speaker": "duri",
+    "duration": 17.633
+  },
+  "M3-work": {
+    "src": "assets/audio/voice/M3-work.mp3",
+    "text": "친구들이 손이나 흙을 가져오면 같이 배양 접시를 들여다봐. “여기에도 산다고?” 하고 다들 깜짝 놀라지!",
+    "speaker": "duri",
+    "duration": 10.736
+  },
   "M4-welcome": {
     "src": "assets/audio/voice/M4-welcome.mp3",
     "text": "마을 정원에 다시 불이 들어왔어! 네가 살펴본 그 낙엽 자리로 나도 돌아왔지.",

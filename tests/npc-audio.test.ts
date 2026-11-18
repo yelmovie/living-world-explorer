@@ -47,8 +47,7 @@ it('muting releases the clip source and event handlers',async()=>{
 
 it('인사 ID는 실제로 있는 검증된 음성 파일을 사용한다',async()=>{
  const a=await import('../src/audio');a.syncAudio({sound:true});
- // 2026-11-17: M3 두리's lines were rewritten for the new bacteria lab; their voice is re-recorded separately.
- for(const stage of ['M1','M2','M4','M5']){
+ for(const stage of ['M1','M2','M3','M4','M5']){
   expect(a.playNarration(stage+'-welcome')).toBe(true);
   const clip=clips.at(-1)!;
   expect(clip.src).toBe(`assets/audio/voice/${stage}-welcome.mp3`);
@@ -63,4 +62,4 @@ it('등록되지 않은 대사는 요청하지 않고 이전 인사를 멈춘다
  expect(greeting.pause).toHaveBeenCalled();expect(clips).toHaveLength(1);
 });
 
-it('every generated narration ID uses a shipped file',async()=>{const a=await import('../src/audio');a.syncAudio({sound:true});expect(Object.keys(narrationRecordings)).toHaveLength(21);for(const[id,line]of Object.entries(narrationRecordings)){expect(a.playNarration(id)).toBe(true);expect(clips.at(-1)!.src).toBe(line.src);expect(shippedRecordings).toHaveProperty('../public/'+line.src);}});
+it('every generated narration ID uses a shipped file',async()=>{const a=await import('../src/audio');a.syncAudio({sound:true});expect(Object.keys(narrationRecordings)).toHaveLength(24);for(const[id,line]of Object.entries(narrationRecordings)){expect(a.playNarration(id)).toBe(true);expect(clips.at(-1)!.src).toBe(line.src);expect(shippedRecordings).toHaveProperty('../public/'+line.src);}});

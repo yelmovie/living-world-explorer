@@ -17,3 +17,5 @@
 - `npm run build`: 통과. Vite의 기존 대형 청크 경고는 남는다.
 - 실제 설치된 Chrome: 각 프로젝트 음성 모듈과 실제 NPC 파일로 사용자 클릭 후 재생 시간 증가, 음소거 즉시 정지 확인. 미디어 오류와 페이지 오류 0. 재현 명령은 5magnet에서 `node scripts/audio-series-lifecycle.cjs`이다. 테스트 서버는 루프백 주소만 사용하고 종료 시 닫는다.
 - 파일 전체의 청감·모든 대사 끝까지 듣기·iPad 실제 장치 출력은 이번 검사 범위가 아니다.
+
+2026-11-18: M3 두리의 새 대사 3개(M3-welcome·memory·work)는 로컬 Momo의 Qwen3-TTS(Apache-2.0) 저장 가상 목소리 '현자 할아버지'로 다시 녹음했다. 대사마다 후보 3개를 만들고 Whisper large-v3-turbo 받아쓰기와 무음 구간으로 골랐다. 시드·원본 UUID·음량·해시는 public/assets/audio/voice/momo-duri-m3-20261118.json에 있고, 예전 ElevenLabs M3 기록은 elevenlabs-residents-20261112.json에서 뺐다. 실제 사람 목소리를 복제하지 않았다.
