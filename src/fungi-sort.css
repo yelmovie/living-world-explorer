@@ -1,6 +1,6 @@
 /* 2026-11-16: M1-4 card hand above a two-circle comparison board (mushroom · both · mold). */
 .fungi-sort{--mush:#b9824a;--mush-fill:#f6dcb4;--mold:#5f8f8a;--mold-fill:#c9e2dc;display:grid;grid-template-rows:auto minmax(0,.95fr) minmax(0,1.3fr);gap:10px;height:100%;min-height:0;padding:2px 4px 4px;user-select:none;-webkit-user-select:none}
-.fungi-tip{margin:0 auto;display:flex;align-items:center;gap:8px;padding:6px 18px;border-radius:999px;background:#fffaf0e8;color:#2f4a36;font-size:clamp(17px,1.6vw,21px);font-weight:700;box-shadow:0 3px 10px #3b2a1a1f}
+.fungi-tip{margin:0 auto;display:flex;align-items:center;gap:8px;padding:6px 18px;border-radius:999px;background:#fffaf0e8;color:#2f4a36;font-size:clamp(18px,1.6vw,21px);font-weight:700;box-shadow:0 3px 10px #3b2a1a1f}
 .fungi-tip.is-done{background:#2f6e48;color:#fff}
 .fungi-tip.is-done .fungi-tip-icon{animation:none}
 .fungi-tip-icon{display:inline-block;animation:fungi-point 1.4s ease-in-out infinite}
@@ -30,7 +30,7 @@
 .venn-ring{position:absolute;top:10px;bottom:10px;width:calc(62% - 14px);mix-blend-mode:multiply;border-radius:50%;border:4px solid;pointer-events:none;transition:box-shadow .3s}
 .venn-ring.mushroom{left:14px;background:var(--mush-fill);border-color:var(--mush)}
 .venn-ring.mold{right:14px;background:var(--mold-fill);border-color:var(--mold)}
-.fungi-count{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:2;padding:3px 14px;border-radius:999px;background:#2f5c45;color:#fff;font-weight:700;font-size:17px;box-shadow:0 3px 8px #1d2f2340}
+.fungi-count{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:2;padding:3px 14px;border-radius:999px;background:#2f5c45;color:#fff;font-weight:700;font-size:18px;box-shadow:0 3px 8px #1d2f2340}
 .fungi-zone{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-width:0;min-height:0;padding:10px 8px;border:0;border-radius:50%;background:none;color:#2b3b2e;font:inherit;cursor:pointer;transition:background .15s,box-shadow .15s}
 .fungi-zone[data-zone=mushroom]{padding-left:8%}
 .fungi-zone[data-zone=mold]{padding-right:8%}

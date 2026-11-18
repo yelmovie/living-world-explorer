@@ -1,6 +1,6 @@
 /* 2026-11-16: M4-1 time-lapse and M4-2 before/after wipe (src/renderers/timeline-games.ts). */
 .timeline-game{display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:10px;height:100%;min-height:0;padding:4px 6px;color:#2c3f30;user-select:none;-webkit-user-select:none}
-.timeline-tip{margin:0 auto;padding:6px 20px;border-radius:999px;background:#fffaf0ea;font-size:clamp(17px,1.6vw,21px);font-weight:700;box-shadow:0 3px 10px #3b2a1a1f}
+.timeline-tip{margin:0 auto;padding:6px 20px;border-radius:999px;background:#fffaf0ea;font-size:clamp(18px,1.6vw,21px);font-weight:700;box-shadow:0 3px 10px #3b2a1a1f}
 .timeline-tip.is-done{background:#2f6e48;color:#fff}
 .timeline-stage{display:flex;align-items:center;justify-content:center;gap:16px;min-height:0}
 .timeline-frame{position:relative;height:100%;max-width:100%;aspect-ratio:16/9;border-radius:22px;overflow:hidden;background:#efe8d4;border:4px solid #fffdf6;box-shadow:0 14px 30px #3b2a1a33;cursor:crosshair;touch-action:none}

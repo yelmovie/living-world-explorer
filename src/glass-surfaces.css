@@ -66,7 +66,7 @@
 }
 #app[data-route="nature-map"] .map-encounter-status {
   max-width:100%;padding:4px 8px;border-radius:8px;background:#283a2e;color:#fff6dc;
-  font-size:clamp(12px,1.5vw,15px);line-height:1.25;text-align:right;word-break:keep-all;
+  font-size:18px;line-height:1.25;text-align:right;word-break:keep-all;
 }
 #app[data-route="nature-map"] .screen-nature-map .map-view-icon[aria-pressed="true"] {
   background:#245b46; color:#fff; border-color:#123e2e; box-shadow:0 3px 0 #123e2e;
