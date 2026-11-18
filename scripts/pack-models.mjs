@@ -10,7 +10,6 @@ import sharp from 'sharp';
 const models = {
   mushroom: {tex: [2048, 2048, 512], error: 0.005},
   'bread-mold': {tex: [2048, 2048, 512], error: 0.002},
-  paramecium: {tex: [2048, 2048, 512], error: 0.001},
   yeast: {tex: [2048, 2048, 256], error: 0.0015}
 };
 

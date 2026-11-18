@@ -10,7 +10,7 @@
 | 1 | BIO CORE | `bio-core.glb` | 코어 복구 · 결과 화면 | 새로 생성 `bio-core-3d-base.png` | 25,000 | ★★★ |
 | 2 | 버섯 | `mushroom.glb` | M1-2 갓 아래 관찰 · 도감 | 새로 생성 `mushroom-3d-base.png` | 15,000 | ★★★ |
 | 3 | 빵 곰팡이 | `bread-mold.glb` | M1-3 균사·포자 관찰 · 도감 | 새로 생성 `mold-3d-base.png` | 15,000 | ★★ |
-| 4 | 짚신벌레 | `paramecium.glb` | M2-3 발견 팝업 · 도감 | 새로 생성 `paramecium-3d-base.png` | 10,000 | ★★ |
+| 4 | 짚신벌레(2026-11-18 앱에서 제거) | `paramecium.glb` | ~~M2-3 발견 팝업 · 도감~~ | 새로 생성 `paramecium-3d-base.png` | 10,000 | ★★ |
 | 5 | 효모 | `yeast.glb` | M5-2 효모 작용 · 도감 | 새로 생성 `yeast-3d-base.png` | 5,000 | ★ |
 | 6 | 모아(연구원) | `moa.glb` | 결과 화면 등장 (선택) | 기존 `moa-3d-base.png` | 15,000 | 선택 |
 | 7 | 토토(토끼 조수) | `companion.glb` | 결과 화면 등장 (선택) | 기존 `companion-3d-base.png` | 15,000 | 선택 |
