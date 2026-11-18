@@ -66,3 +66,23 @@ it('every generated narration ID uses a shipped file',async()=>{const a=await im
 // 2026-11-18: Toto reads every task hint aloud, and each character keeps one voice file set.
 it('every task hint and villain line has a Toto or Lens recording',async()=>{const {inquiryTasks}=await import('../src/curriculum');const {mapVillainStages}=await import('../src/map-villain-content');const texts=new Set(Object.values(narrationRecordings).map(r=>r.text));for(const t of inquiryTasks)for(const h of t.hints??[])expect(texts.has(h),t.id+' '+h).toBe(true);for(const s of mapVillainStages)for(const line of [...s.lines,...s.hit,s.finish])expect(texts.has(line),line).toBe(true);expect(new Set(Object.values(narrationRecordings).filter(r=>r.speaker==='toto').map(r=>r.src.split('/').slice(0,-1).join('/'))).size).toBe(1);});
 it('every discovery summary, science term and Toto map guide line is voiced',async()=>{const {inquiryTasks}=await import('../src/curriculum');const {scienceTerms}=await import('../src/science-terms');const texts=new Set(Object.values(narrationRecordings).map(r=>r.text));for(const t of inquiryTasks)expect(texts.has(t.success),t.id).toBe(true);for(const [term,text] of Object.entries(scienceTerms))expect(texts.has(text),term).toBe(true);expect(texts.has('연구소를 복구하면 이웃이 돌아와요. 악당을 만나면 가까이에서 공격 버튼이나 J·스페이스바를 눌러요.')).toBe(true);});
+describe('지도 전투음과 악당 대사',()=>{
+ it('악당 대사가 나오는 동안에도 휘두르기·명중·퇴장 소리가 80% 이상으로 재생된다',async()=>{
+  const gains:{gain:{value:number};connect:ReturnType<typeof vi.fn>}[]=[],sources:{start:ReturnType<typeof vi.fn>;stop:ReturnType<typeof vi.fn>;level?:unknown}[]=[];
+  class Ctx{state='running';currentTime=0;destination={};
+   createGain(){const g={gain:{value:1},connect:vi.fn((n:unknown)=>n),disconnect:vi.fn()};gains.push(g);return g;}
+   createBufferSource(){const s={buffer:null,start:vi.fn(),stop:vi.fn(),disconnect:vi.fn(),onended:null,level:undefined as unknown,connect:vi.fn((n:unknown)=>{s.level=n;return n;})};sources.push(s);return s;}
+   decodeAudioData=vi.fn(async()=>({}));resume=vi.fn(async()=>{});close=vi.fn(async()=>{});}
+  vi.stubGlobal('window',{AudioContext:Ctx});vi.stubGlobal('fetch',vi.fn(async()=>({ok:true,arrayBuffer:async()=>new ArrayBuffer(8)})));
+  const a=await import('../src/audio');a.syncAudio({sound:true});listeners.get('pointerdown')?.();
+  for(let i=0;i<10;i++)await Promise.resolve();
+  const [,effects,fight]=gains;
+  a.playVoiceLine('앗, 들켰네!')||a.playNarration('M1');
+  a.playEffect('map-swing');a.playEffect('map-hit-1');a.playEffect('map-exit');
+  const cues=sources.slice(-3);expect(cues).toHaveLength(3);
+  for(const cue of cues){expect(cue.start).toHaveBeenCalledOnce();expect(cue.stop).not.toHaveBeenCalled();expect((cue.level as {connect:ReturnType<typeof vi.fn>}).connect).toHaveBeenCalledWith(fight);}
+  expect(fight.gain.value).toBeCloseTo(.06*.8);
+  a.playEffect('click');expect(effects.gain.value).toBeCloseTo(.06*.3);
+  a.disposeAudio();
+ });
+});

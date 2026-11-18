@@ -22,6 +22,8 @@ let settings: AudioSettings = {sound: false, bgm: false, bgmVolume: 35};
 let context: AudioContext | undefined;
 let musicGain: GainNode | undefined;
 let effectGain: GainNode | undefined;
+// Map fight cues (map-*) have their own bus: a character line lowers them to 80% at most, never mutes them (VILLAIN-VOICE-SFX-FIX-20261118).
+let combatGain: GainNode | undefined;
 let unlocked = false;
 let explicitQuiet = false;
 let installed = false;
@@ -91,6 +93,7 @@ function engine() {
       effectGain.gain.value = .06;
       musicGain.connect(context.destination);
       effectGain.connect(context.destination);
+      combatGain = context.createGain();combatGain.gain.value = .06;combatGain.connect(context.destination);
     } catch { context = undefined; }
   }
   return context;
@@ -194,8 +197,10 @@ export function playEffect(name: EffectName = 'click') {
   const play = () => {
     if (context !== ctx || !effectGain || !settings.sound || document.hidden || explicitQuiet) return;
     effectGain.gain.value = .06 * (narration ? .3 : 1);
-    const buffer=samples.get(name);if(buffer){const source=ctx.createBufferSource();source.buffer=buffer;const level=ctx.createGain();level.gain.value=effectLevel[name]??1;source.connect(level).connect(effectGain);effectVoices.add(source);source.onended=()=>{effectVoices.delete(source);source.disconnect();level.disconnect();};source.start();return;}
-    frequencies.forEach((frequency,i) => voice(frequency, .16, effectGain!, effectVoices, ctx.currentTime + i * .09));
+    const combat = name.startsWith('map-') && combatGain, bus = combat || effectGain;
+    if (combat) combat.gain.value = .06 * (narration ? .8 : 1);
+    const buffer=samples.get(name);if(buffer){const source=ctx.createBufferSource();source.buffer=buffer;const level=ctx.createGain();level.gain.value=effectLevel[name]??1;source.connect(level).connect(bus);effectVoices.add(source);source.onended=()=>{effectVoices.delete(source);source.disconnect();level.disconnect();};source.start();return;}
+    frequencies.forEach((frequency,i) => voice(frequency, .16, bus, effectVoices, ctx.currentTime + i * .09));
   };
   if (ctx.state === 'suspended') void ctx.resume().then(play).catch(() => {});else play();
 }
@@ -207,5 +212,5 @@ export function disposeAudio() {
   document.removeEventListener('visibilitychange', visibility);
   installed = false;unlocked = false;samplesRequested=false;samples.clear();
   if (context) void context.close().catch(() => {});
-  context = undefined;musicGain = undefined;effectGain = undefined;music = undefined;musicTrack = undefined;
+  context = undefined;musicGain = undefined;effectGain = undefined;combatGain = undefined;music = undefined;musicTrack = undefined;
 }

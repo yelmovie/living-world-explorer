@@ -121,14 +121,16 @@ export function mountMapEncounters({
   const timers=new Set();
   const later=(fn,ms)=>{const id=(view??globalThis).setTimeout(()=>{timers.delete(id);if(!closed)fn();},ms);timers.add(id);return id;};
 
-  function speak(foe,text,time){
+  // A line spoken on a hit starts voiceDelay ms later so the clank and retreat are heard first.
+  function speak(foe,text,time,voiceDelay=0){
     for(const other of foes)if(other!==foe){other.saidUntil=0;other.bubble.hidden=true;}
     foe.bubble.textContent=text;
     foe.bubble.hidden=false;
     lastSpeechLayout=-Infinity;
     foe.saidUntil=time;
     live.textContent=text;
-    voice?.(text);
+    if(!voiceDelay)voice?.(text);
+    else later(()=>{if(foe.bubble.textContent===text)voice?.(text);},voiceDelay);
   }
   function hit(){
     if(closed||pending||!current||!last||paused())return;
@@ -150,7 +152,7 @@ export function mountMapEncounters({
     foe.poseUntil=time+duration;foe.hitAt=time;foe.hurtAt=undefined;
     saved={...saved,[foe.s.id]:n};onSave({...saved});tone(n===HITS?'finish':'hit',n);
     if(n===HITS)later(()=>tone('exit',n),EXIT_CUE);
-    speak(foe, n===HITS?foe.s.finish??'앗, 물러날게!':foe.s.hit?.[n-1]??(n===1?'앗, 들켰네!':'이번 건 제법인데!'),time+(n===HITS?2750:1800));
+    speak(foe, n===HITS?foe.s.finish??'앗, 물러날게!':foe.s.hit?.[n-1]??(n===1?'앗, 들켰네!':'이번 건 제법인데!'),time+(n===HITS?2750:1800),300);
     live.textContent+=n===HITS?' 세 번 명중! 악당이 물러나요.':` ${n}번 명중. ${HITS-n}번 남았어요.`;
     if(n===HITS&&requiredFoes>0&&stages.length===requiredFoes&&stages.every(s=>(saved[s.id]??record[s.id])===HITS))finaleAt=time+2920;
     if(last)update({...last,now:time});
