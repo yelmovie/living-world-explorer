@@ -342,7 +342,7 @@ function report(ctx:Context){const a=ctx.attempt;const head=el('div','activity-h
  const gathered=stageIds.filter(id=>hasRecord(id)).length;
  const reportStatus=paragraph(gathered===5?'다섯 연구소의 발견이 모였어요. 위에서 연구소를 눌러 다시 읽어 보고, 코어에 연결해요.':`발견 ${gathered}/5 · 지도에서 남은 연구소를 탐험해요.`,'report-status');
  const mentor=el('img','report-mentor');mentor.src='assets/characters/moa-portrait.webp';mentor.alt='모아 연구원';side.append(reportStatus,mentor,heading('내 말로 소개해요'),paragraph('관찰한 것 / 그렇게 생각한 근거 / 우리 생활과의 연결'),button('생활 사건 발표',presentation,'secondary',!hasRecord('M4')));
- const f=el('div','action-bar');f.append(button('지도로',()=>go('nature-map')),button('발견을 코어에 연결',()=>go('core-restoration'),'primary',!stageIds.every(id=>hasRecord(id)&&a.report.includes(id))));ctx.host.append(f);
+ const f=el('div','action-bar');f.append(button('발견을 코어에 연결',()=>go('core-restoration'),'primary',!stageIds.every(id=>hasRecord(id)&&a.report.includes(id))));ctx.host.append(f);
 }
 /** Moa's line plays once per visit of the session, not on every re-render. */
 let resultsVoiced=false;
@@ -367,3 +367,4 @@ document.documentElement.style.removeProperty('--app-height');void load().then(s
 
 import './glass-surfaces.css';
 import './upgrade-1115.css';
+import './layout-balance-1118.css';

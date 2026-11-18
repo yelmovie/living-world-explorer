@@ -1,0 +1,15 @@
+/* 2026-11-18 놀이 화면 비율(_shared/LAYOUT-BALANCE-DELIVERY-20261118.md 1절). Loaded after upgrade-1115.css.
+   Only sizes change here; the screens, tools and learning flow stay as they are. */
+
+/* Game boards (M1-1~3, M3, M4, M5-2·3) were capped at 1200px, so on 1920×1080 boards they floated in the middle
+   with about a fifth of empty scenery on each side. On tall wide screens they now grow with the screen height. */
+@media(min-width:1400px){
+ /* quiz-board.css arrives later with the lazy game chunk, so this selector is one step more specific. */
+ #app>.expedition-shell.quiz-task .expedition-work{max-width:max(1200px,calc((100dvh - 270px) * 1.9))}
+}
+
+/* Phaser scenes with a tool panel (M2-1 on narrower screens, M2-3, M5-1, M5-4): the 16:9 scene is limited by its
+   column width, so a slimmer panel gives the scene more room. M2-2 keeps its wider panel for the three viewing buttons. */
+@media(min-width:1000px){
+ html:not(.large-text) #app>.expedition-shell:is([data-kind=sample],[data-kind=track],[data-kind=build],[data-kind=publish]):not(.quiz-task):not(.link-task){grid-template-columns:minmax(0,1fr) clamp(280px,23vw,448px)}
+}

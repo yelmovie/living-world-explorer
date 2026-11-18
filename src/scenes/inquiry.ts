@@ -344,7 +344,9 @@ export function inquiryScene(ctx:Context,stage:Stage){
   document.addEventListener('visibilitychange',interrupt);document.addEventListener('focusin',interrupt);
   ctx.cleanup(()=>{clearTimeout(timer);document.removeEventListener('visibilitychange',interrupt);document.removeEventListener('focusin',interrupt);demoButton.remove();});
  }
- const footer=el('div','expedition-footer');const left=el('div','expedition-secondary');left.append(button(index===0?'지도로':'이전 발견',()=>{if(index===0)ctx.go('nature-map');else{progress.current[stage]=index-1;ctx.save();ctx.go(index-1<2?stages.find(s=>s.id===stage)!.entry:stages.find(s=>s.id===stage)!.exit);}}));
+ const footer=el('div','expedition-footer');const left=el('div','expedition-secondary');
+ // 2026-11-18: on the first discovery the top-left 「이전」 already goes to the map, so the footer keeps only 「이전 발견」.
+ if(index>0)left.append(button('이전 발견',()=>{progress.current[stage]=index-1;ctx.save();ctx.go(index-1<2?stages.find(s=>s.id===stage)!.entry:stages.find(s=>s.id===stage)!.exit);}));
  const next=button(task.kind==='summary'?'정리 마치기':r.completedAt?'기록 확인하고 계속':'발견 기록하기',()=>{
   if(!ready||running)return info('이미지와 실행 결과를 확인한 뒤 기록해요.');
   if(document.querySelector('.discovery-dialog'))return;

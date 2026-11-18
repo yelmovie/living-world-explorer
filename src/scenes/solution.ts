@@ -43,11 +43,11 @@ export function core(ctx:Context){
  });
  review.append(records);
  side.append(status,sockets,review);
- const back=button('보고서로',()=>ctx.go('final-report'),'secondary');
  const activateButton=button('코어 가동',()=>activate(),'primary',true);
  activateButton.setAttribute('aria-describedby','core-link-help');
  message.id='core-link-help';
- footer(ctx,back,activateButton);
+ // 2026-11-18: the top-left 「이전」 already returns to the report, so the footer keeps only 「코어 가동」.
+ footer(ctx,activateButton);
 
  function update(fresh=-1){
   const linked=connections(),total=linked.filter(Boolean).length,ready=total===stageIds.length;
