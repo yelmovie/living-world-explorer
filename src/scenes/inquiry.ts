@@ -1,5 +1,3 @@
-import {openDetectiveBoard} from '../detective-board';
-import {researchCases} from '../detective-cases';
 import {el,button,heading,paragraph,slider,choices,modal,notice,reducedMotion,type Context} from '../ui';
 import {stages} from '../content';
 import {tasksFor} from '../curriculum';
@@ -33,7 +31,7 @@ export function mentor(task:InquiryTask,record:InquiryRecord){const box=el('div'
 export function inquiryScene(ctx:Context,stage:Stage){
  const progress=ctx.attempt.inquiry;const list=tasksFor(stage);let index=progress.current[stage]??0;index=Math.max(0,Math.min(3,index));const task=list[index];const r=progress.records[task.id]??=prepareInquiry(task);let disposed=false;ctx.cleanup(()=>disposed=true);
  const linking=['collect','connect','sort'].includes(task.kind),quiz=linking&&task.id!=='M1-4',lapse=task.kind==='timeline'&&['M4-1','M4-2'].includes(task.id),scope=['M1-2','M1-3'].includes(task.id),brew=['M5-2','M5-3'].includes(task.id),germ=isGermTask(task),board=quiz||lapse||scope||brew||germ;ctx.host.classList.add('expedition-shell',`stage-${stage}`);ctx.host.classList.toggle('link-task',linking&&!quiz);ctx.host.classList.toggle('quiz-task',board);ctx.host.dataset.stage=stage;ctx.host.dataset.kind=task.kind;ctx.host.style.setProperty('--facility-image',`url('/assets/places/${backgrounds[stage]}.webp')`);
- const head=el('div','expedition-header');const emblem=activityIllustration(task,'mission-emblem');const titles=el('div','mission-titles');titles.append(el('span','eyebrow',`MISSION ${stage.slice(1).padStart(2,'0')} · ${stages.find(s=>s.id===stage)!.title} · ${index+1}번째 발견`),heading(task.title));if(task.kind!=='summary')titles.append(paragraph(researchCases[stage].question,'case-brief'));head.append(emblem,titles);ctx.host.append(head);
+ const head=el('div','expedition-header');const emblem=activityIllustration(task,'mission-emblem');const titles=el('div','mission-titles');titles.append(el('span','eyebrow',`MISSION ${stage.slice(1).padStart(2,'0')} · ${stages.find(s=>s.id===stage)!.title} · ${index+1}번째 발견`),heading(task.title));head.append(emblem,titles);ctx.host.append(head);
  const grid=el('div','expedition-workspace');const work=el('section','expedition-work');const host=el('div','expedition-canvas-host');host.setAttribute('aria-label',task.title+' 탐구 장면');const badge=el('span','model-badge',task.kind==='build'?'관계 설명 모형':'관찰·조사 모형');work.append(host);if(!linking)work.append(badge);const side=el('aside','expedition-panel');grid.append(work);if(task.kind!=='summary'&&task.id!=='M1-4'&&!lapse&&!scope&&!brew&&!germ)grid.append(side);ctx.host.append(grid);
  let running=false,ready=false;
  // 2026-11-16: finishing an activity opens its discovery record by itself; the footer button stays for revisits.
@@ -337,7 +335,6 @@ export function inquiryScene(ctx:Context,stage:Stage){
   ctx.cleanup(()=>{clearTimeout(timer);document.removeEventListener('visibilitychange',interrupt);document.removeEventListener('focusin',interrupt);demoButton.remove();});
  }
  const footer=el('div','expedition-footer');const left=el('div','expedition-secondary');left.append(button(index===0?'지도로':'이전 발견',()=>{if(index===0)ctx.go('nature-map');else{progress.current[stage]=index-1;ctx.save();ctx.go(index-1<2?stages.find(s=>s.id===stage)!.entry:stages.find(s=>s.id===stage)!.exit);}}));
- if(stage!=='M2'&&progress.records[`${stage}-4`])left.append(button('조사 기록',()=>openDetectiveBoard(ctx,stage),'secondary detective-open'));
  const next=button(task.kind==='summary'?'정리 마치기':r.completedAt?'기록 확인하고 계속':'발견 기록하기',()=>{
   if(!ready||running)return info('이미지와 실행 결과를 확인한 뒤 기록해요.');
   if(document.querySelector('.discovery-dialog'))return;
@@ -352,9 +349,9 @@ export function inquiryScene(ctx:Context,stage:Stage){
   pips.append(el('span','pip-label',`발견 도장 ${found} / 4`));
   const card=el('div','discovery-card');card.append(activityIllustration(task,'discovery-stamp',r),emphasizeScience(heading(task.success)),...task.terms?.length?[termChips(task.terms)]:[]);const model=modelButton(task.id);if(model)card.append(model);
   const onward=paragraph('','discovery-next');
-  if(index===3)onward.textContent='조사 기록을 확인해 연구소를 복구해요.';
+  if(index===3)onward.textContent='발견 네 개를 모두 모았어요. 연구소를 복구해요.';
   else onward.append(el('span','discovery-next-label','다음 발견'),list[index+1].title);
-  const dialog=modal(index===3?'조사 기록을 모았어요!':'새로운 발견을 기록했어요',[card,pips,onward,button(index===3?'연구소 복구하기':'다음 발견으로',()=>{dialog.close();if(index===3){openDetectiveBoard(ctx,stage,()=>ctx.complete(stage));return;}playEffect('page-turn');progress.current[stage]=index+1;ctx.save();ctx.go(index+1<2?stages.find(s=>s.id===stage)!.entry:stages.find(s=>s.id===stage)!.exit);},'primary')],{showClose:false});dialog.classList.add('discovery-dialog');
+  const dialog=modal(index===3?'발견 기록을 모두 모았어요!':'새로운 발견을 기록했어요',[card,pips,onward,button(index===3?'연구소 복구하기':'다음 발견으로',()=>{dialog.close();if(index===3){ctx.complete(stage);return;}playEffect('page-turn');progress.current[stage]=index+1;ctx.save();ctx.go(index+1<2?stages.find(s=>s.id===stage)!.entry:stages.find(s=>s.id===stage)!.exit);},'primary')],{showClose:false});dialog.classList.add('discovery-dialog');
  },'primary',true);
  recordButton=next;
  if(demoButton)left.append(demoButton);

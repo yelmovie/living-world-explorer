@@ -35,7 +35,6 @@ describe('M3 자료 연구실 세균 실험',()=>{
   r.assignments.order='bacteria,paramecium,mushroom';expect(taskIssues(exhibit,r).length).toBe(1);r.assignments.order='mushroom,paramecium,bacteria';
   r.assignments.blank_place='water';expect(taskIssues(exhibit,r).length).toBe(1);
  });
- it('조사 기록 사건의 단서 칸(case_*)과 겹치지 않는다',()=>{for(const t of tasksFor('M3'))expect(Object.keys(germExample(t)).some(k=>k.startsWith('case_'))).toBe(false);});
  it('예전 카드 활동 기록은 다시 시작하고, 새 기록과 완료한 연구 기록은 지킨다',()=>{
   const a=makeAttempt();const old=emptyRecord();old.assignments={shape:'evidence',rumor:'guess'};old.completedAt='2026-11-01T00:00:00Z';
   a.inquiry.records['M3-1']=old;a.inquiry.records['M3-2']={...done(catchTask),completedAt:'2026-11-17T00:00:00Z'};

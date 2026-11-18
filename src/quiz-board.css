@@ -10,7 +10,7 @@
   max-width: 100%;
   margin-inline: auto;
 }
-#app>.quiz-task .case-brief,#app>.quiz-task .mission-emblem,#app>.quiz-task .eyebrow {
+#app>.quiz-task .mission-emblem,#app>.quiz-task .eyebrow {
   display: none;
 }
 #app>.quiz-task .expedition-work {

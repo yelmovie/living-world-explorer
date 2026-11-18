@@ -49,12 +49,19 @@ export function mountScopeGame(host:HTMLElement,task:InquiryTask,record:InquiryR
   lensView.append(photo,lens);pic.src=artFor('mushroomSpores')!.src;
   let lp:Point={x:.22,y:.82},dwell:ReturnType<typeof setTimeout>|undefined,found=false;
   const placeLens=(p:Point)=>{lp={x:Math.max(0,Math.min(1,p.x)),y:Math.max(0,Math.min(1,p.y))};const b=lensView.getBoundingClientRect();lens.style.left=lp.x*100+'%';lens.style.top=lp.y*100+'%';lens.style.backgroundImage=`url("${photo.src}")`;lens.style.backgroundSize=`${b.width*2.4}px ${b.height*2.4}px`;const d=lens.offsetWidth/2;lens.style.backgroundPosition=`${-lp.x*b.width*2.4+d}px ${-lp.y*b.height*2.4+d}px`;
-   const on=featureAt('mushroom',lp)==='gills';lens.classList.toggle('is-on',on);clearTimeout(dwell);
-   if(on&&!found)dwell=setTimeout(()=>{if(disposed||found)return;found=true;playEffect('focus');totoSay(root,{text:'찾았다! 갓 아래 줄무늬를 주름이라고 해. 현미경으로 더 크게 보자!',mood:'cheer'});lensView.classList.add('zoom-out');later(()=>{record.level=2;record.focus=65;record.light=65;hooks.changed();paint();},900);},650);};
+   // The glass counts as on the gills when they show anywhere in the inner part of the circle, not only under its centre.
+   const rx=d*.45/b.width,ry=d*.45/b.height;
+   const on=[[0,0],[1,0],[-1,0],[0,1],[0,-1],[.7,.7],[-.7,.7],[.7,-.7],[-.7,-.7]].some(([x,y])=>featureAt('mushroom',{x:lp.x+x*rx,y:lp.y+y*ry})==='gills');
+   lens.classList.toggle('is-on',on||found);clearTimeout(dwell);
+   if(on&&!found)dwell=setTimeout(markFound,dragging?450:0);};
+  // 2026-11-18: finding the gills no longer jumps on by itself; a button moves to the microscope when the child is ready.
+  const markFound=()=>{if(disposed||found)return;found=true;playEffect('focus');totoSay(root,{text:'찾았다! 갓 아래 줄무늬를 주름이라고 해. 「현미경으로 보기」를 눌러 더 크게 보자!',mood:'cheer'});paint();};
+  const toMicroscope=()=>{if(disposed||record.level>=2)return;playEffect('click');lensView.classList.add('zoom-out');later(()=>{record.level=2;record.focus=65;record.light=65;hooks.changed();paint();},prefersStill()?0:900);};
+  const prefersStill=()=>document.documentElement.classList.contains('reduced')||matchMedia('(prefers-reduced-motion: reduce)').matches;
   let dragging=false;
   lensView.onpointerdown=e=>{if(e.button!==0||record.level>=2)return;dragging=true;lensView.setPointerCapture(e.pointerId);const b=lensView.getBoundingClientRect();placeLens({x:(e.clientX-b.left)/b.width,y:(e.clientY-b.top)/b.height});};
   lensView.onpointermove=e=>{if(!dragging)return;const b=lensView.getBoundingClientRect();placeLens({x:(e.clientX-b.left)/b.width,y:(e.clientY-b.top)/b.height});};
-  lensView.onpointerup=()=>{dragging=false;};lensView.onpointercancel=()=>{dragging=false;};
+  lensView.onpointerup=()=>{dragging=false;placeLens(lp);};lensView.onpointercancel=()=>{dragging=false;};
   field.onclick=e=>{
    if(record.level<2||record.capture||disposed)return;
    const p=toImage(e.clientX,e.clientY),hit=near('mushroomSpores',p,'spore');
@@ -63,11 +70,11 @@ export function mountScopeGame(host:HTMLElement,task:InquiryTask,record:InquiryR
    else if(!hit){record.misses++;hooks.changed();playEffect('retry');miss(e.clientX,e.clientY);totoSay(root,{text:task.hints?.[1]||'사진을 다시 살펴봐!'});}
   };
   paint=()=>{
-   const phase=record.capture?'done':record.level>=2?'spores':'lens';root.dataset.phase=phase;
+   const phase=record.capture?'done':record.level>=2?'spores':'lens';root.dataset.phase=phase;root.classList.toggle('is-found',found&&phase==='lens');
    stage.replaceChildren(phase==='lens'?lensView:eye,panel);
-   tip.textContent=phase==='lens'?'🔍 돋보기를 끌어 갓 아래를 살펴봐요':phase==='spores'?`✨ 주름에 붙은 작은 알갱이(포자)를 콕 눌러 잡아요 · ${Math.min(3,record.marks.length)} / 3`:'👉 「발견 기록하기」를 눌러 기록을 남겨요';
+   tip.textContent=phase==='lens'?(found?'✅ 주름을 찾았어요! 「현미경으로 보기」를 눌러요':'🔍 돋보기를 끌어 갓 아래를 살펴봐요'):phase==='spores'?`✨ 주름에 붙은 작은 알갱이(포자)를 콕 눌러 잡아요 · ${Math.min(3,record.marks.length)} / 3`:'👉 「발견 기록하기」를 눌러 기록을 남겨요';
    if(phase!=='lens'){marks.replaceChildren();record.marks.forEach(m=>pin(m,'scope-spore','✨'));}
-   panel.replaceChildren(progress([['돋보기로 주름 찾기',record.level>=2],['현미경으로 포자 3개 잡기',record.capture],['관찰 사진 남기기',record.capture]]),...phase==='done'?[el('p','scope-fact','주름에 붙은 아주 작은 알갱이가 포자예요. 포자가 알맞은 곳에 닿으면 새 버섯이 자랄 수 있어요.')]:[]);
+   panel.replaceChildren(progress([['돋보기로 주름 찾기',found||record.level>=2],['현미경으로 포자 3개 잡기',record.capture],['관찰 사진 남기기',record.capture]]),...phase==='lens'&&found?[button('현미경으로 보기 ▶',toMicroscope,'primary scope-next')]:[],...phase==='done'?[el('p','scope-fact','주름에 붙은 아주 작은 알갱이가 포자예요. 포자가 알맞은 곳에 닿으면 새 버섯이 자랄 수 있어요.')]:[]);
    if(phase==='lens')requestAnimationFrame(()=>placeLens(lp));
   };
   void Promise.all([photo,pic,handle,frame].map(i=>i.decode())).then(()=>{if(disposed)return;root.inert=false;paint();hooks.ready(true);},()=>{if(!disposed)hooks.ready(false);});

@@ -45,7 +45,6 @@
 }
 /* 2026-11-10: phone landscape (about 412px tall). Keep cards, trays and the observation picture on screen without scrolling. */
 @media(min-width:660px) and (max-height:480px){
- #app>.expedition-shell .case-brief{display:none}
  #app>.expedition-shell.link-task{grid-template-columns:minmax(0,1fr) 240px;grid-template-rows:auto minmax(0,1fr) auto;gap:6px 12px}
  #app>.expedition-shell.link-task .expedition-header{grid-area:1/1}
  #app>.expedition-shell.link-task .expedition-work{grid-area:2/1}

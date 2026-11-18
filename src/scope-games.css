@@ -71,3 +71,16 @@
  .tag-box{flex-direction:row;flex-wrap:wrap;gap:8px}.name-tag{font-size:18px;padding:8px 18px 8px 10px;margin-left:22px}
  .scope-fact{font-size:15px;padding:10px}
 }
+/* 2026-11-18: the picture or eyepiece sits in the middle of the screen and the step card takes the right-hand column. */
+.scope-next{width:100%;min-height:56px;font-size:20px;animation:scope-pop .45s cubic-bezier(.3,1.6,.5,1)}
+@media(min-width:660px) and (min-height:481px){
+ /* The card may hang past the work area on wide screens; the picture keeps room for it on both sides of the viewport. */
+ .scope-stage{--side:clamp(220px,20vw,300px);--room:calc(100vw - 2 * (var(--side) + 40px));container-type:size;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:24px;justify-content:stretch;align-items:center}
+ .scope-stage>.lens-view{grid-column:2;height:auto;max-width:none;width:min(var(--room),100cqh * 793 / 496)}
+ .scope-stage>.scope-eye{grid-column:2;height:auto;max-width:none;width:min(var(--room),100cqh)}
+ .scope-stage>.scope-panel{grid-column:3;justify-self:start;align-self:center;width:var(--side);box-sizing:border-box}
+ .scope-panel{word-break:keep-all}
+ #app>.expedition-shell .expedition-canvas-host:has(>.scope-game){overflow:visible}
+}
+/* Short landscape phones hide the step card while observing; the microscope button still shows once the gills are found. */
+@media(max-height:480px){.scope-game.is-found[data-phase=lens] .scope-panel{display:flex;flex:none;width:auto;padding:8px}.scope-game.is-found .scope-next{min-height:48px;font-size:18px}}

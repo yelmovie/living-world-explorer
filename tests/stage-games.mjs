@@ -28,7 +28,7 @@ try{
 
   // M1-2: hand lens to the gills, then three spores in the eyepiece.
   await open('M1-2');const lv=await page.locator('.lens-view').boundingBox();
-  await page.mouse.move(lv.x+lv.width*.2,lv.y+lv.height*.85);await page.mouse.down();await page.mouse.move(lv.x+lv.width*.33,lv.y+lv.height*.42,{steps:10});await page.waitForTimeout(900);await page.mouse.up();
+  await page.mouse.move(lv.x+lv.width*.2,lv.y+lv.height*.85);await page.mouse.down();await page.mouse.move(lv.x+lv.width*.33,lv.y+lv.height*.42,{steps:10});await page.waitForTimeout(900);await page.mouse.up();await page.locator('.scope-next').click();
   await page.locator('.eye-field').waitFor();await page.waitForTimeout(700);
   for(const p of spores){const [x,y]=await eye(p);await page.mouse.click(x,y);await page.waitForTimeout(250);}
   await page.waitForTimeout(900);let r=await rec('M1-2');assert.ok(r.capture&&r.level===2&&r.focus===65,'M1-2 saves a sharp microscope photo');await finished();

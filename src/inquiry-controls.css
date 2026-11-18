@@ -212,7 +212,6 @@
  #app>.expedition-shell[data-stage=M2] .expedition-panel-body{flex:none}
  /* M2-2 and M2-3 on a phone: the picture shrinks before the focus tools leave the screen. */
  #app>.expedition-shell[data-stage=M2]:is([data-kind=microscope],[data-kind=track]){grid-template-rows:auto minmax(200px,1fr) auto auto}
- #app>.expedition-shell[data-stage=M2]:is([data-kind=microscope],[data-kind=track]) .case-brief{display:none}
  #app>.expedition-shell[data-stage=M2] .simple-observation{min-height:0}
 }
 /* 2026-11-17: M3-4 review and M5-4 publish fit without scrolling. While a source is open its reading takes the place of the
@@ -231,7 +230,6 @@
  #app>.expedition-shell:is([data-kind=review],[data-kind=publish]) .expedition-panel{overflow:visible;min-height:min-content;max-height:none}
  #app>.expedition-shell:is([data-kind=review],[data-kind=publish]) .expedition-panel-body{flex:none}
  #app>.expedition-shell:is([data-kind=review],[data-kind=publish]){grid-template-rows:auto minmax(152px,1fr) auto auto}
- #app>.expedition-shell:is([data-kind=review],[data-kind=publish]) .case-brief{display:none}
 }
 /* 2026-11-17: viewing-mode buttons read as two tidy lines (tool name, then a smaller 으로 보기) instead of breaking mid-word. */
 #app>.expedition-shell .observation-modes>.button{flex-direction:column;gap:1px;padding:6px 4px;line-height:1.15;white-space:nowrap}

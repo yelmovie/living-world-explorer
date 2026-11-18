@@ -18,7 +18,7 @@ async function touch(x,y){await tapCanvas(page,x/960,y/540);}
 const spores=[[0.482,0.3014],[0.4461,0.3708],[0.4406,0.4403]],moldTags={thread:[0.4813,0.3653],round:[0.5,0.6]},changes={bread:[0.536,0.654],leaf:[0.46,0.4486]};
 const eyePoint=p=>page.locator('.eye-field').evaluate((f,p)=>{const r=f.getBoundingClientRect(),b={left:r.left+f.clientLeft,top:r.top+f.clientTop,width:f.clientWidth,height:f.clientHeight},img=f.querySelector('img'),a=img.naturalWidth/img.naturalHeight,w=b.height*a;return [b.left+p[0]*w-(w-b.width)/2,b.top+p[1]*b.height];},p);
 async function playBoard(task){
- if(task.id==='M1-2'){const lv=await page.locator('.lens-view').boundingBox();await page.mouse.move(lv.x+lv.width*.2,lv.y+lv.height*.85);await page.mouse.down();await page.mouse.move(lv.x+lv.width*.33,lv.y+lv.height*.42,{steps:10});await page.waitForTimeout(900);await page.mouse.up();await page.locator('.eye-field').waitFor();await page.waitForTimeout(700);for(const p of spores){const [x,y]=await eyePoint(p);await page.mouse.click(x,y);await page.waitForTimeout(250);}return true;}
+ if(task.id==='M1-2'){const lv=await page.locator('.lens-view').boundingBox();await page.mouse.move(lv.x+lv.width*.2,lv.y+lv.height*.85);await page.mouse.down();await page.mouse.move(lv.x+lv.width*.33,lv.y+lv.height*.42,{steps:10});await page.waitForTimeout(900);await page.mouse.up();await page.locator('.scope-next').click();await page.locator('.eye-field').waitFor();await page.waitForTimeout(700);for(const p of spores){const [x,y]=await eyePoint(p);await page.mouse.click(x,y);await page.waitForTimeout(250);}return true;}
  if(task.id==='M1-3'){for(let i=0;i<12&&await page.locator('.focus-dial').count();i++){await btn('오른쪽으로 ▶').click();await page.waitForTimeout(60);}for(const [id,p] of Object.entries(moldTags)){await page.locator(`[data-tag="${id}"]`).click();const [x,y]=await eyePoint(p);await page.mouse.click(x,y);await page.waitForTimeout(250);}return true;}
  if(task.id==='M1-4'||task.id==='M4-3'){for(const item of task.items){await linkCard(page,item.id).tap();await linkTarget(page,item.target).tap();await page.waitForTimeout(150);}return true;}
  if(task.stage==='M3'){await playGerm(page,task.id);return true;}
@@ -108,7 +108,6 @@ async function completeTask(task,replay=false){
  assert.match(await page.locator('.discovery-dialog .pip-label').innerText(),new RegExp(`발견 도장 ${task.order} / 4`));
  await btn(task.order===4?'연구소 복구하기':'다음 발견으로').click();
  }
- if(task.order===4&&task.kind!=='summary'){const clues=await page.locator('[data-clue]').evaluateAll(nodes=>nodes.map((n,i)=>({id:n.dataset.clue,role:i===2?'limit':'supports'})));for(const clue of clues){const card=page.locator(`[data-clue="${clue.id}"]`);for(let i=0;i<2&&await card.getAttribute('data-role')!==clue.role;i++)await card.click();}await page.waitForTimeout(800);await btn('조사 결과 전달하기').click();}
  if(task.order===4&&!replay){
   const stageIndex=Number(task.stage.slice(1))-1;
   await page.locator('.concept-dialog').waitFor();await waitForScene(page,'.map-host');
