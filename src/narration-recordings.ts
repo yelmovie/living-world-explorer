@@ -906,5 +906,251 @@ export const narrationRecordings:Record<string,{src:string;text:string;speaker:s
     "text": "이름표를 다 붙였어! 가는 실은 균사, 동그란 주머니 안에는 포자가 들어 있어. 찰칵!",
     "speaker": "toto",
     "duration": 7.05
+  },
+  "toto-map-1": {
+    "src": "assets/audio/voice/toto/toto-map-1.mp3",
+    "text": "다음은 버섯숲 표본실이에요. 아래 화살표나 키보드 방향키로 걸어요.",
+    "speaker": "toto",
+    "duration": 5.43
+  },
+  "toto-map-2": {
+    "src": "assets/audio/voice/toto/toto-map-2.mp3",
+    "text": "다음은 연못 관찰소예요. 아래 화살표나 키보드 방향키로 걸어요.",
+    "speaker": "toto",
+    "duration": 5.25
+  },
+  "toto-map-3": {
+    "src": "assets/audio/voice/toto/toto-map-3.mp3",
+    "text": "다음은 자료 연구실이에요. 아래 화살표나 키보드 방향키로 걸어요.",
+    "speaker": "toto",
+    "duration": 5.25
+  },
+  "toto-map-4": {
+    "src": "assets/audio/voice/toto/toto-map-4.mp3",
+    "text": "다음은 생활마을이에요. 아래 화살표나 키보드 방향키로 걸어요.",
+    "speaker": "toto",
+    "duration": 4.99
+  },
+  "toto-map-5": {
+    "src": "assets/audio/voice/toto/toto-map-5.mp3",
+    "text": "다음은 BIO 작업실이에요. 아래 화살표나 키보드 방향키로 걸어요.",
+    "speaker": "toto",
+    "duration": 5.3
+  },
+  "toto-map-6": {
+    "src": "assets/audio/voice/toto/toto-map-6.mp3",
+    "text": "다음은 중앙 연구소예요. 아래 화살표나 키보드 방향키로 걸어요.",
+    "speaker": "toto",
+    "duration": 5.15
+  },
+  "toto-map-7": {
+    "src": "assets/audio/voice/toto/toto-map-7.mp3",
+    "text": "연구소를 복구하면 이웃이 돌아와요. 악당을 만나면 가까이에서 공격 버튼이나 J·스페이스바를 눌러요.",
+    "speaker": "toto",
+    "duration": 8.46
+  },
+  "discovery-M1-1": {
+    "src": "assets/audio/voice/moa/discovery-M1-1.mp3",
+    "text": "버섯은 숲속 죽은 나무에서, 곰팡이는 축축한 빵에서 찾았어요. 이제 하나씩 크게 들여다봐요!",
+    "speaker": "moa",
+    "duration": 7.65
+  },
+  "discovery-M1-2": {
+    "src": "assets/audio/voice/moa/discovery-M1-2.mp3",
+    "text": "갓 아래 줄무늬는 주름이에요. 주름에서 아주 작은 알갱이, 포자가 만들어져요. 포자가 알맞은 곳에 닿으면 새 버섯이 자랄 수 있어요.",
+    "speaker": "moa",
+    "duration": 10.21
+  },
+  "discovery-M1-3": {
+    "src": "assets/audio/voice/moa/discovery-M1-3.mp3",
+    "text": "곰팡이 몸은 가는 실(균사)로 되어 있어요. 실 끝 동그란 주머니(포자주머니) 안에 포자가 들어 있어요.",
+    "speaker": "moa",
+    "duration": 7.92
+  },
+  "discovery-M1-4": {
+    "src": "assets/audio/voice/moa/discovery-M1-4.mp3",
+    "text": "버섯과 곰팡이는 생김새가 달라도 둘 다 가는 실(균사)로 된 몸과 포자가 있어요. 이런 생물을 균류라고 해요.",
+    "speaker": "moa",
+    "duration": 8.86
+  },
+  "discovery-M2-1": {
+    "src": "assets/audio/voice/moa/discovery-M2-1.mp3",
+    "text": "연못의 장소와 한 방울 표본 준비 과정을 남겼어요.",
+    "speaker": "moa",
+    "duration": 3.81
+  },
+  "discovery-M2-2": {
+    "src": "assets/audio/voice/moa/discovery-M2-2.mp3",
+    "text": "물에서 관찰한 해캄의 길게 이어진 모습을 기록했어요. 해캄은 초록색이고 여러 마디가 실처럼 이어져 있어요.",
+    "speaker": "moa",
+    "duration": 8.1
+  },
+  "discovery-M2-3": {
+    "src": "assets/audio/voice/moa/discovery-M2-3.mp3",
+    "text": "같은 짚신벌레의 서로 다른 두 위치를 기록했어요. 짚신벌레는 몸 둘레의 가는 털(섬모)을 움직여 이동해요.",
+    "speaker": "moa",
+    "duration": 8.41
+  },
+  "discovery-M2-4": {
+    "src": "assets/audio/voice/moa/discovery-M2-4.mp3",
+    "text": "해캄 관찰 사진과 짚신벌레의 움직임을 정리했어요. 두 생물은 물에서 만나지만 생김새와 움직임이 달라요.",
+    "speaker": "moa",
+    "duration": 8.1
+  },
+  "discovery-M3-1": {
+    "src": "assets/audio/voice/moa/discovery-M3-1.mp3",
+    "text": "세균은 매우 작아서 맨눈이나 돋보기로는 볼 수 없고, 1000배쯤 확대하는 현미경으로 봐야 보여요. 짚신벌레보다도 훨씬 작아요.",
+    "speaker": "moa",
+    "duration": 9.53
+  },
+  "discovery-M3-2": {
+    "src": "assets/audio/voice/moa/discovery-M3-2.mp3",
+    "text": "세균은 공 모양, 막대 모양, 나선 모양처럼 여러 가지 모양이 있어요. 꼬리(편모)가 있는 세균도 있어요. 색은 구별하기 쉽게 칠한 거예요.",
+    "speaker": "moa",
+    "duration": 10.58
+  },
+  "discovery-M3-3": {
+    "src": "assets/audio/voice/moa/discovery-M3-3.mp3",
+    "text": "손·흙·물·문손잡이·음식처럼 여러 곳에서 채집한 접시에 세균 무리가 자랐어요. 세균은 우리 주변 거의 모든 곳에 살아요.",
+    "speaker": "moa",
+    "duration": 10.37
+  },
+  "discovery-M3-4": {
+    "src": "assets/audio/voice/moa/discovery-M3-4.mp3",
+    "text": "세균은 균류나 짚신벌레보다 훨씬 작고, 공·막대·나선처럼 여러 모양이 있으며, 흙·물·우리 몸처럼 여러 곳에 살아요.",
+    "speaker": "moa",
+    "duration": 10.45
+  },
+  "discovery-M4-1": {
+    "src": "assets/audio/voice/moa/discovery-M4-1.mp3",
+    "text": "빵의 변화 전후와 달라진 곳을 기록했어요.",
+    "speaker": "moa",
+    "duration": 3.24
+  },
+  "discovery-M4-2": {
+    "src": "assets/audio/voice/moa/discovery-M4-2.mp3",
+    "text": "낙엽의 변화와 분해에 관한 조사 자료를 연결했어요.",
+    "speaker": "moa",
+    "duration": 3.66
+  },
+  "discovery-M4-3": {
+    "src": "assets/audio/voice/moa/discovery-M4-3.mp3",
+    "text": "네 생활 사건을 목적과 상황에 맞게 비교했어요.",
+    "speaker": "moa",
+    "duration": 3.55
+  },
+  "discovery-M4-4": {
+    "src": "assets/audio/voice/moa/discovery-M4-4.mp3",
+    "text": "여섯 사건을 비교하고 상황에 따라 설명하는 생활 보고서를 완성했어요. 세균 때문에 생기는 충치처럼 우리 몸에 해로운 영향도 있어요.",
+    "speaker": "moa",
+    "duration": 9.3
+  },
+  "discovery-M5-1": {
+    "src": "assets/audio/voice/moa/discovery-M5-1.mp3",
+    "text": "우유가 걸쭉하고 새콤한 요구르트로 변했어요. 유산균이 우유 속 당을 이용해 젖산을 만들면서 생긴 변화예요. 요구르트를 만들 때 유산균이 우유 속 당을 바꾸는 이런 작용은 발효의 한 예예요.",
+    "speaker": "moa",
+    "duration": 14.52
+  },
+  "discovery-M5-2": {
+    "src": "assets/audio/voice/moa/discovery-M5-2.mp3",
+    "text": "균류의 작용을 이용하는 두 번째 설계도도 완성했어요.",
+    "speaker": "moa",
+    "duration": 3.63
+  },
+  "discovery-M5-3": {
+    "src": "assets/audio/voice/moa/discovery-M5-3.mp3",
+    "text": "낙엽의 분해 작용을 설계에 적용했어요. 사람들은 이런 작용을 이용해 텃밭에 줄 퇴비를 만들어요.",
+    "speaker": "moa",
+    "duration": 7.21
+  },
+  "discovery-M5-4": {
+    "src": "assets/audio/voice/moa/discovery-M5-4.mp3",
+    "text": "내 설계와 실제 근거가 담긴 생명과학 소개 카드가 완성됐어요.",
+    "speaker": "moa",
+    "duration": 4.83
+  },
+  "term-1": {
+    "src": "assets/audio/voice/moa/term-1.mp3",
+    "text": "버섯과 곰팡이가 속한 생물 무리예요. 여기서 관찰한 두 표본의 몸은 가는 실인 균사로 이루어져 있어요.",
+    "speaker": "moa",
+    "duration": 7.65
+  },
+  "term-2": {
+    "src": "assets/audio/voice/moa/term-2.mp3",
+    "text": "버섯과 곰팡이의 몸을 이루는 가는 실 모양 부분이에요.",
+    "speaker": "moa",
+    "duration": 3.92
+  },
+  "term-3": {
+    "src": "assets/audio/voice/moa/term-3.mp3",
+    "text": "이번 버섯의 갓 아래에 나란히 있는 얇은 부분이에요. 이 버섯은 주름 표면에서 포자를 만들어요.",
+    "speaker": "moa",
+    "duration": 7.31
+  },
+  "term-4": {
+    "src": "assets/audio/voice/moa/term-4.mp3",
+    "text": "이번 곰팡이에서 실 끝에 보인 둥근 부분이에요. 그 안에 포자가 들어 있어요.",
+    "speaker": "moa",
+    "duration": 5.75
+  },
+  "term-5": {
+    "src": "assets/audio/voice/moa/term-5.mp3",
+    "text": "균류가 퍼지고 자라는 데 쓰이는 작은 부분이에요. 알맞은 조건에서 새로운 균사로 자랄 수 있어요.",
+    "speaker": "moa",
+    "duration": 6.97
+  },
+  "term-6": {
+    "src": "assets/audio/voice/moa/term-6.mp3",
+    "text": "해캄과 짚신벌레처럼 여러 가지 생물이 속한 무리예요. 두 표본은 물에서 살지만 모양과 움직임이 달라요.",
+    "speaker": "moa",
+    "duration": 8.05
+  },
+  "term-7": {
+    "src": "assets/audio/voice/moa/term-7.mp3",
+    "text": "짚신벌레의 몸 둘레에 난 가는 털 같은 부분이에요. 섬모를 움직여 물속에서 이동해요.",
+    "speaker": "moa",
+    "duration": 6.4
+  },
+  "term-8": {
+    "src": "assets/audio/voice/moa/term-8.mp3",
+    "text": "매우 작은 생물이에요. 모양과 사는 곳이 다양하며, 우리 생활에 도움이 되는 경우도 있어요.",
+    "speaker": "moa",
+    "duration": 6.43
+  },
+  "term-9": {
+    "src": "assets/audio/voice/moa/term-9.mp3",
+    "text": "낙엽 속 물질이 더 단순한 물질로 바뀌는 과정이에요. 균류와 세균 등이 이 과정에 관여해요.",
+    "speaker": "moa",
+    "duration": 7.18
+  },
+  "term-10": {
+    "src": "assets/audio/voice/moa/term-10.mp3",
+    "text": "음식의 냄새나 색, 맛 등이 달라져 먹기 어려워지는 일이에요. 상한 음식은 맛보지 않아요.",
+    "speaker": "moa",
+    "duration": 7.0
+  },
+  "term-11": {
+    "src": "assets/audio/voice/moa/term-11.mp3",
+    "text": "입속의 일부 세균이 당을 이용하며 만든 산 때문에 치아가 손상되는 일이에요.",
+    "speaker": "moa",
+    "duration": 5.46
+  },
+  "term-12": {
+    "src": "assets/audio/voice/moa/term-12.mp3",
+    "text": "당을 이용해 젖산을 만드는 세균이에요. 요구르트를 만들 때는 알맞은 종류의 식품용 유산균을 써요.",
+    "speaker": "moa",
+    "duration": 7.47
+  },
+  "term-13": {
+    "src": "assets/audio/voice/moa/term-13.mp3",
+    "text": "작은 균류예요. 빵을 만들 때 효모가 만든 기체가 반죽을 부풀게 해요.",
+    "speaker": "moa",
+    "duration": 5.85
+  },
+  "term-14": {
+    "src": "assets/audio/voice/moa/term-14.mp3",
+    "text": "이 활동에서는 미생물이 재료를 바꾸는 작용을 음식 만들기에 이용해요. 유산균으로 요구르트를 만들고, 효모로 빵 반죽을 부풀려요.",
+    "speaker": "moa",
+    "duration": 9.82
   }
 };

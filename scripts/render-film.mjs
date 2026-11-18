@@ -12,7 +12,7 @@ const GRADE='eq=contrast=1.05:saturation=1.1,vignette=angle=PI/5';
 const films={
  intro:{
   // The source fades to black by 20.6s, then flashes a bright frame; everything after the fade is cut.
-  srcEnd:20.6,total:24.8,poster:2.2,
+  srcEnd:20.6,total:25.6,poster:2.2,
   glitch:[[4.85,5.05],[5.3,5.42],[6.1,6.2]],
   cues:[
    // 2026-11-18: cues follow 모아's ElevenLabs lines (voice below).
@@ -22,12 +22,12 @@ const films={
    [10.76,13.1,'우리 생활에 어떤 일을 할까?'],
    [13.2,16.9,'숲과 연못에서 [관찰]하고, [근거]를 모아'],
    [17.0,19.9,'[다섯 기록]으로 연구소를 깨워 줘!'],
-   [21.3,23,'다섯 기록을 모아 BIO CORE를 깨워요'],
-   [23,24.8,'탐험 시작!']
+   [21.3,23.5,'다섯 기록을 모아 BIO CORE를 깨워요'],
+   [23.5,25.6,'탐험 시작!']
   ],
   sfx:[['retry',4.85,.2],...[0,1,2,3,4].map(i=>['snap',21.7+i*.18,.22]),['success',23,.3]],
   // 모아 (ElevenLabs eleven_v4, voice Mina); provenance in public/assets/audio/voice/elevenlabs-voices-20261118.json.
-  voice:[['intro-1',0.7,1.0],['intro-2',5.1,1.15],['intro-3',7.89,1.15],['intro-4',10.86,1.0],['intro-5',13.3,1.0],['intro-6',17.1,1.0],['intro-7',22.75,1.044]]
+  voice:[['intro-1',0.7,1.0],['intro-2',5.1,1.15],['intro-3',7.89,1.15],['intro-4',10.86,1.0],['intro-5',13.3,1.0],['intro-6',17.1,1.0],['intro-card',20.9,1.1],['intro-7',23.55,1.0]]
  },
  final:{
   // The source closes on an iris and a bright flash frame; the film holds Toto's jump (20.95s) instead.

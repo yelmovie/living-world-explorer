@@ -3,7 +3,7 @@ import {stages} from '../content';
 import {tasksFor} from '../curriculum';
 import {type InquiryTask,type InquiryRecord} from '../inquiry-model';
 import {taskIssues,invalidateRun} from '../inquiry-evaluate';
-import {playEffect} from '../audio';
+import {playEffect,voiceDialog} from '../audio';
 import {guidance} from '../inquiry-guidance';
 import {finishObservation,observationFrames} from '../inquiry-playback';
 import type {Stage,Evidence} from '../model';
@@ -351,7 +351,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
   const onward=paragraph('','discovery-next');
   if(index===3)onward.textContent='발견 네 개를 모두 모았어요. 연구소를 복구해요.';
   else onward.append(el('span','discovery-next-label','다음 발견'),list[index+1].title);
-  const dialog=modal(index===3?'발견 기록을 모두 모았어요!':'새로운 발견을 기록했어요',[card,pips,onward,button(index===3?'연구소 복구하기':'다음 발견으로',()=>{dialog.close();if(index===3){ctx.complete(stage);return;}playEffect('page-turn');progress.current[stage]=index+1;ctx.save();ctx.go(index+1<2?stages.find(s=>s.id===stage)!.entry:stages.find(s=>s.id===stage)!.exit);},'primary')],{showClose:false});dialog.classList.add('discovery-dialog');
+  const dialog=modal(index===3?'발견 기록을 모두 모았어요!':'새로운 발견을 기록했어요',[card,pips,onward,button(index===3?'연구소 복구하기':'다음 발견으로',()=>{dialog.close();if(index===3){ctx.complete(stage);return;}playEffect('page-turn');progress.current[stage]=index+1;ctx.save();ctx.go(index+1<2?stages.find(s=>s.id===stage)!.entry:stages.find(s=>s.id===stage)!.exit);},'primary')],{showClose:false});dialog.classList.add('discovery-dialog');voiceDialog(dialog,[task.success]);
  },'primary',true);
  recordButton=next;
  if(demoButton)left.append(demoButton);
@@ -368,7 +368,7 @@ export function termChips(terms:string[]){
  const row=el('div','term-chips');row.append(el('span','term-label','과학 낱말'));
  for(const term of terms){
   if(!scienceTerms[term]){row.append(el('span','term-chip',term));continue;}
-  const chip=button(term,()=>modal(term+' 알아보기',[emphasizeScience(paragraph(scienceTerms[term]))]),'term-chip');
+  const chip=button(term,()=>voiceDialog(modal(term+' 알아보기',[emphasizeScience(paragraph(scienceTerms[term]))]),[scienceTerms[term]],{now:true}),'term-chip');
   chip.setAttribute('aria-label',term+' 뜻 보기');row.append(chip);
  }
  return row;

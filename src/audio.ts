@@ -37,7 +37,10 @@ let narration:HTMLAudioElement|undefined;
 export type NarrationState='loading'|'playing'|'waiting'|'ended'|'stopped'|'unavailable';
 let narrationState:((state:NarrationState)=>void)|undefined;
 /** Every playable ID is backed by a shipped, validated character recording. */
+/** A line waiting for the current one to end (a discovery card after Toto's cheer); any new line drops it. */
+let queued:(()=>void)|undefined;
 function clearNarration(){
+ queued=undefined;
  const previous=narration,onState=narrationState;narration=undefined;narrationState=undefined;
  if(previous){previous.onended=previous.onerror=previous.onplaying=previous.onwaiting=previous.onpause=null;previous.pause();previous.removeAttribute('src');previous.load();onState?.('stopped');}
 }
@@ -50,7 +53,7 @@ export function playNarration(id:string,onState?:(state:NarrationState)=>void):b
  // Unknown IDs must not create broken requests or leave the previous line playing.
  if(!recording){sync();return false;}
  const audio=new Audio(recording.src);audio.preload='none';narration=audio;narrationState=onState;
- const finish=(state:NarrationState)=>{if(narration===audio){narration=undefined;narrationState=undefined;sync();onState?.(state);}};
+ const finish=(state:NarrationState)=>{if(narration===audio){narration=undefined;narrationState=undefined;const next=queued;queued=undefined;sync();onState?.(state);if(state==='ended')next?.();}};
  audio.onended=()=>finish('ended');audio.onerror=()=>finish('unavailable');
  audio.onplaying=()=>{if(narration===audio)onState?.('playing');};
  audio.onwaiting=()=>{if(narration===audio)onState?.('waiting');};
@@ -65,6 +68,9 @@ export function playNarration(id:string,onState?:(state:NarrationState)=>void):b
 /** Toto hints and villain lines carry no id: they play when their exact on-screen text has a recording. */
 const lineIds=new Map(Object.entries(narrationRecordings).map(([id,r])=>[r.text,id]));
 export function playVoiceLine(text:string,onState?:(state:NarrationState)=>void){const id=lineIds.get(text.trim());return id?playNarration(id,onState):false;}
+export function queueVoiceLine(text:string,onState?:(state:NarrationState)=>void,still:()=>boolean=()=>true){if(!narration)return playVoiceLine(text,onState);if(!lineIds.has(text.trim()))return false;queued=()=>{if(still())playVoiceLine(text,onState);};return true;}
+/** Plays voiced lines in order while a dialog is open and stops them when it closes; `now` interrupts a line already playing (a tap), otherwise it waits. */
+export function voiceDialog(dialog:HTMLDialogElement,texts:string[],{now=false}={}){let open=true;texts=[...texts];const own=(state:NarrationState)=>{if(state==='ended'&&texts.length)voice();};const voice=()=>{const t=texts.shift();if(t&&now){now=false;playVoiceLine(t,own);}else if(t)queueVoiceLine(t,own,()=>open);};voice();dialog.addEventListener('close',()=>{open=false;texts.length=0;stopNarration(own);},{once:true});}
 export function voiceLineSeconds(text:string){const id=lineIds.get(text.trim());return id?narrationRecordings[id].duration:0;}
 
 function engine() {

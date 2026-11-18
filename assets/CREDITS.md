@@ -146,3 +146,4 @@ SOFTWARE.
 - 캐릭터마다 목소리 하나로 맞췄다. 모아: Mina(`mV7RnCYPcw47zFjyhuhw`), 토토: Aria(`O2KReOFLpoR65nz6C9Se`), 초점 도깨비 렌즈: Harry(`wMrz30qBeYiSkAtnZGtn`), 두리: Taek(`rCm09Tf1yMYbOyCRLDyB`, 11-12 녹음과 같은 목소리). 솔비·여울·밤톨·보리는 11-12 ElevenLabs 녹음을 그대로 쓴다.
 - 새로 만든 것: 모아 의뢰 3줄과 결과 1줄(`story-*`, `results-1`), 두리 M3 3줄, 토토 힌트 102줄(`voice/toto/`), 렌즈 대사 25줄(`voice/lens/`), 인트로·엔딩 영상 내레이션 13줄, 개념 영상 5편 내레이션 20줄. 모두 ElevenLabs eleven_v4, Creator 유료 요금제(2026-11-18 충전) 생성이다.
 - 생성 ID, 받아쓰기, 길이, 해시와 영상 속 위치는 `public/assets/audio/voice/elevenlabs-voices-20261118.json`. 같은 날 앞서 로컬 Momo로 녹음한 모아 인트로·의뢰 음성과 두리 M3 음성은 이 녹음으로 바뀌었다.
+- 추가(같은 날): 발견 카드 요약 20줄·과학 낱말 설명 14줄(모아, `voice/moa/`), 토토 지도 안내 7줄(`voice/toto/toto-map-*`), 인트로 제목 카드 1줄. 같은 기록 파일에 들어 있다.

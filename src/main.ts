@@ -21,7 +21,7 @@ import {downloadCard} from './export';
 import {iconButton,reward,stageBadge,habits,habitEarned,canDoLines} from './experience';
 import {mapNodes,MAP_WIDTH,MAP_HEIGHT,mapSpawn,mapAssets} from './mapData';
 import {openSettings} from './settings';
-import {syncAudio,playEffect,toggleMasterSound,anySound,setMusicTrack,playNarration,playVoiceLine,stopNarration} from './audio';
+import {syncAudio,playEffect,toggleMasterSound,anySound,setMusicTrack,playNarration,playVoiceLine,voiceDialog,stopNarration} from './audio';
 import {showConcept} from './concepts';
 import {showFilm} from './film';
 import {startRun} from './inquiry-runs';
@@ -274,8 +274,8 @@ function map(ctx:Context){
     ctx.attempt.mapPosition={...position};persist();render();
     app.querySelector<HTMLButtonElement>('.map-companion-help')?.focus({preventScroll:true});
   })));
-  const dialog=modal('토토와 같이 탐험해요',[paragraph(`다음은 ${placeIs(next)}. 아래 화살표나 키보드 방향키로 걸어요.`),
-    paragraph('연구소를 복구하면 이웃이 돌아와요. 악당을 만나면 가까이에서 공격 버튼이나 J·스페이스바를 눌러요.'),actions]);
+  const lines=[`다음은 ${placeIs(next)}. 아래 화살표나 키보드 방향키로 걸어요.`,'연구소를 복구하면 이웃이 돌아와요. 악당을 만나면 가까이에서 공격 버튼이나 J·스페이스바를 눌러요.'];
+  const dialog=modal('토토와 같이 탐험해요',[...lines.map(line=>paragraph(line)),actions]);voiceDialog(dialog,lines,{now:true});
  },'map-companion-help');
  helper.querySelector('span')?.remove();
  const directions=el('div','map-directions');directions.setAttribute('role','group');directions.setAttribute('aria-label','길 따라 이동');for(const [label,dir,name] of [['↑','up','위'],['←','left','왼쪽'],['↓','down','아래'],['→','right','오른쪽']] as const){const b=button(label,()=>{},'direction');b.setAttribute('aria-label',`${name} 방향으로 걷기`);b.dataset.mapDirection=dir;directions.append(b);}directions.append(helper);ctx.host.append(directions);
