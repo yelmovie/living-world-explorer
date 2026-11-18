@@ -8,6 +8,8 @@ const titles:Record<Film,string>={intro:'연구소의 의뢰 영상',final:'연�
 export function showFilm(name:Film,settings:{sound:boolean;voice?:boolean;reduced:boolean},onDone?:()=>void){
  const reduced=reducedMotion(settings.reduced);
  const video=el('video','film-video');video.src=`assets/film/${name}.mp4`;video.poster=`assets/film/${name}.webp`;video.playsInline=true;video.preload='auto';video.muted=!(settings.sound||settings.voice);video.controls=reduced;video.setAttribute('aria-label',titles[name]);
+ // Captions are burned into the bottom of the picture, so native controls appear only while the film is paused; a tap pauses it.
+ video.addEventListener('playing',()=>{video.controls=false;});video.addEventListener('pause',()=>{video.controls=true;});video.addEventListener('click',()=>{if(!video.paused)video.pause();});
  const track=el('track');track.kind='captions';track.srclang='ko';track.label='한국어';track.src=`assets/film/${name}.vtt`;video.append(track);
  // Tablets may refuse sound without a fresh tap; the picture and captions still carry the film.
  const play=()=>{void video.play().catch(()=>{video.muted=true;void video.play().catch(()=>{video.controls=true;});});};

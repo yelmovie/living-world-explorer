@@ -63,8 +63,9 @@ function overlayProgram(name,cues,total,freezeAt){
  const back=v=>{const c=1.70158;return 1+(c+1)*Math.pow(v-1,3)+c*Math.pow(v-1,2);};
  const rand=seed=>()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
  const font=size=>`700 ${size}px NanumSquareNeo,"Malgun Gothic",sans-serif`;
- const bars=h=>{if(h<=0)return;g.fillStyle='#000';g.fillRect(0,0,W,h);g.fillRect(0,H-h,W,h);};
- function caption(t,a,b,text,y=H-BAR/2,size=50){
+ // 2026-11-18: 영상은 줄이지 않고 전체 화면으로 두고, 자막은 그림 안 아래쪽에 넣는다(검은 띠 없음).
+ const bars=()=>{};
+ function caption(t,a,b,text,y=H-104,size=54){
   const alpha=Math.min(span(t,a,a+.25),1-span(t,b-.25,b));if(alpha<=0)return;
   const parts=text.split(/(\[[^\]]+\])/).filter(Boolean).map(p=>p[0]==='['?[p.slice(1,-1),true]:[p,false]);
   g.save();g.globalAlpha=alpha;g.font=font(size);g.textBaseline='middle';
@@ -142,7 +143,7 @@ function overlayProgram(name,cues,total,freezeAt){
   }
   if(t>16.3&&t<19.6)for(const m of motes){const age=t-16.3-m.d;if(age<0||age>m.l)continue;const k=age/m.l,d=m.v*age;g.globalAlpha=(1-k)*.9;g.fillStyle='#e9ffb8';g.beginPath();g.arc(CORE[0]+Math.cos(m.a)*d,CORE[1]+Math.sin(m.a)*d-age*age*30,m.s,0,7);g.fill();}
   g.globalAlpha=1;
-  for(const [a,b,text] of cues.slice(0,5))caption(t,a,b,text,t>17?H-74:H-BAR/2);
+  for(const [a,b,text] of cues.slice(0,5))caption(t,a,b,text,H-104);
   if(t>=21.4){
    for(const c of confetti){const age=t-c.at;if(age<0)continue;const y=c.y+c.v*age,x=c.x+c.vx*age+Math.sin(age*2+c.p)*34;if(y>H+30)continue;g.save();g.translate(x,y);g.rotate(c.p+age*c.spin);g.fillStyle=c.c;g.fillRect(-c.w/2,-c.h/2,c.w,c.h);g.restore();}
    const hit=span(t,21.4,21.62);
