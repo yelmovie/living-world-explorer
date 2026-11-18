@@ -8,14 +8,14 @@ import {inquiryArt,artTime,artKey,artFrame,magnifyFor,type MagnifyView} from '..
 import {addMark,markHint,viewToImage,observedKind,featureAt} from '../observation';
 import type {ObservationFrame} from '../inquiry-playback';
 import {mountScopeDecor} from './scope-view';
-export type InquiryHooks={assigned:(id:string,target:string)=>void;changed:()=>void;open:(id:string)=>void;feedback:(text:string,kind?:'retry'|'success')=>void;ready:(ok:boolean)=>void};
+export type InquiryHooks={/** 2026-11-18: the live clip's moment (0–10) while it plays outside the demo. */tick?:(time:number)=>void;assigned:(id:string,target:string)=>void;changed:()=>void;open:(id:string)=>void;feedback:(text:string,kind?:'retry'|'success')=>void;ready:(ok:boolean)=>void};
 const WIDTH=960,HEIGHT=540;
 /** The filmed paramecium clip is sampled every half second over its ten seconds. */
 const LIVE_STEPS=20;
 export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRecord,hooks:InquiryHooks,reduced:boolean){
  let record=learner;
  let beforeDemo:{preview:boolean;reveal:number|undefined}|undefined;
- let refresh=()=>{};let play=false;let preview=false;let disposed=false;let armed='';let reveal:number|undefined;let simulating=false;let scene:Phaser.Scene|undefined;let playbackRate=1;
+ let refresh=()=>{};let play=false;/* Learner playback keeps its own clock so the saved record.time only changes when the learner pins or drags. */let liveClock=0;let preview=false;let disposed=false;let armed='';let reveal:number|undefined;let simulating=false;let scene:Phaser.Scene|undefined;let playbackRate=1;
  const scope=task.kind==='track'?mountScopeDecor(host,'water'):undefined;
  const blocked=()=>disposed||document.hidden||!!document.querySelector('dialog[open]');
  // Scene colours follow the DOM tokens (styles.css stage layer), so one token edit restyles both.
@@ -100,7 +100,7 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
     }
     if(isTimeline)this.caption(700,455,'달라진 곳을 눌러요',28,tone.ink,370);
    }
-   else{this.drawSpecimen(480,isTimeline?255:270,isTimeline?730:750,isTimeline?390:435,kind,record.time,task.kind==='microscope');if(preview&&!play&&(isTimeline||isTrack))this.caption(480,30,isTimeline?'지금 고른 모습 · 관찰 '+(record.time+1):'지금 고른 순간 · 시점 '+Math.round(record.time),22);}
+   else{this.drawSpecimen(480,isTimeline?255:270,isTimeline?730:750,isTimeline?390:435,kind,isTrack&&play&&!beforeDemo?liveClock:record.time,task.kind==='microscope');if(preview&&!play&&(isTimeline||isTrack))this.caption(480,30,isTimeline?'지금 고른 모습 · 관찰 '+(record.time+1):'지금 고른 순간 · 시점 '+Math.round(record.time),22);}
    if(isTrack&&(!comparing||reveal===undefined))this.caption(480,510,'같은 시야 · 같은 짚신벌레의 위치를 비교해요',20,'#3e6651',850);
    if(isTimeline&&(!comparing||reveal===undefined)){const g=this.add.graphics();g.lineStyle(6,tone.line,1).lineBetween(235,505,725,505);for(let i=0;i<4;i++){const x=235+i*163,current=i===record.time,pinned=record.pins.includes(i);g.fillStyle(tone.shade,.16).fillCircle(x+2,509,32);g.fillStyle(current?tone.accent:pinned?tone.soft:tone.paper,1).fillCircle(x,505,32);g.lineStyle(3,current||pinned?tone.accent:tone.line,1).strokeCircle(x,505,32);this.add.zone(x,505,76,76).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard())return;record.time=i;preview=true;this.commit();});this.text(x,505,String(i+1),21,current?'#fffdf4':tone.ink);}}
   }
@@ -284,9 +284,9 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
   update(_time:number,delta:number){
    if(blocked()){this.tweens.pauseAll();return;}this.tweens.resumeAll();
    if(!play||task.kind!=='track'||simulating)return;
-   record.time=(record.time+delta/1000*playbackRate)%10;this.trackElapsed+=delta;
+   const demo=!!beforeDemo,step=delta/1000*playbackRate;if(demo)record.time=(record.time+step)%10;else liveClock=(liveClock+step)%10;const now=demo?record.time:liveClock;this.trackElapsed+=delta;
    // Playback repaints one persistent canvas, never the text, input zones or display list.
-   if(this.trackSurface&&this.trackElapsed>=1000/30){this.trackElapsed=0;const image=this.textures.exists('art-paramecium')?this.textures.get('art-paramecium').getSourceImage() as CanvasImageSource:undefined;draw(this.trackSurface.canvas,task.organism||'paramecium',{time:record.time,focus:65,light:65,zoom:record.zoom,pan:record.pan,trail:true,image,...this.liveFrames(record.time)});this.trackSurface.texture.refresh();}
+   if(this.trackSurface&&this.trackElapsed>=1000/30){this.trackElapsed=0;const image=this.textures.exists('art-paramecium')?this.textures.get('art-paramecium').getSourceImage() as CanvasImageSource:undefined;draw(this.trackSurface.canvas,task.organism||'paramecium',{time:now,focus:65,light:65,zoom:record.zoom,pan:record.pan,trail:true,image,...this.liveFrames(now)});this.trackSurface.texture.refresh();if(!demo)hooks.tick?.(now);}
   }
  }
  const game=new Phaser.Game({type:Phaser.CANVAS,parent:host,width:WIDTH,height:HEIGHT,transparent:true,scene:Inquiry,scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},audio:{noAudio:true},banner:false,render:{antialias:true}});
@@ -317,6 +317,6 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
   if(!beforeDemo)return;
   record=learner;preview=beforeDemo.preview;reveal=beforeDemo.reveal;play=false;beforeDemo=undefined;refresh();
  };
-  return {showFrame,endDemo,setPlaybackRate:(rate:number)=>{playbackRate=rate;if(scene)scene.tweens.timeScale=rate;},refresh:()=>{if(!disposed&&!simulating)refresh();},setPreview:(value:boolean)=>{if(disposed||simulating)return;preview=value;refresh();},setReveal:(value:number|undefined)=>{if(disposed||simulating)return;preview=false;reveal=value===undefined?undefined:Phaser.Math.Clamp(value,0,1);refresh();},animateRun:(valid:boolean,finish:()=>void)=>{if(scene instanceof Inquiry)scene.animateRun(valid,finish);else finish();},setPlaying:(value:boolean)=>{if(disposed||simulating||value&&blocked())return;if(play!==value){play=value;refresh();}},arm:(id:string)=>{if(disposed||simulating)return;armed=id;refresh();},assignCard,assign:assignCard,place:assignCard,dispose:()=>{disposed=true;play=false;scope?.dispose();document.removeEventListener('scroll',rebound,{capture:true});document.removeEventListener('pointerdown',beforePointer,true);game.destroy(true);}};
+  return {showFrame,endDemo,setPlaybackRate:(rate:number)=>{playbackRate=rate;if(scene)scene.tweens.timeScale=rate;},refresh:()=>{if(!disposed&&!simulating)refresh();},setPreview:(value:boolean)=>{if(disposed||simulating)return;preview=value;refresh();},setReveal:(value:number|undefined)=>{if(disposed||simulating)return;preview=false;reveal=value===undefined?undefined:Phaser.Math.Clamp(value,0,1);refresh();},animateRun:(valid:boolean,finish:()=>void)=>{if(scene instanceof Inquiry)scene.animateRun(valid,finish);else finish();},setPlaying:(value:boolean)=>{if(disposed||simulating||value&&blocked())return;if(play!==value){if(value&&!beforeDemo)liveClock=record.time;play=value;refresh();}},arm:(id:string)=>{if(disposed||simulating)return;armed=id;refresh();},assignCard,assign:assignCard,place:assignCard,dispose:()=>{disposed=true;play=false;scope?.dispose();document.removeEventListener('scroll',rebound,{capture:true});document.removeEventListener('pointerdown',beforePointer,true);game.destroy(true);}};
 }
 export type InquiryView=ReturnType<typeof mountInquiry>;

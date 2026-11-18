@@ -35,6 +35,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
  const grid=el('div','expedition-workspace');const work=el('section','expedition-work');const host=el('div','expedition-canvas-host');host.setAttribute('aria-label',task.title+' 탐구 장면');const badge=el('span','model-badge',task.kind==='build'?'관계 설명 모형':'관찰·조사 모형');work.append(host);if(!linking)work.append(badge);const side=el('aside','expedition-panel');grid.append(work);if(task.kind!=='summary'&&task.id!=='M1-4'&&!lapse&&!scope&&!brew&&!germ)grid.append(side);ctx.host.append(grid);
  let running=false,ready=false;
  // 2026-11-16: finishing an activity opens its discovery record by itself; the footer button stays for revisits.
+ let trackPlay=false,liveTime:number|undefined,liveSlider:HTMLElement|undefined;
  const autoRecord=['collect','connect','sort','microscope','timeline','track','sample'].includes(task.kind)||brew||germ;let wasReady=guidance(task,r).ready,autoTimer:ReturnType<typeof setTimeout>|undefined;ctx.cleanup(()=>clearTimeout(autoTimer));
  const loading=el('div','inquiry-loading','관찰 이미지를 준비하고 있어요…');loading.setAttribute('role','status');work.append(loading);
  const status=el('div','inquiry-status');const counter=el('strong','inquiry-counter');
@@ -81,6 +82,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
  };
  const save=()=>{feedback.textContent='';r.submitted=false;ctx.save();updateStatus();};
  const paint=()=>{view?.refresh();save();};
+ if(task.kind==='track'){const keep=setInterval(()=>{if(trackPlay&&demoStep<0&&ready&&view&&r.level<2&&!validTrackPair(r))view.setPlaying(true);},300);ctx.cleanup(()=>clearInterval(keep));}
  const info=(text:string,kind:'retry'|'success'='retry')=>{feedback.dataset.kind=kind;feedback.textContent=text;};
  const source=(id:string,fromList=false)=>{
   const it=task.items.find(i=>i.id===id);if(!it||running||disposed)return;
@@ -113,10 +115,12 @@ export function inquiryScene(ctx:Context,stage:Stage){
  };
  // DOM quizzes and observations load their own small renderers.
  const scene=():Promise<typeof import('../renderers/inquiry2d').mountInquiry>=>task.kind==='summary'?import('../renderers/pond-summary').then(m=>(host,_task,_record,hooks)=>m.mountPondSummary(host,progress.records,hooks)):germ?import('../renderers/germ-games').then(m=>m.mountGermGame):scope?import('../renderers/scope-games').then(m=>m.mountScopeGame):brew?import('../renderers/build-games').then(m=>m.mountBuildGame):task.kind==='microscope'?import('../renderers/simple-microscope').then(m=>m.mountMicroscope):task.id==='M1-4'?import('../renderers/fungi-sort').then(m=>m.mountFungiSort):['M4-3','M4-4'].includes(task.id)?import('../renderers/choice-games').then(m=>m.mountChoiceGame):lapse?import('../renderers/timeline-games').then(m=>m.mountTimelineGame):quiz?import('../renderers/quiz-board').then(m=>m.mountQuizBoard):import('../renderers/inquiry2d').then(m=>m.mountInquiry);
- void scene().then(async mount=>{await document.fonts.ready;if(disposed)return;view=mount(host,task,r,{assigned:()=>{selectedCard='';sourcePreview.hidden=true;sourcePreview.replaceChildren();updateStatus();},changed:()=>{save();controls();},open:source,feedback:info,ready:(ok)=>{
+ void scene().then(async mount=>{await document.fonts.ready;if(disposed)return;view=mount(host,task,r,{assigned:()=>{selectedCard='';sourcePreview.hidden=true;sourcePreview.replaceChildren();updateStatus();},changed:()=>{save();controls();},open:source,feedback:info,tick:t=>{liveTime=t;const input=liveSlider?.isConnected?liveSlider.querySelector('input'):null;if(input&&trackPlay){input.value=String(Math.round(t));updateReadouts();}},ready:(ok)=>{
   if(disposed)return;
   ready=ok;if(demoButton)demoButton.disabled=!ok;tools.inert=!ok||demoStep>=0;next.disabled=!ok||demoStep>=0;updateStatus();
-  if(ok){loading.remove();ctx.host.dispatchEvent(new Event('activity-ready',{bubbles:true}));}
+  if(ok){loading.remove();ctx.host.dispatchEvent(new Event('activity-ready',{bubbles:true}));
+   // 2026-11-18: M2-3 opens with the paramecium clip already swimming.
+   if(task.kind==='track'&&!trackPlay&&!reducedMotion(ctx.state.settings.reduced)&&r.level<2&&!validTrackPair(r)){trackPlay=true;controls();}}
   else{loading.replaceChildren(paragraph('관찰 이미지를 준비하지 못했어요. 연결을 확인하고 다시 열어요.'),button('이미지 다시 준비',ctx.render));}
  }},reducedMotion(ctx.state.settings.reduced));ctx.cleanup(view.dispose);}).catch(()=>{loading.replaceChildren(paragraph('장면을 열지 못했어요.'),button('다시 열기',ctx.render));});
  const nakedWater=()=>{
@@ -158,9 +162,15 @@ export function inquiryScene(ctx:Context,stage:Stage){
    tools.append(found?paragraph(`현미경 · 몸 둘레 표시 ${found}곳`):choice,...r.marks.length?[button('표시 되돌리기',()=>{r.marks.pop();paint();controls();},'secondary')]:[],button('움직임 다시 보기',()=>{r.level=0;paint();controls();}));
   }else if(task.kind==='track'){
    if(!validTrackPair(r)){
-    tools.append(button('눈으로 보기',nakedWater),slider('관찰 시점',0,10,1,r.time,v=>{view?.setPlaying(false);r.time=v;view?.setPreview(true);paint();}),
-     button(`A 고정${r.pins[0]===undefined?'':` · ${r.pins[0]}`}`,()=>{r.pins=[Math.round(r.time)];view?.setPreview(true);paint();controls();playEffect('capture');}),
-     button(`B 고정${r.pins[1]===undefined?'':` · ${r.pins[1]}`}`,()=>{const time=Math.round(r.time);if(!Number.isFinite(r.pins[0])||Math.abs(time-r.pins[0])<3)return info('A에서 3칸 이상 떨어진 순간을 골라요.');r.pins[1]=time;view?.setPreview(false);paint();controls();playEffect('capture');}));
+    // 2026-11-18: the clip plays by itself; 「멈추기」, the time handle or a valid B stops it at the moment on screen.
+    const moment=()=>Math.round(trackPlay&&liveTime!==undefined?liveTime:r.time);
+    const halt=()=>{if(!trackPlay)return;r.time=moment();trackPlay=false;liveTime=undefined;view?.setPlaying(false);toggle.textContent='▶ 움직임 보기';};
+    const toggle=button(trackPlay?'⏸ 멈추기':'▶ 움직임 보기',()=>{if(trackPlay){halt();view?.setPreview(true);paint();controls();}else{trackPlay=true;view?.setPlaying(true);toggle.textContent='⏸ 멈추기';}},'secondary');
+    const time=slider('관찰 시점',0,10,1,moment(),v=>{halt();r.time=v;view?.setPreview(true);paint();});
+    liveSlider=time;
+    tools.append(button('눈으로 보기',nakedWater),toggle,time,
+     button(`A 고정${r.pins[0]===undefined?'':` · ${r.pins[0]}`}`,()=>{r.pins=[moment()];if(!trackPlay)view?.setPreview(true);paint();controls();playEffect('capture');}),
+     button(`B 고정${r.pins[1]===undefined?'':` · ${r.pins[1]}`}`,()=>{const at=moment();if(!Number.isFinite(r.pins[0])||Math.abs(at-r.pins[0])<3)return info('A에서 3칸 이상 떨어진 순간을 골라요.');halt();r.time=at;r.pins[1]=at;view?.setPreview(false);paint();controls();playEffect('capture');}));
    }else{
     tools.append(slider('두 시점 겹쳐 보기',0,100,5,50,v=>view?.setReveal(v/100)));
     if(r.v===2)tools.append(button('현미경으로 움직임의 비밀 찾기',()=>{r.level=2;paint();controls();playEffect('capture');},'primary'));
