@@ -2,9 +2,9 @@
 export const narrationRecordings:Record<string,{src:string;text:string;speaker:string;duration:number}>={
   "story-1": {
     "src": "assets/audio/voice/story-1.mp3",
-    "text": "숲과 연못에 궁금한 사건이 생겼어요. 모아와 토토가 증거를 찾는 네 도움이 필요해요.",
+    "text": "숲과 연못에 궁금한 사건이 생겼어요. 모아와 토토가 증거를 찾는 데 도움이 필요해요.",
     "speaker": "moa",
-    "duration": 6.74
+    "duration": 6.22
   },
   "story-2": {
     "src": "assets/audio/voice/story-2.mp3",

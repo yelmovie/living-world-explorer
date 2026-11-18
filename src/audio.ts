@@ -12,6 +12,8 @@ export type MusicTrack = 'main'|'ending';
 const tracks: Record<MusicTrack, string> = {main: 'assets/audio/bgm-main-theme.m4a', ending: 'assets/audio/bgm-ending-theme.m4a'};
 // Files are normalized to -16 LUFS. 100% BGM ≈ -36 LUFS, just under the effects (≈ -34 LUFS at .06). Tune by ear here.
 const MUSIC_MAX_GAIN = .1;
+// Character lines duck the music instead of stopping it, so the theme carries on from the intro film.
+const NARRATION_DUCK = .4;
 let settings: AudioSettings = {sound: false, bgm: false, bgmVolume: 35};
 let context: AudioContext | undefined;
 let musicGain: GainNode | undefined;
@@ -53,7 +55,8 @@ export function playNarration(id:string,onState?:(state:NarrationState)=>void):b
  audio.onplaying=()=>{if(narration===audio)onState?.('playing');};
  audio.onwaiting=()=>{if(narration===audio)onState?.('waiting');};
  audio.onpause=()=>{if(!audio.ended)finish('stopped');};
- stopMusic();
+ // 2026-11-18: BGM keeps running from the intro film on; sync() ducks it under the line.
+ sync();
  onState?.('loading');
  void audio.play().catch(()=>finish('unavailable'));
  return true;
@@ -113,16 +116,16 @@ function musicElement(ctx: AudioContext) {
 function sync() {
   if (!settings.sound || document.hidden || explicitQuiet) stopVoices(effectVoices);
   if (!narrationEnabled() || document.hidden || explicitQuiet) clearNarration();
-  if (!settings.bgm || !unlocked || quiet() || narration || (film && !film.playing)) {stopMusic();return;}
+  if (!settings.bgm || !unlocked || quiet() || (film && !film.playing)) {stopMusic();return;}
   const ctx = engine();
   if (!ctx || !musicGain) return;
   const volume = Number.isFinite(settings.bgmVolume) ? Math.max(0, Math.min(100, settings.bgmVolume!)) / 100 : .35;
-  musicGain.gain.setTargetAtTime(volume * MUSIC_MAX_GAIN * (film ? .82 : 1), ctx.currentTime, .05);
+  musicGain.gain.setTargetAtTime(volume * MUSIC_MAX_GAIN * (film ? .82 : narration ? NARRATION_DUCK : 1), ctx.currentTime, narration ? .08 : .25);
   const element = musicElement(ctx);
   if (!element) return;
   const desiredTrack = film?.track ?? track;
   if (musicTrack !== desiredTrack) {element.src = tracks[desiredTrack];musicTrack = desiredTrack;}
-  const start = () => {if (context === ctx && unlocked && !narration && element.paused && settings.bgm && !quiet() && (!film || film.playing)) void element.play().catch(() => {});};
+  const start = () => {if (context === ctx && unlocked && element.paused && settings.bgm && !quiet() && (!film || film.playing)) void element.play().catch(() => {});};
   if (ctx.state === 'suspended') void ctx.resume().then(start).catch(() => {});else start();
 }
 function preloadEffects(){

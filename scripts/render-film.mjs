@@ -15,16 +15,19 @@ const films={
   srcEnd:20.6,total:24.8,poster:2.2,
   glitch:[[4.85,5.05],[5.3,5.42],[6.1,6.2]],
   cues:[
-   [1.3,4.4,'숲과 연못, 작은 생물의 마을에 온 걸 환영해!'],
-   [4.6,7.7,'그런데 [연구 기록]이 뒤섞여 버렸어!'],
-   [8,11,'[빵의 곰팡이], [요구르트를 만드는 세균]…'],
-   [11.2,13.8,'우리 생활에 어떤 일을 할까?'],
-   [14,16.8,'숲과 연못에서 [관찰]하고, [근거]를 모아'],
+   // 2026-11-18: cues follow 모아's voice lines below.
+   [.7,4.9,'숲과 연못, 작은 생물의 마을에 온 걸 환영해!'],
+   [5,7.4,'그런데 [연구 기록]이 뒤섞여 버렸어!'],
+   [7.5,10.4,'[빵의 곰팡이], [요구르트를 만드는 세균]…'],
+   [10.6,13,'우리 생활에 어떤 일을 할까?'],
+   [13.2,16.8,'숲과 연못에서 [관찰]하고, [근거]를 모아'],
    [17,19.6,'[다섯 기록]으로 연구소를 깨워 줘!'],
    [21.3,23,'다섯 기록을 모아 BIO CORE를 깨워요'],
    [23,24.8,'탐험 시작!']
   ],
-  sfx:[['retry',4.85,.2],...[0,1,2,3,4].map(i=>['snap',21.7+i*.18,.22]),['success',23,.3]]
+  sfx:[['retry',4.85,.2],...[0,1,2,3,4].map(i=>['snap',21.7+i*.18,.22]),['success',23,.3]],
+  // 모아 (local Momo Qwen3-TTS preset-04, -16 LUFS); provenance in public/assets/audio/voice/momo-intro-film-20261118.json.
+  voice:[['intro-1',.7],['intro-2',5],['intro-3',7.5],['intro-4',10.6],['intro-5',13.2],['intro-6',17],['intro-7',22.75]]
  },
  final:{
   // The source closes on an iris and a bright flash frame; the film holds Toto's jump (20.95s) instead.
@@ -174,15 +177,16 @@ async function render(name){
  await page.evaluate(`(${overlayProgram})(${JSON.stringify(name)},${JSON.stringify(film.cues)},${film.total},${film.srcEnd})`);
 
  const glitch=film.glitch.length?`,rgbashift=rh=-16:bh=16:enable='${film.glitch.map(([a,b])=>`between(t,${a},${b})`).join('+')}'`:'';
- const sounds=film.sfx.map(([file])=>['-i',`public/assets/audio/${file}.wav`]).flat();
- const mix=film.sfx.map(([,at,gain],i)=>`[${i+2}:a]aformat=sample_rates=44100:channel_layouts=stereo,adelay=${Math.round(at*1000)}:all=1,volume=${gain}[s${i}]`);
+ const voice=film.voice??[],VOICE_GAIN=.9;
+ const sounds=[...film.sfx.map(([file])=>['-i',`public/assets/audio/${file}.wav`]),...voice.map(([file])=>['-i',`assets/generated/film-voice-20261118/${file}.wav`])].flat();
+ const mix=[...film.sfx.map(([,at,gain])=>[at,gain]),...voice.map(([,at])=>[at,VOICE_GAIN])].map(([at,gain],i)=>`[${i+2}:a]aformat=sample_rates=44100:channel_layouts=stereo,adelay=${Math.round(at*1000)}:all=1,volume=${gain}[s${i}]`);
  const graph=[
   `[0:v]trim=end=${film.srcEnd},setpts=PTS-STARTPTS,fps=${FPS},${GRADE}${glitch},tpad=stop_mode=${film.hold?'clone':'add'}:stop_duration=${extra}:color=black[base]`,
   `[1:v]scale=out_color_matrix=bt709,format=yuva420p[ui]`,
   `[base][ui]overlay=0:0:eof_action=endall,scale=1280:720:flags=lanczos,format=yuv420p[v]`,
   `[0:a]atrim=end=${film.srcEnd},asetpts=PTS-STARTPTS,volume=7dB[amb]`,
   ...mix,
-  `[amb]${film.sfx.map((_,i)=>`[s${i}]`).join('')}amix=inputs=${film.sfx.length+1}:normalize=0:duration=longest,alimiter=limit=0.7:level=0,apad,atrim=end=${film.total},afade=t=out:st=${film.total-.5}:d=0.5[a]`
+  `[amb]${mix.map((_,i)=>`[s${i}]`).join('')}amix=inputs=${mix.length+1}:normalize=0:duration=longest,alimiter=limit=0.7:level=0,apad,atrim=end=${film.total},afade=t=out:st=${film.total-.5}:d=0.5[a]`
  ].join(';');
  const encoder=spawn(ffmpeg,['-y','-hide_banner','-loglevel','error','-i',`${SOURCE}/${name}.mp4`,'-f','image2pipe','-framerate',String(FPS),'-c:v','png','-i','pipe:0',...sounds,'-filter_complex',graph,'-map','[v]','-map','[a]','-filter_threads','2','-c:v','libx264','-preset','slow','-crf','24','-profile:v','high','-level','4.1','-pix_fmt','yuv420p','-colorspace','bt709','-color_primaries','bt709','-color_trc','bt709','-c:a','aac','-b:a','128k','-map_metadata','-1','-movflags','+faststart',`${OUT}/${name}.mp4`],{stdio:['pipe','inherit','inherit']});
  const done=new Promise((ok,fail)=>encoder.on('close',code=>code?fail(Error(`ffmpeg exited ${code}`)):ok()));

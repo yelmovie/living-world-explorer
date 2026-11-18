@@ -75,7 +75,7 @@ function complete(stage:Stage){
 // 다시 도전 restarts only the working records of one stage; accepted evidence, rewards, report and card stay.
 function retry(stage:Stage){const i=stageIds.indexOf(stage);modal(`${stages[i].title} 다시 도전`,[paragraph('네 탐구를 처음부터 다시 해요. 이미 남긴 발견 기록·보상·소개 카드는 그대로 남아요.'),paragraph(`이번에 네 탐구를 한 번에 정확히 기록하면 '${habits[i].name}' 배지를 받아요.`),button('다시 도전 시작',()=>{const a=active(state);for(const t of tasksFor(stage))a.inquiry.records[t.id]=prepareInquiry(t);a.inquiry.current[stage]=0;persist();document.querySelectorAll<HTMLDialogElement>('dialog[open]').forEach(d=>d.close());go(stages[i].entry);},'primary')]);}
 function story(prepareMap=false){
- const sections=[['작은 생물의 사건을 조사해요','숲과 연못에 궁금한 사건이 생겼어요. 모아와 토토가 증거를 찾는 네 도움이 필요해요.'],['손으로 탐구하고 발견해요','확대해 관찰하고, 시간을 움직여 비교하고, 근거를 연결해요.'],['증거를 연결하면 사건이 풀려요','관찰한 단서를 연결하고, 아직 알 수 없는 것도 구별해요. 조사 결과를 전하면 다음 연구소가 열려요.']];
+ const sections=[['작은 생물의 사건을 조사해요','숲과 연못에 궁금한 사건이 생겼어요. 모아와 토토가 증거를 찾는 데 도움이 필요해요.'],['손으로 탐구하고 발견해요','확대해 관찰하고, 시간을 움직여 비교하고, 근거를 연결해요.'],['증거를 연결하면 사건이 풀려요','관찰한 단서를 연결하고, 아직 알 수 없는 것도 구별해요. 조사 결과를 전하면 다음 연구소가 열려요.']];
  const body=el('div','intro-story'),paper=el('div','resident-lines story-paper'),pic=el('div','story-character dialogue-mouth');
  const poses=new URL('assets/characters/moa-dialogue.webp',document.baseURI);
  pic.style.setProperty('--dialogue-poses',`url("${poses.href}")`);

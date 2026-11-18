@@ -1905,3 +1905,23 @@ button.step{min-width:48px;min-height:48px}
 }
 .map-lock-icon { flex: none; vertical-align: middle; }
 .map-next .map-direction-cue { margin-inline-start: 6px; vertical-align: middle; }
+
+/* 2026-11-18 home: the logo sits above the glass cases and the subtitle and start button sit on the wooden plinth.
+   Positions are greenhouse.webp pixels (1600x900, cover, 35% vertical anchor) so they follow the art at any 16:9-ish size. */
+.hero-companion{scale:calc(2 / 3);transform-origin:50% 100%}
+@media(min-width:851px){
+ .screen-main{container-type:size;padding:0;background-position:center 35%}
+ .screen-main .hero{
+  --s:max(100cqw / 1600, 100cqh / 900);
+  --ox:calc((100cqw - 1600 * var(--s)) / 2);
+  --oy:calc((100cqh - 900 * var(--s)) * .35);
+  position:absolute;margin:0;width:max-content;max-width:90cqw;gap:10px;
+  left:calc(var(--ox) + 787 * var(--s));top:calc(var(--oy) + 614 * var(--s));transform:translateX(-50%)}
+ /* logo.webp keeps 10% clear above and 15% below the lettering; the lettering ends at art y 340, just above the cases. */
+ .screen-main .hero h1{position:absolute;left:50%;bottom:calc(100% + 274 * var(--s));transform:translate(-50%,15%);
+  width:min(830 * var(--s),(var(--oy) + 340 * var(--s) - 12px) * 4,64cqw - 20px);line-height:0;margin:0}
+ .screen-main .title-art{width:100%;max-width:none;max-height:none}
+ .screen-main .hero>p{padding:8px 24px}
+ /* The bubble moves to the edge so the wider logo clears it on 4:3 tablets. */
+ .screen-main .hero-speech.left{left:2%}
+}
