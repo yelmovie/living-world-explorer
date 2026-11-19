@@ -58,7 +58,7 @@ let unlocked = false;
 let explicitQuiet = false;
 let installed = false;
 let track: MusicTrack = 'main';
-let film: {track:MusicTrack;playing:boolean} | undefined;
+let film: {track:MusicTrack;playing:boolean;voiced:boolean} | undefined;
 let music: HTMLAudioElement | undefined;
 let musicTrack: MusicTrack | undefined;
 let finaleSince: number | undefined;
@@ -187,7 +187,7 @@ function sync() {
   const volume = Number.isFinite(settings.bgmVolume) ? Math.max(0, Math.min(100, settings.bgmVolume!)) / 100 : .35;
   if (finale && finaleSince === undefined) {finaleSince = ctx.currentTime;musicGain.gain.setValueAtTime(0, ctx.currentTime);}
   const rising = finaleSince !== undefined && ctx.currentTime - finaleSince < FINALE_RISE;
-  musicGain.gain.setTargetAtTime(volume * MUSIC_MAX_GAIN * (film ? FILM_DUCK : narration ? NARRATION_DUCK : 1), ctx.currentTime, rising ? .8 : narration ? .08 : .25);
+  musicGain.gain.setTargetAtTime(volume * MUSIC_MAX_GAIN * (film?.voiced ? FILM_DUCK : narration ? NARRATION_DUCK : 1), ctx.currentTime, rising ? .8 : narration ? .08 : .25);
   const element = musicElement(ctx);
   if (!element) return;
   const desiredTrack = finale ? 'ending' : film?.track ?? track;
@@ -214,8 +214,9 @@ function install() {
 export function syncAudio(value: AudioSettings) {settings = value;install();if(unlocked&&settings.sound)preloadEffects();effectBusLevels();sync();}
 export function setAudioQuiet(value: boolean) {explicitQuiet = value;sync();}
 export function setMusicTrack(value: MusicTrack) {if (track === value) return;track = value;sync();}
-export function scoreStoryFilm(video: HTMLVideoElement, theme: MusicTrack) {
-  const session = {track: theme, playing: false};
+// A film muted because the character voice is off has nothing to duck under, so the music stays at its usual level.
+export function scoreStoryFilm(video: HTMLVideoElement, theme: MusicTrack, voiced = true) {
+  const session = {track: theme, playing: false, voiced};
   film = session;
   stopNarration();
   const events = new AbortController();
