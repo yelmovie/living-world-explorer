@@ -45,3 +45,8 @@
 - `cmp.sh`: `assets/index-COrW3nxK.js` 빌드=운영 `e8ff706cf8a7d1f3` MATCH, `assets/index-Bj0UeKgw.css` `2ce558379ef2184c` MATCH, `index.html` `282c080d51913d9b` MATCH.
 - 운영 다시 측정: 1280×800 9(오탐), 1920×1080 1(오탐). 로컬 빌드와 같은 결과.
 - 대표 화면 전/후: `.tmp/linebreak-20261119/before/1280x800/story-3.png`(「…다음 연구소가 / 열려요.」) → `.tmp/linebreak-20261119/live-story3-1280.png`(「…알 수 없는 것도 / 구별해요. … 다음 연구소가 열려요.」)
+
+## 추가 수정 (2026-11-20, 공통 지침 8절)
+
+- 성취 카드 보관함 잠긴 문구 「악당을 물리치면 / 열려요」: `src/reward-cards.css` `.rc-locked small` 아래에 공통 네 줄(컨테이너 152px 이하면 4.6em 폭으로 세 줄) 추가. 커밋 `713b119`, 배포 https://b320ff52.living-world-explorer.pages.dev, `cmp.sh` `assets/index-Be3WCH8v.css` `052b70973e928aae`·index MATCH. 운영 보관함: 1280×800·1920×1080 한 줄, 1024×768 「악당을 / 물리치면 / 열려요」 세 줄, 카드 넘침 0(도구의 「끝줄 4자 이하」 표시는 의도한 세 줄이라 오탐).
+- 다른 세션의 화면 배치 변경(`a0b086f`, 놀이 화면 61%)을 포함한 빌드로 61개 화면 다시 측정: 1280×800 9, 1920×1080 1로 이전과 같은 오탐만, 새 문제 없음.
