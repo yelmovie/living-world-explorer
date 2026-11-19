@@ -31,6 +31,11 @@ export function showConcept(stage:Stage,settings:{sound:boolean;voice?:boolean;r
  const video=el('video','concept-video');video.src=`assets/concepts/${stage}.mp4`;video.poster=`assets/concepts/${stage}.webp`;video.controls=true;video.playsInline=true;video.preload='metadata';video.muted=!(settings.sound||settings.voice);
  // 2026-11-10: the explainer's effects were mixed about 20 dB louder than the same effects in play; match the story films (desktop/Android; iPad ignores volume).
  video.volume=.35;
+ // 2026-11-18: full screen like the story films. Captions are burned into the bottom of the picture, so native controls appear only while
+ // the clip is paused (a tap pauses it) and the recall words show only when paused or finished.
+ video.addEventListener('playing',()=>{video.controls=false;body.dataset.playing='true';body.dataset.video='ok';});
+ video.addEventListener('pause',()=>{video.controls=true;body.dataset.playing='false';});
+ video.addEventListener('click',()=>{if(!video.paused)video.pause();});
  video.setAttribute('aria-label',`${concept.title} · ${duration}초 개념 영상`);
  const track=el('track');track.kind='captions';track.srclang='ko';track.label='한국어';track.src=`assets/concepts/${stage}.vtt`;video.append(track);
  const caption=paragraph('','concept-caption');caption.setAttribute('aria-live','off');
@@ -52,6 +57,7 @@ export function showConcept(stage:Stage,settings:{sound:boolean;voice?:boolean;r
  const dialog=modal(concept.title,[body],{showClose:false});dialog.classList.add('concept-dialog');
  const hidden=()=>{if(document.hidden)video.pause();};document.addEventListener('visibilitychange',hidden);
  dialog.addEventListener('close',()=>{clearTimeout(ended);video.pause();video.removeAttribute('src');video.load();document.removeEventListener('visibilitychange',hidden);onContinue?.();},{once:true});
- if(!still)void video.play().catch(()=>{});
+ body.dataset.playing=String(!still);
+ if(!still)void video.play().catch(()=>{body.dataset.playing='false';});
  return dialog;
 }

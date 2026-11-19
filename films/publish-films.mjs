@@ -2,6 +2,8 @@
 // public/assets/concepts/<id>.mp4 (960x540 H.264 + AAC, faststart), <id>.webp (closing frame poster), <id>.vtt, manifest.json.
 // Run: node films/publish-films.mjs <folder with M1-1080.mp4 ... M5-1080.mp4>
 //      node films/publish-films.mjs --captions-only   (caption wording changed, videos untouched: rewrites concept-captions.json, VTT, manifest)
+// 2026-11-18: the app's concept mp4s carry burned-in captions (docs/concept-captions-20261118/*.json + _shared/caption-motion-20261118/burn.py).
+//   Re-publishing videos writes caption-free clips: burn the captions again afterwards (update the cue JSON if the wording or timing changed).
 import {execFileSync} from 'node:child_process';
 import {readFileSync, writeFileSync, statSync} from 'node:fs';
 import {dirname, join} from 'node:path';
