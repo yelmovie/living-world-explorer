@@ -225,13 +225,16 @@ function map(ctx:Context){
   if(wasOverview&&returnView?.mode===next){zoom=returnView.zoom;translation=poseAt(returnView.center);if(next==='hand')pan={...translation};}
   if(stop)m?.stop();camera.classList.toggle('hand-on',mode==='hand');camera.classList.toggle('overview-on',mode==='overview');hand.setAttribute('aria-pressed',String(mode==='hand'));overview.setAttribute('aria-pressed',String(mode==='overview'));overview.setAttribute('aria-label',mode==='overview'?'이전 지도 보기':'지도 전체 보기');frame(position);m?.resize();};
  const clearStage=dialogueStage;dialogueStage=null;
+ let cardWon=false;
  const encounters=mountMapEncounters({
   requiredFoes:5,host:camera,clearStage:()=>clearStage,stages:foesOn?mapVillainStages.filter((_,i)=>done[i]):[],progress:ctx.attempt.mapHits,
-  onSave:patch=>{const won=wonRewardCards(ctx.attempt.mapHits,patch);ctx.attempt.mapHits={...ctx.attempt.mapHits,...patch};refreshEncounterStatus();void save(state).then(showStorageWarning);won.forEach(awardCard);},
+  onSave:patch=>{const won=wonRewardCards(ctx.attempt.mapHits,patch);if(won.length)cardWon=true;ctx.attempt.mapHits={...ctx.attempt.mapHits,...patch};refreshEncounterStatus();void save(state).then(showStorageWarning);won.forEach(awardCard);},
   blocked:()=>disposed||mode!=='follow'||guided>=0||ctx.host.dataset.mapReady!=='true'||rewardCardDue(),
   reduced,art:{left:'assets/map-encounter/map-villain-poses-left.webp',frames:6,nativeFacing:1},palette:'#bd84ff',reach:102,contact:24,
   voice:text=>{playVoiceLine(text);},
-  tone:(kind,hits)=>playEffect(kind==='swing'?'map-swing':kind==='hit'?(hits===1?'map-hit-1':'map-hit-2'):kind==='finish'?'map-finish':kind==='exit'?'map-exit':kind==='contact'?'map-hurt':kind==='appear'?'map-appear':'map-victory'),
+  // 2026-11-19 sound pass 2 (celebration order): the last villain's card ends on the set-complete jingle, which is the
+  // "all driven off" cheer. The separate victory jingle sounds only when no card was won on this map, so it never cuts that jingle.
+  tone:(kind,hits)=>kind==='victory'&&cardWon?undefined:playEffect(kind==='swing'?'map-swing':kind==='hit'?(hits===1?'map-hit-1':'map-hit-2'):kind==='finish'?'map-finish':kind==='exit'?'map-exit':kind==='contact'?'map-hurt':kind==='appear'?'map-appear':'map-victory'),
  });
  ctx.cleanup(encounters.destroy);
  // A villain's third hit wins its achievement card. The card opens once the exit has played and makes the app inert,
