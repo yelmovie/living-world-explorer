@@ -2,7 +2,8 @@ import {stepAlongRoad,MAP_VECTORS} from '../map-controls.js';
 import Phaser from 'phaser';
 import {drawBuildingLights} from './map-lighting';
 import {outlinedSprite} from './sprite-outline';
-import {advanceGait,walkCells,walkFrame,type Direction,type Gait} from './map-walk';
+import {advanceGait,footfall,walkCells,walkFrame,type Direction,type Gait,type Stride} from './map-walk';
+import {playStep,stopStep} from '../audio';
 import type {Point} from '../model';
 import type {MapReaction,MapReactions} from '../map-encounters.js';
 import {MAP_WIDTH,MAP_HEIGHT,mapSpawn,locations,pathSegments,pathGraph,destinationNodeIds,routeBetween,nearestRoadPoint,mapAssets} from '../mapData';
@@ -28,6 +29,7 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
   private insideDoors=new Set<number>();
   private heroGait:Gait={direction:'down',distance:0};
   private friendGait:Gait={direction:'down',distance:0};
+  private stride:Stride={next:0};
   private beforeReveal?:Phaser.GameObjects.Image;
   private styleSprite(image:Phaser.GameObjects.Image,key:string,height:number){
    const outline=outlinedSprite(this.textures,key,height);
@@ -138,7 +140,7 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
     this.restoration(reveal.index);
    }
    if(!this.hero||disposed)return;
-   const blocked=document.hidden||held();if(blocked){this.keys.clear();this.held=undefined;this.tweens.pauseAll();this.heroGait.distance=this.friendGait.distance=0;this.drawWalker(this.heroImage,this.heroGait,false,null);this.drawWalker(this.friendImage,this.friendGait,false,null,true);encounters?.(this.hero,this.friend);return;}this.tweens.resumeAll();
+   const blocked=document.hidden||held();if(blocked){this.keys.clear();this.held=undefined;this.tweens.pauseAll();footfall(this.stride,false,0);stopStep();this.heroGait.distance=this.friendGait.distance=0;this.drawWalker(this.heroImage,this.heroGait,false,null);this.drawWalker(this.friendImage,this.friendGait,false,null,true);encounters?.(this.hero,this.friend);return;}this.tweens.resumeAll();
    const seconds=Math.min(delta,50)/1000;const start={x:this.hero.x,y:this.hero.y};let next:Point|undefined;
    const dx=(this.keys.has('ArrowRight')||this.keys.has('KeyD')||this.held==='right'?1:0)-(this.keys.has('ArrowLeft')||this.keys.has('KeyA')||this.held==='left'?1:0);
    const dy=(this.keys.has('ArrowDown')||this.keys.has('KeyS')||this.held==='down'?1:0)-(this.keys.has('ArrowUp')||this.keys.has('KeyW')||this.held==='up'?1:0);
@@ -147,6 +149,8 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
    else if(this.route.length){const target=this.route[0];const distance=Math.hypot(target.x-start.x,target.y-start.y);const amount=speed*seconds;if(distance<=amount){next=target;this.route.shift();}else next={x:start.x+(target.x-start.x)/distance*amount,y:start.y+(target.y-start.y)/distance*amount};}
    const mx=(next?.x??start.x)-start.x,my=(next?.y??start.y)-start.y,moving=Math.hypot(mx,my)>.01;
    advanceGait(this.heroGait,mx,my,MOA_STEP);
+   // Footsteps follow the hero only while the position really changes (keys, a held arrow or a tapped route alike).
+   if(footfall(this.stride,moving,performance.now()))playStep();else if(!moving)stopStep();
    if(moving&&next){this.hero.setPosition(next.x,next.y);this.pathHistory.push(next);if(this.pathHistory.length>250)this.pathHistory.shift();}
    let following=0;let friendTarget={x:this.friend.x,y:this.friend.y};for(let i=this.pathHistory.length-1;i>0;i--){const a=this.pathHistory[i],b=this.pathHistory[i-1];const d=Math.hypot(a.x-b.x,a.y-b.y);if(!d)continue;following+=d;if(following>=43){const t=(following-43)/d;friendTarget={x:b.x+(a.x-b.x)*t,y:b.y+(a.y-b.y)*t};break;}}
    const fdx=friendTarget.x-this.friend.x,fdy=friendTarget.y-this.friend.y,friendMoved=Math.hypot(fdx,fdy)>.01;
@@ -162,5 +166,5 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
  const game=new Phaser.Game({type:Phaser.CANVAS,parent:host,width:MAP_WIDTH,height:MAP_HEIGHT,backgroundColor:'#9daf83',pixelArt:true,antialias:false,scene:Village,scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},audio:{noAudio:true},banner:false});
  // Resize the canvas and touch coordinates in the same frame as the DOM map markers.
  const resize=()=>{if(game.scale.canvas&&game.scale.getParentBounds())game.scale.refresh();};
- return {resize,bounds:()=>game.scale.updateBounds(),move:(index:number)=>{requested=index;navigate(index);},walk:(direction:Direction)=>walk(direction),nudge:(direction:Direction)=>nudge(direction),stop:()=>stop(),cancel:()=>{requested=undefined;cancel();},dispose:()=>{disposed=true;game.destroy(true);}};
+ return {resize,bounds:()=>game.scale.updateBounds(),move:(index:number)=>{requested=index;navigate(index);},walk:(direction:Direction)=>walk(direction),nudge:(direction:Direction)=>nudge(direction),stop:()=>stop(),cancel:()=>{requested=undefined;cancel();},dispose:()=>{disposed=true;stopStep();game.destroy(true);}};
 }

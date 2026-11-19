@@ -195,5 +195,28 @@
       "sha256": "0c28c5d2c984b207"
     }
   ],
-  "cardEffectsNote": "2026-11-18 성취 카드(지도 악당 격퇴 보상) 효과음. 지도 악당 효과음과 같은 공통 라이브러리(CC0만, 원본 페이지에서 2026-11-17 라이선스 재확인)에서 이름만 바꿔 복사했고 재인코딩하지 않았다."
+  "cardEffectsNote": "2026-11-18 성취 카드(지도 악당 격퇴 보상) 효과음. 지도 악당 효과음과 같은 공통 라이브러리(CC0만, 원본 페이지에서 2026-11-17 라이선스 재확인)에서 이름만 바꿔 복사했고 재인코딩하지 않았다.",
+  "stepEffects": [
+    {
+      "file": "sfx/step-01.mp3",
+      "library": "_shared/sfx-library-20261117/sfx/step-01.mp3",
+      "title": "Footstep on Stone",
+      "creator": "sgossner",
+      "source": "https://freesound.org/people/sgossner/sounds/197778",
+      "license": "CC0",
+      "use": "지도 발자국(홀수 걸음)",
+      "sha256": "c77001b9d67b3715"
+    },
+    {
+      "file": "sfx/step-02.mp3",
+      "library": "_shared/sfx-library-20261117/sfx/step-02.mp3",
+      "title": "concrete footstep 4",
+      "creator": "Yoyodaman234",
+      "source": "https://freesound.org/people/Yoyodaman234/sounds/166506",
+      "license": "CC0",
+      "use": "지도 발자국(짝수 걸음)",
+      "sha256": "a84873e22e90c19c"
+    }
+  ],
+  "stepEffectsNote": "2026-11-19 소리 2차 수정 지도 발자국. 과학34 공통 효과음 라이브러리(CC0만, 라이브러리 manifest.json에 라이선스 재확인 기록)에서 이름 그대로 복사했고 재인코딩하지 않았다. 라이브러리 가공: 앞뒤 무음 제거·짧은 페이드·음량 맞춤(참피크 약 -3 dBTP)."
 }

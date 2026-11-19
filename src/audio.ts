@@ -1,5 +1,5 @@
 import {narrationRecordings} from './narration-recordings';
-/** Project BGM (main loop, ending loop) + locally hosted CC0 interaction sounds. */
+/** Project BGM (main loop, ending loop) + locally hosted CC0 interaction sounds. Every bus meets in one limiter before the speakers. */
 export type AudioSettings = {sound: boolean; voice?: boolean; bgm?: boolean; bgmVolume?: number};
 export type EffectName = 'click'|'success'|'retry'|'snap'|'capture'|'water'|'hint'|'run'|'page-turn'|'pipette-drop'|'core-wake'|'focus'|'sparkle'
   |'map-swing'|'map-hit-1'|'map-hit-2'|'map-finish'|'map-exit'|'map-hurt'|'map-appear'|'map-victory'
@@ -24,12 +24,29 @@ const NARRATION_DUCK = .25;
 const FILM_DUCK = .45;
 // The map finale opens on the victory jingle, so its ending theme rises over this long instead of starting at full level.
 const FINALE_RISE = 2.6;
+// 2026-11-19 second pass: one limiter in front of the speakers. The music's peak (.26 at the default level) plus a loud cue (capture .9)
+// could pass 1.0 for a moment. The threshold sits at the loudest single sound, so nothing below it changes; the node's built-in
+// make-up gain (Web Audio: full-range gain to the power -0.6) is taken back out by LIMIT_TRIM so everyday levels stay where they were.
+const LIMIT_DB = -1;
+const LIMIT_RATIO = 20;
+const LIMIT_TRIM = 10 ** (.6 * LIMIT_DB * (1 - 1 / LIMIT_RATIO) / 20);
+// Map footsteps (CC0, sources.json stepEffects): the loudest 100 ms of both files lands near -30 dB, about 3 dB under the music's
+// everyday level (-26.6 dB) and well under every other cue. A character line halves them.
+const stepFiles = ['assets/audio/sfx/step-01.mp3', 'assets/audio/sfx/step-02.mp3'];
+const STEP_LEVEL = [.17, .26];
+const STEP_DUCK = .5;
+const STEP_RATE_SPREAD = .06;
 let settings: AudioSettings = {sound: false, bgm: false, bgmVolume: 35};
 let context: AudioContext | undefined;
 let musicGain: GainNode | undefined;
 let effectGain: GainNode | undefined;
 // Map fight cues (map-*) have their own bus: a character line lowers them to 80% at most, never mutes them (VILLAIN-VOICE-SFX-FIX-20261118).
 let combatGain: GainNode | undefined;
+let output: AudioNode | undefined;
+// Footsteps keep one voice of their own: they never cut another cue and no other cue cuts them.
+const stepSamples: AudioBuffer[] = [];
+let stepVoice: {source: AudioBufferSourceNode; level: GainNode} | undefined;
+let stepCount = 0;
 let unlocked = false;
 let explicitQuiet = false;
 let installed = false;
@@ -100,12 +117,21 @@ function engine() {
       effectGain = context.createGain();
       musicGain.gain.value = 0;
       effectGain.gain.value = EFFECT_GAIN;
-      musicGain.connect(context.destination);
-      effectGain.connect(context.destination);
-      combatGain = context.createGain();combatGain.gain.value = EFFECT_GAIN;combatGain.connect(context.destination);
+      combatGain = context.createGain();combatGain.gain.value = EFFECT_GAIN;
+      output = limiter(context);
+      for (const bus of [musicGain, effectGain, combatGain]) bus.connect(output);
     } catch { context = undefined; }
   }
   return context;
+}
+function limiter(ctx: AudioContext): AudioNode {
+  try {
+    const node = ctx.createDynamicsCompressor();
+    node.threshold.value = LIMIT_DB;node.knee.value = 0;node.ratio.value = LIMIT_RATIO;node.attack.value = .002;node.release.value = .12;
+    const trim = ctx.createGain();trim.gain.value = LIMIT_TRIM;
+    node.connect(trim).connect(ctx.destination);
+    return node;
+  } catch { return ctx.destination; }
 }
 function stopVoices(voices: Set<AudioScheduledSourceNode>) {
   for (const voice of voices) {try { voice.stop(); } catch { /* Already stopped. */ }}
@@ -144,7 +170,7 @@ function musicElement(ctx: AudioContext) {
   return music;
 }
 function sync() {
-  if (!settings.sound || document.hidden || explicitQuiet) stopVoices(effectVoices);
+  if (!settings.sound || document.hidden || explicitQuiet) {stopVoices(effectVoices);stopStep();}
   if (!narrationEnabled() || document.hidden || explicitQuiet) clearNarration();
   const finale = mapFinale();
   if (!finale) finaleSince = undefined;
@@ -165,9 +191,10 @@ function sync() {
 function preloadEffects(){
  if(samplesRequested)return;const ctx=engine();if(!ctx)return;samplesRequested=true;
  for(const name of effectNames)void fetch(effectFile(name)).then(r=>{if(!r.ok)throw Error('audio');return r.arrayBuffer();}).then(data=>ctx.decodeAudioData(data)).then(buffer=>{if(context===ctx)samples.set(name,buffer);}).catch(()=>{});
+ stepFiles.forEach((file,i)=>void fetch(file).then(r=>{if(!r.ok)throw Error('audio');return r.arrayBuffer();}).then(data=>ctx.decodeAudioData(data)).then(buffer=>{if(context===ctx)stepSamples[i]=buffer;}).catch(()=>{}));
 }
 function firstGesture() {unlocked = true;if(settings.sound)preloadEffects();sync();}
-function visibility() {if (document.hidden) {stopMusic();stopVoices(effectVoices);stopNarration();}else sync();}
+function visibility() {if (document.hidden) {stopMusic();stopVoices(effectVoices);stopStep();stopNarration();}else sync();}
 function install() {
   if (installed) return;
   installed = true;
@@ -219,13 +246,43 @@ export function playEffect(name: EffectName = 'click') {
   };
   if (ctx.state === 'suspended') void ctx.resume().then(play).catch(() => {});else play();
 }
+/** The hero stopped (or the map is held): the footstep still ringing fades out in a few hundredths of a second. */
+export function stopStep() {
+  const voice = stepVoice, ctx = context;
+  if (!voice) return;
+  stepVoice = undefined;
+  try {
+    if (ctx) {voice.level.gain.setTargetAtTime(0, ctx.currentTime, .012);voice.source.stop(ctx.currentTime + .06);}
+    else voice.source.stop();
+  } catch { /* Already stopped. */ }
+}
+/** One footfall on the map. The two samples alternate and the speed drifts a little so the walk does not sound mechanical. */
+export function playStep() {
+  if (!settings.sound || !unlocked || document.hidden || explicitQuiet) return;
+  const ctx = engine();
+  if (!ctx || !output) return;
+  preloadEffects();
+  if (ctx.state !== 'running') {void ctx.resume().catch(() => {});return;}
+  const index = stepCount % stepFiles.length, buffer = stepSamples[index];
+  if (!buffer) return;
+  stopStep();
+  stepCount++;
+  const source = ctx.createBufferSource(), level = ctx.createGain(), voice = {source, level};
+  source.buffer = buffer;
+  source.playbackRate.value = 1 + (Math.random() * 2 - 1) * STEP_RATE_SPREAD;
+  level.gain.value = STEP_LEVEL[index] * (narration ? STEP_DUCK : 1);
+  source.connect(level).connect(output);
+  source.onended = () => {if (stepVoice === voice) stepVoice = undefined;source.disconnect();level.disconnect();};
+  stepVoice = voice;
+  source.start();
+}
 export function disposeAudio() {
-  stopNarration();stopMusic();stopVoices(effectVoices);
+  stopNarration();stopMusic();stopVoices(effectVoices);stopStep();stepSamples.length = 0;stepCount = 0;
   observer?.disconnect();observer = undefined;film = undefined;finaleSince = undefined;
   document.removeEventListener('pointerdown', firstGesture);
   document.removeEventListener('keydown', firstGesture);
   document.removeEventListener('visibilitychange', visibility);
   installed = false;unlocked = false;samplesRequested=false;samples.clear();
   if (context) void context.close().catch(() => {});
-  context = undefined;musicGain = undefined;effectGain = undefined;combatGain = undefined;music = undefined;musicTrack = undefined;
+  context = undefined;musicGain = undefined;effectGain = undefined;combatGain = undefined;output = undefined;music = undefined;musicTrack = undefined;
 }
