@@ -190,7 +190,8 @@ async function render(name){
   ...mix,
   `[amb]${mix.map((_,i)=>`[s${i}]`).join('')}amix=inputs=${mix.length+1}:normalize=0:duration=longest,alimiter=limit=0.7:level=0,apad,atrim=end=${film.total},afade=t=out:st=${film.total-.5}:d=0.5[a]`
  ].join(';');
- const encoder=spawn(ffmpeg,['-y','-hide_banner','-loglevel','error','-i',`${SOURCE}/${name}.mp4`,'-f','image2pipe','-framerate',String(FPS),'-c:v','png','-i','pipe:0',...sounds,'-filter_complex',graph,'-map','[v]','-map','[a]','-filter_threads','2','-c:v','libx264','-preset','slow','-crf','24','-profile:v','high','-level','4.1','-pix_fmt','yuv420p','-colorspace','bt709','-color_primaries','bt709','-color_trc','bt709','-c:a','aac','-b:a','128k','-map_metadata','-1','-movflags','+faststart',`${OUT}/${name}.mp4`],{stdio:['pipe','inherit','inherit']});
+ // 2026-11-19: CRF 30 + 96k audio keeps the burned-in captions crisp at about half the size (intro 7.6→3.9MB, final 5.8→3.1MB).
+ const encoder=spawn(ffmpeg,['-y','-hide_banner','-loglevel','error','-i',`${SOURCE}/${name}.mp4`,'-f','image2pipe','-framerate',String(FPS),'-c:v','png','-i','pipe:0',...sounds,'-filter_complex',graph,'-map','[v]','-map','[a]','-filter_threads','2','-c:v','libx264','-preset','slow','-crf','30','-profile:v','high','-level','4.1','-pix_fmt','yuv420p','-colorspace','bt709','-color_primaries','bt709','-color_trc','bt709','-c:a','aac','-b:a','96k','-map_metadata','-1','-movflags','+faststart',`${OUT}/${name}.mp4`],{stdio:['pipe','inherit','inherit']});
  const done=new Promise((ok,fail)=>encoder.on('close',code=>code?fail(Error(`ffmpeg exited ${code}`)):ok()));
  for(let frame=0;frame<frames;frame++){
   const png=Buffer.from(await page.evaluate(t=>window.drawFrame(t),frame/FPS),'base64');

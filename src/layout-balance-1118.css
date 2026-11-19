@@ -13,3 +13,18 @@
 @media(min-width:1000px){
  html:not(.large-text) #app>.expedition-shell:is([data-kind=sample],[data-kind=track],[data-kind=build],[data-kind=publish]):not(.quiz-task):not(.link-task){grid-template-columns:minmax(0,1fr) clamp(280px,23vw,448px)}
 }
+
+/* 2026-11-19: M2-1 keeps the 11-17 wide-screen layout on 4:3 and 16:10 tablets too: the pond photo uses the full width and the
+   short sampling panel floats over the empty scenery at the top right (the scene leaves that corner free). */
+@media(min-width:1000px){
+ html:not(.large-text) #app>.expedition-shell[data-kind=sample] .expedition-work{grid-area:2/1/3/3}
+ html:not(.large-text) #app>.expedition-shell[data-kind=sample] .expedition-panel{position:relative;z-index:2;align-self:start;justify-self:end;width:clamp(280px,26vw,330px);height:auto;max-height:none}
+}
+
+/* 2026-11-19: after 「보고서로」 left the core footer, 「코어 가동」 was alone in a full-width band. It now sits in the port panel's
+   bottom-right corner (still the screen's bottom-right primary spot), and the core figure takes the band's height. */
+@media(min-width:851px) and (min-height:641px){
+ .screen-core-restoration{position:relative}
+ .screen-core-restoration .action-bar{position:absolute;right:calc(var(--screen-inset) + 14px);bottom:26px;min-height:0;padding:0}
+ .screen-core-restoration .core-controls{padding-bottom:84px}
+}
