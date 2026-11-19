@@ -18,9 +18,9 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
  let refresh=()=>{};let play=false;/* Learner playback keeps its own clock so the saved record.time only changes when the learner pins or drags. */let liveClock=0;let preview=false;let disposed=false;let armed='';let reveal:number|undefined;let simulating=false;let scene:Phaser.Scene|undefined;let playbackRate=1;
  const scope=task.kind==='track'?mountScopeDecor(host,'water'):undefined;
  // 2026-11-19 놀이 화면 비율: beside the tool panel the free box is taller than 16:9 on 4:3 and 16:10 screens,
- // so these scenes take the box's shape (960 wide, 540–800 tall) and spread their layout down instead of floating in a short strip.
+ // so these scenes take the box's shape (960 wide, 540–900 tall) and spread their layout down instead of floating in a short strip.
  const tall=task.kind==='track'||task.kind==='build'||task.kind==='publish';
- const fitHeight=()=>{const box=host.getBoundingClientRect();return tall&&box.width>40&&box.height>40?Math.round(Phaser.Math.Clamp(WIDTH*box.height/box.width,HEIGHT,800)):HEIGHT;};
+ const fitHeight=()=>{const box=host.getBoundingClientRect();return tall&&box.width>40&&box.height>40?Math.round(Phaser.Math.Clamp(WIDTH*box.height/box.width,HEIGHT,900)):HEIGHT;};
  const blocked=()=>disposed||document.hidden||!!document.querySelector('dialog[open]');
  // Scene colours follow the DOM tokens (styles.css stage layer), so one token edit restyles both.
  const css=(name:string,fallback:number)=>{const v=getComputedStyle(host).getPropertyValue(name).trim();return /^#[0-9a-f]{6}$/i.test(v)?parseInt(v.slice(1),16):fallback;};
@@ -108,8 +108,8 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
     }
     if(isTimeline)this.caption(700,455+mid,'달라진 곳을 눌러요',28,tone.ink,370);
    }
-   else{this.drawSpecimen(480,isTimeline?255:270+mid,isTimeline?730:Math.min(900,750+(H-HEIGHT)*1.6),isTimeline?390:435+(H-HEIGHT),kind,isTrack&&play&&!beforeDemo?liveClock:record.time,task.kind==='microscope');if(preview&&!play&&(isTimeline||isTrack))this.caption(480,30,isTimeline?'지금 고른 모습 · 관찰 '+(record.time+1):'지금 고른 순간 · 시점 '+Math.round(record.time),22);}
-   if(isTrack&&(!comparing||reveal===undefined))this.caption(480,H-30,'같은 시야 · 같은 짚신벌레의 위치를 비교해요',20,'#3e6651',850);
+   else{this.drawSpecimen(480,isTimeline?255:270+mid,isTimeline?730:Math.min(880,720+(H-HEIGHT)*1.6),isTimeline?390:435+(H-HEIGHT),kind,isTrack&&play&&!beforeDemo?liveClock:record.time,task.kind==='microscope');if(preview&&!play&&(isTimeline||isTrack))this.caption(480,30,isTimeline?'지금 고른 모습 · 관찰 '+(record.time+1):'지금 고른 순간 · 시점 '+Math.round(record.time),22);}
+   if(isTrack&&(!comparing||reveal===undefined))this.caption(480,H-26,'같은 시야 · 같은 짚신벌레의 위치를 비교해요',20,'#3e6651',850);
    if(isTimeline&&(!comparing||reveal===undefined)){const g=this.add.graphics();g.lineStyle(6,tone.line,1).lineBetween(235,505,725,505);for(let i=0;i<4;i++){const x=235+i*163,current=i===record.time,pinned=record.pins.includes(i);g.fillStyle(tone.shade,.16).fillCircle(x+2,509,32);g.fillStyle(current?tone.accent:pinned?tone.soft:tone.paper,1).fillCircle(x,505,32);g.lineStyle(3,current||pinned?tone.accent:tone.line,1).strokeCircle(x,505,32);this.add.zone(x,505,76,76).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard())return;record.time=i;preview=true;this.commit();});this.text(x,505,String(i+1),21,current?'#fffdf4':tone.ink);}}
   }
   specimenSize(w:number,h:number,kind:string,time:number){

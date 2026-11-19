@@ -11,7 +11,7 @@
 /* Phaser scenes with a tool panel (M2-1 on narrower screens, M2-3, M5-1, M5-4): the 16:9 scene is limited by its
    column width, so a slimmer panel gives the scene more room. M2-2 keeps its wider panel for the three viewing buttons. */
 @media(min-width:1000px){
- html:not(.large-text) #app>.expedition-shell:is([data-kind=sample],[data-kind=track],[data-kind=build],[data-kind=publish]):not(.quiz-task):not(.link-task){grid-template-columns:minmax(0,1fr) clamp(280px,23vw,448px)}
+ html:not(.large-text) #app>.expedition-shell:is([data-kind=sample],[data-kind=track],[data-kind=build],[data-kind=publish],[data-kind=microscope]):not(.quiz-task):not(.link-task){grid-template-columns:minmax(0,1fr) clamp(280px,23vw,448px)}
 }
 
 /* 2026-11-19: M2-1 keeps the 11-17 wide-screen layout on 4:3 and 16:10 tablets too: the pond photo uses the full width and the
@@ -27,4 +27,37 @@
  .screen-core-restoration{position:relative}
  .screen-core-restoration .action-bar{position:absolute;right:calc(var(--screen-inset) + 14px);bottom:26px;min-height:0;padding:0}
  .screen-core-restoration .core-controls{padding-bottom:84px}
+}
+
+/* 2026-11-19: M2-3·M5-1·M5-4 — the activity title moves to the top of the tool-panel column, so the scene column runs from
+   the top bar down to the footer (1024×768: 696×562 → about 696×622, play area over 55%). The panel follows under the title. */
+@media(min-width:1000px){
+ html:not(.large-text) #app>.expedition-shell:is([data-kind=track],[data-kind=build],[data-kind=publish],[data-kind=microscope]):not(.quiz-task):not(.link-task) .expedition-header{grid-area:1/2;justify-self:stretch;padding:0}
+ html:not(.large-text) #app>.expedition-shell:is([data-kind=track],[data-kind=build],[data-kind=publish],[data-kind=microscope]):not(.quiz-task):not(.link-task) .expedition-header>div{width:100%}
+ html:not(.large-text) #app>.expedition-shell:is([data-kind=track],[data-kind=build],[data-kind=publish],[data-kind=microscope]):not(.quiz-task):not(.link-task) .expedition-header h2{font-size:clamp(22px,1.6vw,30px);padding:6px 14px;text-align:center;white-space:normal;word-break:keep-all;text-wrap:balance}
+ html:not(.large-text) #app>.expedition-shell:is([data-kind=track],[data-kind=build],[data-kind=publish],[data-kind=microscope]):not(.quiz-task):not(.link-task) .expedition-work{grid-area:1/1/3/2}
+ html:not(.large-text) #app>.expedition-shell:is([data-kind=track],[data-kind=build],[data-kind=publish],[data-kind=microscope]):not(.quiz-task):not(.link-task) .expedition-panel{grid-area:2/2/3/3}
+}
+
+/* 2026-11-19: core — the title moves to the top of the port-panel column (a slightly narrower column) and the core figure runs
+   from the top bar to the bottom, so the figure is the screen's main area (1024×768: 624×608 → about 665×680). */
+@media(min-width:851px) and (min-height:641px){
+ html:not(.large-text) .screen-core-restoration{display:grid;grid-template-columns:minmax(0,1fr) clamp(300px,30vw,414px);grid-template-rows:auto minmax(0,1fr);gap:8px 16px}
+ html:not(.large-text) .screen-core-restoration>.workspace{display:contents}
+ html:not(.large-text) .screen-core-restoration .core-workbench{grid-area:1/1/3/2}
+ html:not(.large-text) .screen-core-restoration .core-controls{grid-area:2/2}
+ html:not(.large-text) .screen-core-restoration>.activity-heading{grid-area:1/2;min-width:0}
+ html:not(.large-text) .screen-core-restoration .core-port-label{word-break:keep-all}
+ html:not(.large-text) .screen-core-restoration>.activity-heading h2{max-width:100%;font-size:clamp(22px,1.6vw,30px);padding:6px 14px;text-align:center;white-space:normal;word-break:keep-all;text-wrap:balance}
+}
+@media(min-width:851px) and (max-width:1279px) and (min-height:641px){
+ /* the narrower port column keeps names on whole words; the small stage icon gives way first */
+ html:not(.large-text) .screen-core-restoration .core-controls .core-port .stage-badge{display:none}
+ html:not(.large-text) .screen-core-restoration .core-controls .core-port{grid-template-columns:auto minmax(0,1fr) auto}
+}
+
+/* 2026-11-19: M2-2 joins the narrower panel and the title-in-panel-column layout above. In that 280–330px column the viewing
+   buttons use their short names (눈 · 돋보기 · 현미경, the 11-17 short-screen form); the full name stays as the button name. */
+@media(min-width:1000px) and (max-width:1439px){
+ html:not(.large-text) #app>.expedition-shell[data-kind=microscope]:not(.quiz-task) .observation-modes .mode-suffix{display:none}
 }
