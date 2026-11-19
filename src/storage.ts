@@ -50,6 +50,20 @@ export function restoreAttempt(raw:unknown):Attempt{
  if(!Array.isArray(a.draft.m1.captures)||!Array.isArray(a.draft.m5.runs))return base;
  return a;
 }
+/** Saved switches. The teacher preview flag is never restored. */
+export function restoreSettings(raw:unknown):State['settings']{
+ const base=makeState().settings,v=(raw&&typeof raw==='object'?raw:{}) as Partial<Record<keyof State['settings'],unknown>>;
+ const s={...base};
+ for(const k of ['large','reduced','flat'] as const)s[k]=v[k]===true;
+ s.villains=v.villains!==false;
+ s.bgmVolume=typeof v.bgmVolume==='number'&&Number.isFinite(v.bgmVolume)?Math.max(0,Math.min(100,v.bgmVolume)):base.bgmVolume;
+ // 2026-11-19: sound used to start off. A save from that time (no audioDefaults mark) is switched on once, and because the music
+ // scale became louder with the same change its old slider value never starts above the new default. After that the learner's own switches are kept.
+ if(v.audioDefaults!==2){s.bgmVolume=Math.min(s.bgmVolume,base.bgmVolume);return s;}
+ s.sound=v.sound===true;s.bgm=v.bgm===true;
+ s.voice=typeof v.voice==='boolean'?v.voice:s.sound;
+ return s;
+}
 export async function load():Promise<State>{
  const fallback=makeState();
  protectedOriginal=false;
@@ -63,15 +77,11 @@ export async function load():Promise<State>{
   if(!raw||raw.version!==1||typeof raw.learner?.id!=='string'||!raw.learner.draft||!['m1','m2','m3','m4','m5'].every(k=>raw.learner.draft[k]&&typeof raw.learner.draft[k]==='object')){
    protectedOriginal=true;storageMessage='저장 원본을 보호하고 있어요. 기존 기록을 자동으로 덮어쓰지 않아요.';return fallback;
   }
-  const s:State={...fallback,learner:restoreAttempt(raw.learner),preview:restoreAttempt(raw.preview),settings:{...fallback.settings}};
-  for(const k of ['sound','bgm','large','reduced','flat'] as const)s.settings[k]=raw.settings?.[k]===true;
-  s.settings.voice=typeof raw.settings?.voice==='boolean'?raw.settings.voice:s.settings.sound;
-  s.settings.villains=raw.settings?.villains!==false;
+  const s:State={...fallback,learner:restoreAttempt(raw.learner),preview:restoreAttempt(raw.preview),settings:restoreSettings(raw.settings)};
   // Classroom previews are temporary. Reload always returns to the student's own attempt.
   restoredFromPreview=raw.settings?.admin===true;
   s.settings.admin=false;
   s.preview=makeAttempt();
-  s.settings.bgmVolume=typeof raw.settings?.bgmVolume==='number'?Math.max(0,Math.min(100,raw.settings.bgmVolume)):30;
   for(const a of [s.learner,s.preview]){
    for(const c of a.draft.m1.captures){const blob=await request(db.transaction('captures').objectStore('captures').get(c.id));if(blob instanceof Blob)blobs.set(c.id,blob);}
    if(a.draft.m1.captures.some(c=>captureValid(c)&&!blobs.has(c.id))){a.evidence={};a.report=[];a.ports=[];a.activated=false;a.route='fungi-microscope';storageMessage='사진이 빠져 있어요. 다시 촬영해 주세요.';}

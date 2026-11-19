@@ -14,10 +14,16 @@ const effectFile = (name: EffectName) => /^(map|card)-/.test(name) ? `assets/aud
 const layered = new Set<EffectName>(['map-hit-1','map-hit-2','map-finish','map-exit','card-whoosh','card-reveal','card-epic','card-slot','card-complete']);
 export type MusicTrack = 'main'|'ending';
 const tracks: Record<MusicTrack, string> = {main: 'assets/audio/bgm-main-theme.m4a', ending: 'assets/audio/bgm-ending-theme.m4a'};
-// Files are normalized to -16 LUFS. 100% BGM ≈ -36 LUFS, just under the effects (≈ -34 LUFS at .06). Tune by ear here.
-const MUSIC_MAX_GAIN = .1;
-// Character lines duck the music instead of stopping it, so the theme carries on from the intro film.
-const NARRATION_DUCK = .4;
+// 2026-11-19 levels, relative to the character lines (plain <audio> at 1.0, files about -16.5 LUFS). Music files are -16 LUFS,
+// so the default 30% slider gives .28 (about 11 dB under a line); the effects keep their old balance against the music and stay under a line.
+// Before this the music ran at .03 and the effects at .06, about 19 dB too quiet next to the voices. Measured in docs/AUDIO-FIX-20261119.md.
+const MUSIC_MAX_GAIN = .93;
+const EFFECT_GAIN = .5;
+// Character lines and story films duck the music instead of stopping it (neither film has the theme mixed into its own sound).
+const NARRATION_DUCK = .25;
+const FILM_DUCK = .45;
+// The map finale opens on the victory jingle, so its ending theme rises over this long instead of starting at full level.
+const FINALE_RISE = 2.6;
 let settings: AudioSettings = {sound: false, bgm: false, bgmVolume: 35};
 let context: AudioContext | undefined;
 let musicGain: GainNode | undefined;
@@ -31,9 +37,12 @@ let track: MusicTrack = 'main';
 let film: {track:MusicTrack;playing:boolean} | undefined;
 let music: HTMLAudioElement | undefined;
 let musicTrack: MusicTrack | undefined;
+let finaleSince: number | undefined;
 const effectVoices = new Set<AudioScheduledSourceNode>();
 // 2026-11-10: per-file level so short CC0 samples sit within about ±3 dB of each other (measured mean volume: run -9 dB … page-turn -28 dB).
-const effectLevel: Partial<Record<EffectName, number>> = {run:.4,success:.55,retry:.75,hint:.75,'core-wake':.85,water:1.2,'pipette-drop':1.8,capture:1.8,'page-turn':2.2,focus:1.3,sparkle:1.6,
+const effectLevel: Partial<Record<EffectName, number>> = {run:.4,success:.55,retry:.75,hint:.75,'core-wake':.85,water:1.2,'pipette-drop':1.8,capture:1.8,'page-turn':2.2,
+  // 2026-11-19: the two softest cues sat under the music at its new level, so they come up to the quiet end of the others.
+  focus:1.9,sparkle:2,
   // Map cues (library loudness: swing/exit/victory about -18 LUFS, hits -20, hurt -24, heavy hit -28). The appear pop stays soft.
   'map-swing':.75,'map-hit-1':1.1,'map-hit-2':1.1,'map-finish':2,'map-exit':.8,'map-hurt':1.3,'map-appear':.7,'map-victory':.8,
   // Card cues (library loudness: reveal/epic/complete about -18 LUFS, whoosh and slot -21 to -22).
@@ -90,10 +99,10 @@ function engine() {
       musicGain = context.createGain();
       effectGain = context.createGain();
       musicGain.gain.value = 0;
-      effectGain.gain.value = .06;
+      effectGain.gain.value = EFFECT_GAIN;
       musicGain.connect(context.destination);
       effectGain.connect(context.destination);
-      combatGain = context.createGain();combatGain.gain.value = .06;combatGain.connect(context.destination);
+      combatGain = context.createGain();combatGain.gain.value = EFFECT_GAIN;combatGain.connect(context.destination);
     } catch { context = undefined; }
   }
   return context;
@@ -103,7 +112,9 @@ function stopVoices(voices: Set<AudioScheduledSourceNode>) {
   voices.clear();
 }
 // Only a concept video silences BGM; story films play over it, and settings keep it so the volume slider can be heard.
-function quiet() {return explicitQuiet || document.hidden || !!document.querySelector('dialog[open] video:not(.film-video)');}
+// The map finale (muted film) plays the ending theme while it is open and hands back to the main theme when it closes.
+function quiet() {return explicitQuiet || document.hidden || !!document.querySelector('dialog[open]:not(.map-finale-dialog) video:not(.film-video)');}
+function mapFinale() {return !!document.querySelector('dialog.map-finale-dialog[open]');}
 function stopMusic() {music?.pause();}
 function voice(frequency: number, duration: number, destination: GainNode, voices: Set<AudioScheduledSourceNode>, start: number, type: OscillatorType = 'sine') {
   const ctx = context;
@@ -135,14 +146,18 @@ function musicElement(ctx: AudioContext) {
 function sync() {
   if (!settings.sound || document.hidden || explicitQuiet) stopVoices(effectVoices);
   if (!narrationEnabled() || document.hidden || explicitQuiet) clearNarration();
+  const finale = mapFinale();
+  if (!finale) finaleSince = undefined;
   if (!settings.bgm || !unlocked || quiet() || (film && !film.playing)) {stopMusic();return;}
   const ctx = engine();
   if (!ctx || !musicGain) return;
   const volume = Number.isFinite(settings.bgmVolume) ? Math.max(0, Math.min(100, settings.bgmVolume!)) / 100 : .35;
-  musicGain.gain.setTargetAtTime(volume * MUSIC_MAX_GAIN * (film ? .82 : narration ? NARRATION_DUCK : 1), ctx.currentTime, narration ? .08 : .25);
+  if (finale && finaleSince === undefined) {finaleSince = ctx.currentTime;musicGain.gain.setValueAtTime(0, ctx.currentTime);}
+  const rising = finaleSince !== undefined && ctx.currentTime - finaleSince < FINALE_RISE;
+  musicGain.gain.setTargetAtTime(volume * MUSIC_MAX_GAIN * (film ? FILM_DUCK : narration ? NARRATION_DUCK : 1), ctx.currentTime, rising ? .8 : narration ? .08 : .25);
   const element = musicElement(ctx);
   if (!element) return;
-  const desiredTrack = film?.track ?? track;
+  const desiredTrack = finale ? 'ending' : film?.track ?? track;
   if (musicTrack !== desiredTrack) {element.src = tracks[desiredTrack];musicTrack = desiredTrack;}
   const start = () => {if (context === ctx && unlocked && element.paused && settings.bgm && !quiet() && (!film || film.playing)) void element.play().catch(() => {});};
   if (ctx.state === 'suspended') void ctx.resume().then(start).catch(() => {});else start();
@@ -196,9 +211,9 @@ export function playEffect(name: EffectName = 'click') {
   const frequencies = motifs[name];
   const play = () => {
     if (context !== ctx || !effectGain || !settings.sound || document.hidden || explicitQuiet) return;
-    effectGain.gain.value = .06 * (narration ? .3 : 1);
+    effectGain.gain.value = EFFECT_GAIN * (narration ? .3 : 1);
     const combat = name.startsWith('map-') && combatGain, bus = combat || effectGain;
-    if (combat) combat.gain.value = .06 * (narration ? .8 : 1);
+    if (combat) combat.gain.value = EFFECT_GAIN * (narration ? .8 : 1);
     const buffer=samples.get(name);if(buffer){const source=ctx.createBufferSource();source.buffer=buffer;const level=ctx.createGain();level.gain.value=effectLevel[name]??1;source.connect(level).connect(bus);effectVoices.add(source);source.onended=()=>{effectVoices.delete(source);source.disconnect();level.disconnect();};source.start();return;}
     frequencies.forEach((frequency,i) => voice(frequency, .16, bus, effectVoices, ctx.currentTime + i * .09));
   };
@@ -206,7 +221,7 @@ export function playEffect(name: EffectName = 'click') {
 }
 export function disposeAudio() {
   stopNarration();stopMusic();stopVoices(effectVoices);
-  observer?.disconnect();observer = undefined;film = undefined;
+  observer?.disconnect();observer = undefined;film = undefined;finaleSince = undefined;
   document.removeEventListener('pointerdown', firstGesture);
   document.removeEventListener('keydown', firstGesture);
   document.removeEventListener('visibilitychange', visibility);

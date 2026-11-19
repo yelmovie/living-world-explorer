@@ -264,7 +264,7 @@ export function mountMapEncounters({
       callback.hidden=now>=clearUntil;
     }
     if(appeared)tone('appear',0);
-    // The finale video is muted and opening it pauses the BGM, so the jingle has the room to itself.
+    // The finale video is muted; audio.ts switches to the ending theme and lets it rise slowly, so the jingle is heard first.
     if(finaleAt&&now>=finaleAt&&!stop){finaleAt=0;tone('victory',HITS);openMapFinale(host,"/assets/film/final.mp4");}
     current=nearest;
     if(current&&current!==lastNear&&current.saidUntil<=now&&now-lastHit>REPEAT&&now>=clearUntil){

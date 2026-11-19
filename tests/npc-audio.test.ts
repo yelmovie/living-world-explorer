@@ -81,8 +81,63 @@ describe('지도 전투음과 악당 대사',()=>{
   a.playEffect('map-swing');a.playEffect('map-hit-1');a.playEffect('map-exit');
   const cues=sources.slice(-3);expect(cues).toHaveLength(3);
   for(const cue of cues){expect(cue.start).toHaveBeenCalledOnce();expect(cue.stop).not.toHaveBeenCalled();expect((cue.level as {connect:ReturnType<typeof vi.fn>}).connect).toHaveBeenCalledWith(fight);}
-  expect(fight.gain.value).toBeCloseTo(.06*.8);
-  a.playEffect('click');expect(effects.gain.value).toBeCloseTo(.06*.3);
+  expect(fight.gain.value).toBeCloseTo(.5*.8);
+  a.playEffect('click');expect(effects.gain.value).toBeCloseTo(.5*.3);
+  a.disposeAudio();
+ });
+});
+// 2026-11-19: music sits at .28 of a character line by default, is lowered (never stopped) under lines and story films,
+// and the map finale dialog plays the ending theme until it closes.
+describe('배경 음악 크기·줄임·지도 피날레',()=>{
+ const start=async(settings={sound:false,voice:true,bgm:true,bgmVolume:30})=>{
+  const dom={finale:false,concept:false},gains:{gain:{value:number;setTargetAtTime:ReturnType<typeof vi.fn>;setValueAtTime:ReturnType<typeof vi.fn>}}[]=[];
+  class Ctx{state='running';currentTime=0;destination={};
+   createGain(){const gain={value:1,setTargetAtTime:vi.fn((v:number)=>{gain.value=v;}),setValueAtTime:vi.fn((v:number)=>{gain.value=v;})};const g={gain,connect:vi.fn((n:unknown)=>n),disconnect:vi.fn()};gains.push(g);return g;}
+   createMediaElementSource(){return {connect:vi.fn()};}
+   resume=vi.fn(async()=>{});close=vi.fn(async()=>{});}
+  vi.stubGlobal('window',{AudioContext:Ctx});
+  vi.stubGlobal('document',{hidden:false,body:{},querySelector:(q:string)=>(q.includes('.map-finale-dialog[open]')?dom.finale:dom.concept)?{}:null,addEventListener:(n:string,f:()=>void)=>listeners.set(n,f),removeEventListener:(n:string)=>listeners.delete(n)});
+  const a=await import('../src/audio');a.syncAudio(settings);listeners.get('pointerdown')?.();
+  return {a,dom,settings,music:gains[0].gain,theme:clips[0]};
+ };
+ it('기본 30%에서 대사의 약 0.28배로 메인테마를 튼다',async()=>{
+  const {a,music,theme}=await start();
+  expect(theme.src).toBe('assets/audio/bgm-main-theme.m4a');expect(theme.paused).toBe(false);
+  expect(music.value).toBeGreaterThanOrEqual(.27);expect(music.value).toBeLessThanOrEqual(.3);
+  a.disposeAudio();
+ });
+ it('대사 동안 멈추지 않고 0.25배로 줄였다가, 끝나거나 오류가 나면 되돌린다',async()=>{
+  const {a,music,theme}=await start(),full=music.value;
+  for(const end of ['onended','onerror','onpause'] as const){
+   expect(a.playNarration('M1')).toBe(true);
+   expect(music.value).toBeCloseTo(full*.25);expect(theme.paused).toBe(false);
+   (clips.at(-1) as unknown as Record<string,()=>void>)[end]();
+   expect(music.value).toBeCloseTo(full);
+  }
+  expect(theme.pause).not.toHaveBeenCalled();a.disposeAudio();
+ });
+ it('이야기 영상이 재생되는 동안 0.45배로 계속 나고, 닫으면 되돌린다',async()=>{
+  const {a,music,theme}=await start(),full=music.value,on=new Map<string,()=>void>();
+  const release=a.scoreStoryFilm({addEventListener:(n:string,f:()=>void)=>on.set(n,f)} as unknown as HTMLVideoElement,'main');
+  on.get('playing')!();expect(theme.paused).toBe(false);expect(music.value).toBeCloseTo(full*.45);
+  release();expect(music.value).toBeCloseTo(full);a.disposeAudio();
+ });
+ it('지도 피날레 창이 열려 있는 동안 엔딩 곡을 0에서 올려 틀고, 닫으면 메인테마로 돌아간다',async()=>{
+  const {a,dom,settings,music,theme}=await start(),full=music.value;
+  dom.finale=true;a.syncAudio(settings);
+  expect(theme.src).toBe('assets/audio/bgm-ending-theme.m4a');expect(theme.paused).toBe(false);
+  expect(music.setValueAtTime).toHaveBeenCalledTimes(1);expect(music.setValueAtTime).toHaveBeenCalledWith(0,0);
+  expect(music.setTargetAtTime).toHaveBeenLastCalledWith(full,0,.8);
+  a.syncAudio(settings);expect(music.setValueAtTime).toHaveBeenCalledTimes(1);
+  dom.finale=false;a.syncAudio(settings);
+  expect(theme.src).toBe('assets/audio/bgm-main-theme.m4a');expect(theme.paused).toBe(false);expect(music.value).toBeCloseTo(full);
+  a.disposeAudio();
+ });
+ it('개념 영상 창에서는 멈추고, 배경 음악을 끄면 바로 멈춘다',async()=>{
+  const {a,dom,settings,theme}=await start();
+  dom.concept=true;a.syncAudio(settings);expect(theme.paused).toBe(true);
+  dom.concept=false;a.syncAudio(settings);expect(theme.paused).toBe(false);
+  a.syncAudio({...settings,bgm:false});expect(theme.paused).toBe(true);
   a.disposeAudio();
  });
 });
