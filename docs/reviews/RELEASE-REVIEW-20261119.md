@@ -37,3 +37,9 @@
 ## 아직 NOT TESTED
 
 교사 내용 승인, 학생 이해도, B16 40분 수업, C19, D6·D9·D10 실기 성능, G19. 11-18과 같다.
+
+## 저녁 재배포 (면적 55%)
+
+- 커밋 `489de12` → Cloudflare Pages 배포 `2d4f9396`. `cmp.sh`: `assets/inquiry2d-CufLEuCt.js` build=live `22be21c27b91d1ee` **MATCH**, index **MATCH**, CSS `index-DVc0c0Gl.css` MATCH
+- 운영 스모크(1024×768): M5-1 696×622(높이 81%·면적 55%), 코어 661×676(88%·57%), M2-2 사진 위 띠부터 아래까지·짧은 보기 버튼, 콘솔 오류 0
+- 판정·점수 변화 없음: 조건부 배포 가능, 88/100(C1·C2는 이미 PASS로 매김)
