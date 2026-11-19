@@ -18,9 +18,9 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
  let refresh=()=>{};let play=false;/* Learner playback keeps its own clock so the saved record.time only changes when the learner pins or drags. */let liveClock=0;let preview=false;let disposed=false;let armed='';let reveal:number|undefined;let simulating=false;let scene:Phaser.Scene|undefined;let playbackRate=1;
  const scope=task.kind==='track'?mountScopeDecor(host,'water'):undefined;
  // 2026-11-19 놀이 화면 비율: beside the tool panel the free box is taller than 16:9 on 4:3 and 16:10 screens,
- // so these scenes take the box's shape (960 wide, 540–900 tall) and spread their layout down instead of floating in a short strip.
+ // so these scenes take the box's shape (960 wide, 540–960 tall) and spread their layout down instead of floating in a short strip.
  const tall=task.kind==='track'||task.kind==='build'||task.kind==='publish';
- const fitHeight=()=>{const box=host.getBoundingClientRect();return tall&&box.width>40&&box.height>40?Math.round(Phaser.Math.Clamp(WIDTH*box.height/box.width,HEIGHT,900)):HEIGHT;};
+ const fitHeight=()=>{const box=host.getBoundingClientRect();return tall&&box.width>40&&box.height>40?Math.round(Phaser.Math.Clamp(WIDTH*box.height/box.width,HEIGHT,960)):HEIGHT;};
  const blocked=()=>disposed||document.hidden||!!document.querySelector('dialog[open]');
  // Scene colours follow the DOM tokens (styles.css stage layer), so one token edit restyles both.
  const css=(name:string,fallback:number)=>{const v=getComputedStyle(host).getPropertyValue(name).trim();return /^#[0-9a-f]{6}$/i.test(v)?parseInt(v.slice(1),16):fallback;};

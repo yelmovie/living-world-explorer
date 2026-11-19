@@ -61,3 +61,12 @@
 @media(min-width:1000px) and (max-width:1439px){
  html:not(.large-text) #app>.expedition-shell[data-kind=microscope]:not(.quiz-task) .observation-modes .mode-suffix{display:none}
 }
+
+/* 2026-11-19 (2): on screens at least 700px tall, the footer of these four scenes joins the tool-panel column too: secondary
+   buttons, step dots and the primary button stack at the column's bottom, the primary still in the screen's bottom-right corner.
+   The scene runs from the top bar to the bottom edge (1024×768: 696×622 → 696×688, play area about 61%). */
+@media(min-width:1000px) and (min-height:700px){
+ html:not(.large-text) #app>.expedition-shell:is([data-kind=track],[data-kind=build],[data-kind=publish],[data-kind=microscope]):not(.quiz-task):not(.link-task) .expedition-work{grid-area:1/1/4/2}
+ html:not(.large-text) #app>.expedition-shell:is([data-kind=track],[data-kind=build],[data-kind=publish],[data-kind=microscope]):not(.quiz-task):not(.link-task) .expedition-footer{grid-area:3/2;display:flex;flex-direction:column;align-items:flex-end;gap:8px;padding:0}
+ html:not(.large-text) #app>.expedition-shell:is([data-kind=track],[data-kind=build],[data-kind=publish],[data-kind=microscope]):not(.quiz-task):not(.link-task) .expedition-footer .expedition-secondary{align-self:stretch;justify-content:flex-start}
+}
