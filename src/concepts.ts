@@ -28,7 +28,8 @@ function focusWords(node:HTMLElement,text:string,terms:string[]){
 export function showConcept(stage:Stage,settings:{sound:boolean;voice?:boolean;reduced:boolean},onContinue?:()=>void){
  const concept=concepts[stage],{duration,cues}=conceptCaptions[stage];const still=reducedMotion(settings.reduced);
  const body=el('div','concept-body');body.dataset.reduced=String(still);
- const video=el('video','concept-video');video.src=`assets/concepts/${stage}.mp4`;video.poster=`assets/concepts/${stage}.webp`;video.controls=true;video.playsInline=true;video.preload='metadata';video.muted=!(settings.sound||settings.voice);
+ const video=el('video','concept-video');video.src=`assets/concepts/${stage}.mp4`;video.poster=`assets/concepts/${stage}.webp`;video.controls=true;video.playsInline=true;video.preload='metadata';video.muted=!settings.sound;
+ // 2026-11-20: the concept clips carry only effects (page turns, snaps, chimes; no spoken line and no separate caption voice), so they follow the effects switch alone.
  // 2026-11-10: the explainer's effects were mixed about 20 dB louder than the same effects in play; match the story films (desktop/Android; iPad ignores volume).
  video.volume=.35;
  // 2026-11-18: full screen like the story films. Captions are burned into the bottom of the picture, so native controls appear only while

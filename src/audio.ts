@@ -1,6 +1,6 @@
 import {narrationRecordings} from './narration-recordings';
 /** Project BGM (main loop, ending loop) + locally hosted CC0 interaction sounds. Every bus meets in one limiter before the speakers. */
-export type AudioSettings = {sound: boolean; voice?: boolean; bgm?: boolean; bgmVolume?: number};
+export type AudioSettings = {sound: boolean; voice?: boolean; bgm?: boolean; bgmVolume?: number; effectVolume?: number};
 export type EffectName = 'click'|'success'|'retry'|'snap'|'capture'|'water'|'hint'|'run'|'page-turn'|'pipette-drop'|'core-wake'|'focus'|'sparkle'
   |'map-swing'|'map-hit-1'|'map-hit-2'|'map-finish'|'map-exit'|'map-hurt'|'map-appear'|'map-victory'
   |'card-whoosh'|'card-reveal'|'card-epic'|'card-slot'|'card-complete';
@@ -37,6 +37,13 @@ const STEP_LEVEL = [.17, .26];
 const STEP_DUCK = .5;
 const STEP_RATE_SPREAD = .06;
 let settings: AudioSettings = {sound: false, bgm: false, bgmVolume: 35};
+// 2026-11-20 effect volume slider (0-100, default 100): multiplies every effect bus and the footsteps, so 100 keeps the levels above unchanged.
+function effectScale() {const v = settings.effectVolume;return Number.isFinite(v) ? Math.max(0, Math.min(100, v!)) / 100 : 1;}
+function effectBusLevels() {
+  const scale = EFFECT_GAIN * effectScale();
+  if (effectGain) effectGain.gain.value = scale * (narration ? .3 : 1);
+  if (combatGain) combatGain.gain.value = scale * (narration ? .8 : 1);
+}
 let context: AudioContext | undefined;
 let musicGain: GainNode | undefined;
 let effectGain: GainNode | undefined;
@@ -116,8 +123,8 @@ function engine() {
       musicGain = context.createGain();
       effectGain = context.createGain();
       musicGain.gain.value = 0;
-      effectGain.gain.value = EFFECT_GAIN;
-      combatGain = context.createGain();combatGain.gain.value = EFFECT_GAIN;
+      effectGain.gain.value = EFFECT_GAIN * effectScale();
+      combatGain = context.createGain();combatGain.gain.value = EFFECT_GAIN * effectScale();
       output = limiter(context);
       for (const bus of [musicGain, effectGain, combatGain]) bus.connect(output);
     } catch { context = undefined; }
@@ -204,7 +211,7 @@ function install() {
   observer = new MutationObserver(sync);
   observer.observe(document.body, {childList: true, subtree: true, attributes: true, attributeFilter: ['open']});
 }
-export function syncAudio(value: AudioSettings) {settings = value;install();if(unlocked&&settings.sound)preloadEffects();sync();}
+export function syncAudio(value: AudioSettings) {settings = value;install();if(unlocked&&settings.sound)preloadEffects();effectBusLevels();sync();}
 export function setAudioQuiet(value: boolean) {explicitQuiet = value;sync();}
 export function setMusicTrack(value: MusicTrack) {if (track === value) return;track = value;sync();}
 export function scoreStoryFilm(video: HTMLVideoElement, theme: MusicTrack) {
@@ -238,9 +245,8 @@ export function playEffect(name: EffectName = 'click') {
   const frequencies = motifs[name];
   const play = () => {
     if (context !== ctx || !effectGain || !settings.sound || document.hidden || explicitQuiet) return;
-    effectGain.gain.value = EFFECT_GAIN * (narration ? .3 : 1);
+    effectBusLevels();
     const combat = name.startsWith('map-') && combatGain, bus = combat || effectGain;
-    if (combat) combat.gain.value = EFFECT_GAIN * (narration ? .8 : 1);
     const buffer=samples.get(name);if(buffer){const source=ctx.createBufferSource();source.buffer=buffer;const level=ctx.createGain();level.gain.value=effectLevel[name]??1;source.connect(level).connect(bus);effectVoices.add(source);source.onended=()=>{effectVoices.delete(source);source.disconnect();level.disconnect();};source.start();return;}
     frequencies.forEach((frequency,i) => voice(frequency, .16, bus, effectVoices, ctx.currentTime + i * .09));
   };
@@ -270,7 +276,7 @@ export function playStep() {
   const source = ctx.createBufferSource(), level = ctx.createGain(), voice = {source, level};
   source.buffer = buffer;
   source.playbackRate.value = 1 + (Math.random() * 2 - 1) * STEP_RATE_SPREAD;
-  level.gain.value = STEP_LEVEL[index] * (narration ? STEP_DUCK : 1);
+  level.gain.value = STEP_LEVEL[index] * effectScale() * (narration ? STEP_DUCK : 1);
   source.connect(level).connect(output);
   source.onended = () => {if (stepVoice === voice) stepVoice = undefined;source.disconnect();level.disconnect();};
   stepVoice = voice;

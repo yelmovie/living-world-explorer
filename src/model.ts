@@ -12,7 +12,7 @@ export type Draft = {
 };
 export type Evidence = {stage:Stage;attemptId:string;origin:'learner'|'demo';created:string;updated?:string;validationVersion?:2;summary:string;draft:Draft;inquiry?:InquiryProgress};
 export type Attempt={id:string;route:string;resumeRoute?:string|null;mapPosition:Point;mapHits?:Record<string,number>;draft:Draft;evidence:Partial<Record<Stage,Evidence>>;report:Stage[];ports:Stage[];activated:boolean;cardTitle:string;cardNote:string;canDo?:Stage[];canDoNote?:string;inquiry:InquiryProgress;presentation?:{observation:string;evidence:string;life:string}};
-export type State={version:1;settings:{sound:boolean;voice:boolean;bgm:boolean;bgmVolume:number;audioDefaults:2;villains:boolean;large:boolean;reduced:boolean;flat:boolean;admin:boolean};learner:Attempt;preview:Attempt};
+export type State={version:1;settings:{sound:boolean;voice:boolean;bgm:boolean;bgmVolume:number;effectVolume:number;audioDefaults:2;villains:boolean;large:boolean;reduced:boolean;flat:boolean;admin:boolean};learner:Attempt;preview:Attempt};
 export const stageIds:Stage[]=['M1','M2','M3','M4','M5'];
 export function makeAttempt():Attempt {return {id:crypto.randomUUID(),route:'main',mapPosition:{x:480,y:380},evidence:{},report:[],ports:[],activated:false,cardTitle:'작은 생물이 만드는 변화',cardNote:'',inquiry:emptyInquiry(),draft:{
  m1:{environment:[],organism:'mushroom',focus:25,light:65,zoom:1,pan:{x:0,y:0},captures:[],selected:'',claim:''},
@@ -22,7 +22,8 @@ export function makeAttempt():Attempt {return {id:crypto.randomUUID(),route:'mai
  m5:{slots:['','',''],selected:'',edges:[false,false],revision:0,prediction:'',reason:'',runs:[],explanation:''}
  }};}
 // 2026-11-19: effects, character voices and music start on. audioDefaults marks a save made with these defaults (see restoreSettings).
-export function makeState():State {return {version:1,settings:{sound:true,voice:true,bgm:true,bgmVolume:30,audioDefaults:2,villains:true,large:false,reduced:false,flat:false,admin:false},learner:makeAttempt(),preview:makeAttempt()};}
+// 2026-11-20: effectVolume scales every effect bus (UI, map fight, cards, footsteps); 100 is the level they had before the slider existed.
+export function makeState():State {return {version:1,settings:{sound:true,voice:true,bgm:true,bgmVolume:30,effectVolume:100,audioDefaults:2,villains:true,large:false,reduced:false,flat:false,admin:false},learner:makeAttempt(),preview:makeAttempt()};}
 export function active(s:State){return s.settings.admin?s.preview:s.learner;}
 export function validEvidence(a:Attempt,stage:Stage,admin:boolean){const e=a.evidence[stage];return !!e&&e.attemptId===a.id&&e.origin===(admin?'demo':'learner');}
 export function position(t:number):Point {return {x:0.25+t*0.045,y:0.48+Math.sin(t*.65)*.15};}

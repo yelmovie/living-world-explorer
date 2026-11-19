@@ -57,6 +57,8 @@ export function restoreSettings(raw:unknown):State['settings']{
  for(const k of ['large','reduced','flat'] as const)s[k]=v[k]===true;
  s.villains=v.villains!==false;
  s.bgmVolume=typeof v.bgmVolume==='number'&&Number.isFinite(v.bgmVolume)?Math.max(0,Math.min(100,v.bgmVolume)):base.bgmVolume;
+ // 2026-11-20: saves from before the effect volume slider play effects at the level they always had (100%).
+ s.effectVolume=typeof v.effectVolume==='number'&&Number.isFinite(v.effectVolume)?Math.max(0,Math.min(100,v.effectVolume)):base.effectVolume;
  // 2026-11-19: sound used to start off. A save from that time (no audioDefaults mark) is switched on once, and because the music
  // scale became louder with the same change its old slider value never starts above the new default. After that the learner's own switches are kept.
  if(v.audioDefaults!==2){s.bgmVolume=Math.min(s.bgmVolume,base.bgmVolume);return s;}

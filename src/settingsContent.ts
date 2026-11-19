@@ -6,7 +6,7 @@ export const settingsContent = {
   version: manifest.version,
   producer: '기획·제작: 옐샘 & 아이스크림미디어',
   title: '설정',
-  sound: {music: '배경 음악', effects: '효과음', voice: '캐릭터 목소리', volume: '배경 음악 크기'},
+  sound: {music: '배경 음악', effects: '효과음', voice: '캐릭터 목소리', volume: '배경 음악 크기', effectVolume: '효과음 크기'},
   story: '모아의 의뢰 듣기',
   intro: '시작 영상 다시 보기',
   ending: '복구 이야기 다시 보기',

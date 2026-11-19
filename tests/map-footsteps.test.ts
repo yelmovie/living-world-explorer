@@ -135,6 +135,26 @@ describe('발자국 소리와 출력 리미터',()=>{
   hidden.value=false;a.setAudioQuiet(true);a.playStep();expect(sources).toHaveLength(2);
   a.disposeAudio();
  });
+ it('효과음 크기(2026-11-20): 기본 100%는 예전 값 그대로, 바꾸면 효과음·전투음·발자국이 그 비율로 바뀌고 배경 음악은 그대로다',async()=>{
+  const {a,settings}=await start({sound:true,voice:true,bgm:true,bgmVolume:30,effectVolume:100} as never);
+  const [music,effects,fight]=nodes.filter(n=>n.kind==='gain');
+  expect(effects.gain.value).toBe(.5);expect(fight.gain.value).toBe(.5);
+  a.playStep();expect(level(sources[0]).gain.value).toBeCloseTo(.17);
+  const musicBefore=music.gain.value;
+  a.syncAudio({...settings,effectVolume:40} as never);
+  expect(effects.gain.value).toBeCloseTo(.2);expect(fight.gain.value).toBeCloseTo(.2);
+  a.playStep();expect(level(sources.at(-1)!).gain.value).toBeCloseTo(.26*.4);
+  a.playEffect('map-hit-1');expect(fight.gain.value).toBeCloseTo(.2);
+  a.playNarration('M1');a.playEffect('hint');expect(effects.gain.value).toBeCloseTo(.2*.3);a.playEffect('map-hit-2');expect(fight.gain.value).toBeCloseTo(.2*.8);
+  a.stopNarration();a.syncAudio({...settings,effectVolume:0} as never);expect(effects.gain.value).toBe(0);expect(fight.gain.value).toBe(0);
+  expect(music.gain.value).toBeCloseTo(musicBefore);
+  a.disposeAudio();
+ });
+ it('효과음 크기 값이 없으면 100%로 본다',async()=>{
+  const {a}=await start({sound:true,voice:true,bgm:false});
+  const [,effects,fight]=nodes.filter(n=>n.kind==='gain');expect(effects.gain.value).toBe(.5);expect(fight.gain.value).toBe(.5);
+  a.disposeAudio();
+ });
  it('첫 입력 전에는 내지 않는다',async()=>{
   vi.stubGlobal('window',{AudioContext:class{}});
   const a=await import('../src/audio');a.syncAudio({sound:true});a.playStep();expect(sources).toHaveLength(0);a.disposeAudio();
