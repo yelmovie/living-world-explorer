@@ -11,6 +11,8 @@ export function mountDialogueSpeech(
   const layout=el('span','dialogue-line-layout');
   const visual=el('span','dialogue-line-visual');
   const readable=el('span','dialogue-readable');
+  // Not-yet-typed letters stay in place (hidden) so the line breaks never move while typing.
+  const typed=document.createTextNode(''),pending=el('span','dialogue-line-pending');
   const reveal=el('button','dialogue-reveal');
   reveal.type='button';
   reveal.onclick=finish;
@@ -63,14 +65,16 @@ export function mountDialogueSpeech(
     if(motion.matches||document.hidden||document.documentElement.classList.contains('reduced'))finish();
     else{
       const characters=Array.from(text),started=performance.now();
-      visual.textContent='';
+      typed.data='';pending.textContent=text;
+      visual.replaceChildren(typed,pending);
       reveal.removeAttribute('aria-disabled');
       scene.dataset.typing='true';
       const draw=(now:number)=>{
         if(!dialog.open||!dialog.isConnected){finish();return;}
         const count=Math.floor((now-started)/24)+1;
         if(count>=characters.length){finish();return;}
-        visual.textContent=characters.slice(0,count).join('');
+        typed.data=characters.slice(0,count).join('');
+        pending.textContent=characters.slice(count).join('');
         frame=requestAnimationFrame(draw);
       };
       frame=requestAnimationFrame(draw);

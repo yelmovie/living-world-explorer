@@ -10,6 +10,9 @@
 .dialogue-reveal[aria-disabled=true] {cursor:default}
 .dialogue-line-layout {display:block;visibility:hidden}
 .dialogue-line-visual {position:absolute;inset:0}
+/* Both copies wrap the whole line the same way, so a balanced break is safe while typing (2026-11-19). */
+.dialogue-line-layout,.dialogue-line-visual {text-wrap:balance}
+.dialogue-line-pending {visibility:hidden}
 .dialogue-readable {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .modal .dialogue-voice-status {margin:4px 0 0;font-size:14px;line-height:1.4}
 .dialogue-voice-status:empty {display:none}
