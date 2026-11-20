@@ -1,0 +1,220 @@
+# 배포 검토 보고서 — 생명 코드 연구소 (8 creatures) · 최신 운영 빌드 재점검
+
+> 점검 2026-11-20 09:52~12:35 KST · 운영 https://living-world-explorer.pages.dev
+> **최종 기준 커밋 `1f2659c` · Cloudflare Pages 배포 `e86a0a64`** (`prodcmp.sh 08` index MATCH, JS·CSS 25개 일치·불일치 0)
+> 시작 기준은 `67e455d`(Pages `acd8b123`). 점검 중 다른 세션이 `b46fef9`(저작권·제작 표기 통일)·`edda5b9`(시작 화면 제작 표기 한 줄)를 올려 배포했고, 이번 점검에서 D5를 고친 `1f2659c`를 배포했다. 아래 「최종 빌드 재확인」은 `1f2659c` 운영 빌드에서 다시 돌린 결과다.
+> 지난 점검 문서 `7b53cea`(RELEASE-REVIEW-20261119) 뒤 코드 커밋 3개: `713b119` 성취 카드 잠긴 문구, `847851e` 소리 3차(효과음 크기·개념 영상), `67e455d` 소리 4차(목소리 끄면 이야기 영상 음소거)
+> 지침: `_shared/FINAL-RECHECK-20261120.md`. 지난 판정을 옮겨 적지 않고, 이번에 운영 빌드에서 실제로 본 것만 PASS로 적었다.
+
+## 최종 판정
+
+**조건부 배포 가능** · FAIL 0
+
+- 운영 = 최종 기준 커밋 빌드: `prodcmp.sh 08` → `1f2659c` 빌드최신, index MATCH, JS·CSS 25개 일치(불일치 0). 시작 기준 `67e455d`도 점검 시작 때 같은 방식으로 MATCH였다.
+- 조건부인 이유: 교사 내용 승인(`src/curriculum.ts:63` `needsReview:true`, `reviewer:null`), 학생 이해도, 40분 수업, 실제 학교 태블릿·iPad Safari 실기는 `NOT TESTED`다. A영역 `NOT TESTED`가 있으면 「배포 가능」을 주지 않는다.
+- 지난 점검(11-19) 대비 달라진 판정
+  - B13 뒤로 가기: PASS → **WARNING(확인됨)**. 이번에 처음 직접 눌러 봤다. 아래 B절.
+  - D5 중복 asset: 이번에 운영 빌드를 해시로 대조해 2쌍을 찾았고(WARNING), 고쳐서 배포한 뒤 **PASS(확인됨)**. 아래 「고친 것」.
+  - A17·C13·D6·E13·G17은 이번에 다시 보지 못해 `NOT TESTED`로 적었다(이전에는 11-12 판정을 이어 적었던 항목). 반대로 C9 대비·C20 글자 크기·C25 줌·B11 초기화·D11 오프라인은 이번에 운영에서 직접 재서 PASS로 적었다.
+  - 검사 도구: `tests/storage-safety.mjs`가 운영에서 실패했다. 앱이 아니라 소리 기본값이 켜짐으로 바뀐 뒤(`3c5e4b7`) 낡은 테스트 동작(이미 켜진 스위치를 다시 켬 → 저장이 일어나지 않음) 때문이라 테스트만 고쳤고, 고친 테스트로 운영에서 PASS. 앱 코드 변경·재배포 없음.
+
+## 요약
+
+| 영역 | PASS | WARNING | FAIL | NOT TESTED | N/A |
+|---|---|---|---|---|---|
+| A 교육적 품질 | 16 | 0 | 0 | 3 | 0 |
+| B 기능 | 17 | 1 | 0 | 1 | 0 |
+| C 태블릿·UI | 22 | 1 | 0 | 2 | 0 |
+| D 성능 | 10 | 1 | 0 | 3 | 0 |
+| E 코드 품질 | 10 | 3 | 0 | 1 | 0 |
+| F 데이터·안전 | 13 | 2 | 0 | 0 | 0 |
+| G 배포 | 17 | 0 | 0 | 2 | 1 |
+
+## 실행한 검증 (이번 회차, 운영 주소 대상)
+
+브라우저는 Mac Chrome 헤드리스(Playwright, 터치 에뮬레이션), 잠금 차로 `fc-browser-2`·`fc-build-2`. 결과 파일은 `.tmp/final-recheck-20261120/`.
+
+| 명령 | 대상 | 결과 |
+|---|---|---|
+| `npm test` | 로컬 `67e455d` | PASS 20파일·193개 |
+| `npm run build` (`tsc --noEmit` + Vite) | 로컬 `67e455d` | PASS. 산출 해시 = 운영 |
+| lint | — | 스크립트 없음 → N/A |
+| `npm run test:browser` | 운영 | PASS 15경로 × 9화면(915×412·830×515·375×812·1024×768·906×755·1280×800·1920×1080·873×580·1280×720) = 135화면, 페이지 오류·실패 요청·레이아웃 실패 0 |
+| `npm run test:flow` | 운영 | FULL FLOW PASS: 20탐구·보고서·코어·PNG·새로고침·시연 분리 |
+| `npm run test:games` | 운영 | PASS(1280×800·915×412, 그림 실패 시 다시 준비 버튼) |
+| `tests/layout-balance.mjs` | 운영 | 25화면 × 3뷰포트, 콘솔 오류 0. 수치는 C1·C2 |
+| `tests/inquiry-screen-fit.mjs` (1280·1024·1920) | 운영 | PASS 154화면(조작 상태 54 포함), 스크롤·잘림·가림 0 |
+| `tests/startup-load.mjs` | 운영 | 1.047·1.027·1.025초, 전송 약 1.09MB·요청 6~7·외부 0 |
+| `tests/storage-safety.mjs` | 운영 | 처음 2회 FAIL(테스트 낡음, 위 설명) → 고친 테스트로 PASS 4/4 |
+| `tests/story-voice-browser.mjs` | 운영 | PASS(이야기 목소리 1~3 재생·끝, 오류 0) |
+| `npm run test:offline` | 로컬 같은 커밋 빌드 | PASS: 서비스 워커 447파일(30.9MB) 저장, 서버 끈 뒤 지도·탐구 열림, 영상·음악·목소리 Range 206 |
+| 소리·줄바꿈·성취 카드 확인(`probe.mjs`) | 운영 | 아래 「그 뒤 들어간 변경 확인」 |
+| 뒤로 가기·기록 초기화(`probe2.mjs`) | 운영 | 아래 B11·B13 |
+| 글자 크기·대비·제목 줄 수·줌 125%(`probe3.mjs`) | 운영 | 아래 C9·C16·C20·C25 |
+
+## 그 뒤 들어간 변경 확인 (운영, 귀로 듣지 않고 상태 값으로)
+
+| 변경 | 확인한 것 | 결과 |
+|---|---|---|
+| 첫 입력 전 재생 | 새 학생으로 첫 화면을 3.5초 둠 | `play()` 호출 0, 재생 중 미디어 0 |
+| 설정 소리 항목(3차) | 새 학생 기본값과 순서 | 효과음 켬·효과음 크기 100%·배경 음악 켬·배경 음악 크기 30%·캐릭터 목소리 켬. 순서 효과음 → 효과음 크기 → 배경 음악 → 배경 음악 크기 → 캐릭터 목소리. 효과음을 끄면 효과음 크기 슬라이더 비활성 |
+| 이야기 영상, 목소리 켬 | 「탐험 시작」 뒤 인트로 | `intro.mp4` 재생·`muted=false`, 배경 음악 이득 0.1256(=0.279×0.45) |
+| 이야기 영상, 목소리 끔(4차) | 설정에서 목소리 끈 뒤 인트로 | `intro.mp4` 재생·**`muted=true`**, 배경 음악 이득 0.279(줄이지 않음) |
+| 영상 뒤 배경음 복귀 | 「건너뛰기」 뒤 3초 | `bgm-main-theme.m4a` `paused=false`, 이득 0.279로 복귀. 목소리 켬이면 이어지는 이야기 대사 동안 0.0698(=×0.25) |
+| 헤더 전체 소리 | 「소리 켜짐」 누름 | 「소리 꺼짐」으로 바뀌고 음악·영상·대사 모두 `paused=true`, 새로고침 뒤에도 「소리 꺼짐」 유지 |
+| 개념 영상(3차) | 코드 `src/concepts.ts` `video.muted=!settings.sound` | 효과음 스위치만 따름. 운영에서 개념 영상을 직접 열어 보지는 않음(그 탐구 완료 기록이 필요) — 코드 확인(추정) |
+| 성취 카드 잠긴 문구 | 지도 → 성취 카드 보관함, 세 뷰포트 | 1024×768 카드 폭 175px: 「악당을 / 물리치면 / 열려요」 낱말마다 한 줄(3줄), 카드 안. 1280·1920 카드 폭 180px: 한 줄. 글자 넘침 0 |
+| 한국어 줄바꿈 | 세 뷰포트 × 첫 화면·설정·지도·보관함 글자 넘침 검사 + 탐구 154화면 screen-fit + 135화면 | 화면 밖·상자 밖·잘림 0 |
+| 지난 수정 회귀 | 놀이 영역 비율·중복 버튼·설정 닫기·완주 | C1·C2, C18, `test:flow` 모두 유지 |
+
+관찰(판정 밖): 대사·음악이 도는 동안 같은 이득 값을 매 프레임(약 16ms) `setTargetAtTime`으로 다시 거는 호출이 이어진다. 소리 크기는 맞고 오류도 없다. 소리 규칙 변경은 이번 범위 밖이라 기록만 한다.
+
+---
+
+## A. 교육적 품질
+
+| # | 판정 | 근거 |
+|---|---|---|
+| A1 목표–활동 일치 · A2 성취기준 | PASS(확인됨) | `curriculum-meta.test.ts` 「모든 탐구가 실재하는 성취기준 코드를 가진다」「연구소마다 학습목표가 있고 탐구 코드와 같다」 통과. 설정 → 교사용 가이드 → 성취기준에 4과12-01 표시(`test:browser`) |
+| A3 정답 맞히기로 안 끝남 · A4 판단 활동 | PASS(확인됨) | `inquiry-guidance.test.ts`(설계가 성공해도 예상과 비교해야 완료, 소개 글 길이가 아니라 사례·작용), `review-regression.test.ts`(근거로 판단). `test:flow`가 20탐구를 근거 선택까지 진행 |
+| A5 오개념 피드백 | PASS(확인됨) | 「모든 세균이 해로울 것 같아요」 같은 처음 생각을 고르고, 새 자료로 「모든 세균이 해로운 것은 아니에요」로 바로잡는 흐름(`src/content.ts`, `src/inquiry-evaluate.ts`) |
+| A6 난이도 · A7 보상 | PASS(확인됨) | `education.test.ts` 탐구 습관 배지 조건, 보상은 발견 기록·지도 악당에 연결(성취 카드 0/5, 「악당을 물리치면 열려요」) |
+| A8 클릭 반복 통과 | PASS(확인됨) | `review-regression.test.ts` 동일 시점·역순 거절, 실행 후 예상만 바꿔 제출 불가 |
+| A9 힌트 노출 | PASS(확인됨) | `inquiry-guidance.test.ts` 「정답 위치를 대신 말하지 않고 역할을 생각하도록 안내」 |
+| A10 오답 후 튕김 | PASS(확인됨) | `test:flow`·`test:games` 오답 뒤 같은 화면에서 재시도 |
+| A11 데이터 구조화 · A12 메타데이터 | PASS(확인됨) | `src/curriculum.ts:63` 출처·검토 상태, `curriculum-meta.test.ts` |
+| A13 단정 서술 · A14 어휘 · A15 피드백 어조 | PASS(확인됨, 정적 검사) | `src/*.ts` 한국어 문자열 1,374개 검사: 비난형 표현 0(「~못했어요」 4곳은 모두 대안 안내가 붙은 오류 안내), 「모든·항상」 단정 4곳은 모두 바로잡을 오개념 문장. 과학 용어는 교과 용어(세균·균류·포자·원생생물 등) |
+| A16 조작 다양성 | PASS(확인됨) | 놀이 형태 9가지(퀴즈판·현미경 초점·분류·Phaser 장면·연못 요약·세균 놀이·시간 순서·선택·조립) — `layout-balance` 화면 종류 |
+| A17 난이도 상승 구조 | **NOT TESTED** | 이번에 연구소별 난도 변화를 따로 보지 않음 |
+| 교사 내용 승인 | **NOT TESTED** | `contentReview.needsReview=true`, `reviewer=null` |
+| 학생 이해도 | **NOT TESTED** | 현장 측정 필요 |
+
+## B. 기능
+
+| # | 판정 | 근거 |
+|---|---|---|
+| B1 시작 · B2 도움말 · B3 스테이지 이동 | PASS(확인됨) | `test:flow` 시작 → 이야기 → 지도 → 20탐구 → 보고서 → 코어 → 결과. 설정의 학생용·교사용 가이드 펼침(`test:browser`) |
+| B4~B8 정오답·재시도·진행도·보상 | PASS(확인됨) | `test:flow`·`test:games`·`inquiry-screen-fit` 조작 상태 54개 |
+| B9 자동 저장 · B10 이어하기 · B14 새로고침 복원 | PASS(확인됨) | `test:flow` reload 복원, `probe2` 저장값(`learner.route` 등) 확인 |
+| B11 초기화 | PASS(확인됨) | 운영에서 설정 → 「연구 기록 초기화」 → 확인 창(「취소」「기록 지우기」). 취소하면 그대로, 지우면 `route=main`·소리 설정(배경 음악 끔) 유지, 새로고침 뒤에도 유지 |
+| B12 완료 | PASS(확인됨) | `test:flow` 결과·PNG |
+| B13 뒤로 가기 | **WARNING(확인됨)** | 앱 안 「이전」 버튼은 정상. 브라우저(안드로이드) 뒤로 가기는 앱 밖 이전 페이지로 나간다. 화면 이동을 `history.replaceState`로 해(`src/main.ts` `go()`) 기록이 쌓이지 않기 때문. 다시 열면 자동 저장된 자리로 돌아온다(`goForward` 뒤 `#/nature-map`). 진행 로직이라 이번 범위에서 바꾸지 않음 |
+| B15 | PASS(확인됨) | 시연(교사용 전체 해금)과 학생 기록 분리(`test:flow` preview isolation) |
+| B16 40분 수업 | **NOT TESTED** | 실제 수업 미측정 |
+| B17 중복 보상 · B18 피드백 동기화 · B19 조작 응답 | PASS(확인됨) | `test:games` 연타·완료 뒤 자동 기록, `education.test.ts` |
+
+## C. 태블릿·UI
+
+| # | 판정 | 근거 |
+|---|---|---|
+| C1 16:9 가로 · C2 1024 태블릿(놀이 영역 비율) | PASS(확인됨) | `layout-balance` 운영: 놀이 화면 63개(21화면 × 3뷰포트) 모두 높이 70% 이상·면적 56% 이상. 가장 낮은 곳 1920 M2-1 면적 56%, 코어 57%. 1024에서 M2-2·M2-3·M5-1·M5-4 696×688(높이 90%·면적 61%). 옆 빈 띠는 도구 패널 열(25~34%)과 위 띠(16~18%)뿐 |
+| C3 터치 영역 · C4 겹침 · C5 잘림 · C6 화면 밖 | PASS(확인됨) | `test:browser` 9화면 44px 미만·가림 0, `screen-fit` 154화면 잘림·가림 0 |
+| C7 가로·세로 | PASS(확인됨) | 375×812 세로 포함 9개 크기 |
+| C8 과도한 애니메이션 · C24 reduced-motion | PASS(확인됨, 정적) | CSS 14파일에 `prefers-reduced-motion`, Phaser(`inquiry2d.ts`·`map.ts`)와 이야기 영상(`film.ts` `reducedMotion`)도 따름 |
+| C9 글자 대비 | PASS(확인됨) | 운영 9경로(첫 화면·지도·탐구 5곳·코어·결과) × 4뷰포트(1920·1024·915·830): 불투명 패널 위 글자 중 WCAG 기준(4.5:1, 큰 글자 3:1) 미달 0. 사진·캔버스 위에 바로 놓인 글자는 이 측정에서 빠진다 |
+| C10 음소거 | PASS(확인됨) | 헤더 「소리 켜짐/꺼짐」(위 소리 표) |
+| C11 키보드 | **WARNING(추정)** | Phaser 장면 물체는 키보드 초점이 없고 옆 패널 버튼이 같은 조작을 대신한다(지난 회차와 같은 구조, 의도) |
+| C12 디자인 일관성 | PASS(확인됨) | 세 뷰포트 스크린샷: 왼쪽 위 홈·이전, 오른쪽 위 소리·설정, 오른쪽 아래 주 버튼 하나 |
+| C13 색상 단독 구분 | **NOT TESTED** | 이번에 정오답 표시를 색약 기준으로 다시 보지 않음 |
+| C14 한글 조사 | PASS(확인됨, 정적) | `src/scenes/inquiry.ts` 받침 판별 `withEul` |
+| C15 UI 이모지 | PASS(확인됨, 정적) | 이모지 글리프 없음. 성취 카드의 ★·✕는 텍스트 기호(`src/reward-cards.js`) |
+| C16 제목 리본 1줄 | PASS(확인됨) | 915×412·830×515에서 탐구 제목·MISSION 줄 모두 한 줄. 결과 화면 큰 제목 「작은 생물, / 우리 생활의 큰 발견」은 의도한 두 줄이고 본문을 덮지 않음(스크린샷) |
+| C17 가로 스크롤 | PASS(확인됨) | `test:browser` horizontal 0 |
+| C18 모달 크기·닫힘 | PASS(확인됨) | 설정 창: 세 뷰포트에서 화면 안, 아래쪽 버튼 「연구 기록 초기화」「닫기」(위 X 없음), Esc로 닫힘. 초기화 확인 창 「취소」「기록 지우기」 |
+| C19 가장자리 제스처 | **NOT TESTED** | iPad 실기 없음 |
+| C20 글자 크기 하한 | PASS(확인됨) | 1920: 본문·선택지 최소 18px. 1024: 최소 16.4px(돋보기 배율 「맨눈」). 915·830 폰 가로: 최소 14~15px(안내 문구). 첫 화면 아래 제작 표기 한 줄만 1024에서 10px·1920에서 13px(본문·선택지 아님) |
+| C21 한글 줄바꿈 | PASS(확인됨) | 위 「그 뒤 들어간 변경 확인」 |
+| C22 캔버스↔DOM | PASS(확인됨) | `test:games`·`screen-fit` 상태 검사 |
+| C23 5초 인지 | PASS(확인됨) | 아래 오른쪽 주 버튼 하나. `layout-balance` 중복 버튼 검출은 M3-2 「동그란 세균」 등 3건뿐인데 헤엄치는 세균 한 마리 한 마리라 중복이 아님 |
+| C25 텍스트 확대 | PASS(확인됨) | 1280×800 화면을 125% 줌(1024×640 CSS px)으로 9경로: 버튼 글자 잘림 0. 텍스트 200%는 보지 않음 |
+
+## D. 성능
+
+| # | 판정 | 근거 |
+|---|---|---|
+| D1 초기 로딩 | PASS(확인됨) | 운영 3회 1.047·1.027·1.025초(새 컨텍스트, 캐시 끔, 서비스 워커 차단, 10Mbps·40ms·CPU 4배) |
+| D2 이미지 크기 | PASS(확인됨) | 운영 빌드에 1MB 넘는 그림 0 |
+| D3 오디오·영상 | PASS(확인됨) | `intro.mp4` 3.7MB, `final.mp4` 2.9MB, 엔딩 곡 2.1MB, 재생할 때만 받음 |
+| D4 GLB | PASS(확인됨) | `mushroom.glb` 2.7MB·`bread-mold.glb` 2.3MB, 「3D로 돌려 보기」를 누를 때만 |
+| D5 중복 asset | PASS(확인됨, 고침) | `67e455d` 운영 빌드 460파일 해시 대조에서 같은 그림 2쌍(`map-ally-reaction.webp` 107KB·`map-hero-reaction.webp` 246KB가 `public/`과 `import.meta.glob` 해시 사본으로 두 번). `1f2659c`에서 public 경로로 직접 불러오게 고침 → `e86a0a64` 운영 빌드 해시 대조 중복 0, 지도에서 두 그림 200·오류 0 |
+| D6 미사용 파일 | **NOT TESTED** | 파일 이름을 코드에서 조합해 쓰는 곳이 많아 정적 대조로 판정할 수 없었다(대조 시도 결과는 오탐뿐) |
+| D7 dependency | PASS(확인됨) | `package.json` 런타임 의존성 phaser·three 등 실제 사용 |
+| D8 메모리 누수 | PASS(확인됨, 정적) | 남을 수 있는 `window`·`document` 리스너를 따로 짝지어 봤다: 끌기용 `pointermove/up/cancel` 8쌍은 끌기마다 `{signal}`로 해제, `visibilitychange` 9곳은 `removeEventListener`·`once`·`signal`로 해제. 나머지 리스너는 화면을 바꿀 때 요소째 사라지는 버튼. 메모리 실측은 없음 |
+| D9 frame 저하 · D10 저사양 | **NOT TESTED** | 실기 없음 |
+| D11 오프라인 재방문 | PASS(확인됨) | `test:offline` PASS |
+| D12 외부 요청 0 | PASS(확인됨) | `startup-load` external 0, `test:browser` 실패 요청 0 |
+| D13 애니메이션 속성(정적) | WARNING(추정) | 지난 회차와 같음, 실측 없이 바꾸지 않음 |
+| D14 폰트 | PASS(확인됨) | NanumSquareNeo woff2 2종, OFL 고지 동봉 |
+
+## E. 코드 품질
+
+| # | 판정 | 근거 |
+|---|---|---|
+| E1 중복 · E2 큰 파일 · E6 하드코딩 | WARNING(확인됨) | CSS 덮어쓰기 층이 많다(`src/*.css`, 최근 규칙은 `layout-balance-1118.css`·`korean-linebreak.css`에 모음). 리팩터링 범위 |
+| E3 미사용 import | PASS(확인됨) | `tsc --noEmit` 통과 |
+| E4 any | PASS(확인됨) | `src` TypeScript에서 `: any`·`as any` 0 |
+| E5 console 오류 | PASS(확인됨) | 135화면·흐름·소리 확인 모두 0 |
+| E7 잘못된 경로 · E8 대소문자 | PASS(확인됨) | 운영 실패 요청 0 |
+| E9 비밀키 | PASS(확인됨) | 운영 빌드·`src`에 키 패턴 0 |
+| E10 lock | PASS | `package-lock.json` 하나 |
+| E11 빌드 | PASS(확인됨) | |
+| E12 테스트 | PASS(확인됨) | 단위 193개, 브라우저 검사 전부(고친 storage-safety 포함) |
+| E13 이벤트·상태 위생 | **NOT TESTED** | 이번에 다시 보지 않음 |
+| E14 파일명 | PASS(확인됨) | `public/` 생성기 기본 이름·확장자 중복 0 |
+
+## F. 데이터·안전
+
+| # | 판정 | 근거 |
+|---|---|---|
+| F1 이름 수집 · F2 개인정보 · F3 외부 전송 | PASS(확인됨) | 저장값 `learner` 키(id·route·mapPosition·evidence…)에 이름 없음, 외부 요청 0 |
+| F4 저장 구조 · F5 키 · F6 version · F7 migration | PASS(확인됨) | IndexedDB `life-code-lab`(localStorage 미사용), 버전 다른 저장값 원본 보존(`storage-safety`) |
+| F8 초기화 | PASS(확인됨) | B11 |
+| F9 외부 링크 | PASS(확인됨) | 설정 창 링크 0(`test:browser`), `src`에 외부 `href`·`window.open` 0 |
+| F10 저작권 | PASS(확인됨) | 설정 → 이미지·소리·저작권 고지, 자료 출처 모아 보기(CC0 표기) |
+| F11 라이선스 · F12 출처 | WARNING(확인됨) | 일부 생성 그림의 원본·이용 조건 기록이 아직 덜 됐다(문서 작업). 음성은 `assets/audio/voice/elevenlabs-voices-20261118.json`에 생성 경위 기록 |
+| F13 비밀키 구분 | PASS(확인됨) | 서비스 키 없음 |
+| F14 손상 저장값 | PASS(확인됨) | `storage-safety` null·future·malformed 원본 보존 |
+| F15 해금 재계산 · 두 창 충돌 | PASS(확인됨) | 오래된 두 번째 창 저장 차단(`storage-safety`), 잠긴 탐구는 「먼저 앞선 발견 기록을 완성해요」로 지도 이동(`go()` `allowed`) |
+
+## G. 배포
+
+| # | 판정 | 근거 |
+|---|---|---|
+| G1 경로 · G2 base · G4 asset 경로 | PASS(확인됨) | Cloudflare Pages 루트, 상대 경로(`./assets/…`), 운영 실패 요청 0 |
+| G3 SPA routing · G6 404 | PASS(확인됨) | 해시 라우팅. 없는 주소 `/nope-xyz`도 200으로 첫 화면 |
+| G5 환경변수 | N/A | 쓰지 않음 |
+| G7 OG · G8 제목·설명 · G9 favicon · G18 카톡 썸네일 | PASS(확인됨) | `og:title` 「생명 코드 연구소」, `og:image` `assets/ui/og-life-code-v1.jpg`, icon·manifest 200 |
+| G10 production build | PASS(확인됨) | `prodcmp.sh 08` MATCH |
+| G11 배포 후 smoke | PASS(확인됨) | 위 운영 대상 검사 전부 |
+| G12 로그인 보호 | PASS(확인됨) | 공개 접근 |
+| G13 git status | PASS | 로컬 = `origin/main`. 추적 안 된 `output/`은 다른 작업 것이라 건드리지 않음 |
+| G14 README | PASS(확인됨) | README의 `npm run` 명령 6개 모두 `package.json`에 있음 |
+| G15 .gitignore | PASS(확인됨) | `dist/`, `.tmp/`, `._*`, 원본 GLB 제외 |
+| G16 push 대상 | PASS | `origin/main` |
+| G17 저장 origin 분리 | **NOT TESTED** | 이번에 미리보기 주소와의 분리를 다시 보지 않음 |
+| G19 인쇄·이미지 저장 | **NOT TESTED** | PNG 저장은 `test:flow`로 확인, 실제 모바일 공유·인쇄는 실기 필요 |
+| G20 롤백 대상 | PASS | 직전 운영 커밋 `55df9e1`·`a0b086f` 계열 |
+
+## 고친 것
+
+- **D5 지도 반응 그림 이중 배포** — 커밋 `1f2659c`(`src/renderers/map.ts`): `import.meta.glob`이 `public/` 그림의 해시 사본을 한 벌 더 내보내던 것을 걷기 그림과 같은 public 경로 직접 불러오기로 바꿨다(약 0.35MB, 오프라인 저장에서도 한 벌 줄어듦). 검증: `npm test` 193개, `npm run build`, 로컬 빌드에서 `map-completion-clean`·`test:flow` PASS, 반응 그림 요청 200. → Pages 배포 `e86a0a64`, `prodcmp.sh` MATCH, 운영에서 중복 0·그림 200·오류 0.
+- `tests/storage-safety.mjs`(검사 도구만): 소리 기본값이 켜짐으로 바뀐 뒤 「효과음」「배경 음악」을 `check()`하던 단계가 아무것도 바꾸지 못해 저장·충돌이 일어나지 않았다. 끄는 쪽(`uncheck()`)으로 바꿔 실제 저장을 일으키게 했다. 운영에서 PASS 4/4.
+
+## 최종 빌드 재확인 (`1f2659c`, Pages `e86a0a64`, 12:24~12:34)
+
+| 검사 | 결과 |
+|---|---|
+| `test:browser` | PASS 135화면, 오류·실패 요청·레이아웃 실패 0 |
+| `test:flow` | FULL FLOW PASS |
+| `test:games` | PASS |
+| `layout-balance` | 놀이 화면 63개 모두 높이 70%·면적 56% 이상(최저 1920 M2-1 56%), 콘솔 오류 0 |
+| 소리·줄바꿈·성취 카드(`probe.mjs`) | 위 표와 같은 값: 첫 입력 전 재생 0, 목소리 켬 영상 소리 있음·음악 0.1256, 목소리 끔 영상 음소거·음악 0.279, 영상 뒤 음악 재생, 헤더 끄기 유지. 세 뷰포트 글자 넘침 0, 잠긴 카드 1024 세 줄·카드 안. 설정 아래 「닫기」 하나·Esc |
+| `storage-safety` | PASS 4/4 |
+| `startup-load` | 1.019·1.022·1.014초, 약 1.09MB·요청 6·외부 0 |
+| 지도 반응 그림 | `map-encounter/map-{hero,ally}-reaction.webp` 200, 오류 0 |
+
+## 남은 것
+
+- 교사 내용 승인, 학생 이해도, 40분 수업(B16), 실제 학교 태블릿·iPad Safari(C19·D9·D10), 인쇄·공유(G19): 실기·현장 필요.
+- B13 브라우저 뒤로 가기가 앱 밖으로 나가는 것: 진행 로직(`history.replaceState`)이라 이번 범위 밖. 기록은 남아 다시 열면 그 자리.
+- C11·D13·E1·E2·E6·F11·F12: 지난 회차와 같은 이유(의도된 구조, 실측 필요, 리팩터링 범위, 권리 문서).
