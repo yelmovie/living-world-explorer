@@ -1,5 +1,6 @@
 import {stepAlongRoad,MAP_VECTORS} from '../map-controls.js';
 import Phaser from 'phaser';
+import {releasable} from './phaser-release';
 import {drawBuildingLights} from './map-lighting';
 import {outlinedSprite} from './sprite-outline';
 import {advanceGait,footfall,walkCells,walkFrame,type Direction,type Gait,type Stride} from './map-walk';
@@ -165,10 +166,8 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
    locations.forEach((p,index)=>{const inside=Math.hypot(p.x-this.hero.x,p.y-this.hero.y)<20;if(inside&&!this.insideDoors.has(index)&&(dx||dy)&&moving){this.insideDoors.add(index);this.keys.clear();this.held=undefined;onArrive(index,{x:this.hero.x,y:this.hero.y});}else if(!inside)this.insideDoors.delete(index);});
   }
  }
- const game=new Phaser.Game({type:Phaser.CANVAS,parent:host,width:MAP_WIDTH,height:MAP_HEIGHT,backgroundColor:'#9daf83',pixelArt:true,antialias:false,scene:Village,scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},audio:{noAudio:true},banner:false});
+ const game=new Phaser.Game({type:Phaser.CANVAS,parent:host,width:MAP_WIDTH,height:MAP_HEIGHT,backgroundColor:'#9daf83',pixelArt:true,antialias:false,scene:Village,scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},audio:{noAudio:true},banner:false});const release=releasable(game);
  // Resize the canvas and touch coordinates in the same frame as the DOM map markers.
  const resize=()=>{if(game.scale.canvas&&game.scale.getParentBounds())game.scale.refresh();};
- return {resize,bounds:()=>game.scale.updateBounds(),move:(index:number)=>{requested=index;navigate(index);},walk:(direction:Direction)=>walk(direction),nudge:(direction:Direction)=>nudge(direction),stop:()=>stop(),cancel:()=>{requested=undefined;cancel();},dispose:()=>{disposed=true;stopStep();
-  // Phaser 3.90 never removes its canvas 'wheel' listener; the pooled canvas kept every old map alive.
-  game.input.mouse?.target?.removeEventListener('wheel',game.input.mouse.onMouseWheel);game.destroy(true);}};
+ return {resize,bounds:()=>game.scale.updateBounds(),move:(index:number)=>{requested=index;navigate(index);},walk:(direction:Direction)=>walk(direction),nudge:(direction:Direction)=>nudge(direction),stop:()=>stop(),cancel:()=>{requested=undefined;cancel();},dispose:()=>{disposed=true;stopStep();release();}};
 }

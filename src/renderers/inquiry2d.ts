@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import {releasable} from './phaser-release';
 import {addHandLens} from './hand-lens';
 import type {InquiryTask,InquiryRecord} from '../inquiry-model';
 import {canvas,draw} from '../draw';
@@ -300,7 +301,7 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
    if(this.trackSurface&&this.trackElapsed>=1000/30){this.trackElapsed=0;const image=this.textures.exists('art-paramecium')?this.textures.get('art-paramecium').getSourceImage() as CanvasImageSource:undefined;draw(this.trackSurface.canvas,task.organism||'paramecium',{time:now,focus:65,light:65,zoom:record.zoom,pan:record.pan,trail:true,image,...this.liveFrames(now)});this.trackSurface.texture.refresh();if(!demo)hooks.tick?.(now);}
   }
  }
- const game=new Phaser.Game({type:Phaser.CANVAS,parent:host,width:WIDTH,height:fitHeight(),transparent:true,scene:Inquiry,scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},audio:{noAudio:true},banner:false,render:{antialias:true}});
+ const game=new Phaser.Game({type:Phaser.CANVAS,parent:host,width:WIDTH,height:fitHeight(),transparent:true,scene:Inquiry,scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},audio:{noAudio:true},banner:false,render:{antialias:true}});const release=releasable(game);
  // Narrow layouts scroll inside the screen, not the window; Phaser only re-reads the canvas position on resize, so taps drifted after scrolling.
  const rebound=()=>game.scale?.updateBounds();
  // Window or panel size changes repaint the taller scenes at the box's new shape (paint() resizes the game first).
@@ -330,8 +331,6 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
   if(!beforeDemo)return;
   record=learner;preview=beforeDemo.preview;reveal=beforeDemo.reveal;play=false;beforeDemo=undefined;refresh();
  };
-  return {showFrame,endDemo,setPlaybackRate:(rate:number)=>{playbackRate=rate;if(scene)scene.tweens.timeScale=rate;},refresh:()=>{if(!disposed&&!simulating)refresh();},setPreview:(value:boolean)=>{if(disposed||simulating)return;preview=value;refresh();},setReveal:(value:number|undefined)=>{if(disposed||simulating)return;preview=false;reveal=value===undefined?undefined:Phaser.Math.Clamp(value,0,1);refresh();},animateRun:(valid:boolean,finish:()=>void)=>{if(scene instanceof Inquiry)scene.animateRun(valid,finish);else finish();},setPlaying:(value:boolean)=>{if(disposed||simulating||value&&blocked())return;if(play!==value){if(value&&!beforeDemo)liveClock=record.time;play=value;refresh();}},arm:(id:string)=>{if(disposed||simulating)return;armed=id;refresh();},assignCard,assign:assignCard,place:assignCard,dispose:()=>{disposed=true;play=false;reshape.disconnect();scope?.dispose();document.removeEventListener('scroll',rebound,{capture:true});document.removeEventListener('pointerdown',beforePointer,true);
-  // Phaser 3.90 never removes its canvas 'wheel' listener; the canvas goes back to Phaser's pool and the listener kept every old scene and screen alive.
-  game.input.mouse?.target?.removeEventListener('wheel',game.input.mouse.onMouseWheel);game.destroy(true);}};
+  return {showFrame,endDemo,setPlaybackRate:(rate:number)=>{playbackRate=rate;if(scene)scene.tweens.timeScale=rate;},refresh:()=>{if(!disposed&&!simulating)refresh();},setPreview:(value:boolean)=>{if(disposed||simulating)return;preview=value;refresh();},setReveal:(value:number|undefined)=>{if(disposed||simulating)return;preview=false;reveal=value===undefined?undefined:Phaser.Math.Clamp(value,0,1);refresh();},animateRun:(valid:boolean,finish:()=>void)=>{if(scene instanceof Inquiry)scene.animateRun(valid,finish);else finish();},setPlaying:(value:boolean)=>{if(disposed||simulating||value&&blocked())return;if(play!==value){if(value&&!beforeDemo)liveClock=record.time;play=value;refresh();}},arm:(id:string)=>{if(disposed||simulating)return;armed=id;refresh();},assignCard,assign:assignCard,place:assignCard,dispose:()=>{disposed=true;play=false;reshape.disconnect();scope?.dispose();document.removeEventListener('scroll',rebound,{capture:true});document.removeEventListener('pointerdown',beforePointer,true);release();}};
 }
 export type InquiryView=ReturnType<typeof mountInquiry>;
