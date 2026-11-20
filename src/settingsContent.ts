@@ -4,7 +4,7 @@ import manifest from '../package.json';
 export const settingsContent = {
   appName: '생명 코드 연구소',
   version: manifest.version,
-  producer: '기획·제작: 옐샘 & 아이스크림미디어',
+  producer: '기획·제작: 옐샘 & ⓒ 아이스크림미디어',
   title: '설정',
   sound: {music: '배경 음악', effects: '효과음', voice: '캐릭터 목소리', volume: '배경 음악 크기', effectVolume: '효과음 크기'},
   story: '모아의 의뢰 듣기',
@@ -65,7 +65,7 @@ export const settingsContent = {
     {title: '교육 내용 참고 문헌', text: 'OpenStax Biology 2e(openstax.org) · CC BY 4.0 · 균류·원생생물·세균의 특징을 설명할 때 참고했고, 본문과 그림은 옮겨 싣지 않았어요. FAO(fao.org) · 발효유 자료 부록 VII · 요구르트 속 세균을 설명할 때 참고했어요. 참고한 장은 아래와 같아요.'}
   ],
   copyright: [
-    'ⓒ 2026 옐샘 & 아이스크림미디어. All rights reserved.',
+    '기획·제작: 옐샘 & ⓒ 아이스크림미디어',
     '앱 화면 캡처·자체 제작 일러스트·자체 제작 음원은 무단 복제·재배포·전용·상업적 이용을 금지해요.',
     '외부 공개 사진·효과음·폰트의 저작권은 각 원저작자와 소장 기관에 있으며, 각 자료의 공개 라이선스와 이용 조건을 따라요.',
     '교육 내용 구성 참고: 교육부(moe.go.kr), 경기도교육청(goe.go.kr), OpenStax(openstax.org), FAO(fao.org).'
