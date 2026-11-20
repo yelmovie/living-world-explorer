@@ -22,6 +22,8 @@
 /* 08 생명 코드 연구소 (2026-11-19): 짧은 카드 글은 두 줄 길이를 고르게 */
 .pond-summary-card p,           /* 짚신벌레 요약: "털(섬모) / 을 찾았어요." 방지 */
 .album-tile p,                  /* 최종 보고 앨범: "새 버섯이 / 자랄 수 있어요." 방지 */
-.scope-steps span {             /* 현미경 단계 안내 */
+.scope-steps span,              /* 현미경 단계 안내 */
+.map-encounter-say,             /* 지도 악당 말풍선: "요구르트는 / 남겨 줘!" 방지 (2026-11-20) */
+.map-encounter-clear {          /* 악당 퇴치 뒤 한마디: "그런 / 건 없는 거야!" 방지 */
   text-wrap: balance;
 }
