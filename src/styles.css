@@ -1911,7 +1911,7 @@ button.step{min-width:48px;min-height:48px}
    Positions are greenhouse.webp pixels (1600x900, cover, 35% vertical anchor) so they follow the art at any 16:9-ish size. */
 .hero-companion{scale:calc(2 / 3);transform-origin:50% 100%}
 /* 2026-11-20 home: one quiet credit line in the bottom-right corner; it never takes a tap. */
-.home-credit{position:absolute;z-index:3;right:calc(var(--screen-inset) + env(safe-area-inset-right,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));margin:0;color:#fffdf3;font-size:clamp(10px,.9vw,13px);font-weight:700;line-height:1.2;white-space:nowrap;text-shadow:0 0 2px #1d2a18,0 0 2px #1d2a18,0 0 2px #1d2a18,0 0 4px #1d2a18,0 0 4px #1d2a18,0 0 4px #1d2a18,0 0 8px #1d2a18,0 0 8px #1d2a18;pointer-events:none;user-select:none;-webkit-user-select:none}
+.home-credit{position:absolute;z-index:3;right:calc(var(--screen-inset) + env(safe-area-inset-right,0px));bottom:calc(9px + env(safe-area-inset-bottom,0px));margin:0;padding:3px 9px;border-radius:999px;background:#1d2a18b3;color:#fffdf3;font-size:clamp(10px,.9vw,13px);font-weight:700;line-height:1.2;white-space:nowrap;text-shadow:0 1px 2px #1d2a18;pointer-events:none;user-select:none;-webkit-user-select:none}
 @media(min-width:851px){
  .screen-main{container-type:size;padding:0;background-position:center 35%}
  .screen-main .hero{
@@ -1927,4 +1927,16 @@ button.step{min-width:48px;min-height:48px}
  .screen-main .hero>p{padding:8px 24px}
  /* The bubble moves to the edge so the wider logo clears it on 4:3 tablets. */
  .screen-main .hero-speech.left{left:2%}
+}
+/* 2026-11-20 phone landscape (under 500px tall): the start button stays on screen without scrolling.
+   Wide phones keep the art-anchored layout; the subtitle and button lift just enough to fit and the logo stays where it was. */
+@media(min-width:851px) and (max-height:500px){
+ .screen-main .hero{--lift:max(0px,calc(var(--oy) + 614 * var(--s) + 142px - 100cqh));top:calc(var(--oy) + 614 * var(--s) - var(--lift))}
+ .screen-main .hero h1{bottom:calc(100% + 274 * var(--s) - var(--lift))}
+}
+/* Narrower phones use the card layout: it gives up its tall paddings and gaps and keeps clear of the corner buttons. */
+@media(max-width:850px) and (max-height:500px) and (orientation:landscape){
+ .screen-main{padding:8px 16px}
+ .screen-main .hero{gap:10px;padding:8px 16px;width:min(100%,calc(100vw - 272px))}
+ .screen-main .title-art{max-height:min(220px,calc(100dvh - 190px))}
 }
