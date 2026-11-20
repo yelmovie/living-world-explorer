@@ -1,4 +1,6 @@
-export function el<K extends keyof HTMLElementTagNameMap>(tag:K,cls='',text=''):HTMLElementTagNameMap[K]{const n=document.createElement(tag);n.className=cls;if(text)n.textContent=text;return n;}
+/** 2026-11-21 line breaks: keep a closing bracket or quote on the same line as the particle after it ("실(균사)로", not "실(균사) / 로"). Display only; data, voice keys and saved text stay as written. */
+export const glueParticles=(text:string)=>text.replace(/([)\]」』”’])(?=[가-힣])/g,'$1\u2060');
+export function el<K extends keyof HTMLElementTagNameMap>(tag:K,cls='',text=''):HTMLElementTagNameMap[K]{const n=document.createElement(tag);n.className=cls;if(text)n.textContent=glueParticles(text);return n;}
 export function button(text:string,fn:()=>void,cls='secondary',disabled=false){const b=el('button',`button ${cls}`,text);b.type='button';b.disabled=disabled;b.onclick=fn;return b;}
 export function heading(text:string){return el('h2','',text);}
 export function paragraph(text:string,cls=''){return el('p',cls,text);}
