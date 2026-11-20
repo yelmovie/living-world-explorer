@@ -1910,6 +1910,8 @@ button.step{min-width:48px;min-height:48px}
 /* 2026-11-18 home: the logo sits above the glass cases and the subtitle and start button sit on the wooden plinth.
    Positions are greenhouse.webp pixels (1600x900, cover, 35% vertical anchor) so they follow the art at any 16:9-ish size. */
 .hero-companion{scale:calc(2 / 3);transform-origin:50% 100%}
+/* 2026-11-20 home: one quiet credit line in the bottom-right corner; it never takes a tap. */
+.home-credit{position:absolute;z-index:3;right:calc(var(--screen-inset) + env(safe-area-inset-right,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));margin:0;color:#fffdf3;font-size:clamp(10px,.9vw,13px);font-weight:700;line-height:1.2;white-space:nowrap;text-shadow:0 0 2px #1d2a18,0 0 2px #1d2a18,0 0 2px #1d2a18,0 0 4px #1d2a18,0 0 4px #1d2a18,0 0 4px #1d2a18,0 0 8px #1d2a18,0 0 8px #1d2a18;pointer-events:none;user-select:none;-webkit-user-select:none}
 @media(min-width:851px){
  .screen-main{container-type:size;padding:0;background-position:center 35%}
  .screen-main .hero{

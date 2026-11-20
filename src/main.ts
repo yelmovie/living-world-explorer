@@ -21,6 +21,7 @@ import {downloadCard} from './export';
 import {iconButton,reward,stageBadge,habits,habitEarned,canDoLines} from './experience';
 import {mapNodes,MAP_WIDTH,MAP_HEIGHT,mapSpawn,mapAssets} from './mapData';
 import {openSettings} from './settings';
+import {settingsContent} from './settingsContent';
 import {syncAudio,playEffect,toggleMasterSound,anySound,setMusicTrack,playNarration,playVoiceLine,voiceDialog,stopNarration} from './audio';
 import {showConcept} from './concepts';
 import {showFilm} from './film';
@@ -133,7 +134,7 @@ function titleArt(){const h=el('h1');const image=el('img','title-art');image.fet
 function main(ctx:Context){
  const hero=el('section','hero');hero.append(titleArt(),paragraph('작은 생물을 만나, 큰 변화를 발견해요.','hero-subtitle'));
  const actions=el('div','hero-actions');const resume=ctx.attempt.resumeRoute;const has=!!resume||Object.keys(ctx.attempt.inquiry.records).length>0||Object.keys(ctx.attempt.evidence).length>0;actions.append(button(has?'탐험 이어 하기':'탐험 시작',()=>has?go(resume&&allowed(resume)?resume:'nature-map'):showFilm('intro',state.settings,()=>story(true)),'primary large'));hero.append(actions);ctx.host.append(hero);
- const speech=button('모아의 의뢰 듣기',()=>story(),'hero-speech left');ctx.host.append(speech);
+ const speech=button('모아의 의뢰 듣기',()=>story(),'hero-speech left');ctx.host.append(speech,paragraph(settingsContent.producer,'home-credit'));
  const dress=()=>{
   ctx.host.classList.add('home-dressed');
   for(const [name,cls,alt] of [['moa','hero-moa','모아 연구원'],['companion','hero-companion','함께 탐험하는 토끼']] as const){const img=el('img','hero-character '+cls);img.fetchPriority='low';img.decoding='async';img.src=`assets/characters/${name}-full.webp`;img.alt=alt;ctx.host.append(img);}
