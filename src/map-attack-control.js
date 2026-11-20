@@ -14,8 +14,8 @@ html body button.map-attack-dock[data-map-attack-dock]:not([hidden]){
  cursor:pointer;vertical-align:middle;
 }
 html body button.map-attack-dock[data-map-attack-dock][hidden]{display:none!important}
-html body button.map-attack-dock[data-map-attack-dock]{grid-template-rows:22px 15px;align-content:center;font:800 11px/1 NanumSquareNeo,system-ui}
-html body button.map-attack-dock[data-map-attack-dock]>svg{display:block;width:22px;height:22px;pointer-events:none}
+html body button.map-attack-dock[data-map-attack-dock]{grid-template-rows:18px 19px;align-content:center;font:800 18px/1 NanumSquareNeo,system-ui;letter-spacing:-.5px}
+html body button.map-attack-dock[data-map-attack-dock]>svg{display:block;width:18px;height:18px;pointer-events:none}
 html body button.map-attack-dock[data-map-attack-dock]:hover{background:#583c78!important}
 html body button.map-attack-dock[data-map-attack-dock]:active{background:#2e2043!important}
 html body button.map-attack-dock[data-map-attack-dock]:focus-visible{outline:3px solid #fff!important;outline-offset:3px}
