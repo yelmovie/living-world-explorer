@@ -44,9 +44,9 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
    for(const [name,file] of [['moa','moa'],['friend','toto']]){
     this.load.spritesheet(`${name}-walk`,`assets/map/${file}-walk.webp`,{frameWidth:walkCells.width,frameHeight:walkCells.height});
    }
-   if(completed.some(Boolean))for(const [asset,url] of Object.entries(import.meta.glob<string>('/public/assets/map-encounter/map-*-reaction.webp',{eager:true,import:'default',query:'?url'}))){
-    const role=asset.includes('-hero-')?'moa':'friend';
-    this.load.spritesheet(`${role}-reaction`,url,{frameWidth:256,frameHeight:256});
+   // 2026-11-20: plain public paths like the walk sheets above; the earlier import.meta.glob shipped a second, hashed copy of both sheets.
+   if(completed.some(Boolean))for(const [role,file] of [['moa','hero'],['friend','ally']]){
+    this.load.spritesheet(`${role}-reaction`,`assets/map-encounter/map-${file}-reaction.webp`,{frameWidth:256,frameHeight:256});
    }
   }
   create(){
