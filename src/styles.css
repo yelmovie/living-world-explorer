@@ -1314,7 +1314,7 @@ button.settings-switch[aria-pressed="true"]{background:var(--moss-486);color:var
 @media print{
   #app{height:auto;overflow:visible;background:var(--white)}
 
-  .toolbar,.app-status,.preview-banner,.results-layout{display:none!important}
+  .toolbar,.app-status,.preview-banner,.results-layout,.toast{display:none!important}
 
   .screen{display:block;overflow:visible;padding:0;background:var(--white)!important}
 

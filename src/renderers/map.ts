@@ -91,7 +91,9 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
    });
    this.input.keyboard?.on('keydown',(e:KeyboardEvent)=>{if(held()||e.ctrlKey||e.metaKey||e.altKey||(e.target instanceof HTMLElement&&(e.target.isContentEditable||e.target.closest('input,textarea,select'))))return;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD'].includes(e.code)){e.preventDefault();onManual?.();this.keys.add(e.code);this.route=[];this.destination=undefined;}});
    this.input.keyboard?.on('keyup',(e:KeyboardEvent)=>this.keys.delete(e.code));
-   const blur=()=>{this.keys.clear();this.held=undefined;};document.addEventListener('visibilitychange',blur);window.addEventListener('blur',blur);this.events.once('shutdown',()=>{document.removeEventListener('visibilitychange',blur);window.removeEventListener('blur',blur);});
+   const blur=()=>{this.keys.clear();this.held=undefined;};document.addEventListener('visibilitychange',blur);window.addEventListener('blur',blur);
+   // game.destroy() emits 'destroy', not 'shutdown'; without it these two listeners kept every old map alive.
+   const off=()=>{document.removeEventListener('visibilitychange',blur);window.removeEventListener('blur',blur);};this.events.once('shutdown',off);this.events.once('destroy',off);
    this.syncCamera();onReady?.();if(requested!==undefined)navigate(requested);
   }
   private restoration(index:number){
@@ -166,5 +168,7 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
  const game=new Phaser.Game({type:Phaser.CANVAS,parent:host,width:MAP_WIDTH,height:MAP_HEIGHT,backgroundColor:'#9daf83',pixelArt:true,antialias:false,scene:Village,scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},audio:{noAudio:true},banner:false});
  // Resize the canvas and touch coordinates in the same frame as the DOM map markers.
  const resize=()=>{if(game.scale.canvas&&game.scale.getParentBounds())game.scale.refresh();};
- return {resize,bounds:()=>game.scale.updateBounds(),move:(index:number)=>{requested=index;navigate(index);},walk:(direction:Direction)=>walk(direction),nudge:(direction:Direction)=>nudge(direction),stop:()=>stop(),cancel:()=>{requested=undefined;cancel();},dispose:()=>{disposed=true;stopStep();game.destroy(true);}};
+ return {resize,bounds:()=>game.scale.updateBounds(),move:(index:number)=>{requested=index;navigate(index);},walk:(direction:Direction)=>walk(direction),nudge:(direction:Direction)=>nudge(direction),stop:()=>stop(),cancel:()=>{requested=undefined;cancel();},dispose:()=>{disposed=true;stopStep();
+  // Phaser 3.90 never removes its canvas 'wheel' listener; the pooled canvas kept every old map alive.
+  game.input.mouse?.target?.removeEventListener('wheel',game.input.mouse.onMouseWheel);game.destroy(true);}};
 }
