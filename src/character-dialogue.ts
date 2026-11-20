@@ -1,5 +1,5 @@
 import {narrationEnabled,playNarration,stopNarration,type NarrationState} from './audio';
-import {button,el,glueParticles,paragraph} from './ui';
+import {button,el,paragraph} from './ui';
 import './character-dialogue.css';
 
 /** Shared reading and voice controls; the caller owns story pages and reply choices. */
@@ -60,9 +60,7 @@ export function mountDialogueSpeech(
   }
   function show(text:string,voice:string){
     finish();
-    readable.textContent=text;
-    text=glueParticles(text);
-    layout.textContent=text;
+    layout.textContent=readable.textContent=text;
     recording=voice;
     if(motion.matches||document.hidden||document.documentElement.classList.contains('reduced'))finish();
     else{
