@@ -50,3 +50,12 @@
 
 - 성취 카드 보관함 잠긴 문구 「악당을 물리치면 / 열려요」: `src/reward-cards.css` `.rc-locked small` 아래에 공통 네 줄(컨테이너 152px 이하면 4.6em 폭으로 세 줄) 추가. 커밋 `713b119`, 배포 https://b320ff52.living-world-explorer.pages.dev, `cmp.sh` `assets/index-Be3WCH8v.css` `052b70973e928aae`·index MATCH. 운영 보관함: 1280×800·1920×1080 한 줄, 1024×768 「악당을 / 물리치면 / 열려요」 세 줄, 카드 넘침 0(도구의 「끝줄 4자 이하」 표시는 의도한 세 줄이라 오탐).
 - 다른 세션의 화면 배치 변경(`a0b086f`, 놀이 화면 61%)을 포함한 빌드로 61개 화면 다시 측정: 1280×800 9, 1920×1080 1로 이전과 같은 오탐만, 새 문제 없음.
+
+## 남은 것 정리 (2026-11-20, 공통 지침 9절)
+
+스크립트 `.tmp/linebreak-20261119/audit9.mjs`, 크기 1280×800·1024×768.
+
+- **지도 악당 말풍선**: 지도 화면에 실제 스타일(`map-encounters.js`의 STYLES)로 `.map-encounter-say`(대사 25줄)와 퇴치 뒤 한마디 `.map-encounter-clear`(5줄)를 띄워 잼. 전 30줄 중 2줄 끝줄 외톨이(「흥, 기록은 가져. 요구르트는 / 남겨 줘!」, 「…그런 / 건 없는 거야!”」) → `src/korean-linebreak.css` 프로젝트 보정에 `.map-encounter-say, .map-encounter-clear { text-wrap: balance }` → 후 0. 화면 밖으로 나간 말풍선 0.
+- **내 발견 도감**: 1차 때 못 연 이유는 지도 힌트 창 안의 버튼이라서였다. 시연 기록을 채우고 「토토의 지도 힌트 → 내 발견 도감」으로 열어 잼: 문제 0. 도감의 「개념 영상 다시 보기」로 연 개념 영상 창: 문제 0.
+- **캔버스 글**: `fillText`를 가로채 탐구 20개 화면의 캔버스 글을 줄 단위로 모음(화면마다 캔버스 4~11개). 여러 줄로 감긴 글 없음, 문제 0. 코드: Phaser `text()`는 `wordWrap`(`useAdvancedWrap`, 낱말 단위)이라 글자 수로 자르지 않는다. 학생이 쓴 소개 문장(최대 68자, `inquiry2d.ts` 293행)과 저장용 카드 PNG(`export.ts` `lines()`, 낱말 단위 앞채움)는 입력에 따라 끝줄이 짧을 수 있으나 정해진 문구가 아니라 손대지 않음.
+- 커밋 `0c34031`, 배포 https://ea8993df.living-world-explorer.pages.dev, `cmp.sh` `assets/index-Cwc196Fi.css` `2900326d2823170e`·index MATCH. 운영 다시 측정: 악당 말풍선 0/30, 도감·개념 창 0. `npm test` 20파일 193개 통과.
