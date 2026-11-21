@@ -76,7 +76,7 @@
 
 | # | 파일(묶음) | 만든 곳 | 만든 날·기록 위치 | 이용 조건 | 근거 파일 경로 | 상태 |
 |---|---|---|---|---|---|---|
-| 31 | `models/{mushroom,bread-mold,yeast}.glb` (3개) | 사용자 Meshy 계정 image-to-3D, 입력 그림은 Higgsfield gpt_image_2_5, `scripts/pack-models.mjs`·gltfpack으로 압축 | 2026-10-25~26. 받은 파일 이름·설정 기록 | CREDITS 「Meshy 생성물의 상업 이용 조건은 생성 당시 계정 플랜 기준 — 납품 전 확인」, 플랜 기록 없음 | `assets/generated/models-20261025.json`, `docs/3D_MODEL_PROMPTS.md` | 근거 약함 |
+| 31 | `models/{mushroom,bread-mold}.glb` (2개; yeast는 2026-11-22 53번 줄로 바뀜) | 사용자 Meshy 계정 image-to-3D, 입력 그림은 Higgsfield gpt_image_2_5, `scripts/pack-models.mjs`·gltfpack으로 압축 | 2026-10-25~26. 받은 파일 이름·설정 기록 | CREDITS 「Meshy 생성물의 상업 이용 조건은 생성 당시 계정 플랜 기준 — 납품 전 확인」, 플랜 기록 없음 | `assets/generated/models-20261025.json`, `docs/3D_MODEL_PROMPTS.md` | 근거 약함 |
 
 ## 8. 음악
 
@@ -127,6 +127,7 @@
 | 50 | `study/leaf-0.webp` (1024×576) | 6번 줄 `study/leaf-1.webp` + Codex CLI GPT 이미지로 만든 구멍 없는 잎(참고 그림 `leaf-1`)에서 구멍 자리만 오려 붙인 합성 | 2026-11-21, 프롬프트 `IMAGE-NEEDS-20261121.md` 「3-3a 만들기 기록」, 원본 `.tmp/score-images-20261121/leaf-0-gen1.png`, 1회 생성, 합성 `leafcomp2.mjs` | ChatGPT 유료 요금제(사용자 확인 2026-11-21) | 위 문서 | 확인됨 |
 | 51 | `study/germ/colonies-{cream,soil,pond}.webp` (3장, 96px 칸 12개씩 한 줄, M3-3 배양 접시 집락) | Codex CLI 내장 이미지 도구(GPT 이미지), `gpt-imagegen` 스킬 `gpt-image.sh`, 참고 그림 `study/germ/petri.webp` | 2026-11-21, 프롬프트 `docs/reviews/IMAGE-NEEDS-20261121.md` 「M3-3 배양 접시 집락」, 원본 `.tmp/colonies-20261121/colonies-*.png`(1536×1024 투명), 장마다 1회 생성, 오려 내기 `.tmp/colonies-20261121/slice.mjs` | ChatGPT 유료 요금제(사용자 확인 2026-11-21) | 위 문서 | 확인됨 |
 | 52 | `study/yeast.webp` (1024×576, M5-2·M5-4 「효모의 작용」 카드, 현미경 명시야 실사풍 효모 세포) | Codex CLI 내장 이미지 도구(GPT 이미지), `gpt-imagegen` 스킬 `gpt-image.sh`, 참고 그림 없음 | 2026-11-22, 프롬프트 `docs/reviews/IMAGE-NEEDS-20261121.md` 「M5 효모 현미경 사진」, 원본 `.tmp/yeast-20261122/yeast-micro-gen1.png`(1672×941), 1회 생성, sharp로 1024×576 webp q82 | ChatGPT 유료 요금제(사용자 확인 2026-11-21) | 위 문서 | 확인됨 |
+| 53 | `models/yeast.glb` (싹 달린 효모 세포 하나, 삼각형 4,002개, 585KB) | 사용자 Meshy 계정 Image to 3D(Meshy 7.1 Flagship, 텍스처 Meshy 7 2K, PBR 켜짐, 리메시 삼각형 목표 5,000 → 5,248), Aside 브라우저로 조작. 입력 사진은 Codex CLI GPT 이미지(`gpt-imagegen`, 52번 줄 사진을 참고 그림으로). `scripts/pack-models.mjs`·gltfpack으로 압축 | 2026-11-22. Meshy 작업 ID `01a1ff3c-5f3f-73bd-9095-837f1c04052c`(리메시)·`01a1ff3b-4028-73d5-85c4-e852f4e6037f`(텍스처), 30크레딧. 원본 `assets/generated/models-20261122/yeast-meshy.glb`, 입력 `assets/generated/models-20261122/yeast-3d-base.png` | Meshy 계정 플랜 화면 없음(31번 줄과 같음). 입력 사진은 ChatGPT 유료 요금제(사용자 확인 2026-11-21) | `docs/3D_MODEL_PROMPTS.md` 5장, `docs/reviews/IMAGE-NEEDS-20261121.md` 「M5 효모 현미경 사진」 | 근거 약함 |
 
 ## 합계
 
@@ -154,7 +155,7 @@
 | 4~18 (+28 장면 그림) | 2026-10-21~11-18에 쓴 **ChatGPT 계정 요금제 화면**(Plus·Pro·Team 등, 상업 이용 가능한 플랜임이 보이게). Codex 내장 이미지 도구도 같은 ChatGPT 로그인이라 한 장이면 된다 | 도구·날짜는 기록에 있고 이용 조건만 빠졌다 |
 | 8 | 주민 5명(2026-11-02) 그림을 어떤 도구로 만들었는지 한 줄 | CREDITS에 도구 이름이 없다 |
 | 19~22, 35 | **Higgsfield 계정 요금제·결제 화면**(2026-10-25, 11-12, 11-15 생성분) | 그림 24장·효과음 2개의 이용 조건 근거 |
-| 31 | **Meshy 계정 플랜 화면**(2026-10-25 생성 당시) | CREDITS가 직접 「납품 전 확인」으로 남겨 둠 |
+| 31, 53 | **Meshy 계정 플랜 화면**(2026-10-25 생성 당시, 2026-11-22 효모 다시 만든 때) | CREDITS가 직접 「납품 전 확인」으로 남겨 둠 |
 | 28 | 시작·복구 영상(2026-11-04)을 **영상으로 만든 서비스 이름**과 그 계정 요금제 화면 | 영상화 도구 기록이 없다 |
 | 30 | 짚신벌레·해캄 영상(2026-11-17)을 만든 **Google 서비스 이름(Gemini 앱인지 다른 도구인지)과 요금제 화면**, 그리고 보이는 표식을 지워도 되는지에 대한 확인 | 원본에 Google 표시만 있고, 커밋에 「Gemini 표식 제거」가 적혀 있다 |
 | 23 | 버섯·곰팡이·짚신벌레·해캄 관찰 그림 4장을 만든 기록(도구·날짜·원본 PNG)이 따로 있으면 그것. 없으면 새로 그려 교체(`docs/reviews/IMAGE-NEEDS-20261121.md` (가)) | 저장소 안팎 어디에서도 기록을 못 찾았다 |

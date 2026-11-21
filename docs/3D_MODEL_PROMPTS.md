@@ -146,6 +146,7 @@ Reference image for image-to-3D. A single paramecium educational model: slipper-
 - **쓰는 곳:** M5-2 빵 반죽 설계에서 "효모의 작용" 카드를 누르면 3D로 확대해 보기, 도감. 우선순위 낮음 — 크레딧이 남을 때.
 - **기본 이미지:** `D:\iscreammedia_sc34\8 creatures\assets\generated\models-20261025\yeast-3d-base.png`
 - **확인할 것:** 세포 하나 끝에 작은 혹(싹)이 붙어 있는지. 이게 효모가 늘어나는 모습(출아)을 보여 주는 부분이다.
+- **2026-11-22 다시 만듦:** 입력 사진 `assets/generated/models-20261122/yeast-3d-base.png`(싹 달린 세포 하나, M5 현미경 사진과 같은 모양). Meshy 7.1 Flagship Image to 3D, 텍스처 Meshy 7 2K(이 화면에는 텍스처 프롬프트·PBR 끄기·대칭 설정이 없어 PBR 켜진 채로 나옴), 생성 뒤 리메시 Triangle 5,000 → 5,248. 원본 `assets/generated/models-20261122/yeast-meshy.glb`(7.2MB) → `node scripts/pack-models.mjs yeast` → 4,002개·585KB.
 
 텍스처 프롬프트
 

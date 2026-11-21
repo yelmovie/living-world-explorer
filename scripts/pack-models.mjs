@@ -1,6 +1,6 @@
 // Meshy GLB → public/assets/models: shrink the embedded textures, then gltfpack simplifies with UV seams locked and meshopt-compresses.
 // Blender's merge + Decimate collapsed across UV seams and smeared the texture into shards (2026-10-26), so no Blender step here.
-// node scripts/pack-models.mjs [name...]   (originals: assets/generated/models-20261025/<name>-meshy.glb, Git-ignored)
+// node scripts/pack-models.mjs [name...]   (originals: assets/generated/<dir, default models-20261025>/<name>-meshy.glb, Git-ignored)
 import {readFile, writeFile, mkdir} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
 import sharp from 'sharp';
@@ -10,7 +10,7 @@ import sharp from 'sharp';
 const models = {
   mushroom: {tex: [2048, 2048, 512], error: 0.005},
   'bread-mold': {tex: [2048, 2048, 512], error: 0.002},
-  yeast: {tex: [2048, 2048, 256], error: 0.0015}
+  yeast: {tex: [2048, 2048, 256], error: 0.0015, dir: 'models-20261122'} // 2026-11-22 Meshy 7.1 remake (one budding cell, remeshed to ~5k tris)
 };
 
 async function shrinkTextures(src, out, [colorPx, normalPx, attribPx]) {
@@ -44,8 +44,8 @@ async function shrinkTextures(src, out, [colorPx, normalPx, attribPx]) {
 
 await mkdir('.tmp/models', {recursive: true});
 for (const name of process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(models)) {
-  const {tex, error} = models[name], textured = `.tmp/models/${name}-tex.glb`, out = `public/assets/models/${name}.glb`;
-  await shrinkTextures(`assets/generated/models-20261025/${name}-meshy.glb`, textured, tex);
+  const {tex, error, dir = 'models-20261025'} = models[name], textured = `.tmp/models/${name}-tex.glb`, out = `public/assets/models/${name}.glb`;
+  await shrinkTextures(`assets/generated/${dir}/${name}-meshy.glb`, textured, tex);
   // -si only sets a floor; the error bound and locked seams decide where it stops. UVs 14-bit so seams stay put on 2048 textures.
   const log = execFileSync('node', ['node_modules/gltfpack/cli.js', '-i', textured, '-o', out, '-si', '0.01', '-se', String(error), '-cc', '-vt', '14', '-v'], {encoding: 'utf8'});
   console.log(name, log.match(/^output: 1 mesh primitives \((\d+) triangles/m)?.[1], 'tris', (await readFile(out)).length, 'bytes');
