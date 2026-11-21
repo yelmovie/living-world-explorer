@@ -25,7 +25,7 @@
 | # | 파일(묶음) | 만든 곳 | 만든 날·기록 위치 | 이용 조건 | 근거 파일 경로 | 상태 |
 |---|---|---|---|---|---|---|
 | 4 | `characters/{moa,companion}-portrait.webp`, `map/{moa,companion}-{down,right,up,left}.webp` (10장) | 내장 image_gen | 2026-10-21. 프롬프트·가공 방법 기록 있음 | ChatGPT 유료 요금제(사용자 확인 2026-11-21 「전부 맞아」(`_shared/CODEX-IMAGE-RECORDS-20261121.md`)) | `public/assets/map/generation.json`, `assets/CREDITS.md` | 확인됨(사용자 확인) |
-| 5 | `map/terrain.webp`, `places/core.webp`, `study/{pond,yogurt,soil,milk,yeast}.webp` (7장; bread-0·leaf-0은 2026-11-21 49·50번 줄로 바뀜) | 내장 image_gen | 2026-10-24. 파일별 프롬프트·원본 PNG | ChatGPT 유료 요금제(사용자 확인 2026-11-21 「전부 맞아」(`_shared/CODEX-IMAGE-RECORDS-20261121.md`)) | `assets/generated/study-20261024.json`, `docs/ART_GENERATION_20261024.md`, `docs/MAP_ASSET_PROMPT.md` | 확인됨(사용자 확인) |
+| 5 | `map/terrain.webp`, `places/core.webp`, `study/{pond,yogurt,soil,milk}.webp` (6장; bread-0·leaf-0은 2026-11-21 49·50번 줄로, yeast는 2026-11-22 52번 줄로 바뀜) | 내장 image_gen | 2026-10-24. 파일별 프롬프트·원본 PNG | ChatGPT 유료 요금제(사용자 확인 2026-11-21 「전부 맞아」(`_shared/CODEX-IMAGE-RECORDS-20261121.md`)) | `assets/generated/study-20261024.json`, `docs/ART_GENERATION_20261024.md`, `docs/MAP_ASSET_PROMPT.md` | 확인됨(사용자 확인) |
 | 6 | `study/{deadwood,moldy-fruit,dough-before,dough-after,bread-1,bread-2,bread-3,leaf-1,leaf-2,leaf-3}.webp` (10장) | 내장 image_gen(생성·편집) | 2026-10-25. 파일별 전체 프롬프트·원본 PNG | ChatGPT 유료 요금제(사용자 확인 2026-11-21 「전부 맞아」(`_shared/CODEX-IMAGE-RECORDS-20261121.md`)) | `assets/generated/specimens-20261025.json`, `assets/generated/specimens-20261025/` | 확인됨(사용자 확인) |
 | 7 | `ui/{hand-lens,yogurt-maker,water-glass,starter}.webp` (4장) | OpenAI image_gen | 2026-11-03(CREDITS 표). 프롬프트·원본 기록 없음. 반입 커밋 `211d381` | ChatGPT 유료 요금제(사용자 확인 2026-11-21 「전부 맞아」(`_shared/CODEX-IMAGE-RECORDS-20261121.md`)) | `assets/CREDITS.md` 「실제 사용 자료」 표 | 확인됨(사용자 확인) |
 | 8 | `map/residents/{solbi,yeoul,duri,bamtol,bori}.webp` (5장) | 생성 도구 이름 기록 없음(「토토 지도 그림을 화풍 참고로 생성」만 적힘) → **Codex(GPT 이미지), 사용자 확인 2026-11-21** | 2026-11-02 | ChatGPT 유료 요금제(사용자 확인 2026-11-21 「전부 맞아」(`_shared/CODEX-IMAGE-RECORDS-20261121.md`)) | `assets/CREDITS.md` 「복구 지도 주민 일러스트」 절 | 확인됨(사용자 확인) |
@@ -118,7 +118,7 @@
 
 배포본에 같이 들어가는 기록 파일(`sources.json`, `KENNEY-LICENSE.txt`, `NanumSquareNeo-*`, `voice/*.json`, `MOMO-SOURCE.txt`, `map/generation.json`, `concepts/manifest.json`, `assets/CREDITS.md`)은 권리 대상이 아니라 위 줄의 근거라 따로 적지 않았다.
 
-## 12. 2026-11-21 3-3a단계에서 바꾼 그림
+## 12. 2026-11-21 3-3a단계 뒤에 바꾼 그림
 
 | # | 파일(묶음) | 만든 곳 | 만든 날·기록 위치 | 이용 조건 | 근거 파일 경로 | 상태 |
 |---|---|---|---|---|---|---|
@@ -126,6 +126,7 @@
 | 49 | `study/bread-0.webp` (1024×576) | 생성 없음: 6번 줄 `study/bread-1.webp`에서 곰팡이 점만 옆 빵 속으로 덮은 파생본(sharp) | 2026-11-21, `.tmp/score-images-20261121/` 스크립트 | 6번 줄과 같음 | 6번 줄 | 확인됨(재료 따름) |
 | 50 | `study/leaf-0.webp` (1024×576) | 6번 줄 `study/leaf-1.webp` + Codex CLI GPT 이미지로 만든 구멍 없는 잎(참고 그림 `leaf-1`)에서 구멍 자리만 오려 붙인 합성 | 2026-11-21, 프롬프트 `IMAGE-NEEDS-20261121.md` 「3-3a 만들기 기록」, 원본 `.tmp/score-images-20261121/leaf-0-gen1.png`, 1회 생성, 합성 `leafcomp2.mjs` | ChatGPT 유료 요금제(사용자 확인 2026-11-21) | 위 문서 | 확인됨 |
 | 51 | `study/germ/colonies-{cream,soil,pond}.webp` (3장, 96px 칸 12개씩 한 줄, M3-3 배양 접시 집락) | Codex CLI 내장 이미지 도구(GPT 이미지), `gpt-imagegen` 스킬 `gpt-image.sh`, 참고 그림 `study/germ/petri.webp` | 2026-11-21, 프롬프트 `docs/reviews/IMAGE-NEEDS-20261121.md` 「M3-3 배양 접시 집락」, 원본 `.tmp/colonies-20261121/colonies-*.png`(1536×1024 투명), 장마다 1회 생성, 오려 내기 `.tmp/colonies-20261121/slice.mjs` | ChatGPT 유료 요금제(사용자 확인 2026-11-21) | 위 문서 | 확인됨 |
+| 52 | `study/yeast.webp` (1024×576, M5-2·M5-4 「효모의 작용」 카드, 현미경 명시야 실사풍 효모 세포) | Codex CLI 내장 이미지 도구(GPT 이미지), `gpt-imagegen` 스킬 `gpt-image.sh`, 참고 그림 없음 | 2026-11-22, 프롬프트 `docs/reviews/IMAGE-NEEDS-20261121.md` 「M5 효모 현미경 사진」, 원본 `.tmp/yeast-20261122/yeast-micro-gen1.png`(1672×941), 1회 생성, sharp로 1024×576 webp q82 | ChatGPT 유료 요금제(사용자 확인 2026-11-21) | 위 문서 | 확인됨 |
 
 ## 합계
 

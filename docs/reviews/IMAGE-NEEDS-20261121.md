@@ -54,3 +54,12 @@
 
 - 참고 그림 `study/germ/petri.webp`. 투명 배경 원본에서 집락을 하나씩 오려(알파 연결 덩어리) 96px 칸 12개짜리 한 줄로 묶었다.
 - 코드: `src/renderers/germ-games.ts` `drawDish`가 학생이 그은 지그재그 길을 따라 배양 일수만큼 커지는 규칙·개수는 그대로 두고, 단색 동그라미 대신 이 칸을 찍는다. 그림이 아직 안 불렸으면 예전 동그라미로 그리고 불린 뒤 다시 그린다. 빈 접시는 그대로.
+
+## M5 효모 현미경 사진 (2026-11-22, 사용자 요청 「효모 실사 이미지로 해봐 현미경 관찰한 실사 이미지 느낌으로」)
+
+| 그림 | 쓰는 곳 | 프롬프트 | 뽑은 횟수 |
+|---|---|---|---:|
+| `study/yeast.webp` (640×360 금빛 일러스트 → 1024×576 현미경 사진풍) | M5-2 「효모의 작용」 병 카드, M5-4 소개 카드(`src/artAssets.ts` 23행) | 「Photorealistic brightfield light microscope photograph of baker's yeast (Saccharomyces cerevisiae) cells at about 400x magnification, 16:9 landscape. About ten to fourteen oval and round single yeast cells spread across a pale, softly lit background, several cells clearly budding with a small round daughter bud attached at one end, one short chain of a mother cell with a bud. Each cell slightly translucent with a thin darker outline, a faint grainy interior and a small vacuole, gentle out-of-focus depth with a couple of cells slightly blurred, natural microscope illumination with a soft warm-grey vignette at the edges. Realistic scientific micrograph look, not an illustration. No text, no letters, no scale bar, no labels, no watermark.」 | 1 |
+
+- 원본 `.tmp/yeast-20261122/yeast-micro-gen1.png`(1672×941), 옛 그림 `.tmp/yeast-20261122/yeast-now.png`. 확인 화면 `.tmp/yeast-20261122/shots-after/`(1280×800·1024×768·1920×1080, 카드 칸 203×114·162×91·269×120에 잘림 없이 들어감, 페이지 오류 0).
+- 3D 모형 입력 사진 `.tmp/yeast-20261122/yeast-3d-base-gen1.png`(흰 바탕, 싹 달린 효모 세포 하나, 위 사진을 참고 그림으로, 1회). Meshy 로그인 뒤 `models/yeast.glb`를 바꿀 때 쓴다.
