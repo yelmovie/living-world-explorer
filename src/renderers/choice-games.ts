@@ -5,6 +5,9 @@ import {el} from '../ui';
 import {playEffect} from '../audio';
 import {totoSay} from '../toto-hint';
 import {picture} from './quiz-board';
+// 2026-11-21: the board-screen layout (quiz-task: centred work area) lives in quiz-board.css; without this import it only arrived
+// after a quiz screen had been opened, so a learner resuming straight into this game saw the work area stuck in the left column.
+import '../quiz-board.css';
 import '../choice-games.css';
 
 /** 2026-11-16: three game boards that replace the identical two-button quiz in stages M3 and M4.
@@ -116,7 +119,7 @@ export function mountChoiceGame(host:HTMLElement,task:InquiryTask,record:Inquiry
      if(u.type==='pointerup'&&Math.abs(dx)>110)decide(dx>0?rightT.id:leftT.id,dx>0?1:-1);else card.style.transform='';};
     card.addEventListener('pointerup',end,{signal:stop.signal});card.addEventListener('pointercancel',end,{signal:stop.signal});
    };
-   stage.append(left,card,finish,right);root.append(progress,el('p','choice-tip','카드를 읽고 알맞은 쪽으로 쓱 밀어요'),stage,tray);
+   stage.append(left,card,finish,right);root.append(progress,el('p','choice-tip','작은 생물이 한 일이 도움을 주면 오른쪽, 피해를 주면 왼쪽으로 쓱 밀어요'),stage,tray);
   }
   refresh=()=>{paintTray();if(nextIndex()!==index)show();else paintDots(index);};
   paintTray();show();
@@ -145,7 +148,7 @@ export function mountChoiceGame(host:HTMLElement,task:InquiryTask,record:Inquiry
    b.onclick=()=>{if(b.dataset.dragged||blocked()||placed(it))return;selected=selected===it.id?'':it.id;if(selected){hooks.open(it.id);playEffect('click');}refresh();};
    hand.append(b);return {it,b};
   });
-  root.append(progress,el('p','choice-tip','사건 카드를 끌어 알맞은 신호등에 놓아요'),hand,lamps);
+  root.append(progress,el('p','choice-tip','작은 생물이 한 일이 도움을 주면 초록, 피해를 주면 빨간 신호등에 놓아요'),hand,lamps);
   refresh=()=>{
    for(const {it,b} of cards){b.classList.toggle('is-placed',placed(it));b.classList.toggle('is-selected',selected===it.id);b.setAttribute('aria-pressed',String(selected===it.id));}
    for(const {t,z,chips} of zones){const its=items.filter(it=>placed(it)&&it.target===t.id);z.classList.toggle('is-lit',its.length>0);if(chips.childElementCount!==its.length)chips.replaceChildren(...its.map(it=>el('span','lamp-chip',it.label)));}

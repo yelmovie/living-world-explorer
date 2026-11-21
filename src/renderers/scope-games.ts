@@ -6,6 +6,9 @@ import {featureAt} from '../observation';
 import {el,button} from '../ui';
 import {playEffect} from '../audio';
 import {totoSay} from '../toto-hint';
+// 2026-11-21: the board-screen layout (quiz-task: centred work area) lives in quiz-board.css; without this import it only arrived
+// after a quiz screen had been opened, so a learner resuming straight into this game saw the work area stuck in the left column.
+import '../quiz-board.css';
 import '../scope-games.css';
 
 /** 2026-11-16: the two M1 microscope activities each get their own gesture instead of the same focus-and-capture panel.

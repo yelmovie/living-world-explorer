@@ -7,7 +7,7 @@ import {playEffect} from './audio';
 import {icon} from './experience';
 
 // One achievement card per map villain, in stage order (M1–M5). The star count rises with the stage.
-const titles=['버섯 곰팡이 관찰왕','물방울 속 생물 탐정','세균 모양 명탐정','요구르트 사건 해결사','생명 코드 수호 영웅'];
+const titles=['버섯 곰팡이 관찰왕','물방울 속 생물 탐정','세균 모양 명탐정','생활 속 사건 해결사','생명 코드 수호 영웅'];
 type Hits=Record<string,number>|undefined;
 /** A card is owned once its stage's villain has been driven off (three hits). Nothing extra is saved. */
 export const ownedRewardCards=(hits:Hits)=>stageIds.map(id=>hits?.[id]===3);
