@@ -2,7 +2,7 @@ import {reducedMotion,el,button,heading,paragraph,modal,type Context} from '../u
 import {layout,footer} from './observe';
 import {stages} from '../content';
 import {stageIds,validEvidence} from '../model';
-import {inquiryEvidenceView as evidenceView} from './inquiry';
+import {inquiryEvidenceView as evidenceView} from './inquiry-evidence';
 import {stageBadge} from '../experience';
 import {playEffect} from '../audio';
 import {showFilm} from '../film';
