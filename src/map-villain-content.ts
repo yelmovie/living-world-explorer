@@ -8,8 +8,9 @@ const dialogue=[
   ["요구르트와 곰팡이 사건을 구분했어? 이름표를 섞어 놨는데!", "다음엔 요구르트 통에 내 이름을 써 두지!", "앗, 유산균 이름표가 제자리로!", "내가 뒤집은 사건 카드가 펼쳐졌어!", "흥, 기록은 가져. 요구르트는 남겨 줘!"],
   ["네 해결 장치를 시험까지 했다고? 내 흐림 필터도 뚫렸잖아!", "내 장난에도 시험 기록이 필요하겠군!", "앗, 조립 부품이 제자리로!", "시험 결과가 또렷해지잖아!", "쳇, BIO 작업실은 돌려줄게!"],
 ];
-// 2026-11-17: villains wait on the open roads around the central plaza, away from building doors and resident NPCs.
-const approaches=[{x:529,y:223},{x:864,y:271},{x:871,y:407},{x:703,y:488},{x:397,y:407}];
+// 2026-11-17: villains wait on open roads, away from building doors and resident NPCs.
+// 2026-11-22: each one now waits on the road nearest its OWN lab, so the card it gives reads as that stage's card.
+const approaches=[{x:505,y:228},{x:864,y:271},{x:970,y:370},{x:805,y:459},{x:442,y:505}];
 export const mapVillainStages=stageIds.map((id,i)=>({
  id,name:'초점 도깨비 렌즈',...nearestRoadPoint(approaches[i]??locations[i]),
  lines:dialogue[i].slice(0,2),prop:['cap','pane','dial','label','lens'][i],hit:dialogue[i].slice(2,4),finish:dialogue[i][4],
