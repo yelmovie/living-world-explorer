@@ -40,10 +40,10 @@
 .discovery-dialog .discovery-card h2{font-size:clamp(20px,2vw,26px);line-height:1.45}
 .discovery-pips{display:flex;align-items:center;justify-content:center;gap:8px}
 .discovery-pips .pip{width:18px;height:18px;border-radius:50%;border:2px solid #9aa88a;background:#f1eedd}
-.discovery-pips .pip.on{border-color:#2f6a4c;background:#3f8a63;box-shadow:inset 0 0 0 3px #fffdf4}
+.discovery-pips .pip.on{border-color:#2f6a4c;background:#3f8a63;box-shadow:inset 0 0 0 3px var(--cream-50)}
 .discovery-pips .pip-label{margin-left:6px;font-size:var(--font-size-small);font-weight:700;color:#3d5947}
 .discovery-next{margin:0;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;font-size:var(--font-size-label);color:var(--ink-strong);line-height:1.35}
-.discovery-next-label{padding:3px 10px;border-radius:999px;background:#245b46;color:#fffdf4;font-size:var(--font-size-small);font-weight:800;white-space:nowrap}
+.discovery-next-label{padding:3px 10px;border-radius:999px;background:var(--forest-572);color:var(--cream-50);font-size:var(--font-size-small);font-weight:800;white-space:nowrap}
 .discovery-dialog>.button.primary{align-self:center;min-width:240px;min-height:56px;font-size:var(--font-size-button)}
 @media(max-height:560px){.modal.discovery-dialog{gap:6px;padding:12px 18px}.discovery-dialog>.button.primary{min-height:48px}}
 
@@ -51,7 +51,7 @@
 .resident-reward .resident-reward-actions .button.primary{min-height:56px;font-size:var(--font-size-button)}
 
 /* Microscope: the moment the picture turns sharp is visible and audible. */
-.observation-photo .focus-lock{position:absolute;left:50%;bottom:7%;z-index:3;translate:-50% 0;padding:6px 14px;border-radius:999px;background:#245b46;color:#fffdf4;font-family:var(--font-display);font-size:clamp(15px,1.4vw,19px);font-weight:800;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s}
+.observation-photo .focus-lock{position:absolute;left:50%;bottom:7%;z-index:3;translate:-50% 0;padding:6px 14px;border-radius:999px;background:var(--forest-572);color:var(--cream-50);font-family:var(--font-display);font-size:clamp(15px,1.4vw,19px);font-weight:800;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s}
 .observation-photo[data-sharp=true] .focus-lock{opacity:1}
 @keyframes focus-ring{0%{box-shadow:0 0 0 0 #9fe08a00}40%{box-shadow:0 0 0 10px #9fe08a88}100%{box-shadow:0 0 0 22px #9fe08a00}}
 @media(prefers-reduced-motion:no-preference){html:not(.reduced) .observation-photo[data-sharp=true] .scope-field{animation:focus-ring .7s ease-out 1}}

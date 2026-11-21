@@ -69,5 +69,5 @@
 }
 .science-keyword{font-weight:700;color:#254334;background:linear-gradient(transparent 65%,#e6cf8f 65%);box-decoration-break:clone;-webkit-box-decoration-break:clone}
 .term-chips>.button.term-chip{min-height:48px;padding:6px 14px;text-decoration:underline;text-underline-offset:4px}
-#app>.expedition-shell .source-preview .source-next{font-size:16px;font-weight:700;line-height:1.35;color:#315f46;border-bottom:1px solid #9da88b;padding-bottom:4px}
+#app>.expedition-shell .source-preview .source-next{font-size:16px;font-weight:700;line-height:1.35;color:var(--forest-700);border-bottom:1px solid #9da88b;padding-bottom:4px}
 #app>.expedition-shell.link-task .expedition-panel-body:has(.source-preview:not([hidden])){overflow-y:auto;max-height:100%}

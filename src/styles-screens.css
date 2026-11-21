@@ -535,11 +535,11 @@
 }
 /* Concept clips carry only labels; the full sentence is this caption under the clip (also the VTT track). */
 .concept-caption{margin:0;line-height:1.35;word-break:keep-all;flex:none}
-.modal.film-dialog{inset:0;margin:0;width:100dvw;max-width:100dvw;height:100dvh;max-height:100dvh;padding:0;border:0;border-radius:0;box-shadow:none;background:#000;overflow:hidden}
-.film-dialog::backdrop{background:#000}
+.modal.film-dialog{inset:0;margin:0;width:100dvw;max-width:100dvw;height:100dvh;max-height:100dvh;padding:0;border:0;border-radius:0;box-shadow:none;background:var(--ink-1000);overflow:hidden}
+.film-dialog::backdrop{background:var(--ink-1000)}
 .film-dialog>h2{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 /* The film fills the screen (contain, never cover: the burned captions sit in the bottom 22%); only the skip button overlays it, at the top. */
-.modal>.film-video{display:block;flex:1 1 auto;width:100%;height:100%;min-height:0;object-fit:contain;background:#000}
+.modal>.film-video{display:block;flex:1 1 auto;width:100%;height:100%;min-height:0;object-fit:contain;background:var(--ink-1000)}
 .modal>.film-skip{position:absolute;top:max(12px,env(safe-area-inset-top));right:max(16px,env(safe-area-inset-right));min-height:48px;opacity:.9}
 @media(min-width:1500px) and (min-height:850px){.expedition-tools .pick,.expedition-tools textarea{font-size:24px}.expedition-tools .field-label{font-size:26px}}
 

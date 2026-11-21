@@ -8,7 +8,7 @@
 .button:not(.primary):not(.selected):not(.current):not(.danger):hover:not(:disabled){background:rgba(255,254,248,.94)}
 .button[aria-pressed=true],.map-view-icon[aria-pressed=true]{background:#e5efd4;border-color:#55794d}
 @media(prefers-reduced-transparency:reduce){:root{--glass-face:#fffdf3;--glass-reading:#fffdf6}}
-@media print{.modal,.tool-panel,.expedition-panel,.discovery-card{background:#fff!important;backdrop-filter:none!important;box-shadow:none!important}}
+@media print{.modal,.tool-panel,.expedition-panel,.discovery-card{background:var(--white)!important;backdrop-filter:none!important;box-shadow:none!important}}
 /* Portrait evidence labels get their own track rather than spilling onto the next card. */
 @media(max-width:599px){
  #app>.expedition-shell.link-task.link-task .link-card,#app>.expedition-shell.link-task.link-task .link-card:has(.link-port[data-side=left]){grid-template-rows:minmax(24px,1fr) auto;grid-template-columns:minmax(0,1fr);gap:4px;padding:6px 12px}
@@ -69,7 +69,7 @@
   font-size:18px;line-height:1.25;text-align:right;word-break:keep-all;
 }
 #app[data-route="nature-map"] .screen-nature-map .map-view-icon[aria-pressed="true"] {
-  background:#245b46; color:#fff; border-color:#123e2e; box-shadow:0 3px 0 #123e2e;
+  background:var(--forest-572); color:var(--white); border-color:var(--forest-672); box-shadow:0 3px 0 var(--forest-672);
 }
 #app[data-route="nature-map"] .screen-nature-map .map-directions {
   grid-template:repeat(2,var(--map-key)) / repeat(3,var(--map-key));
@@ -84,8 +84,8 @@
   -webkit-backdrop-filter:none; font-weight:800; pointer-events:auto; transition:none;
 }
 #app[data-route="nature-map"] .screen-nature-map .map-directions > [data-map-direction]:is(:active,[data-map-held],.is-held,.is-pressed) {
-  background:#245b46; color:#fff; border-color:#123e2e;
-  box-shadow:0 1px 0 #123e2e; transform:none; translate:0 2px; filter:none;
+  background:var(--forest-572); color:var(--white); border-color:var(--forest-672);
+  box-shadow:0 1px 0 var(--forest-672); transform:none; translate:0 2px; filter:none;
 }
 #app[data-route="nature-map"] .screen-nature-map .map-directions > .button:focus-visible { outline:3px solid #165fba; outline-offset:2px; }
 #app[data-route="nature-map"] .screen-nature-map .map-directions { left:var(--map-left); bottom:var(--map-bottom); }

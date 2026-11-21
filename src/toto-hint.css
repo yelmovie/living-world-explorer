@@ -4,7 +4,7 @@
 .toto-hint-toggle:active{transform:translateY(3px);box-shadow:0 1px 0 #e59ab2}
 .toto-hint-toggle img{width:52px;height:52px;border-radius:50%;object-fit:cover;object-position:center 18%;background:#ffe2ea}
 .toto-hint.nudge .toto-hint-toggle{animation:toto-wiggle 1.6s ease-in-out infinite}
-.toto-hint.nudge .toto-hint-toggle::after{content:'';position:absolute;top:-4px;left:42px;width:16px;height:16px;border-radius:50%;background:#e8557a;box-shadow:0 0 0 3px #fff}
+.toto-hint.nudge .toto-hint-toggle::after{content:'';position:absolute;top:-4px;left:42px;width:16px;height:16px;border-radius:50%;background:#e8557a;box-shadow:0 0 0 3px var(--white)}
 @keyframes toto-wiggle{0%,60%,100%{transform:rotate(0)}10%{transform:rotate(-7deg)}20%{transform:rotate(6deg)}30%{transform:rotate(-4deg)}40%{transform:rotate(2deg)}}
 .toto-bubble{position:absolute;left:0;bottom:calc(100% + 14px);width:min(430px,78vw);padding:14px 18px 14px;border-radius:22px;background:#fffdf7;border:3px solid #f1b8c9;box-shadow:0 14px 30px #3b221a33;color:#3a2a26;text-align:left;pointer-events:none}
 .toto-bubble button{pointer-events:auto}
