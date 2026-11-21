@@ -67,15 +67,15 @@ try{
     assert.equal(await dialog.getAttribute('aria-describedby'),await line.getAttribute('id'));
     const welcome=await line.innerText();
     const questions=dialog.locator('.resident-replies button');
-    await questions.first().click();
-    const first=await line.innerText();
+    // While the welcome voice plays, a question is queued and answered when it ends: wait until it is the one shown.
+    const answered=async q=>{await q.click();await page.waitForFunction(b=>b.getAttribute('aria-pressed')==='true',await q.elementHandle(),{timeout:20000});return line.innerText();};
+    const first=await answered(questions.first());
     assert.notEqual(first,welcome);
     const stage=await marker.getAttribute('data-stage');
     if(stage==='M1')await page.screenshot({path:'.tmp/resident-conversation.png'});
     if(stage==='M2')assert.match(first,/물풀 가까이/);
     if(stage==='M5')assert.match(first,/요구르트/);
-    await questions.last().click();
-    assert.notEqual(await line.innerText(),first);
+    assert.notEqual(await answered(questions.last()),first);
     await page.keyboard.press('Escape');await dialog.waitFor({state:'detached'});
     assert.ok(await marker.evaluate(b=>b===document.activeElement));
   }
