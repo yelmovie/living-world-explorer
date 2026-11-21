@@ -38,7 +38,8 @@ export function germProgress(task:InquiryTask,r:InquiryRecord):{steps:[boolean,s
  const a=r.assignments;
  if(task.kind==='zoom')return {steps:[[!!a.guess,'먼저 몇 배로 확대해야 세균이 보일지 예상해요.'],[zoomReach(r)>=3,'배율 다이얼을 돌려 끝까지 확대해요.'],[a.found==='yes','1000배 시야에서 세균을 찾아 콕 눌러요.']]};
  if(task.kind==='catch')return {steps:germShapes.map(s=>[jarCount(r,s.id)>=JAR_GOAL,`${s.label} 세균을 ${JAR_GOAL}마리 잡아 ${s.label} 표본병에 넣어요.`] as [boolean,string])};
- if(task.kind==='culture')return {steps:[[streaked(r).length>=CULTURE_GOAL,culturePlaces.some(p=>a[`dish_${p.id}`]==='loaded')?'면봉에 묻혔어요! 새 배양 접시 위에 지그재그로 그려요.':`면봉으로 ${CULTURE_GOAL}곳 이상 문질러 배양 접시에 그려요.`],[a.days===String(cultureDays),'배양기 시간 손잡이를 끝까지 밀어 접시를 키워요.'],[a.conclusion==='many','접시를 비교해 세균이 사는 곳을 정리해요.']]};
+ if(task.kind==='culture')return {steps:[[streaked(r).length>=CULTURE_GOAL,culturePlaces.some(p=>a[`dish_${p.id}`]==='loaded')?'면봉에 묻혔어요! 새 배양 접시 위에 지그재그로 그려요.':
+   `면봉으로 ${CULTURE_GOAL}곳 이상 문질러 배양 접시에 그려요.`],[a.days===String(cultureDays),'배양기 시간 손잡이를 끝까지 밀어 접시를 키워요.'],[a.conclusion==='many','접시를 비교해 세균이 사는 곳을 정리해요.']]};
  if(task.kind==='exhibit')return {steps:[[a.order===exhibitOrder.join(','),'세 표본을 큰 것부터 작은 것 순서로 전시대에 놓아요.'],...exhibitBlanks.map(b=>[a[`blank_${b.id}`]===b.answer,'관찰한 내용에 맞게 설명 문장을 완성해요.'] as [boolean,string])]};
  return {steps:[]};
 }

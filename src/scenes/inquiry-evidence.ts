@@ -84,7 +84,9 @@ export function inquiryEvidenceView(evidence:Evidence|undefined,compact=false){
    if(record.runs.length)row.append(paragraph(`실행 기록 ${record.runs.length}회 · 마지막 실험 ${run?.startedAt||'다시 확인 필요'}`));
   }else if(task.kind==='publish')row.append(paragraph(`내가 고른 사례: ${selected?.label||'선택 없음'} · ${task.targets.find(target=>target.id===record.assignments.action)?.label||'작용 선택 없음'}`));
   else if(task.kind==='review'){
-   row.append(paragraph(`처음 생각: ${record.assignments.initial==='allbad'?'모든 세균이 해로울 것 같다':'도움이 되는 세균도 있을 것 같다'}`),paragraph(`선택한 주장: ${task.targets.find(t=>t.id===record.assignments.claim)?.label||'이전 연결 활동 기록'}`),paragraph(`근거: ${task.items.find(it=>it.id===record.assignments.evidence)?.detail||'이전 기준에서 남긴 연결 기록'}`),paragraph(record.assignments.decision==='keep'?'처음 주장을 유지했어요.':'새 자료를 보고 주장을 수정했어요.'));
+   row.append(paragraph(`처음 생각: ${record.assignments.initial==='allbad'?'모든 세균이 해로울 것 같다':'도움이 되는 세균도 있을 것 같다'}`),paragraph(`선택한 주장: ${task.targets.find(t=>t.id===record.assignments.claim)?.label||
+     '이전 연결 활동 기록'}`),paragraph(`근거: ${task.items.find(it=>it.id===record.assignments.evidence)?.detail||'이전 기준에서 남긴 연결 기록'}`),paragraph(record.assignments.decision==='keep'?'처음 주장을 유지했어요.':
+     '새 자료를 보고 주장을 수정했어요.'));
   }else for(const it of task.items){const target=task.targets.find(t=>t.id===record.assignments[it.id]);if(target)row.append(paragraph(`선택한 설명: ${target.label} ← 근거: ${it.label} · ${it.detail}`));}
   if(record.note)row.append(paragraph(record.note));
   const extra=Array.from(row.children).slice(beforeDetails);

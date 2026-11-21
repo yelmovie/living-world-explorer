@@ -39,7 +39,8 @@ const text=paragraph('');
 const more=button('다른 힌트',()=>{level=Math.min(2,level+1);
 draw();
 playEffect('hint');},'text-button');
-const draw=()=>{text.textContent=[guidance(task,record).action, task.kind==='microscope'?'관찰 사진과 확대된 모습을 나란히 살펴봐요.':'화면의 자료를 다시 열고 표시나 기록을 살펴봐요.',task.kind==='connect'||task.kind==='sort'||task.kind==='collect'?'자료를 다시 읽고, 고른 답이 자료의 내용과 어울리는지 살펴봐요.':'방금 조작한 결과와 앞 기록에서 달라진 점을 찾아봐요. 그 차이를 고른 설명과 비교해요.'][level];
+const draw=()=>{text.textContent=[guidance(task,record).action, task.kind==='microscope'?'관찰 사진과 확대된 모습을 나란히 살펴봐요.':'화면의 자료를 다시 열고 표시나 기록을 살펴봐요.',task.kind==='connect'||task.kind==='sort'||
+  task.kind==='collect'?'자료를 다시 읽고, 고른 답이 자료의 내용과 어울리는지 살펴봐요.':'방금 조작한 결과와 앞 기록에서 달라진 점을 찾아봐요. 그 차이를 고른 설명과 비교해요.'][level];
 more.disabled=level===2;};
 talk.append(text,more,button('자료·관찰 조건',()=>modal('자료와 관찰 조건',[sourceNotes(task)]),'text-button'));
 const b=button('',()=>{talk.hidden=!talk.hidden;
@@ -159,7 +160,12 @@ export function inquiryScene(ctx:Context,stage:Stage){
   if(task.kind==='review'){controls();view?.refresh();}
  };
  // DOM quizzes and observations load their own small renderers.
- const scene=():Promise<typeof import('../renderers/inquiry2d').mountInquiry>=>task.kind==='summary'?import('../renderers/pond-summary').then(m=>(host,_task,_record,hooks)=>m.mountPondSummary(host,progress.records,hooks)):germ?import('../renderers/germ-games').then(m=>m.mountGermGame):scope?import('../renderers/scope-games').then(m=>m.mountScopeGame):brew?import('../renderers/build-games').then(m=>m.mountBuildGame):task.kind==='microscope'?import('../renderers/simple-microscope').then(m=>m.mountMicroscope):task.id==='M1-4'?import('../renderers/fungi-sort').then(m=>m.mountFungiSort):['M4-3','M4-4'].includes(task.id)?import('../renderers/choice-games').then(m=>m.mountChoiceGame):lapse?import('../renderers/timeline-games').then(m=>m.mountTimelineGame):quiz?import('../renderers/quiz-board').then(m=>m.mountQuizBoard):import('../renderers/inquiry2d').then(m=>m.mountInquiry);
+ const scene=():Promise<typeof import('../renderers/inquiry2d').mountInquiry>=>task.kind==='summary'?
+   import('../renderers/pond-summary').then(m=>(host,_task,_record,hooks)=>m.mountPondSummary(host,progress.records,hooks)):germ?import('../renderers/germ-games').then(m=>m.mountGermGame):scope?
+   import('../renderers/scope-games').then(m=>m.mountScopeGame):brew?import('../renderers/build-games').then(m=>m.mountBuildGame):task.kind==='microscope'?
+   import('../renderers/simple-microscope').then(m=>m.mountMicroscope):task.id==='M1-4'?import('../renderers/fungi-sort').then(m=>m.mountFungiSort):['M4-3','M4-4'].includes(task.id)?
+   import('../renderers/choice-games').then(m=>m.mountChoiceGame):lapse?import('../renderers/timeline-games').then(m=>m.mountTimelineGame):quiz?
+   import('../renderers/quiz-board').then(m=>m.mountQuizBoard):import('../renderers/inquiry2d').then(m=>m.mountInquiry);
  void scene().then(async mount=>{await document.fonts.ready;
  if(disposed)return;
  view=mount(host,task,r,{assigned:()=>{selectedCard='';

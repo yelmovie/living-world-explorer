@@ -27,7 +27,10 @@ export function recoverInquiry(raw:unknown):InquiryProgress{
   r.pan=r.pan&&Number.isFinite(r.pan.x)&&Number.isFinite(r.pan.y)?{x:Math.max(-.4,Math.min(.4,r.pan.x)),y:Math.max(-.4,Math.min(.4,r.pan.y))}:{x:0,y:0};r.pins=Array.isArray(r.pins)?r.pins.filter(v=>Number.isFinite(v)&&v>=0&&v<=10).slice(0,2):[];
   for(const key of ['prediction','runResult','reflection','note'] as const)r[key]=typeof r[key]==='string'?r[key].slice(0,key==='note'?100:80):'';
   r.afterThought=typeof r.afterThought==='string'?r.afterThought.slice(0,80):'';
-  r.runs=Array.isArray(r.runs)?r.runs.filter(run=>run&&typeof run.id==='string'&&typeof run.startedAt==='string'&&['supported','stopped'].includes(run.prediction)&&run.assignments&&typeof run.assignments==='object'&&['running','completed','interrupted'].includes(run.status)).slice(-40).map(run=>({...run,assignments:Object.fromEntries(Object.entries(run.assignments).filter(([k,v])=>k.length<80&&typeof v==='string'&&v.length<80)),status:run.status==='running'?'interrupted':run.status,result:['supported','stopped'].includes(run.result)?run.result:'',reflection:['matches','differs'].includes(run.reflection)?run.reflection:''})):[];
+  r.runs=Array.isArray(r.runs)?r.runs.filter(run=>run&&typeof run.id==='string'&&typeof run.startedAt==='string'&&['supported','stopped'].includes(run.prediction)&&run.assignments&&
+    typeof run.assignments==='object'&&['running','completed','interrupted'].includes(run.status)).slice(-40).map(run=>({...run,
+    assignments:Object.fromEntries(Object.entries(run.assignments).filter(([k,v])=>k.length<80&&typeof v==='string'&&v.length<80)),status:run.status==='running'?'interrupted':run.status,
+    result:['supported','stopped'].includes(run.result)?run.result:'',reflection:['matches','differs'].includes(run.reflection)?run.reflection:''})):[];
   r.capture=r.capture===true;r.submitted=r.submitted===true;r.completedAt=typeof r.completedAt==='string'?r.completedAt:undefined;
   // Records saved before 2026-10-25 had no magnification step or miss count: a photo already taken means the microscope was reached, and one try means a clean pass.
   const raw=value as Partial<InquiryRecord>;
