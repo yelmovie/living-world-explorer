@@ -36,7 +36,8 @@ for(const kind of ['bread','leaf']){
  const semantic=frames.map((data,frame)=>Array.from({length:width*height},(_,i)=>{
   const [r,g,b]=data.subarray(i*3,i*3+3),[r0,g0,b0]=frames[0].subarray(i*3,i*3+3);
   const x=i%width/width,y=Math.floor(i/width)/height;
-  if(kind==='bread')return frame>0&&x>.25&&x<.75&&y>.1&&y<.9&&r-b<35&&r-g<16&&r<210;
+  // 2026-11-21: olive-yellow mold patches (about rgb 160,154,115) count too, not only the grey-green ones.
+  if(kind==='bread')return frame>0&&x>.25&&x<.75&&y>.1&&y<.9&&((r-b<35&&r-g<16&&r<210)||(r<175&&r-g<16&&r-b<60));
   // Removed leaf tissue: the original pixel is brown leaf; later it is paper.
   const interior=[-4*width,4*width,-4,4].every(d=>{const j=(i+d)*3;return j>=0&&j+2<frames[0].length&&frames[0][j]-frames[0][j+2]>55&&frames[0][j+1]-frames[0][j+2]>20;});
   return interior&&r0-b0>55&&g0-b0>20&&r>175&&g>165&&b>140&&r-b<45&&r-g<26;

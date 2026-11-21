@@ -26,7 +26,7 @@ export function mountTimelineGame(host:HTMLElement,task:InquiryTask,record:Inqui
  const controls=el('div','timeline-controls');
  const found=()=>record.marks.filter(p=>markValid(task,record,p)).length;
  const paintPins=()=>pins.replaceChildren(...record.marks.map(p=>{const m=el('span','timeline-pin','🔍');m.style.left=p.x*100+'%';m.style.top=p.y*100+'%';return m;}));
- const say=()=>{tip.textContent=!validTimelinePair(record)?(lapse?'⏩ 시간 손잡이를 끝까지 밀어 빵이 어떻게 변하는지 봐요':'↔ 가운데 손잡이를 좌우로 밀어 처음과 나중을 비교해요'):!found()?(lapse?'👆 처음엔 없던 곰팡이를 사진에서 콕 눌러요':'👆 처음엔 있었는데 사라진 잎 부분을 콕 눌러요'):'📄 옆의 조사 자료를 읽어 봐요';};
+ const say=()=>{tip.textContent=!validTimelinePair(record)?(lapse?'⏩ 시간 손잡이를 끝까지 밀어 빵이 어떻게 변하는지 봐요':'↔ 가운데 손잡이를 좌우로 밀어 처음과 나중을 비교해요'):!found()?(lapse?'👆 처음엔 없던 곰팡이를 큰 사진에서 콕 눌러요':'👆 처음엔 있었는데 사라진 잎 부분을 콕 눌러요'):'📄 옆의 조사 자료를 읽어 봐요';};
  const open=()=>{if(!found())return;note.hidden=false;if(!record.opened.includes('process')){record.opened.push('process');hooks.changed();}};
  const compare=()=>{if(validTimelinePair(record))return;record.pins=[0,3];record.time=3;hooks.changed();playEffect('capture');totoSay(root,{text:lapse?'시간이 지나니 빵 위에 무언가 생겼지? 처음 사진과 비교해 봐!':'나중 낙엽은 처음과 뭐가 달라졌을까? 사라진 곳을 찾아봐!',mood:'cheer'});};
 
@@ -61,6 +61,9 @@ export function mountTimelineGame(host:HTMLElement,task:InquiryTask,record:Inqui
   if(disposed||document.querySelector('dialog[open]'))return;
   if((e.target as HTMLElement).closest('.timeline-handle,.timeline-thumb'))return;
   if(!validTimelinePair(record)){totoSay(root,{text:lapse?'먼저 시간 손잡이를 끝까지 밀어 변화를 봐!':'먼저 가운데 손잡이를 밀어 처음과 나중을 비교해 봐!'});return;}
+  // 2026-11-21: the small 「처음」 picture lets taps through (pointer-events: none), so a tap on it used to count as a miss on the big picture behind it.
+  const small=frame.querySelector<HTMLElement>('.timeline-thumb:not([hidden])')?.getBoundingClientRect();
+  if(small&&e.clientX>=small.left&&e.clientX<=small.right&&e.clientY>=small.top&&e.clientY<=small.bottom){totoSay(root,{text:'작은 사진은 처음 모습이야. 큰 사진에서 곰팡이를 찾아 눌러 봐!'});return;}
   const b=layers[0].getBoundingClientRect();const p:Point={x:(e.clientX-b.left)/b.width,y:(e.clientY-b.top)/b.height};
   // Fingertip tolerance (about 16 px on screen): the closest changed spot near the tap counts.
   const r=16/b.width,step=Math.min(.006,r/4);let hit:Point|undefined,bd=Infinity;
