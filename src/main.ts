@@ -6,6 +6,8 @@ import {bindDirectionPad,mapKeyDirection} from './map-controls.js';
 import {revisedEvidenceCount} from './experience';
 import {needsStorageWarning} from './storage-status';
 import './styles.css';
+import './styles-screens.css';
+import './styles-finish.css';
 import {active,makeAttempt,stageIds,validEvidence,type Stage,type State} from './model';
 import {load,save,storageMessage,restoredFromPreview,clearResearchCaptures} from './storage';
 import {routes,activityRoutes,stages,back} from './content';
