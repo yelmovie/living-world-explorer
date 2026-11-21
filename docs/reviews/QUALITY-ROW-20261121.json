@@ -1,13 +1,73 @@
 {
-  "no": "08", "name": "생명 코드 연구소", "appCommit": "df76cc9", "measuredAt": "2026-11-21T08:44+09:00",
-  "score": {"total": 91, "noDevice": 95,
-    "items": {"learning": 10, "fun": 9, "function": 10, "code": 7, "design": 10, "a11y": 9, "perf": 8, "firstScreen": 10, "data": 8, "deploy": 10}},
-  "structure": {"zones": 5, "activities": 20, "stepsPerActivityMedian": 3, "autoRunSeconds": 127},
-  "interaction": {"kinds": ["누르기", "끌기", "밀기(손잡이·다이얼)", "꾹 누르기", "콕 찍기(캔버스)", "지도 걷기", "3D 돌려 보기"], "kindsCount": 7, "zonesWithOwnInteraction": 5},
-  "feedback": {"wrongAnswerLevels": 3, "hintBeforeAnswer": true, "retryGoal": false, "rewardEffects": 4, "transitionEffects": 3},
-  "screen": {"playAreaHeightPctMedian": 90, "playAreaAreaPctMedian": 66, "bodyTextMinPx": 18, "bodyTextMedianPx": 18.6, "imagesOnScreenMedian": 2},
-  "sound": {"bgm": true, "sfx": true, "voice": true, "voiceLines": 192},
-  "weight": {"firstScreenKB": 1427, "distMB": 86},
-  "robust": {"reloadRestores": true, "corruptSaveHandled": true, "offlineRevisit": true, "backButtonStaysInApp": false, "certificatePrintsOnePage": true},
-  "notes": "운영 측정(1280×800, 대표 활동 M1-1·M2-3·M5-1 가운데 값, 놀이 영역은 .expedition-work). firstScreenKB는 서비스워커 없이 첫 화면까지 받은 양. stepsPerActivityMedian은 화면 단계 안내 목록 기준, wrongAnswerLevels·rewardEffects·transitionEffects는 코드와 완주 화면 기준(오답 문구·이유·토토 힌트·다시 고르기 / 배지 알림·성취 카드·복구 연출·인증서 / 이야기 영상·장면 전환·지도 복구). offlineRevisit는 test:offline(11-20 D11 PASS) 기준. backButtonStaysInApp: 뒤로 2번이면 앱 밖(3-2단계에서 고침)."
+ "no": "08",
+ "name": "생명 코드 연구소",
+ "appCommit": "e27b0e3",
+ "measuredAt": "2026-11-21T09:59+09:00",
+ "score": {
+  "total": 92,
+  "noDevice": 96,
+  "items": {
+   "learning": 10,
+   "fun": 9,
+   "function": 10,
+   "code": 7,
+   "design": 10,
+   "a11y": 9,
+   "perf": 8,
+   "firstScreen": 10,
+   "data": 9,
+   "deploy": 10
+  }
+ },
+ "structure": {
+  "zones": 5,
+  "activities": 20,
+  "stepsPerActivityMedian": 3,
+  "autoRunSeconds": 127
+ },
+ "interaction": {
+  "kinds": [
+   "누르기",
+   "끌기",
+   "밀기(손잡이·다이얼)",
+   "꾹 누르기",
+   "콕 찍기(캔버스)",
+   "지도 걷기",
+   "3D 돌려 보기"
+  ],
+  "kindsCount": 7,
+  "zonesWithOwnInteraction": 5
+ },
+ "feedback": {
+  "wrongAnswerLevels": 3,
+  "hintBeforeAnswer": true,
+  "retryGoal": false,
+  "rewardEffects": 4,
+  "transitionEffects": 3
+ },
+ "screen": {
+  "playAreaHeightPctMedian": 90,
+  "playAreaAreaPctMedian": 66,
+  "bodyTextMinPx": 18,
+  "bodyTextMedianPx": 18.6,
+  "imagesOnScreenMedian": 2
+ },
+ "sound": {
+  "bgm": true,
+  "sfx": true,
+  "voice": true,
+  "voiceLines": 192
+ },
+ "weight": {
+  "firstScreenKB": 1427,
+  "distMB": 86
+ },
+ "robust": {
+  "reloadRestores": true,
+  "corruptSaveHandled": true,
+  "offlineRevisit": true,
+  "backButtonStaysInApp": true,
+  "certificatePrintsOnePage": true
+ },
+ "notes": "운영 측정(1280×800, 대표 활동 M1-1·M2-3·M5-1 가운데 값, 놀이 영역은 .expedition-work). firstScreenKB는 서비스워커 없이 첫 화면까지 받은 양. stepsPerActivityMedian은 화면 단계 안내 목록 기준, wrongAnswerLevels·rewardEffects·transitionEffects는 코드와 완주 화면 기준(오답 문구·이유·토토 힌트·다시 고르기 / 배지 알림·성취 카드·복구 연출·인증서 / 이야기 영상·장면 전환·지도 복구). offlineRevisit는 test:offline(11-20 D11 PASS) 기준. backButtonStaysInApp: 3-2a(e27b0e3)에서 앱 안 앞 화면으로 바꾸고 운영에서 확인."
 }
