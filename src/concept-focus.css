@@ -22,6 +22,13 @@
 .concept-dialog .concept-video{position:absolute;inset:0;width:100%;height:100%;max-height:none;aspect-ratio:auto;object-fit:contain;background:var(--ink-1000);border-radius:0}
 .concept-dialog .concept-chapters,.concept-dialog .concept-actions{position:absolute;top:max(12px,env(safe-area-inset-top));z-index:1;display:flex;gap:6px;padding:0}
 .concept-dialog .concept-chapters{left:max(16px,env(safe-area-inset-left))}
+/* 2026-11-21: every concept clip keeps a header tag (「모아의 연구 노트 · …」) in its top-left corner, 60–612 px of the 1920-wide picture,
+   and nothing else in its top 140 px. The scene buttons start just right of that tag on the displayed picture (contain: width = min(100dvw, 100dvh × 16/9)),
+   so they never cover the clip's own words.
+   When the black band above the picture is taller than the row (4:3 tablets, portrait), the row stays at the left inside that band.
+   clamp(0px, (74px - band) * 1000, shift) is 0 for a tall band and the full shift otherwise. */
+.concept-dialog{--clip-w:min(100dvw,calc(100dvh * 16 / 9));--band:calc((100dvh - var(--clip-w) * 9 / 16) / 2);--past-head:calc((100dvw - var(--clip-w)) / 2 + var(--clip-w) * .335)}
+.concept-dialog .concept-chapters{left:max(16px,env(safe-area-inset-left),calc(16px + clamp(0px,(74px - var(--band)) * 1000,var(--past-head) - 16px)))}
 .concept-dialog .concept-actions{right:max(16px,env(safe-area-inset-right));justify-content:flex-end}
 .concept-dialog .concept-chapters button{flex:none;min-height:48px;padding:6px 12px;font-size:clamp(15px,1.3vw,19px);background:rgba(247,250,243,.9)}
 .concept-dialog .concept-chapters button[aria-current=step]{background:rgba(216,238,223,.95)}
@@ -34,9 +41,10 @@
 /* Phones and folds held sideways: shorter buttons so the top row fits beside the letterboxed picture. */
 @media(max-height:520px),(max-width:900px){
  .concept-dialog .concept-chapters,.concept-dialog .concept-actions{top:max(8px,env(safe-area-inset-top));gap:4px}
- .concept-dialog .concept-chapters{left:max(8px,env(safe-area-inset-left))}
+ .concept-dialog .concept-chapters{left:max(8px,env(safe-area-inset-left),calc(8px + clamp(0px,(66px - var(--band)) * 1000,var(--past-head) - 8px)))}
  .concept-dialog .concept-actions{right:max(8px,env(safe-area-inset-right))}
  .concept-dialog .concept-chapters button,.concept-dialog .concept-actions>.button{font-size:15px;padding:4px 8px}
+ .concept-dialog .concept-chapters button{padding:4px 6px}
  .concept-dialog .concept-focus{top:calc(max(8px,env(safe-area-inset-top)) + 54px);font-size:16px;padding:4px 10px;gap:5px}
  .concept-dialog .concept-focus strong{padding:1px 7px}
  .concept-dialog .concept-caption{font-size:17px;padding:5px 10px}
