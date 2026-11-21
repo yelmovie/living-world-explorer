@@ -111,7 +111,16 @@ const lineIds=new Map(Object.entries(narrationRecordings).map(([id,r])=>[r.text,
 export function playVoiceLine(text:string,onState?:(state:NarrationState)=>void){const id=lineIds.get(text.trim());return id?playNarration(id,onState):false;}
 export function queueVoiceLine(text:string,onState?:(state:NarrationState)=>void,still:()=>boolean=()=>true){if(!narration)return playVoiceLine(text,onState);if(!lineIds.has(text.trim()))return false;queued=()=>{if(still())playVoiceLine(text,onState);};return true;}
 /** Plays voiced lines in order while a dialog is open and stops them when it closes; `now` interrupts a line already playing (a tap), otherwise it waits. */
-export function voiceDialog(dialog:HTMLDialogElement,texts:string[],{now=false}={}){let open=true;texts=[...texts];const own=(state:NarrationState)=>{if(state==='ended'&&texts.length)voice();};const voice=()=>{const t=texts.shift();if(t&&now){now=false;playVoiceLine(t,own);}else if(t)queueVoiceLine(t,own,()=>open);};voice();dialog.addEventListener('close',()=>{open=false;texts.length=0;stopNarration(own);},{once:true});}
+export function voiceDialog(dialog:HTMLDialogElement,texts:string[],{now=false}={}){let open=true;
+texts=[...texts];
+const own=(state:NarrationState)=>{if(state==='ended'&&texts.length)voice();};
+const voice=()=>{const t=texts.shift();
+if(t&&now){now=false;
+playVoiceLine(t,own);}else if(t)queueVoiceLine(t,own,()=>open);};
+voice();
+dialog.addEventListener('close',()=>{open=false;
+texts.length=0;
+stopNarration(own);},{once:true});}
 export function voiceLineSeconds(text:string){const id=lineIds.get(text.trim());return id?narrationRecordings[id].duration:0;}
 
 function engine() {
@@ -248,7 +257,18 @@ export function playEffect(name: EffectName = 'click') {
     if (context !== ctx || !effectGain || !settings.sound || document.hidden || explicitQuiet) return;
     effectBusLevels();
     const combat = name.startsWith('map-') && combatGain, bus = combat || effectGain;
-    const buffer=samples.get(name);if(buffer){const source=ctx.createBufferSource();source.buffer=buffer;const level=ctx.createGain();level.gain.value=effectLevel[name]??1;source.connect(level).connect(bus);effectVoices.add(source);source.onended=()=>{effectVoices.delete(source);source.disconnect();level.disconnect();};source.start();return;}
+    const buffer=samples.get(name);
+    if(buffer){const source=ctx.createBufferSource();
+    source.buffer=buffer;
+    const level=ctx.createGain();
+    level.gain.value=effectLevel[name]??1;
+    source.connect(level).connect(bus);
+    effectVoices.add(source);
+    source.onended=()=>{effectVoices.delete(source);
+    source.disconnect();
+    level.disconnect();};
+    source.start();
+    return;}
     frequencies.forEach((frequency,i) => voice(frequency, .16, bus, effectVoices, ctx.currentTime + i * .09));
   };
   if (ctx.state === 'suspended') void ctx.resume().then(play).catch(() => {});else play();

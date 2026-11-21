@@ -3,8 +3,27 @@ export function button(text:string,fn:()=>void,cls='secondary',disabled=false){c
 export function heading(text:string){return el('h2','',text);}
 export function paragraph(text:string,cls=''){return el('p',cls,text);}
 export function panel(title:string,...children:Node[]){const n=el('section','panel');n.append(heading(title),...children);return n;}
-export function choices(options:{id:string;label:string}[],value:string,change:(id:string)=>void){const box=el('div','choices');for(const o of options){const b=button(o.label,()=>change(o.id),'choice'+(value===o.id?' selected':''));b.setAttribute('aria-pressed',String(value===o.id));box.append(b);}return box;}
-export function select(label:string,options:{id:string;label:string}[],value:string,change:(id:string)=>void){let selected=value;const wrap=el('div','field');wrap.append(el('span','field-label',label));const pick=button(options.find(o=>o.id===value)?.label||'골라요',()=>{pick.setAttribute('aria-expanded','true');const dialog=modal(label,options.filter(o=>o.id).map(o=>{const b=button(o.label,()=>{selected=o.id;pick.textContent=o.label;dialog.close();change(o.id);},o.id===selected?'selected':'secondary');b.setAttribute('aria-pressed',String(o.id===selected));return b;}));dialog.addEventListener('close',()=>pick.setAttribute('aria-expanded','false'),{once:true});},'choice pick');pick.setAttribute('aria-label',label);pick.setAttribute('aria-haspopup','dialog');pick.setAttribute('aria-expanded','false');wrap.append(pick);return wrap;}
+export function choices(options:{id:string;label:string}[],value:string,change:(id:string)=>void){const box=el('div','choices');
+for(const o of options){const b=button(o.label,()=>change(o.id),'choice'+(value===o.id?' selected':''));
+b.setAttribute('aria-pressed',String(value===o.id));
+box.append(b);}
+return box;}
+export function select(label:string,options:{id:string;label:string}[],value:string,change:(id:string)=>void){let selected=value;
+const wrap=el('div','field');
+wrap.append(el('span','field-label',label));
+const pick=button(options.find(o=>o.id===value)?.label||'골라요',()=>{pick.setAttribute('aria-expanded','true');
+const dialog=modal(label,options.filter(o=>o.id).map(o=>{const b=button(o.label,()=>{selected=o.id;
+pick.textContent=o.label;
+dialog.close();
+change(o.id);},o.id===selected?'selected':'secondary');
+b.setAttribute('aria-pressed',String(o.id===selected));
+return b;}));
+dialog.addEventListener('close',()=>pick.setAttribute('aria-expanded','false'),{once:true});},'choice pick');
+pick.setAttribute('aria-label',label);
+pick.setAttribute('aria-haspopup','dialog');
+pick.setAttribute('aria-expanded','false');
+wrap.append(pick);
+return wrap;}
 export function slider(label:string,min:number,max:number,step:number,value:number,change:(v:number)=>void){
  const wrap=el('div','field slider'),name=el('span','field-label',label),row=el('div','range-row');
  const input=el('input'),readout=el('output','slider-readout');

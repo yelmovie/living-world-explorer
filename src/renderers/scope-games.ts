@@ -48,7 +48,14 @@ export function mountScopeGame(host:HTMLElement,task:InquiryTask,record:InquiryR
   const lens=el('div','lens-glass');const handle=el('img','lens-handle');handle.src='assets/ui/hand-lens.webp';handle.alt='';handle.draggable=false;lens.append(handle);
   lensView.append(photo,lens);pic.src=artFor('mushroomSpores')!.src;
   let lp:Point={x:.22,y:.82},dwell:ReturnType<typeof setTimeout>|undefined,found=false;
-  const placeLens=(p:Point)=>{lp={x:Math.max(0,Math.min(1,p.x)),y:Math.max(0,Math.min(1,p.y))};const b=lensView.getBoundingClientRect();lens.style.left=lp.x*100+'%';lens.style.top=lp.y*100+'%';lens.style.backgroundImage=`url("${photo.src}")`;lens.style.backgroundSize=`${b.width*2.4}px ${b.height*2.4}px`;const d=lens.offsetWidth/2;lens.style.backgroundPosition=`${-lp.x*b.width*2.4+d}px ${-lp.y*b.height*2.4+d}px`;
+  const placeLens=(p:Point)=>{lp={x:Math.max(0,Math.min(1,p.x)),y:Math.max(0,Math.min(1,p.y))};
+  const b=lensView.getBoundingClientRect();
+  lens.style.left=lp.x*100+'%';
+  lens.style.top=lp.y*100+'%';
+  lens.style.backgroundImage=`url("${photo.src}")`;
+  lens.style.backgroundSize=`${b.width*2.4}px ${b.height*2.4}px`;
+  const d=lens.offsetWidth/2;
+  lens.style.backgroundPosition=`${-lp.x*b.width*2.4+d}px ${-lp.y*b.height*2.4+d}px`;
    // The glass counts as on the gills when they show anywhere in the inner part of the circle, not only under its centre.
    const rx=d*.45/b.width,ry=d*.45/b.height;
    const on=[[0,0],[1,0],[-1,0],[0,1],[0,-1],[.7,.7],[-.7,.7],[.7,-.7],[-.7,-.7]].some(([x,y])=>featureAt('mushroom',{x:lp.x+x*rx,y:lp.y+y*ry})==='gills');
@@ -101,7 +108,13 @@ export function mountScopeGame(host:HTMLElement,task:InquiryTask,record:InquiryR
   };
   for(const t of tags){
    t.node.onpointerdown=e=>{if(e.button!==0||placedTag(t.want)||!sharp())return;const r=t.node.getBoundingClientRect(),dx=e.clientX-r.left,dy=e.clientY-r.top,sx=e.clientX,sy=e.clientY;let ghost:HTMLElement|undefined;const stop=new AbortController();
-    window.addEventListener('pointermove',m=>{if(m.pointerId!==e.pointerId)return;if(!ghost){if(Math.hypot(m.clientX-sx,m.clientY-sy)<8)return;ghost=t.node.cloneNode(true) as HTMLElement;ghost.classList.add('tag-ghost');document.body.append(ghost);t.node.classList.add('is-lifted');}ghost.style.transform=`translate(${m.clientX-dx}px,${m.clientY-dy}px) rotate(-5deg)`;},{signal:stop.signal});
+    window.addEventListener('pointermove',m=>{if(m.pointerId!==e.pointerId)return;
+    if(!ghost){if(Math.hypot(m.clientX-sx,m.clientY-sy)<8)return;
+    ghost=t.node.cloneNode(true) as HTMLElement;
+    ghost.classList.add('tag-ghost');
+    document.body.append(ghost);
+    t.node.classList.add('is-lifted');}
+    ghost.style.transform=`translate(${m.clientX-dx}px,${m.clientY-dy}px) rotate(-5deg)`;},{signal:stop.signal});
     const end=(u:PointerEvent)=>{if(u.pointerId!==e.pointerId)return;stop.abort();t.node.classList.remove('is-lifted');if(!ghost)return;ghost.remove();t.node.dataset.dragged='1';later(()=>delete t.node.dataset.dragged,350);const b=field.getBoundingClientRect();
      // The tag's pointy end sits half its height left of the box, at the middle.
      const x=u.clientX-dx-r.height/2+4,y=u.clientY-dy+r.height/2;const pts=([[x,y],[u.clientX,u.clientY]] as [number,number][]).filter(([a,c])=>a>=b.left&&a<=b.right&&c>=b.top&&c<=b.bottom);if(u.type==='pointerup'&&pts.length)tryTag(t.id,pts[0][0],pts[0][1],...pts.slice(1));};
@@ -127,5 +140,8 @@ export function mountScopeGame(host:HTMLElement,task:InquiryTask,record:InquiryR
   void Promise.all([pic,frame,knob].map(i=>i.decode())).then(()=>{if(disposed)return;root.inert=false;paint();hooks.ready(true);},()=>{if(!disposed)hooks.ready(false);});
  }
  const idle=()=>{};const none=()=>false;
- return {refresh:()=>paint?.(),showFrame:idle,endDemo:idle,setPlaybackRate:idle,setPreview:idle,setReveal:idle,setPlaying:idle,arm:idle,assignCard:none,assign:none,place:none,animateRun:(_ok,finish)=>finish(),dispose:()=>{disposed=true;timers.forEach(clearTimeout);document.querySelectorAll('.tag-ghost').forEach(g=>g.remove());root.remove();}};
+ return {refresh:()=>paint?.(),showFrame:idle,endDemo:idle,setPlaybackRate:idle,setPreview:idle,setReveal:idle,setPlaying:idle,arm:idle,assignCard:none,assign:none,place:none,animateRun:(_ok,finish)=>finish(),dispose:()=>{disposed=true;
+ timers.forEach(clearTimeout);
+ document.querySelectorAll('.tag-ghost').forEach(g=>g.remove());
+ root.remove();}};
 }

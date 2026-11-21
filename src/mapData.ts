@@ -53,7 +53,15 @@ export function routeBetween(start:Point,targetId:string):Point[]{
  const seeds=edge.map(p=>pathGraph.find(n=>Math.hypot(n.point.x-p.x,n.point.y-p.y)<.01)!);
  const distances=new Map(pathGraph.map(n=>[n.id,Infinity]));for(const n of seeds)distances.set(n.id,Math.hypot(origin.x-n.point.x,origin.y-n.point.y));
  const previous=new Map<string,string>();const open=new Set(pathGraph.map(n=>n.id));
- while(open.size){const id=[...open].sort((a,b)=>distances.get(a)!-distances.get(b)!)[0];open.delete(id);if(id===targetId||!Number.isFinite(distances.get(id)))break;const node=pathGraph.find(n=>n.id===id)!;for(const next of node.neighbors){if(!open.has(next))continue;const dest=pathGraph.find(n=>n.id===next)!;const cost=distances.get(id)!+Math.hypot(node.point.x-dest.point.x,node.point.y-dest.point.y);if(cost<distances.get(next)!){distances.set(next,cost);previous.set(next,id);}}}
+ while(open.size){const id=[...open].sort((a,b)=>distances.get(a)!-distances.get(b)!)[0];
+ open.delete(id);
+ if(id===targetId||!Number.isFinite(distances.get(id)))break;
+ const node=pathGraph.find(n=>n.id===id)!;
+ for(const next of node.neighbors){if(!open.has(next))continue;
+ const dest=pathGraph.find(n=>n.id===next)!;
+ const cost=distances.get(id)!+Math.hypot(node.point.x-dest.point.x,node.point.y-dest.point.y);
+ if(cost<distances.get(next)!){distances.set(next,cost);
+ previous.set(next,id);}}}
  if(!Number.isFinite(distances.get(targetId)))return [];
  const ids=[targetId];while(previous.has(ids[0]))ids.unshift(previous.get(ids[0])!);
  const points=ids.map(id=>({...pathGraph.find(n=>n.id===id)!.point}));if(Math.hypot(points[0].x-origin.x,points[0].y-origin.y)>.01)points.unshift(origin);return points;

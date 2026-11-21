@@ -64,6 +64,18 @@ export async function mountViewer(host:HTMLElement,src:string,reduced:boolean,st
   rotate:(dx,dy)=>{spin=false;pivot.rotation.y+=dx;pivot.rotation.x=clampX(pivot.rotation.x+dy);},
   zoomBy:steps=>setZoom((steps>0?Math.floor(zoom*2+.00001)+1:Math.ceil(zoom*2-.00001)-1)/2),
   reset:()=>{pivot.rotation.set(start[0],start[1],0);setZoom(1);},
-  dispose:()=>{disposed=true;document.removeEventListener('visibilitychange',visibility);cancelAnimationFrame(raf);observer.disconnect();canvas.removeEventListener('wheel',wheel);pointers.clear();scene.traverse(o=>{const mesh=o as THREE.Mesh;mesh.geometry?.dispose();const materials=([] as THREE.Material[]).concat(mesh.material||[]);for(const m of materials){for(const value of Object.values(m))if(value instanceof THREE.Texture)value.dispose();m.dispose();}});renderer.dispose();canvas.remove();}
+  dispose:()=>{disposed=true;
+  document.removeEventListener('visibilitychange',visibility);
+  cancelAnimationFrame(raf);
+  observer.disconnect();
+  canvas.removeEventListener('wheel',wheel);
+  pointers.clear();
+  scene.traverse(o=>{const mesh=o as THREE.Mesh;
+  mesh.geometry?.dispose();
+  const materials=([] as THREE.Material[]).concat(mesh.material||[]);
+  for(const m of materials){for(const value of Object.values(m))if(value instanceof THREE.Texture)value.dispose();
+  m.dispose();}});
+  renderer.dispose();
+  canvas.remove();}
  };
 }

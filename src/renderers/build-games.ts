@@ -42,8 +42,27 @@ export function mountBuildGame(host:HTMLElement,task:InquiryTask,record:InquiryR
   b.onclick=()=>{if(b.dataset.dragged||running)return;selected=selected===it.id?'':it.id;hooks.open(it.id);paint();};
   b.onpointerdown=e=>{
    if(running||e.button!==0)return;const r=b.getBoundingClientRect(),dx=e.clientX-r.left,dy=e.clientY-r.top,sx=e.clientX,sy=e.clientY;let ghost:HTMLElement|undefined;const stop=new AbortController();
-   window.addEventListener('pointermove',m=>{if(m.pointerId!==e.pointerId)return;if(!ghost){if(Math.hypot(m.clientX-sx,m.clientY-sy)<8)return;ghost=b.cloneNode(true) as HTMLElement;ghost.classList.add('build-ghost');ghost.removeAttribute('data-link-item');ghost.style.width=r.width+'px';document.body.append(ghost);b.classList.add('is-lifted');}ghost.style.transform=`translate(${m.clientX-dx}px,${m.clientY-dy}px) rotate(-4deg)`;const v=vessel.getBoundingClientRect();vessel.classList.toggle('is-over',m.clientX>=v.left&&m.clientX<=v.right&&m.clientY>=v.top&&m.clientY<=v.bottom);},{signal:stop.signal});
-   const end=(u:PointerEvent)=>{if(u.pointerId!==e.pointerId)return;stop.abort();b.classList.remove('is-lifted');vessel.classList.remove('is-over');if(!ghost)return;ghost.remove();b.dataset.dragged='1';setTimeout(()=>delete b.dataset.dragged,350);const v=vessel.getBoundingClientRect();if(u.type==='pointerup'&&u.clientX>=v.left&&u.clientX<=v.right&&u.clientY>=v.top&&u.clientY<=v.bottom)put(it);};
+   window.addEventListener('pointermove',m=>{if(m.pointerId!==e.pointerId)return;
+   if(!ghost){if(Math.hypot(m.clientX-sx,m.clientY-sy)<8)return;
+   ghost=b.cloneNode(true) as HTMLElement;
+   ghost.classList.add('build-ghost');
+   ghost.removeAttribute('data-link-item');
+   ghost.style.width=r.width+'px';
+   document.body.append(ghost);
+   b.classList.add('is-lifted');}
+   ghost.style.transform=`translate(${m.clientX-dx}px,${m.clientY-dy}px) rotate(-4deg)`;
+   const v=vessel.getBoundingClientRect();
+   vessel.classList.toggle('is-over',m.clientX>=v.left&&m.clientX<=v.right&&m.clientY>=v.top&&m.clientY<=v.bottom);},{signal:stop.signal});
+   const end=(u:PointerEvent)=>{if(u.pointerId!==e.pointerId)return;
+   stop.abort();
+   b.classList.remove('is-lifted');
+   vessel.classList.remove('is-over');
+   if(!ghost)return;
+   ghost.remove();
+   b.dataset.dragged='1';
+   setTimeout(()=>delete b.dataset.dragged,350);
+   const v=vessel.getBoundingClientRect();
+   if(u.type==='pointerup'&&u.clientX>=v.left&&u.clientX<=v.right&&u.clientY>=v.top&&u.clientY<=v.bottom)put(it);};
    window.addEventListener('pointerup',end,{signal:stop.signal});window.addEventListener('pointercancel',end,{signal:stop.signal});
   };
   hand.append(b);return {it,b};
@@ -53,7 +72,16 @@ export function mountBuildGame(host:HTMLElement,task:InquiryTask,record:InquiryR
  function predict(v:'supported'|'stopped'){if(running||!placed())return;invalidateRun(record);record.prediction=v;hooks.changed();playEffect('click');progress=0;paint();}
  /** Runs the experiment while the learner warms (hold) or stirs (taps). */
  function begin(){if(running||!placed()||!record.prediction||currentRun(record))return false;running=true;const run=startRun(record);run.status='running';hooks.changed();root.classList.add('is-running');return true;}
- function finish(){const run=record.runs.at(-1)!;const valid=designCorrect(task,record);running=false;root.classList.remove('is-running');run.status='completed';run.result=valid?'supported':'stopped';record.runResult=run.result;run.reflection=record.reflection=run.prediction===run.result?'matches':'differs';hooks.changed();playEffect(valid?'success':'retry');
+ function finish(){const run=record.runs.at(-1)!;
+ const valid=designCorrect(task,record);
+ running=false;
+ root.classList.remove('is-running');
+ run.status='completed';
+ run.result=valid?'supported':'stopped';
+ record.runResult=run.result;
+ run.reflection=record.reflection=run.prediction===run.result?'matches':'differs';
+ hooks.changed();
+ playEffect(valid?'success':'retry');
   const it=placed()!;totoSay(root,valid?{text:run.reflection==='matches'?'예상이 맞았어! '+it.detail:'예상과 달랐지만 괜찮아. 결과를 보고 생각을 고치면 돼. '+it.detail,mood:'cheer'}:{text:it.hint||task.hints?.[1]||task.feedback,mood:'hint'});paint();}
  const show=(p:number)=>{const valid=designCorrect(task,record);const steps=layers.length-1;layers.forEach((l,i)=>{l.style.opacity=String(i===0?1:valid?Math.max(0,Math.min(1,p*steps-(i-1))):0);});ring.style.setProperty('--p',String(p));};
  // bread: press and hold

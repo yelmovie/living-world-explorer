@@ -25,7 +25,9 @@ export function taskIssues(task:InquiryTask,r:InquiryRecord):string[]{
  }
  if(task.kind==='build'){
   const run=currentRun(r);
-  if(!designCorrect(task,r))issues.push(task.feedback);if(!run||run.result!=='supported'||r.runResult!==run.result)issues.push('실행 당시 예상과 설계를 확인해요. 새 예상이나 설계로는 다시 실행해요.');if(!run||r.reflection!==run.reflection||run.reflection!==(run.prediction===run.result?'matches':'differs'))issues.push('실행 당시 예상과 실제 결과를 비교해요.');
+  if(!designCorrect(task,r))issues.push(task.feedback);
+  if(!run||run.result!=='supported'||r.runResult!==run.result)issues.push('실행 당시 예상과 설계를 확인해요. 새 예상이나 설계로는 다시 실행해요.');
+  if(!run||r.reflection!==run.reflection||run.reflection!==(run.prediction===run.result?'matches':'differs'))issues.push('실행 당시 예상과 실제 결과를 비교해요.');
  }
  if(task.kind==='review'){
   if(!['allbad','somehelp'].includes(r.assignments.initial))issues.push('자료를 보기 전 내 생각을 먼저 골라요.');

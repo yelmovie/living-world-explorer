@@ -43,7 +43,10 @@ function zoomGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTMLEl
  const view=el('div','zoom-view');view.setAttribute('role','img');view.setAttribute('aria-label','물 한 방울을 확대해 보는 관찰 창');
  const layers=zoomScenes.map((s,i)=>{const n=el('div',`zoom-layer zoom-scene-${i}`);n.style.transformOrigin=s.origin;n.append(img(`${zoomArt}${s.src}.webp`,'zoom-photo'));view.append(n);return n;});
  const swim=el('div','zoom-swim');swim.append(img(`${zoomArt}zoom-paramecium.webp`,'zoom-para','헤엄치는 짚신벌레'));layers[2].append(swim);
- const bugs=bacteria.map(([sx,w,h,cx,cy])=>{const n=el('span','zoom-bug');Object.assign(n.style,{left:`${cx*100}%`,top:`${cy*100}%`,width:`${w/1672*100}%`,aspectRatio:`${w}/${h}`,backgroundSize:`${1041/w*100}% ${62/h*100}%`,backgroundPosition:`${sx/(1041-w)*100}% 0%`});layers[3].append(n);return {n,cx,cy,x:0,y:0,vx:0,vy:0,a:0};});
+ const bugs=bacteria.map(([sx,w,h,cx,cy])=>{const n=el('span','zoom-bug');
+ Object.assign(n.style,{left:`${cx*100}%`,top:`${cy*100}%`,width:`${w/1672*100}%`,aspectRatio:`${w}/${h}`,backgroundSize:`${1041/w*100}% ${62/h*100}%`,backgroundPosition:`${sx/(1041-w)*100}% 0%`});
+ layers[3].append(n);
+ return {n,cx,cy,x:0,y:0,vx:0,vy:0,a:0};});
  [2,9,13].forEach(i=>bugs[i].n.classList.add('zoom-bug-hint'));
  const eyepiece=el('div','zoom-eyepiece'),lensRing=el('div','zoom-lensring'),lens=el('span','zoom-lens');
  const power=el('b','zoom-power'),note=el('p','zoom-note'),spark=el('span','zoom-spark','✨');spark.hidden=true;
@@ -102,7 +105,15 @@ function zoomGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTMLEl
   raf=disposed||(Math.abs(goal-z)<.002&&(reduced||z<=2.3))?0:requestAnimationFrame(tick);
  }
  // Brownian motion: each bacterium wanders a little around its place and drifts back.
- function jiggle(dt:number){for(const b of bugs){b.vx+=(Math.random()-.5)*dt*60-b.x*dt*3;b.vy+=(Math.random()-.5)*dt*60-b.y*dt*3;b.vx*=.9;b.vy*=.9;b.x+=b.vx*dt*6;b.y+=b.vy*dt*6;b.a+=(Math.random()-.5)*dt*40;b.a*=.98;b.n.style.transform=`translate(-50%,-50%) translate(${b.x.toFixed(2)}px,${b.y.toFixed(2)}px) rotate(${b.a.toFixed(1)}deg)`;}}
+ function jiggle(dt:number){for(const b of bugs){b.vx+=(Math.random()-.5)*dt*60-b.x*dt*3;
+ b.vy+=(Math.random()-.5)*dt*60-b.y*dt*3;
+ b.vx*=.9;
+ b.vy*=.9;
+ b.x+=b.vx*dt*6;
+ b.y+=b.vy*dt*6;
+ b.a+=(Math.random()-.5)*dt*40;
+ b.a*=.98;
+ b.n.style.transform=`translate(-50%,-50%) translate(${b.x.toFixed(2)}px,${b.y.toFixed(2)}px) rotate(${b.a.toFixed(1)}deg)`;}}
  dial.oninput=()=>{if(!r.assignments.guess)return;goal=Number(dial.value);set(goal);paint();if(!raf&&!reduced&&z>2.3){last=performance.now();raf=requestAnimationFrame(tick);}};
  dial.onchange=()=>{if(r.assignments.guess)goTo(Math.round(Number(dial.value)));};
  const tap=(cx:number,cy:number)=>{
@@ -132,7 +143,15 @@ function catchGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTMLE
  const field=el('div','catch-field');field.setAttribute('aria-label','움직이는 세균이 보이는 현미경 시야');
  const jars=el('div','catch-jars');
  const jarNodes=new Map<string,{b:HTMLButtonElement;count:HTMLElement;inside:HTMLElement}>();
- for(const s of germShapes){const b=el('button','catch-jar');b.type='button';b.dataset.jar=s.id;const glass=el('span','jar-glass'),insideBox=el('span','jar-inside'),count=el('b','jar-count');glass.append(insideBox);b.append(el('span','jar-lid'),glass,el('strong','',`${s.label}`),count);b.onclick=()=>{if(picked)drop(picked,s.id);};jars.append(b);jarNodes.set(s.id,{b,count,inside:insideBox});}
+ for(const s of germShapes){const b=el('button','catch-jar');
+ b.type='button';
+ b.dataset.jar=s.id;
+ const glass=el('span','jar-glass'),insideBox=el('span','jar-inside'),count=el('b','jar-count');
+ glass.append(insideBox);
+ b.append(el('span','jar-lid'),glass,el('strong','',`${s.label}`),count);
+ b.onclick=()=>{if(picked)drop(picked,s.id);};
+ jars.append(b);
+ jarNodes.set(s.id,{b,count,inside:insideBox});}
  stage.append(field,jars);
  type Bug={kind:typeof bugKinds[number];n:HTMLButtonElement;x:number;y:number;vx:number;vy:number;a:number;t:number;held:boolean};
  const bugs:Bug[]=[];let picked:Bug|undefined,raf=0,last=0,disposed=false;
@@ -219,7 +238,14 @@ function cultureGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTM
  function locked(){return day>0||!!r.assignments.conclusion;}
  function rub(e:PointerEvent,id:string,card:HTMLElement){
   if(e.button!==0||locked()||r.assignments[`dish_${id}`])return;let distance=0,lx=e.clientX,ly=e.clientY;const stop=new AbortController();swab.hidden=false;moveSwab(e.clientX,e.clientY);card.classList.add('is-rubbing');card.setPointerCapture?.(e.pointerId);
-  window.addEventListener('pointermove',m=>{if(m.pointerId!==e.pointerId)return;distance+=Math.hypot(m.clientX-lx,m.clientY-ly);lx=m.clientX;ly=m.clientY;moveSwab(m.clientX,m.clientY);card.style.setProperty('--rub',String(clamp(distance/140,0,1)));if(distance>=140){stop.abort();done();}},{signal:stop.signal});
+  window.addEventListener('pointermove',m=>{if(m.pointerId!==e.pointerId)return;
+  distance+=Math.hypot(m.clientX-lx,m.clientY-ly);
+  lx=m.clientX;
+  ly=m.clientY;
+  moveSwab(m.clientX,m.clientY);
+  card.style.setProperty('--rub',String(clamp(distance/140,0,1)));
+  if(distance>=140){stop.abort();
+  done();}},{signal:stop.signal});
   const done=()=>{swab.hidden=true;card.classList.remove('is-rubbing');card.style.removeProperty('--rub');pick(id);};
   const end=(u:PointerEvent)=>{if(u.pointerId!==e.pointerId)return;stop.abort();swab.hidden=true;card.classList.remove('is-rubbing');card.style.removeProperty('--rub');if(distance<140&&!r.assignments[`dish_${id}`])totoSay(root,{text:'면봉으로 그림 위를 쓱쓱 여러 번 문질러 봐!',mood:'hint'});};
   window.addEventListener('pointerup',end,{signal:stop.signal});window.addEventListener('pointercancel',end,{signal:stop.signal});
@@ -259,7 +285,23 @@ function cultureGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTM
   const ready=streaked(r).length>=CULTURE_GOAL;incubator.classList.toggle('is-locked',!ready);days.disabled=!ready||!!r.assignments.conclusion;
   if(r.assignments.days===String(cultureDays))day=cultureDays;days.value=String(day);dayLabel.textContent=ready?`${Math.floor(day)}일째`:`${streaked(r).length} / ${CULTURE_GOAL} 접시 준비`;
   verdict.replaceChildren();
-  if(r.assignments.days===String(cultureDays)){verdict.append(el('strong','','접시를 비교해 보니…'));const row=el('div','culture-choices');for(const c of conclusions){const b=button(c.label,()=>{if(r.assignments.conclusion==='many')return;if(c.id!=='many'){r.misses++;changed();playEffect('retry');totoSay(root,{text:c.id==='soil'?'흙 말고 다른 접시에도 세균 무리가 자랐는지 다시 봐!':'깨끗해 보이던 손과 문손잡이 접시에도 무리가 자랐어!',mood:'hint'});return;}r.assignments.conclusion='many';playEffect('success');changed();paint();totoSay(root,{text:'맞아! 세균은 눈에 안 보여도 우리 주변 거의 모든 곳에 살아.',mood:'cheer'});},'secondary');b.dataset.conclusion=c.id;b.classList.toggle('selected',r.assignments.conclusion===c.id);row.append(b);}verdict.append(row);}
+  if(r.assignments.days===String(cultureDays)){verdict.append(el('strong','','접시를 비교해 보니…'));
+  const row=el('div','culture-choices');
+  for(const c of conclusions){const b=button(c.label,()=>{if(r.assignments.conclusion==='many')return;
+  if(c.id!=='many'){r.misses++;
+  changed();
+  playEffect('retry');
+  totoSay(root,{text:c.id==='soil'?'흙 말고 다른 접시에도 세균 무리가 자랐는지 다시 봐!':'깨끗해 보이던 손과 문손잡이 접시에도 무리가 자랐어!',mood:'hint'});
+  return;}
+  r.assignments.conclusion='many';
+  playEffect('success');
+  changed();
+  paint();
+  totoSay(root,{text:'맞아! 세균은 눈에 안 보여도 우리 주변 거의 모든 곳에 살아.',mood:'cheer'});},'secondary');
+  b.dataset.conclusion=c.id;
+  b.classList.toggle('selected',r.assignments.conclusion===c.id);
+  row.append(b);}
+  verdict.append(row);}
   paintDishes();
  }
  paint();
@@ -271,7 +313,19 @@ function exhibitGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTM
  const specimens:Record<string,{label:string;art:string;seen:string}>={mushroom:{label:'버섯',art:'mushroom',seen:'눈으로 봤어요'},paramecium:{label:'짚신벌레',art:'paramecium',seen:'현미경 100배'},bacteria:{label:'세균',art:'bacteria',seen:'현미경 1000배'}};
  const shelf=el('div','exhibit-shelf');const tray=el('div','exhibit-tray');const sentence=el('div','exhibit-sentence');
  shelf.append(el('span','exhibit-arrow','큰 것 → 작은 것'));
- const slots=exhibitOrder.map((_,i)=>{const s=el('div','exhibit-slot');s.tabIndex=0;s.setAttribute('role','button');s.dataset.slot=String(i);s.append(el('span','slot-number',String(i+1)));s.onclick=()=>{if(solved())return;if(picked)put(picked,i);else if(order[i]){order[i]='';save();paint();}};s.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();s.click();}};shelf.append(s);return s;});
+ const slots=exhibitOrder.map((_,i)=>{const s=el('div','exhibit-slot');
+ s.tabIndex=0;
+ s.setAttribute('role','button');
+ s.dataset.slot=String(i);
+ s.append(el('span','slot-number',String(i+1)));
+ s.onclick=()=>{if(solved())return;
+ if(picked)put(picked,i);else if(order[i]){order[i]='';
+ save();
+ paint();}};
+ s.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();
+ s.click();}};
+ shelf.append(s);
+ return s;});
  stage.append(shelf,tray,sentence);
  let order:string[]=(r.assignments.order||'').split(',').concat(['','','']).slice(0,3);let picked='';
  const solved=()=>r.assignments.order===exhibitOrder.join(',');
@@ -280,8 +334,25 @@ function exhibitGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTM
   b.onpointerdown=e=>drag(e,id,b);return b;}
  function drag(e:PointerEvent,id:string,b:HTMLElement){
   if(e.button!==0||solved())return;const sx=e.clientX,sy=e.clientY,rect=b.getBoundingClientRect();let ghost:HTMLElement|undefined;const stop=new AbortController();
-  window.addEventListener('pointermove',m=>{if(m.pointerId!==e.pointerId)return;if(!ghost){if(Math.hypot(m.clientX-sx,m.clientY-sy)<8)return;ghost=b.cloneNode(true) as HTMLElement;ghost.classList.add('exhibit-ghost');ghost.style.width=rect.width+'px';document.body.append(ghost);b.classList.add('is-lifted');}ghost.style.transform=`translate(${m.clientX-rect.width/2}px,${m.clientY-rect.height/2}px) rotate(-3deg)`;slots.forEach(s=>s.classList.toggle('is-over',inside(m.clientX,m.clientY,s)));},{signal:stop.signal});
-  const end=(u:PointerEvent)=>{if(u.pointerId!==e.pointerId)return;stop.abort();slots.forEach(s=>s.classList.remove('is-over'));b.classList.remove('is-lifted');if(!ghost)return;ghost.remove();b.dataset.dragged='1';setTimeout(()=>delete b.dataset.dragged,300);const i=slots.findIndex(s=>inside(u.clientX,u.clientY,s));if(i>=0&&u.type==='pointerup')put(id,i);};
+  window.addEventListener('pointermove',m=>{if(m.pointerId!==e.pointerId)return;
+  if(!ghost){if(Math.hypot(m.clientX-sx,m.clientY-sy)<8)return;
+  ghost=b.cloneNode(true) as HTMLElement;
+  ghost.classList.add('exhibit-ghost');
+  ghost.style.width=rect.width+'px';
+  document.body.append(ghost);
+  b.classList.add('is-lifted');}
+  ghost.style.transform=`translate(${m.clientX-rect.width/2}px,${m.clientY-rect.height/2}px) rotate(-3deg)`;
+  slots.forEach(s=>s.classList.toggle('is-over',inside(m.clientX,m.clientY,s)));},{signal:stop.signal});
+  const end=(u:PointerEvent)=>{if(u.pointerId!==e.pointerId)return;
+  stop.abort();
+  slots.forEach(s=>s.classList.remove('is-over'));
+  b.classList.remove('is-lifted');
+  if(!ghost)return;
+  ghost.remove();
+  b.dataset.dragged='1';
+  setTimeout(()=>delete b.dataset.dragged,300);
+  const i=slots.findIndex(s=>inside(u.clientX,u.clientY,s));
+  if(i>=0&&u.type==='pointerup')put(id,i);};
   window.addEventListener('pointerup',end,{signal:stop.signal});window.addEventListener('pointercancel',end,{signal:stop.signal});
  }
  function put(id:string,i:number){order=order.map(o=>o===id?'':o);order[i]=id;picked='';playEffect('snap');
@@ -291,12 +362,33 @@ function exhibitGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTM
  function save(){r.assignments.order=order.join(',');changed();}
  function paint(){
   const ok=solved();shelf.classList.toggle('is-solved',ok);tray.replaceChildren(...Object.keys(specimens).filter(id=>!order.includes(id)).map(card));
-  slots.forEach((s,i)=>{s.querySelector('.exhibit-placed')?.remove();const id=order[i];if(id){const f=el('span','exhibit-placed');f.dataset.specimen=id;f.append(img(artFor(specimens[id].art)!.src,'',specimens[id].label),el('strong','',specimens[id].label),el('span','',specimens[id].seen));s.append(f);}s.classList.toggle('is-armed',!!picked&&!ok);s.setAttribute('aria-label',`${i+1}번째 자리 ${id?specimens[id].label:'비어 있음'}`);});
+  slots.forEach((s,i)=>{s.querySelector('.exhibit-placed')?.remove();
+  const id=order[i];
+  if(id){const f=el('span','exhibit-placed');
+  f.dataset.specimen=id;
+  f.append(img(artFor(specimens[id].art)!.src,'',specimens[id].label),el('strong','',specimens[id].label),el('span','',specimens[id].seen));
+  s.append(f);}
+  s.classList.toggle('is-armed',!!picked&&!ok);
+  s.setAttribute('aria-label',`${i+1}번째 자리 ${id?specimens[id].label:'비어 있음'}`);});
   tray.querySelectorAll<HTMLButtonElement>('.exhibit-card').forEach(b=>{b.classList.toggle('is-picked',b.dataset.specimen===picked);b.setAttribute('aria-pressed',String(b.dataset.specimen===picked));});
   sentence.hidden=!ok;sentence.replaceChildren();
   if(ok){sentence.append(el('strong','sentence-title','세균을 소개하는 문장을 완성해요'));const line=el('p','sentence-line');
    for(const blank of exhibitBlanks){if(blank.before)line.append(document.createTextNode(blank.before+' '));const group=el('span','sentence-blank');group.setAttribute('role','group');
-    for(const o of blank.options){const b=button(o.label,()=>{if(r.assignments[`blank_${blank.id}`]===blank.answer)return;r.assignments[`blank_${blank.id}`]=o.id;if(o.id!==blank.answer){r.misses++;playEffect('retry');totoSay(root,{text:blank.id==='size'?'1000배로 확대해야 보였던 걸 떠올려 봐!':blank.id==='shape'?'표본병 세 개를 떠올려 봐!':'배양 접시 여러 개에서 무리가 자랐던 걸 떠올려 봐!',mood:'hint'});}else playEffect('snap');changed();paint();},'secondary sentence-option');b.dataset.blank=blank.id;b.dataset.option=o.id;const chosen=r.assignments[`blank_${blank.id}`]===o.id;b.classList.toggle('selected',chosen);b.classList.toggle('is-right',chosen&&o.id===blank.answer);b.classList.toggle('is-wrong',chosen&&o.id!==blank.answer);b.setAttribute('aria-pressed',String(chosen));group.append(b);}
+    for(const o of blank.options){const b=button(o.label,()=>{if(r.assignments[`blank_${blank.id}`]===blank.answer)return;
+    r.assignments[`blank_${blank.id}`]=o.id;
+    if(o.id!==blank.answer){r.misses++;
+    playEffect('retry');
+    totoSay(root,{text:blank.id==='size'?'1000배로 확대해야 보였던 걸 떠올려 봐!':blank.id==='shape'?'표본병 세 개를 떠올려 봐!':'배양 접시 여러 개에서 무리가 자랐던 걸 떠올려 봐!',mood:'hint'});}else playEffect('snap');
+    changed();
+    paint();},'secondary sentence-option');
+    b.dataset.blank=blank.id;
+    b.dataset.option=o.id;
+    const chosen=r.assignments[`blank_${blank.id}`]===o.id;
+    b.classList.toggle('selected',chosen);
+    b.classList.toggle('is-right',chosen&&o.id===blank.answer);
+    b.classList.toggle('is-wrong',chosen&&o.id!==blank.answer);
+    b.setAttribute('aria-pressed',String(chosen));
+    group.append(b);}
     line.append(group);if('after' in blank&&blank.after)line.append(document.createTextNode(' '+blank.after+' '));else line.append(document.createTextNode(' '));}
    sentence.append(line);}
  }

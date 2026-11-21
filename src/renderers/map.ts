@@ -77,7 +77,18 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
    this.heroImage=this.add.image(0,0,'moa-down');this.styleSprite(this.heroImage,'moa-down',92);this.hero.add(this.heroImage);
    this.friend=this.add.container(spawn.x,Math.min(MAP_HEIGHT-18,spawn.y+34));this.friend.add(this.add.ellipse(0,-2,25,10,0x203e2f,.23));this.friendImage=this.add.image(0,0,'friend-down');this.styleSprite(this.friendImage,'friend-down',65);this.friend.add(this.friendImage);
    this.pathHistory=[{x:this.friend.x,y:this.friend.y},{...spawn}];locations.forEach((p,i)=>{if(Math.hypot(p.x-spawn.x,p.y-spawn.y)<24)this.insideDoors.add(i);});
-   navigate=(index:number)=>{if(!locations[index])return;this.keys.clear();this.held=undefined;this.destination=index;if(reduced){const p=locations[index];this.hero.setPosition(p.x,p.y);this.friend.setPosition(p.x,Math.min(MAP_HEIGHT-18,p.y+30));this.pathHistory=[{x:this.friend.x,y:this.friend.y},{x:p.x,y:p.y}];this.route=[];this.arrive();return;}this.route=routeBetween({x:this.hero.x,y:this.hero.y},destinationNodeIds[index]);};
+   navigate=(index:number)=>{if(!locations[index])return;
+   this.keys.clear();
+   this.held=undefined;
+   this.destination=index;
+   if(reduced){const p=locations[index];
+   this.hero.setPosition(p.x,p.y);
+   this.friend.setPosition(p.x,Math.min(MAP_HEIGHT-18,p.y+30));
+   this.pathHistory=[{x:this.friend.x,y:this.friend.y},{x:p.x,y:p.y}];
+   this.route=[];
+   this.arrive();
+   return;}
+   this.route=routeBetween({x:this.hero.x,y:this.hero.y},destinationNodeIds[index]);};
    walk=(direction:Direction)=>{this.route=[];this.destination=undefined;this.held=direction;};
    stop=()=>{this.held=undefined;};
    cancel=()=>{this.route=[];this.destination=undefined;this.keys.clear();this.held=undefined;};
@@ -90,7 +101,12 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
     const nearest=pathGraph.reduce((a,b)=>Math.hypot(target.x-a.point.x,target.y-a.point.y)<Math.hypot(target.x-b.point.x,target.y-b.point.y)?a:b);
     onManual?.();this.keys.clear();this.held=undefined;this.destination=undefined;this.route=routeBetween({x:this.hero.x,y:this.hero.y},nearest.id);this.route.push(target);
    });
-   this.input.keyboard?.on('keydown',(e:KeyboardEvent)=>{if(held()||e.ctrlKey||e.metaKey||e.altKey||(e.target instanceof HTMLElement&&(e.target.isContentEditable||e.target.closest('input,textarea,select'))))return;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD'].includes(e.code)){e.preventDefault();onManual?.();this.keys.add(e.code);this.route=[];this.destination=undefined;}});
+   this.input.keyboard?.on('keydown',(e:KeyboardEvent)=>{if(held()||e.ctrlKey||e.metaKey||e.altKey||(e.target instanceof HTMLElement&&(e.target.isContentEditable||e.target.closest('input,textarea,select'))))return;
+   if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD'].includes(e.code)){e.preventDefault();
+   onManual?.();
+   this.keys.add(e.code);
+   this.route=[];
+   this.destination=undefined;}});
    this.input.keyboard?.on('keyup',(e:KeyboardEvent)=>this.keys.delete(e.code));
    const blur=()=>{this.keys.clear();this.held=undefined;};document.addEventListener('visibilitychange',blur);window.addEventListener('blur',blur);
    // game.destroy() emits 'destroy', not 'shutdown'; without it these two listeners kept every old map alive.
@@ -101,7 +117,16 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
    const spot=locations[index];
    const burst=this.add.ellipse(spot.x,spot.y-36,66,38).setStrokeStyle(3,0xffedac,.92).setDepth(9000);
    this.tweens.add({targets:burst,scale:2.1,alpha:0,duration:780,onComplete:()=>burst.destroy()});
-   const points=routeBetween(locations[index],destinationNodeIds[5]);const light=this.add.circle(locations[index].x,locations[index].y,7,0xffe9a8).setDepth(9000);let part=0;const next=()=>{const p=points[part++];if(!p){const halo=this.add.ellipse(locations[5].x,locations[5].y,24,10).setStrokeStyle(4,0xffdfa0).setDepth(9000);this.tweens.add({targets:halo,scale:5,alpha:0,duration:800,onComplete:()=>halo.destroy()});light.destroy();return;}this.tweens.add({targets:light,x:p.x,y:p.y,duration:Math.max(180,Phaser.Math.Distance.Between(light.x,light.y,p.x,p.y)*2),onComplete:next});};this.time.delayedCall(500,next);
+   const points=routeBetween(locations[index],destinationNodeIds[5]);
+   const light=this.add.circle(locations[index].x,locations[index].y,7,0xffe9a8).setDepth(9000);
+   let part=0;
+   const next=()=>{const p=points[part++];
+   if(!p){const halo=this.add.ellipse(locations[5].x,locations[5].y,24,10).setStrokeStyle(4,0xffdfa0).setDepth(9000);
+   this.tweens.add({targets:halo,scale:5,alpha:0,duration:800,onComplete:()=>halo.destroy()});
+   light.destroy();
+   return;}
+   this.tweens.add({targets:light,x:p.x,y:p.y,duration:Math.max(180,Phaser.Math.Distance.Between(light.x,light.y,p.x,p.y)*2),onComplete:next});};
+   this.time.delayedCall(500,next);
   }
   private syncCamera(){onMove?.({x:this.hero.x,y:this.hero.y},{x:this.friend.x,y:this.friend.y});this.scale.updateBounds();}
   private drawWalker(image:Phaser.GameObjects.Image,gait:Gait,moving:boolean,pose:MapReaction|null|undefined,friend=false){
@@ -143,19 +168,42 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
     this.restoration(reveal.index);
    }
    if(!this.hero||disposed)return;
-   const blocked=document.hidden||held();if(blocked){this.keys.clear();this.held=undefined;this.tweens.pauseAll();footfall(this.stride,false,0);stopStep();this.heroGait.distance=this.friendGait.distance=0;this.drawWalker(this.heroImage,this.heroGait,false,null);this.drawWalker(this.friendImage,this.friendGait,false,null,true);encounters?.(this.hero,this.friend);return;}this.tweens.resumeAll();
+   const blocked=document.hidden||held();
+   if(blocked){this.keys.clear();
+   this.held=undefined;
+   this.tweens.pauseAll();
+   footfall(this.stride,false,0);
+   stopStep();
+   this.heroGait.distance=this.friendGait.distance=0;
+   this.drawWalker(this.heroImage,this.heroGait,false,null);
+   this.drawWalker(this.friendImage,this.friendGait,false,null,true);
+   encounters?.(this.hero,this.friend);
+   return;}
+   this.tweens.resumeAll();
    const seconds=Math.min(delta,50)/1000;const start={x:this.hero.x,y:this.hero.y};let next:Point|undefined;
    const dx=(this.keys.has('ArrowRight')||this.keys.has('KeyD')||this.held==='right'?1:0)-(this.keys.has('ArrowLeft')||this.keys.has('KeyA')||this.held==='left'?1:0);
    const dy=(this.keys.has('ArrowDown')||this.keys.has('KeyS')||this.held==='down'?1:0)-(this.keys.has('ArrowUp')||this.keys.has('KeyW')||this.held==='up'?1:0);
    const speed=190;
    if(dx||dy)next=stepAlongRoad(start,{x:dx,y:dy},speed*seconds,pathSegments);
-   else if(this.route.length){const target=this.route[0];const distance=Math.hypot(target.x-start.x,target.y-start.y);const amount=speed*seconds;if(distance<=amount){next=target;this.route.shift();}else next={x:start.x+(target.x-start.x)/distance*amount,y:start.y+(target.y-start.y)/distance*amount};}
+   else if(this.route.length){const target=this.route[0];
+   const distance=Math.hypot(target.x-start.x,target.y-start.y);
+   const amount=speed*seconds;
+   if(distance<=amount){next=target;
+   this.route.shift();}else next={x:start.x+(target.x-start.x)/distance*amount,y:start.y+(target.y-start.y)/distance*amount};}
    const mx=(next?.x??start.x)-start.x,my=(next?.y??start.y)-start.y,moving=Math.hypot(mx,my)>.01;
    advanceGait(this.heroGait,mx,my,MOA_STEP);
    // Footsteps follow the hero only while the position really changes (keys, a held arrow or a tapped route alike).
    if(footfall(this.stride,moving,performance.now()))playStep();else if(!moving)stopStep();
    if(moving&&next){this.hero.setPosition(next.x,next.y);this.pathHistory.push(next);if(this.pathHistory.length>250)this.pathHistory.shift();}
-   let following=0;let friendTarget={x:this.friend.x,y:this.friend.y};for(let i=this.pathHistory.length-1;i>0;i--){const a=this.pathHistory[i],b=this.pathHistory[i-1];const d=Math.hypot(a.x-b.x,a.y-b.y);if(!d)continue;following+=d;if(following>=43){const t=(following-43)/d;friendTarget={x:b.x+(a.x-b.x)*t,y:b.y+(a.y-b.y)*t};break;}}
+   let following=0;
+   let friendTarget={x:this.friend.x,y:this.friend.y};
+   for(let i=this.pathHistory.length-1;i>0;i--){const a=this.pathHistory[i],b=this.pathHistory[i-1];
+   const d=Math.hypot(a.x-b.x,a.y-b.y);
+   if(!d)continue;
+   following+=d;
+   if(following>=43){const t=(following-43)/d;
+   friendTarget={x:b.x+(a.x-b.x)*t,y:b.y+(a.y-b.y)*t};
+   break;}}
    const fdx=friendTarget.x-this.friend.x,fdy=friendTarget.y-this.friend.y,friendMoved=Math.hypot(fdx,fdy)>.01;
    advanceGait(this.friendGait,fdx,fdy,TOTO_STEP);
    if(friendMoved)this.friend.setPosition(friendTarget.x,friendTarget.y);
@@ -163,11 +211,19 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
    this.hero.setDepth(this.hero.y+100);this.friend.setDepth(this.friend.y+100);
    const reactions=encounters?.(this.hero,this.friend);this.drawWalker(this.heroImage,this.heroGait,moving,reactions?.hero);this.drawWalker(this.friendImage,this.friendGait,friendMoved,reactions?.ally,true);
    if(this.destination!==undefined&&!this.route.length){this.arrive();if(disposed)return;}
-   locations.forEach((p,index)=>{const inside=Math.hypot(p.x-this.hero.x,p.y-this.hero.y)<20;if(inside&&!this.insideDoors.has(index)&&(dx||dy)&&moving){this.insideDoors.add(index);this.keys.clear();this.held=undefined;onArrive(index,{x:this.hero.x,y:this.hero.y});}else if(!inside)this.insideDoors.delete(index);});
+   locations.forEach((p,index)=>{const inside=Math.hypot(p.x-this.hero.x,p.y-this.hero.y)<20;
+   if(inside&&!this.insideDoors.has(index)&&(dx||dy)&&moving){this.insideDoors.add(index);
+   this.keys.clear();
+   this.held=undefined;
+   onArrive(index,{x:this.hero.x,y:this.hero.y});}else if(!inside)this.insideDoors.delete(index);});
   }
  }
  const game=new Phaser.Game({type:Phaser.CANVAS,parent:host,width:MAP_WIDTH,height:MAP_HEIGHT,backgroundColor:'#9daf83',pixelArt:true,antialias:false,scene:Village,scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},audio:{noAudio:true},banner:false});const release=releasable(game);
  // Resize the canvas and touch coordinates in the same frame as the DOM map markers.
  const resize=()=>{if(game.scale.canvas&&game.scale.getParentBounds())game.scale.refresh();};
- return {resize,bounds:()=>game.scale.updateBounds(),move:(index:number)=>{requested=index;navigate(index);},walk:(direction:Direction)=>walk(direction),nudge:(direction:Direction)=>nudge(direction),stop:()=>stop(),cancel:()=>{requested=undefined;cancel();},dispose:()=>{disposed=true;stopStep();release();}};
+ return {resize,bounds:()=>game.scale.updateBounds(),move:(index:number)=>{requested=index;
+ navigate(index);},walk:(direction:Direction)=>walk(direction),nudge:(direction:Direction)=>nudge(direction),stop:()=>stop(),cancel:()=>{requested=undefined;
+ cancel();},dispose:()=>{disposed=true;
+ stopStep();
+ release();}};
 }

@@ -16,7 +16,16 @@ const LIVE_STEPS=20;
 export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRecord,hooks:InquiryHooks,reduced:boolean){
  let record=learner;
  let beforeDemo:{preview:boolean;reveal:number|undefined}|undefined;
- let refresh=()=>{};let play=false;/* Learner playback keeps its own clock so the saved record.time only changes when the learner pins or drags. */let liveClock=0;let preview=false;let disposed=false;let armed='';let reveal:number|undefined;let simulating=false;let scene:Phaser.Scene|undefined;let playbackRate=1;
+ let refresh=()=>{};
+ let play=false;/* Learner playback keeps its own clock so the saved record.time only changes when the learner pins or drags. */
+ let liveClock=0;
+ let preview=false;
+ let disposed=false;
+ let armed='';
+ let reveal:number|undefined;
+ let simulating=false;
+ let scene:Phaser.Scene|undefined;
+ let playbackRate=1;
  const scope=task.kind==='track'?mountScopeDecor(host,'water'):undefined;
  // 2026-11-19 놀이 화면 비율: beside the tool panel the free box is taller than 16:9 on 4:3 and 16:10 screens,
  // so these scenes take the box's shape (960 wide, 540–960 tall) and spread their layout down instead of floating in a short strip.
@@ -34,17 +43,32 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
   /** Scene height (540 on a 16:9 box) and the vertical stretch the build and publish layouts use. */
   get H(){return this.scale.height;}
   y(v:number){return v*this.H/HEIGHT;}
-  preload(){this.load.on('loaderror',(file:Phaser.Loader.File)=>{if(!file.key.startsWith('ui-'))this.failed=true;});const view=task.kind==='microscope'?magnifyFor(task.organism,record.v===2):undefined;const needed=new Set([...task.items.map(artKey),task.organism,observedKind(task,record),task.kind==='sample'?'water':undefined,view?.context,view?.lens]);for(const art of needed)if(art&&inquiryArt[art]){const asset=inquiryArt[art];if(asset.frames)asset.frames.forEach((src,i)=>this.load.image(`art-${art}-${i}`,src));else this.load.image(`art-${art}`,asset.src);}
+  preload(){this.load.on('loaderror',(file:Phaser.Loader.File)=>{if(!file.key.startsWith('ui-'))this.failed=true;});
+  const view=task.kind==='microscope'?magnifyFor(task.organism,record.v===2):undefined;
+  const needed=new Set([...task.items.map(artKey),task.organism,observedKind(task,record),task.kind==='sample'?'water':undefined,view?.context,view?.lens]);
+  for(const art of needed)if(art&&inquiryArt[art]){const asset=inquiryArt[art];
+  if(asset.frames)asset.frames.forEach((src,i)=>this.load.image(`art-${art}-${i}`,src));else this.load.image(`art-${art}`,asset.src);}
    if(task.kind==='track')for(let i=0;i<=LIVE_STEPS;i++)this.load.image(`live-paramecium-${i}`,`assets/study/live/paramecium-${String(i).padStart(2,'0')}.webp`);
    // Decorative props are optional: a missing prop falls back to the drawn card, never blocks the activity.
-   const props=['tape',...task.kind==='microscope'?['microscope-frame',...(view?['hand-lens']:[])]:[],...task.id==='M5-1'?['yogurt-maker']:[],...task.kind==='sample'?['dropper','slide','slide-drop','water-drop']:[]];for(const p of props)this.load.image(`ui-${p}`,`assets/ui/${p==='slide'?'slide-flat':p}.webp`);}
+   const props=['tape',...task.kind==='microscope'?['microscope-frame',...(view?['hand-lens']:[])]:[],...task.id==='M5-1'?['yogurt-maker']:[],...task.kind==='sample'?['dropper','slide','slide-drop','water-drop']:[]];
+   for(const p of props)this.load.image(`ui-${p}`,`assets/ui/${p==='slide'?'slide-flat':p}.webp`);}
   create(){scene=this;this.tweens.timeScale=playbackRate;this.input.dragDistanceThreshold=12;if(this.failed){hooks.ready(false);return;}refresh=()=>this.paint();this.paint();hooks.ready(true);}
   wipe(){this.tweens.killAll();this.trackSurface=undefined;this.trackElapsed=0;this.children.removeAll(true);for(const name of this.textures.getTextureKeys())if(name.startsWith('plate-'))this.textures.remove(name);}
   text(x:number,y:number,text:string,size=23,color='#234b3c',width=330){return this.add.text(x,y,text,{fontFamily:'NanumSquareNeo, Malgun Gothic',fontSize:`${Math.max(28,size)}px`,color,align:'center',wordWrap:{width,useAdvancedWrap:true},lineSpacing:4}).setOrigin(.5);}
   // Rounded pill behind short captions so they read over any photo.
-  caption(x:number,y:number,label:string,size=28,color=tone.ink,width=850){const t=this.text(x,y,label,size,color,width);const w=t.width+30,h=t.height+12,r=Math.min(22,h/2),g=this.add.graphics();g.fillStyle(tone.shade,.14).fillRoundedRect(x-w/2+2,y-h/2+4,w,h,r);g.fillStyle(tone.paper,.97).fillRoundedRect(x-w/2,y-h/2,w,h,r);g.lineStyle(2,tone.line,1).strokeRoundedRect(x-w/2,y-h/2,w,h,r);this.children.bringToTop(t);return t;}
+  caption(x:number,y:number,label:string,size=28,color=tone.ink,width=850){const t=this.text(x,y,label,size,color,width);
+  const w=t.width+30,h=t.height+12,r=Math.min(22,h/2),g=this.add.graphics();
+  g.fillStyle(tone.shade,.14).fillRoundedRect(x-w/2+2,y-h/2+4,w,h,r);
+  g.fillStyle(tone.paper,.97).fillRoundedRect(x-w/2,y-h/2,w,h,r);
+  g.lineStyle(2,tone.line,1).strokeRoundedRect(x-w/2,y-h/2,w,h,r);
+  this.children.bringToTop(t);
+  return t;}
   // Paper card: soft shadow + rounded face. Redrawing the same Graphics restyles armed/linked states in place.
-  cardShape(g:Phaser.GameObjects.Graphics,x:number,y:number,w:number,h:number,{fill=tone.paper,stroke=tone.line,width=2,radius=18,alpha=1}:{fill?:number;stroke?:number;width?:number;radius?:number;alpha?:number}={}){g.clear();g.fillStyle(tone.shade,.16*alpha).fillRoundedRect(x-w/2+3,y-h/2+7,w,h,radius);g.fillStyle(fill,alpha).fillRoundedRect(x-w/2,y-h/2,w,h,radius);g.lineStyle(width,stroke,1).strokeRoundedRect(x-w/2,y-h/2,w,h,radius);return g;}
+  cardShape(g:Phaser.GameObjects.Graphics,x:number,y:number,w:number,h:number,{fill=tone.paper,stroke=tone.line,width=2,radius=18,alpha=1}:{fill?:number;stroke?:number;width?:number;radius?:number;alpha?:number}={}){g.clear();
+  g.fillStyle(tone.shade,.16*alpha).fillRoundedRect(x-w/2+3,y-h/2+7,w,h,radius);
+  g.fillStyle(fill,alpha).fillRoundedRect(x-w/2,y-h/2,w,h,radius);
+  g.lineStyle(width,stroke,1).strokeRoundedRect(x-w/2,y-h/2,w,h,radius);
+  return g;}
   card(x:number,y:number,w:number,h:number,style:Parameters<Inquiry['cardShape']>[5]={}){return this.cardShape(this.add.graphics(),x,y,w,h,style);}
   tape(x:number,y:number,w=92,angle=-4){return this.textures.exists('ui-tape')?this.add.image(x,y,'ui-tape').setDisplaySize(w,w*.21).setAngle(angle).setAlpha(.95):undefined;}
   badge(x:number,y:number){const g=this.add.graphics();g.fillStyle(tone.accent,1).fillCircle(x,y,16);g.lineStyle(3,0xffffff,1).strokeCircle(x,y,16);return [g,this.add.text(x,y,'✓',{fontFamily:'NanumSquareNeo, Malgun Gothic',fontSize:'20px',color:'#ffffff'}).setOrigin(.5)];}
@@ -58,7 +82,9 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
   }
   plate(x:number,y:number,w:number,h:number,label:string,fill=tone.paper){const box=this.card(x,y,w,h,{fill});if(label)this.text(x,y,label,22,tone.ink,w-20);return box;}
   /** Filmed frames for the paramecium track: two neighbours and how far between them the time falls. */
-  liveFrames(time=0){const at=Math.max(0,Math.min(10,time))/10*LIVE_STEPS,a=Math.floor(at),b=Math.min(LIVE_STEPS,a+1),get=(i:number)=>this.textures.exists(`live-paramecium-${i}`)?this.textures.get(`live-paramecium-${i}`).getSourceImage() as CanvasImageSource:undefined;const live=get(a);return live?{live,liveNext:get(b),liveMix:at-a}:{};}
+  liveFrames(time=0){const at=Math.max(0,Math.min(10,time))/10*LIVE_STEPS,a=Math.floor(at),b=Math.min(LIVE_STEPS,a+1),get=(i:number)=>this.textures.exists(`live-paramecium-${i}`)?this.textures.get(`live-paramecium-${i}`).getSourceImage() as CanvasImageSource:undefined;
+  const live=get(a);
+  return live?{live,liveNext:get(b),liveMix:at-a}:{};}
   art(x:number,y:number,w:number,h:number,kind:string,options:Parameters<typeof draw>[2]&{fit?:'contain';softEdge?:boolean}={}){
    if(kind==='paramecium'&&options.trail)options={...options,...this.liveFrames(options.time)};
    const name=inquiryArt[kind]?.frames?`art-${kind}-${artFrame(options.time)}`:`art-${kind}`;
@@ -75,7 +101,12 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
     }
     g.restore();
    }
-   const key=`plate-${crypto.randomUUID()}`;const texture=this.textures.addCanvas(key,c)!;if(task.kind==='track'&&kind==='paramecium'&&record.level<2)this.trackSurface={canvas:c,texture};const picture=this.add.image(x,y,key);if(options.fit==='contain')picture.setScale(Math.min(w/c.width,h/c.height));return picture;}
+   const key=`plate-${crypto.randomUUID()}`;
+   const texture=this.textures.addCanvas(key,c)!;
+   if(task.kind==='track'&&kind==='paramecium'&&record.level<2)this.trackSurface={canvas:c,texture};
+   const picture=this.add.image(x,y,key);
+   if(options.fit==='contain')picture.setScale(Math.min(w/c.width,h/c.height));
+   return picture;}
   commit(){playEffect(task.kind==='sample'?(record.sequence===3?'pipette-drop':'water'):'click');hooks.changed();this.paint();}
   // Phaser also forwards window presses, whose coordinates can be stale just after scrolling.
   // Keep outside releases available for drag cleanup, but only apply an action from the canvas.
@@ -97,7 +128,12 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
     const cy=275+mid,{w,h}=this.specimenSize(Math.min(900,750+(H-HEIGHT)*1.6),H-180,kind,record.pins[0]);const left=480-w/2,top=cy-h/2;this.drawSpecimen(480,cy,w,h,kind,record.pins[0],false);
     const after=this.art(480,cy,w,h,kind,{time:record.pins[1],focus:65,light:65,trail:isTrack,marks:record.marks});
     const split=left+w*reveal;const mask=this.add.graphics().fillStyle(0xffffff).fillRect(split,top,left+w-split,h);mask.setVisible(false);after.setMask(mask.createGeometryMask());
-    if(isTimeline)this.add.zone(480,cy,w,h).setInteractive({useHandCursor:true}).on('pointerup',(p:Phaser.Input.Pointer)=>{if(this.pauseGuard())return;if(p.x<left+w*(reveal??.5)){hooks.feedback('이후 쪽에서 달라진 부분을 표시해요.');return;}if(!addMark(task,record,viewToImage({x:(p.x-left)/w,y:(p.y-top)/h},record)))return hooks.feedback(markHint(task));record.submitted=false;this.commit();});
+    if(isTimeline)this.add.zone(480,cy,w,h).setInteractive({useHandCursor:true}).on('pointerup',(p:Phaser.Input.Pointer)=>{if(this.pauseGuard())return;
+    if(p.x<left+w*(reveal??.5)){hooks.feedback('이후 쪽에서 달라진 부분을 표시해요.');
+    return;}
+    if(!addMark(task,record,viewToImage({x:(p.x-left)/w,y:(p.y-top)/h},record)))return hooks.feedback(markHint(task));
+    record.submitted=false;
+    this.commit();});
     const line=this.add.rectangle(split,cy,5,h,0xd6a64a);const handle=this.add.rectangle(split,cy,88,70,0xfff9df).setStrokeStyle(3,0x8a703c);const label=this.text(split,cy,'↔',36);handle.setInteractive({useHandCursor:true});this.input.setDraggable(handle);
     handle.on('drag',(_p:Phaser.Input.Pointer,x:number)=>{if(this.pauseGuard())return;const clamped=Phaser.Math.Clamp(x,left,left+w);reveal=(clamped-left)/w;mask.clear().fillStyle(0xffffff).fillRect(clamped,top,left+w-clamped,h);line.x=handle.x=label.x=clamped;});
     const capY=Math.max(60,top-35);this.caption(250,capY,'A · 이전');this.caption(710,capY,'B · 이후');this.caption(480,H-40,'손잡이를 밀어 같은 위치의 변화를 비교해요',28,'#3e6651',860);
@@ -109,9 +145,20 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
     }
     if(isTimeline)this.caption(700,455+mid,'달라진 곳을 눌러요',28,tone.ink,370);
    }
-   else{this.drawSpecimen(480,isTimeline?255:270+mid,isTimeline?730:Math.min(880,720+(H-HEIGHT)*1.6),isTimeline?390:435+(H-HEIGHT),kind,isTrack&&play&&!beforeDemo?liveClock:record.time,task.kind==='microscope');if(preview&&!play&&(isTimeline||isTrack))this.caption(480,30,isTimeline?'지금 고른 모습 · 관찰 '+(record.time+1):'지금 고른 순간 · 시점 '+Math.round(record.time),22);}
+   else{this.drawSpecimen(480,isTimeline?255:270+mid,isTimeline?730:Math.min(880,720+(H-HEIGHT)*1.6),isTimeline?390:435+(H-HEIGHT),kind,isTrack&&play&&!beforeDemo?liveClock:record.time,task.kind==='microscope');
+   if(preview&&!play&&(isTimeline||isTrack))this.caption(480,30,isTimeline?'지금 고른 모습 · 관찰 '+(record.time+1):'지금 고른 순간 · 시점 '+Math.round(record.time),22);}
    if(isTrack&&(!comparing||reveal===undefined))this.caption(480,H-26,'같은 시야 · 같은 짚신벌레의 위치를 비교해요',20,'#3e6651',850);
-   if(isTimeline&&(!comparing||reveal===undefined)){const g=this.add.graphics();g.lineStyle(6,tone.line,1).lineBetween(235,505,725,505);for(let i=0;i<4;i++){const x=235+i*163,current=i===record.time,pinned=record.pins.includes(i);g.fillStyle(tone.shade,.16).fillCircle(x+2,509,32);g.fillStyle(current?tone.accent:pinned?tone.soft:tone.paper,1).fillCircle(x,505,32);g.lineStyle(3,current||pinned?tone.accent:tone.line,1).strokeCircle(x,505,32);this.add.zone(x,505,76,76).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard())return;record.time=i;preview=true;this.commit();});this.text(x,505,String(i+1),21,current?'#fffdf4':tone.ink);}}
+   if(isTimeline&&(!comparing||reveal===undefined)){const g=this.add.graphics();
+   g.lineStyle(6,tone.line,1).lineBetween(235,505,725,505);
+   for(let i=0;i<4;i++){const x=235+i*163,current=i===record.time,pinned=record.pins.includes(i);
+   g.fillStyle(tone.shade,.16).fillCircle(x+2,509,32);
+   g.fillStyle(current?tone.accent:pinned?tone.soft:tone.paper,1).fillCircle(x,505,32);
+   g.lineStyle(3,current||pinned?tone.accent:tone.line,1).strokeCircle(x,505,32);
+   this.add.zone(x,505,76,76).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard())return;
+   record.time=i;
+   preview=true;
+   this.commit();});
+   this.text(x,505,String(i+1),21,current?'#fffdf4':tone.ink);}}
   }
   specimenSize(w:number,h:number,kind:string,time:number){
    const name=inquiryArt[kind]?.frames?`art-${kind}-${artFrame(time)}`:`art-${kind}`;
@@ -201,10 +248,21 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
     record.sequence=3;this.commit();
    });
    const home={x:record.sequence===2?640:300,y:168};const pipette=this.add.container(home.x,home.y);
-   if(this.textures.exists('ui-dropper')){if(record.sequence>0){const glow=this.add.graphics();glow.fillStyle(0x9fd3d6,.45).fillEllipse(0,-62,64,64);pipette.add(glow);}pipette.add(this.add.image(0,0,'ui-dropper').setDisplaySize(31,210));if(record.sequence===2&&this.textures.exists('ui-water-drop'))pipette.add(this.add.image(0,109,'ui-water-drop').setDisplaySize(13,10));}
+   if(this.textures.exists('ui-dropper')){if(record.sequence>0){const glow=this.add.graphics();
+   glow.fillStyle(0x9fd3d6,.45).fillEllipse(0,-62,64,64);
+   pipette.add(glow);}
+   pipette.add(this.add.image(0,0,'ui-dropper').setDisplaySize(31,210));
+   if(record.sequence===2&&this.textures.exists('ui-water-drop'))pipette.add(this.add.image(0,109,'ui-water-drop').setDisplaySize(13,10));}
    else pipette.add([this.add.rectangle(0,0,28,110,0xeaf3dc).setStrokeStyle(3,0x537d6c),this.add.ellipse(0,-62,58,60,record.sequence>0?0x72b3bc:0x4d8066),this.add.triangle(0,73,0,0,20,0,10,35,0xc1d7b8)]);
    pipette.setSize(90,220).setInteractive({useHandCursor:true});this.input.setDraggable(pipette);let dragged=false;
-   pipette.on('pointerdown',()=>{if(!this.pauseGuard())dragged=false;});pipette.on('drag',(_p:Phaser.Input.Pointer,x:number,y:number)=>{if(this.pauseGuard())return;dragged=true;pipette.setPosition(x,y);});pipette.on('dragend',()=>{if(this.pauseGuard()){if(pipette.active)pipette.setPosition(home.x,home.y);return;}if(record.sequence===2&&pipette.x>740&&pipette.y>200){record.sequence=3;this.commit();}else if(pipette.active)pipette.setPosition(home.x,home.y);});
+   pipette.on('pointerdown',()=>{if(!this.pauseGuard())dragged=false;});
+   pipette.on('drag',(_p:Phaser.Input.Pointer,x:number,y:number)=>{if(this.pauseGuard())return;
+   dragged=true;
+   pipette.setPosition(x,y);});
+   pipette.on('dragend',()=>{if(this.pauseGuard()){if(pipette.active)pipette.setPosition(home.x,home.y);
+   return;}
+   if(record.sequence===2&&pipette.x>740&&pipette.y>200){record.sequence=3;
+   this.commit();}else if(pipette.active)pipette.setPosition(home.x,home.y);});
    pipette.on('pointerup',()=>{if(dragged||this.pauseGuard())return;if(!record.assignments.site){hooks.feedback('먼저 채집할 장소를 살펴봐요.');return;}if(record.sequence<2){record.sequence=2;this.commit();}});
    if(record.sequence===3)pipette.setVisible(false);
    if(record.assignments.site&&record.sequence<2){
@@ -217,7 +275,11 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
    const Y=(v:number)=>this.y(v);
    const resetFaces:(()=>void)[]=[];const slots=task.targets.map((t,i)=>({id:t.id,x:185+i*295,y:Y(200)}));const g=this.add.graphics();
    this.card(480,Y(178),916,Y(274),{fill:yogurt?0xfff5db:tone.paper,stroke:yogurt?0xb28e51:tone.line,radius:26,alpha:.97});
-   for(let i=0;i<2;i++){const linked=record.assignments[`edge${i+1}`]==='linked',color=linked?tone.accent:tone.line;g.lineStyle(6,color,1);const ay=Y(200);g.lineBetween(slots[i].x+117,ay,slots[i+1].x-120,ay);g.fillStyle(color,1).fillTriangle(slots[i+1].x-112,ay,slots[i+1].x-129,ay-10,slots[i+1].x-129,ay+10);}
+   for(let i=0;i<2;i++){const linked=record.assignments[`edge${i+1}`]==='linked',color=linked?tone.accent:tone.line;
+   g.lineStyle(6,color,1);
+   const ay=Y(200);
+   g.lineBetween(slots[i].x+117,ay,slots[i+1].x-120,ay);
+   g.fillStyle(color,1).fillTriangle(slots[i+1].x-112,ay,slots[i+1].x-129,ay-10,slots[i+1].x-129,ay+10);}
    slots.forEach((s,i)=>{const it=task.items.find(item=>item.id===record.assignments[s.id]);
     if(yogurt&&s.id==='action'){
      this.drawYogurtMaker(s.x,Y(166),245,Y(150));
@@ -232,8 +294,31 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
      const guide=this.add.graphics();guide.lineStyle(2,tone.accent,.35).strokeRoundedRect(s.x-101,Y(111),202,Y(178),12);
      this.text(s.x,s.y,yogurt?(s.id==='input'?'병에 담기':'목표 음식 놓기'):'여기에 놓아요',28,tone.ink,190);
     }
-    this.caption(s.x,Y(68),`${i+1} · ${yogurt&&s.id==='action'?'발효기':task.targets[i].label}`,28,tone.ink,235);const zone=this.add.zone(s.x,s.y,240,Y(190)).setRectangleDropZone(240,Y(190)).setInteractive({useHandCursor:true});zone.setData('target',s.id);zone.on('pointerdown',()=>{if(this.pauseGuard())return;if(armed)this.place(armed,s.id);else hooks.feedback('아래에서 놓고 싶은 카드를 먼저 골라요.');});});
-   const ch=Y(174);task.items.forEach((it,i)=>{const x=132+i*233,y=Y(431);const box=this.add.container(x,y);const face=this.add.graphics();this.cardShape(face,0,0,210,ch,{stroke:armed===it.id?tone.pick:tone.line,width:armed===it.id?5:2});resetFaces.push(()=>this.cardShape(face,0,0,210,ch));box.add(face);box.add(this.art(0,Y(-45),188,Y(64),artKey(it)||'question',{time:artTime(artKey(it),it.detail,it.id),fit:'contain'}));box.add(this.text(0,Y(39),it.label,28,tone.ink,194));box.setSize(210,ch).setInteractive({useHandCursor:true});this.input.setDraggable(box);box.on('pointerdown',()=>{if(this.pauseGuard())return;armed=it.id;resetFaces.forEach(reset=>reset());this.cardShape(face,0,0,210,ch,{stroke:tone.pick,width:5});hooks.open(it.id);});box.on('drag',(_p:Phaser.Input.Pointer,x:number,y:number)=>{if(this.pauseGuard())return;box.setPosition(x,y).setDepth(10);});box.on('drop',(_p:Phaser.Input.Pointer,zone:Phaser.GameObjects.Zone)=>this.place(it.id,String(zone.getData('target'))));box.on('dragend',()=>{if(box.active)box.setPosition(x,y).setDepth(0);});});
+    this.caption(s.x,Y(68),`${i+1} · ${yogurt&&s.id==='action'?'발효기':task.targets[i].label}`,28,tone.ink,235);
+    const zone=this.add.zone(s.x,s.y,240,Y(190)).setRectangleDropZone(240,Y(190)).setInteractive({useHandCursor:true});
+    zone.setData('target',s.id);
+    zone.on('pointerdown',()=>{if(this.pauseGuard())return;
+    if(armed)this.place(armed,s.id);else hooks.feedback('아래에서 놓고 싶은 카드를 먼저 골라요.');});});
+   const ch=Y(174);
+   task.items.forEach((it,i)=>{const x=132+i*233,y=Y(431);
+   const box=this.add.container(x,y);
+   const face=this.add.graphics();
+   this.cardShape(face,0,0,210,ch,{stroke:armed===it.id?tone.pick:tone.line,width:armed===it.id?5:2});
+   resetFaces.push(()=>this.cardShape(face,0,0,210,ch));
+   box.add(face);
+   box.add(this.art(0,Y(-45),188,Y(64),artKey(it)||'question',{time:artTime(artKey(it),it.detail,it.id),fit:'contain'}));
+   box.add(this.text(0,Y(39),it.label,28,tone.ink,194));
+   box.setSize(210,ch).setInteractive({useHandCursor:true});
+   this.input.setDraggable(box);
+   box.on('pointerdown',()=>{if(this.pauseGuard())return;
+   armed=it.id;
+   resetFaces.forEach(reset=>reset());
+   this.cardShape(face,0,0,210,ch,{stroke:tone.pick,width:5});
+   hooks.open(it.id);});
+   box.on('drag',(_p:Phaser.Input.Pointer,x:number,y:number)=>{if(this.pauseGuard())return;
+   box.setPosition(x,y).setDepth(10);});
+   box.on('drop',(_p:Phaser.Input.Pointer,zone:Phaser.GameObjects.Zone)=>this.place(it.id,String(zone.getData('target'))));
+   box.on('dragend',()=>{if(box.active)box.setPosition(x,y).setDepth(0);});});
    if(!record.runResult){const filled=task.targets.every(t=>!!record.assignments[t.id]);if(!yogurt||!filled||armed)this.caption(480,Y(322),armed?'이제 위쪽에서 놓을 곳을 눌러요':yogurt?'아래에서 골라 작업대에 놓아요':'아래에서 카드 한 장을 골라요',22);}
    if(record.runResult){const ok=record.runResult==='supported';this.caption(480,Y(315),yogurt?(ok?'완성! 우유가 걸쭉하고 새콤해졌어요':'다시 살펴보기 · 재료와 만들 음식을 확인해요'):ok?`${task.caseName} 사례로 연결됐어요`:'흐름이 멈췄어요 · 연결과 자료를 다시 봐요',23,ok?'#286341':'#995131',850);}
   }
@@ -287,7 +372,15 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
   }
   paintPublish(){
    const Y=(v:number)=>this.y(v);
-   task.items.forEach((it,i)=>{const x=180+i*300;const selected=record.assignments.case===it.id;this.card(x,Y(170),260,Y(245),{fill:selected?tone.soft:tone.paper,stroke:selected?tone.accent:tone.line,width:selected?4:2});if(selected)this.badge(x+118,Y(58));this.art(x,Y(135),230,Y(140),artKey(it)||'yogurt',{time:artTime(artKey(it),it.detail,it.id),fit:'contain'});this.text(x,Y(248),it.label,30);this.add.zone(x,Y(170),260,Y(245)).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard())return;if(chooseCase(task,record,it.id)){playEffect('snap');this.commit();}});});
+   task.items.forEach((it,i)=>{const x=180+i*300;
+   const selected=record.assignments.case===it.id;
+   this.card(x,Y(170),260,Y(245),{fill:selected?tone.soft:tone.paper,stroke:selected?tone.accent:tone.line,width:selected?4:2});
+   if(selected)this.badge(x+118,Y(58));
+   this.art(x,Y(135),230,Y(140),artKey(it)||'yogurt',{time:artTime(artKey(it),it.detail,it.id),fit:'contain'});
+   this.text(x,Y(248),it.label,30);
+   this.add.zone(x,Y(170),260,Y(245)).setInteractive({useHandCursor:true}).on('pointerdown',()=>{if(this.pauseGuard())return;
+   if(chooseCase(task,record,it.id)){playEffect('snap');
+   this.commit();}});});
    this.card(480,Y(415),850,Y(180));
    this.text(480,Y(347),'내 소개 카드',28);
    this.add.graphics().lineStyle(2,tone.line,1).lineBetween(88,Y(372),872,Y(372));
@@ -298,7 +391,11 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
    if(!play||task.kind!=='track'||simulating)return;
    const demo=!!beforeDemo,step=delta/1000*playbackRate;if(demo)record.time=(record.time+step)%10;else liveClock=(liveClock+step)%10;const now=demo?record.time:liveClock;this.trackElapsed+=delta;
    // Playback repaints one persistent canvas, never the text, input zones or display list.
-   if(this.trackSurface&&this.trackElapsed>=1000/30){this.trackElapsed=0;const image=this.textures.exists('art-paramecium')?this.textures.get('art-paramecium').getSourceImage() as CanvasImageSource:undefined;draw(this.trackSurface.canvas,task.organism||'paramecium',{time:now,focus:65,light:65,zoom:record.zoom,pan:record.pan,trail:true,image,...this.liveFrames(now)});this.trackSurface.texture.refresh();if(!demo)hooks.tick?.(now);}
+   if(this.trackSurface&&this.trackElapsed>=1000/30){this.trackElapsed=0;
+   const image=this.textures.exists('art-paramecium')?this.textures.get('art-paramecium').getSourceImage() as CanvasImageSource:undefined;
+   draw(this.trackSurface.canvas,task.organism||'paramecium',{time:now,focus:65,light:65,zoom:record.zoom,pan:record.pan,trail:true,image,...this.liveFrames(now)});
+   this.trackSurface.texture.refresh();
+   if(!demo)hooks.tick?.(now);}
   }
  }
  const game=new Phaser.Game({type:Phaser.CANVAS,parent:host,width:WIDTH,height:fitHeight(),transparent:true,scene:Inquiry,scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},audio:{noAudio:true},banner:false,render:{antialias:true}});const release=releasable(game);
@@ -331,6 +428,23 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
   if(!beforeDemo)return;
   record=learner;preview=beforeDemo.preview;reveal=beforeDemo.reveal;play=false;beforeDemo=undefined;refresh();
  };
-  return {showFrame,endDemo,setPlaybackRate:(rate:number)=>{playbackRate=rate;if(scene)scene.tweens.timeScale=rate;},refresh:()=>{if(!disposed&&!simulating)refresh();},setPreview:(value:boolean)=>{if(disposed||simulating)return;preview=value;refresh();},setReveal:(value:number|undefined)=>{if(disposed||simulating)return;preview=false;reveal=value===undefined?undefined:Phaser.Math.Clamp(value,0,1);refresh();},animateRun:(valid:boolean,finish:()=>void)=>{if(scene instanceof Inquiry)scene.animateRun(valid,finish);else finish();},setPlaying:(value:boolean)=>{if(disposed||simulating||value&&blocked())return;if(play!==value){if(value&&!beforeDemo)liveClock=record.time;play=value;refresh();}},arm:(id:string)=>{if(disposed||simulating)return;armed=id;refresh();},assignCard,assign:assignCard,place:assignCard,dispose:()=>{disposed=true;play=false;reshape.disconnect();scope?.dispose();document.removeEventListener('scroll',rebound,{capture:true});document.removeEventListener('pointerdown',beforePointer,true);release();}};
+  return {showFrame,endDemo,setPlaybackRate:(rate:number)=>{playbackRate=rate;
+  if(scene)scene.tweens.timeScale=rate;},refresh:()=>{if(!disposed&&!simulating)refresh();},setPreview:(value:boolean)=>{if(disposed||simulating)return;
+  preview=value;
+  refresh();},setReveal:(value:number|undefined)=>{if(disposed||simulating)return;
+  preview=false;
+  reveal=value===undefined?undefined:Phaser.Math.Clamp(value,0,1);
+  refresh();},animateRun:(valid:boolean,finish:()=>void)=>{if(scene instanceof Inquiry)scene.animateRun(valid,finish);else finish();},setPlaying:(value:boolean)=>{if(disposed||simulating||value&&blocked())return;
+  if(play!==value){if(value&&!beforeDemo)liveClock=record.time;
+  play=value;
+  refresh();}},arm:(id:string)=>{if(disposed||simulating)return;
+  armed=id;
+  refresh();},assignCard,assign:assignCard,place:assignCard,dispose:()=>{disposed=true;
+  play=false;
+  reshape.disconnect();
+  scope?.dispose();
+  document.removeEventListener('scroll',rebound,{capture:true});
+  document.removeEventListener('pointerdown',beforePointer,true);
+  release();}};
 }
 export type InquiryView=ReturnType<typeof mountInquiry>;

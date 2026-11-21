@@ -117,5 +117,8 @@ export function mountFungiSort(host:HTMLElement,task:InquiryTask,record:InquiryR
  refresh();
  Promise.all([...root.querySelectorAll('img')].map(i=>i.decode())).then(()=>{if(!disposed)hooks.ready(true);},()=>{if(!disposed)hooks.ready(false);});
  const idle=()=>{};
- return {refresh,showFrame:idle,endDemo:idle,setPlaybackRate:idle,setPreview:idle,setReveal:idle,setPlaying:idle,arm:select,assignCard:attempt,assign:attempt,place:attempt,animateRun:(_ok,finish)=>finish(),dispose:()=>{disposed=true;events.abort();document.querySelectorAll('.fungi-ghost').forEach(g=>g.remove());root.remove();}};
+ return {refresh,showFrame:idle,endDemo:idle,setPlaybackRate:idle,setPreview:idle,setReveal:idle,setPlaying:idle,arm:select,assignCard:attempt,assign:attempt,place:attempt,animateRun:(_ok,finish)=>finish(),dispose:()=>{disposed=true;
+ events.abort();
+ document.querySelectorAll('.fungi-ghost').forEach(g=>g.remove());
+ root.remove();}};
 }

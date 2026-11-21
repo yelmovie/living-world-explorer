@@ -17,7 +17,12 @@ export function mountMicroscope(host:HTMLElement,task:InquiryTask,learner:Inquir
  if(clip){video=el('video') as HTMLVideoElement;video.muted=true;video.loop=true;video.playsInline=true;video.preload='auto';video.src=clip;video.setAttribute('aria-hidden','true');video.hidden=true;field.append(video);}
  const decor=mountScopeDecor(viewport,task.stage==='M2'?'water':'forest');
  let active=false;
- const move=(e:PointerEvent)=>{if(!active||record.level!==1)return;const b=viewport.getBoundingClientRect(),x=Math.max(0,Math.min(b.width,e.clientX-b.left)),y=Math.max(0,Math.min(b.height,e.clientY-b.top));loupe.style.left=x+'px';loupe.style.top=y+'px';loupe.style.backgroundSize=b.width*2+'px '+b.height*2+'px';loupe.style.backgroundPosition=(-x*2+75)+'px '+(-y*2+75)+'px';};
+ const move=(e:PointerEvent)=>{if(!active||record.level!==1)return;
+ const b=viewport.getBoundingClientRect(),x=Math.max(0,Math.min(b.width,e.clientX-b.left)),y=Math.max(0,Math.min(b.height,e.clientY-b.top));
+ loupe.style.left=x+'px';
+ loupe.style.top=y+'px';
+ loupe.style.backgroundSize=b.width*2+'px '+b.height*2+'px';
+ loupe.style.backgroundPosition=(-x*2+75)+'px '+(-y*2+75)+'px';};
  viewport.onpointerdown=e=>{if(record.level!==1||document.querySelector('dialog[open]'))return;active=true;viewport.setPointerCapture(e.pointerId);move(e);};viewport.onpointermove=move;viewport.onpointerup=()=>{active=false;};viewport.onpointercancel=()=>{active=false;};
  function refresh(){
   if(disposed)return;const context=magnifyFor(task.organism,true);
@@ -34,5 +39,10 @@ export function mountMicroscope(host:HTMLElement,task:InquiryTask,learner:Inquir
  }
  img.onload=()=>{if(!disposed)hooks.ready(true);};img.onerror=()=>{if(!disposed)hooks.ready(false);};refresh();
  const idle=()=>{};const assign=()=>false;
- return {refresh,showFrame:frame=>{record={...learner,...frame.patch};refresh();},endDemo:()=>{record=learner;refresh();},setPlaybackRate:idle,setPreview:idle,setReveal:idle,setPlaying:idle,arm:idle,assignCard:assign,assign,place:assign,animateRun:(_ok,finish)=>finish(),dispose:()=>{disposed=true;video?.pause();video?.removeAttribute('src');root.remove();}};
+ return {refresh,showFrame:frame=>{record={...learner,...frame.patch};
+ refresh();},endDemo:()=>{record=learner;
+ refresh();},setPlaybackRate:idle,setPreview:idle,setReveal:idle,setPlaying:idle,arm:idle,assignCard:assign,assign,place:assign,animateRun:(_ok,finish)=>finish(),dispose:()=>{disposed=true;
+ video?.pause();
+ video?.removeAttribute('src');
+ root.remove();}};
 }

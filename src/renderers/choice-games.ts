@@ -43,7 +43,15 @@ export function mountChoiceGame(host:HTMLElement,task:InquiryTask,record:Inquiry
   const r=node.getBoundingClientRect(),dx=e.clientX-r.left,dy=e.clientY-r.top,sx=e.clientX,sy=e.clientY;let ghost:HTMLElement|undefined;
   const stop=new AbortController();
   window.addEventListener('pointermove',m=>{if(m.pointerId!==e.pointerId)return;
-   if(!ghost){if(Math.hypot(m.clientX-sx,m.clientY-sy)<8)return;ghost=node.cloneNode(true) as HTMLElement;ghost.classList.add('choice-ghost');ghost.removeAttribute('data-link-item');ghost.removeAttribute('data-link-target');ghost.style.width=r.width+'px';ghost.style.height=r.height+'px';document.body.append(ghost);node.classList.add('is-lifted');}
+   if(!ghost){if(Math.hypot(m.clientX-sx,m.clientY-sy)<8)return;
+   ghost=node.cloneNode(true) as HTMLElement;
+   ghost.classList.add('choice-ghost');
+   ghost.removeAttribute('data-link-item');
+   ghost.removeAttribute('data-link-target');
+   ghost.style.width=r.width+'px';
+   ghost.style.height=r.height+'px';
+   document.body.append(ghost);
+   node.classList.add('is-lifted');}
    ghost.style.transform=`translate(${m.clientX-dx}px,${m.clientY-dy}px) rotate(-4deg)`;onMove(m.clientX,m.clientY);
   },{signal:stop.signal});
   const end=(u:PointerEvent)=>{if(u.pointerId!==e.pointerId)return;stop.abort();node.classList.remove('is-lifted');if(!ghost)return;ghost.remove();node.dataset.dragged='1';setTimeout(()=>delete node.dataset.dragged,350);if(u.type==='pointerup')onDrop(u.clientX,u.clientY);else onMove(-1,-1);};
@@ -93,7 +101,12 @@ export function mountChoiceGame(host:HTMLElement,task:InquiryTask,record:Inquiry
   }else{
    // targets[0] goes right, targets[1] left.
    const [rightT,leftT]=task.targets;
-   const side=(t:typeof rightT,dir:'left'|'right')=>{const b=el('button',`swipe-side ${dir} tone-${tone(t.id)}`);b.type='button';b.dataset.linkTarget=t.id;b.append(icon(t.id),el('strong','',t.label),el('span','swipe-arrow',dir==='left'?'◀ 왼쪽으로 밀기':'오른쪽으로 밀기 ▶'));b.onclick=()=>{if(!blocked())decide(t.id,dir==='left'?-1:1);};return b;};
+   const side=(t:typeof rightT,dir:'left'|'right')=>{const b=el('button',`swipe-side ${dir} tone-${tone(t.id)}`);
+   b.type='button';
+   b.dataset.linkTarget=t.id;
+   b.append(icon(t.id),el('strong','',t.label),el('span','swipe-arrow',dir==='left'?'◀ 왼쪽으로 밀기':'오른쪽으로 밀기 ▶'));
+   b.onclick=()=>{if(!blocked())decide(t.id,dir==='left'?-1:1);};
+   return b;};
    const left=side(leftT,'left'),right=side(rightT,'right');
    card.onpointerdown=e=>{
     if(blocked()||e.button!==0||card.hidden)return;card.setPointerCapture(e.pointerId);const sx=e.clientX;card.classList.add('is-dragging');
@@ -110,7 +123,20 @@ export function mountChoiceGame(host:HTMLElement,task:InquiryTask,record:Inquiry
  }else{
   // lamp: every case card at once, two lamps to drop them on.
   const hand=el('div','lamp-hand');const lamps=el('div','lamp-row');
-  const zones=task.targets.map(t=>{const z=el('button',`lamp tone-${tone(t.id)}`);z.type='button';z.dataset.linkTarget=t.id;const bulb=el('span','lamp-bulb');const lampImg=el('img','lamp-glass');lampImg.src=`assets/ui/game/lamp-${tone(t.id)}.webp`;lampImg.alt='';lampImg.draggable=false;bulb.append(lampImg,icon(t.id,'lamp-icon'));const chips=el('div','lamp-chips');z.append(bulb,el('strong','lamp-label',t.label),chips);z.onclick=()=>{if(selected)drop(selected,t.id);else totoSay(root,{text:'먼저 위에서 사건 카드를 하나 골라 봐!'});};lamps.append(z);return {t,z,chips};});
+  const zones=task.targets.map(t=>{const z=el('button',`lamp tone-${tone(t.id)}`);
+  z.type='button';
+  z.dataset.linkTarget=t.id;
+  const bulb=el('span','lamp-bulb');
+  const lampImg=el('img','lamp-glass');
+  lampImg.src=`assets/ui/game/lamp-${tone(t.id)}.webp`;
+  lampImg.alt='';
+  lampImg.draggable=false;
+  bulb.append(lampImg,icon(t.id,'lamp-icon'));
+  const chips=el('div','lamp-chips');
+  z.append(bulb,el('strong','lamp-label',t.label),chips);
+  z.onclick=()=>{if(selected)drop(selected,t.id);else totoSay(root,{text:'먼저 위에서 사건 카드를 하나 골라 봐!'});};
+  lamps.append(z);
+  return {t,z,chips};});
   let selected='';
   const drop=(id:string,target:string)=>{selected='';const zone=zones.find(z=>z.t.id===target)!;const ok=attempt(id,target);if(ok){zone.z.classList.remove('is-on');void zone.z.offsetWidth;zone.z.classList.add('is-on');}else{shake(zone.z);shake(cards.find(c=>c.it.id===id)!.b);}refresh();};
   const cards=items.map(it=>{

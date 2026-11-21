@@ -72,7 +72,12 @@ export async function load():Promise<State>{
  restoredFromPreview=false;
  observedState=undefined;
  try{
-  db=await new Promise<IDBDatabase>((resolve,reject)=>{const r=indexedDB.open('life-code-lab',1);r.onupgradeneeded=()=>{r.result.createObjectStore('state');r.result.createObjectStore('captures');};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);r.onblocked=()=>reject(new Error('blocked'));});
+  db=await new Promise<IDBDatabase>((resolve,reject)=>{const r=indexedDB.open('life-code-lab',1);
+  r.onupgradeneeded=()=>{r.result.createObjectStore('state');
+  r.result.createObjectStore('captures');};
+  r.onsuccess=()=>resolve(r.result);
+  r.onerror=()=>reject(r.error);
+  r.onblocked=()=>reject(new Error('blocked'));});
   const raw=await request(db.transaction('state').objectStore('state').get('current'));
   observedState=raw===undefined?undefined:JSON.stringify(raw);
   if(raw===undefined){storageMessage='기기에 저장';return fallback;}

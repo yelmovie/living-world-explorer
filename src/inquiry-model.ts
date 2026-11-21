@@ -18,14 +18,23 @@ export function recoverInquiry(raw:unknown):InquiryProgress{
  for(const [id,value] of Object.entries(x.records).slice(0,60)){if(!/^M[1-5]-[1-4]$/.test(id)||!value||typeof value!=='object')continue;const r={...emptyRecord(),...value};
   r.assignments=Object.fromEntries(Object.entries(r.assignments||{}).filter(([k,v])=>k.length<80&&typeof v==='string'&&v.length<80));r.opened=Array.isArray(r.opened)?[...new Set(r.opened.filter(v=>typeof v==='string'&&v.length<80))]:[];
   r.marks=Array.isArray(r.marks)?r.marks.filter(p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=0&&p.x<=1&&p.y>=0&&p.y<=1).slice(0,20):[];
-  for(const key of ['focus','light','time','zoom','sequence','tries'] as const)if(!Number.isFinite(r[key]))r[key]=emptyRecord()[key];r.focus=Math.max(0,Math.min(100,r.focus));r.light=Math.max(20,Math.min(100,r.light));r.zoom=Math.max(1,Math.min(2,r.zoom));r.time=Math.max(0,Math.min(10,r.time));r.sequence=Math.max(0,Math.min(3,Math.floor(r.sequence)));
+  for(const key of ['focus','light','time','zoom','sequence','tries'] as const)if(!Number.isFinite(r[key]))r[key]=emptyRecord()[key];
+  r.focus=Math.max(0,Math.min(100,r.focus));
+  r.light=Math.max(20,Math.min(100,r.light));
+  r.zoom=Math.max(1,Math.min(2,r.zoom));
+  r.time=Math.max(0,Math.min(10,r.time));
+  r.sequence=Math.max(0,Math.min(3,Math.floor(r.sequence)));
   r.pan=r.pan&&Number.isFinite(r.pan.x)&&Number.isFinite(r.pan.y)?{x:Math.max(-.4,Math.min(.4,r.pan.x)),y:Math.max(-.4,Math.min(.4,r.pan.y))}:{x:0,y:0};r.pins=Array.isArray(r.pins)?r.pins.filter(v=>Number.isFinite(v)&&v>=0&&v<=10).slice(0,2):[];
   for(const key of ['prediction','runResult','reflection','note'] as const)r[key]=typeof r[key]==='string'?r[key].slice(0,key==='note'?100:80):'';
   r.afterThought=typeof r.afterThought==='string'?r.afterThought.slice(0,80):'';
   r.runs=Array.isArray(r.runs)?r.runs.filter(run=>run&&typeof run.id==='string'&&typeof run.startedAt==='string'&&['supported','stopped'].includes(run.prediction)&&run.assignments&&typeof run.assignments==='object'&&['running','completed','interrupted'].includes(run.status)).slice(-40).map(run=>({...run,assignments:Object.fromEntries(Object.entries(run.assignments).filter(([k,v])=>k.length<80&&typeof v==='string'&&v.length<80)),status:run.status==='running'?'interrupted':run.status,result:['supported','stopped'].includes(run.result)?run.result:'',reflection:['matches','differs'].includes(run.reflection)?run.reflection:''})):[];
   r.capture=r.capture===true;r.submitted=r.submitted===true;r.completedAt=typeof r.completedAt==='string'?r.completedAt:undefined;
   // Records saved before 2026-10-25 had no magnification step or miss count: a photo already taken means the microscope was reached, and one try means a clean pass.
-  const raw=value as Partial<InquiryRecord>;r.level=Number.isFinite(raw.level)?Math.max(0,Math.min(2,Math.floor(raw.level!))):r.capture||r.completedAt?2:0;r.misses=Number.isFinite(raw.misses)?Math.max(0,Math.min(99,Math.floor(raw.misses!))):0;r.clean=typeof raw.clean==='boolean'?raw.clean:r.completedAt?r.tries===1:undefined;r.v=raw.v===2?2:undefined;
+  const raw=value as Partial<InquiryRecord>;
+  r.level=Number.isFinite(raw.level)?Math.max(0,Math.min(2,Math.floor(raw.level!))):r.capture||r.completedAt?2:0;
+  r.misses=Number.isFinite(raw.misses)?Math.max(0,Math.min(99,Math.floor(raw.misses!))):0;
+  r.clean=typeof raw.clean==='boolean'?raw.clean:r.completedAt?r.tries===1:undefined;
+  r.v=raw.v===2?2:undefined;
   base.records[id]=r;
  }
  for(const stage of ['M1','M2','M3','M4','M5'] as Stage[]){const n=x.current?.[stage];if(typeof n==='number'&&n>=0&&n<=3)base.current[stage]=Math.floor(n);}

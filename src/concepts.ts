@@ -22,7 +22,12 @@ export const conceptTerms:Record<Stage,string[]>={M1:['균류','균사','포자'
 export const conceptChapters=[{label:'관찰하기',cue:1},{label:'특징 연결',cue:2},{label:'기억하기',cue:3}] as const;
 function focusWords(node:HTMLElement,text:string,terms:string[]){
  node.replaceChildren();let remaining=text;
- while(remaining){const matches=terms.map(term=>({term,index:remaining.indexOf(term)})).filter(m=>m.index>=0).sort((a,b)=>a.index-b.index||b.term.length-a.term.length);const match=matches[0];if(!match){node.append(remaining);break;}node.append(remaining.slice(0,match.index),el('mark','concept-keyword',match.term));remaining=remaining.slice(match.index+match.term.length);}
+ while(remaining){const matches=terms.map(term=>({term,index:remaining.indexOf(term)})).filter(m=>m.index>=0).sort((a,b)=>a.index-b.index||b.term.length-a.term.length);
+ const match=matches[0];
+ if(!match){node.append(remaining);
+ break;}
+ node.append(remaining.slice(0,match.index),el('mark','concept-keyword',match.term));
+ remaining=remaining.slice(match.index+match.term.length);}
 }
 /** Replays are optional; closing a clip never changes or loses learning evidence. */
 export function showConcept(stage:Stage,settings:{sound:boolean;voice?:boolean;reduced:boolean},onContinue?:()=>void){

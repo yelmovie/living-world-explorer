@@ -13,4 +13,9 @@ export function validGroup(key:keyof Draft,v:unknown):boolean{
  return strings(v.slots)&&(v.slots as unknown[]).length===3&&typeof v.selected==='string'&&Array.isArray(v.edges)&&v.edges.length===2&&v.edges.every(x=>typeof x==='boolean')&&number(v.revision,0,1e7)&&['prediction','reason','explanation'].every(k=>typeof v[k]==='string')&&Array.isArray(v.runs)&&v.runs.every(r=>object(r)&&typeof r.id==='string'&&number(r.revision,0,1e7)&&strings(r.choices)&&typeof r.prediction==='string'&&typeof r.reason==='string'&&typeof r.passed==='boolean'&&typeof r.code==='string'&&typeof r.reflection==='string'&&['running','completed','interrupted'].includes(r.status as string));
 }
 export function validDraft(v:unknown):v is Draft{return object(v)&&(['m1','m2','m3','m4','m5'] as const).every(k=>validGroup(k,v[k]));}
-export function recoverDraft(raw:unknown){const d=makeAttempt().draft;if(!object(raw))return d;for(const k of ['m1','m2','m3','m4','m5'] as const){if(validGroup(k,raw[k]))Object.assign(d[k],raw[k]);}for(const run of d.m5.runs){if(run.status==='running'){run.status='interrupted';run.passed=false;}}return d;}
+export function recoverDraft(raw:unknown){const d=makeAttempt().draft;
+if(!object(raw))return d;
+for(const k of ['m1','m2','m3','m4','m5'] as const){if(validGroup(k,raw[k]))Object.assign(d[k],raw[k]);}
+for(const run of d.m5.runs){if(run.status==='running'){run.status='interrupted';
+run.passed=false;}}
+return d;}
