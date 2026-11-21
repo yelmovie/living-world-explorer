@@ -43,3 +43,14 @@
 | 나2 `study/bread-0.webp` | **코드로 풂(생성 0회)**: 1~3번과 같은 빵인 `bread-1.webp`(1024×576)에서 가운데 곰팡이 점(약 80×72px)만 바로 아래 빵 속(78px 아래)으로 부드럽게 덮어 「처음」 장면을 만듦 | `.tmp/score-images-20261121/`의 node·sharp 스크립트(타원 가장자리 30% 페더) | `study/bread-1.webp` | 빵 모양·크기·위치·질감이 1~3번과 픽셀까지 같음 / 곰팡이 없음 |
 | 나3 `study/leaf-0.webp` | GPT 이미지(Codex CLI, `gpt-imagegen`)로 구멍 없는 잎을 만든 뒤, **구멍 자리만** 오려 `leaf-1.webp`에 붙임(나머지는 1번 장면 그대로) | 「Edit the attached image. It shows one dry brown oak leaf lying on a plain cream background, 16:9 landscape. Return the exact same picture: identical leaf outline, identical position and size … The only change: the leaf is completely intact … fill every hole and missing patch in the leaf blade with matching leaf tissue and continue the veins naturally … No text」 | `study/leaf-1.webp` | 잎 테두리·잎맥·색·위치가 1~3번과 같음 / 글자·워터마크 없음 |
 | 나1 `places/workshop.webp` | GPT 이미지(Codex CLI)로 새로 그림 | 「Wide 16:9 background illustration for a children's science game: the interior of a sunlit bio workshop inside a wooden-framed glass greenhouse … warm wood workbenches along the left and right walls with glass fermentation jars, a yogurt maker, a small brick bread oven and a wooden compost crate, hanging vines and potted plants, large glass windows with soft green trees outside, warm golden afternoon light. Keep the centre of the floor open and calm (a UI panel covers it). Match the painterly anime game-background style, palette and lighting of the reference images exactly. No people, no characters, no text, no letters, no logos, no screens, no neon」 | `places/village.webp`, `places/fungi.webp`(화풍), `map/terrain.webp` 남서쪽 온실 공방(건물 모양) | 다른 구역과 같은 따뜻한 나무·식물·햇빛 톤, 가운데는 조용히 / 글자·로고·사람·네온 없음 |
+
+## M3-3 배양 접시 집락 (2026-11-21 저녁, 사용자 요청 「세균들 실제 이미지 생성으로 더 리얼하게, 지금은 동그라미 모임처럼 보여서」)
+
+| 그림 | 쓰는 곳 | 프롬프트 요지 | 뽑은 횟수 |
+|---|---|---|---:|
+| `study/germ/colonies-cream.webp` | 손바닥·문손잡이 접시(빵은 흙과 섞음) | 「12 separate bacterial colonies as they look on an agar culture plate, photographed straight from above … creamy white to ivory, glossy wet surface with a small specular highlight … loose 4 by 3 grid with wide empty space … Fully transparent background … match the attached petri dish photo. No text」 | 1 |
+| `study/germ/colonies-soil.webp` | 화분 흙·빵 접시 | 같은 틀 + 「from garden soil … tan and light brown colonies with wrinkled, folded surfaces and irregular lobed edges; flat spreading ones with rough frilly margins; small dry chalky white powdery ones; orange-brown glossy ones」 | 1 |
+| `study/germ/colonies-pond.webp` | 연못 물 접시 | 같은 틀 + 「from pond water … lemon-yellow glossy round, orange, pale translucent watery, soft pink, some with a darker centre ring」 | 1 |
+
+- 참고 그림 `study/germ/petri.webp`. 투명 배경 원본에서 집락을 하나씩 오려(알파 연결 덩어리) 96px 칸 12개짜리 한 줄로 묶었다.
+- 코드: `src/renderers/germ-games.ts` `drawDish`가 학생이 그은 지그재그 길을 따라 배양 일수만큼 커지는 규칙·개수는 그대로 두고, 단색 동그라미 대신 이 칸을 찍는다. 그림이 아직 안 불렸으면 예전 동그라미로 그리고 불린 뒤 다시 그린다. 빈 접시는 그대로.

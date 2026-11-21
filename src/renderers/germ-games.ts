@@ -8,6 +8,12 @@ import {zoomSteps,zoomGuesses,zoomReach,germShapes,bugKinds,JAR_GOAL,jarCount,cu
 // Board layout (full-width stage, no side panel) lives with the quiz board styles.
 import '../quiz-board.css';
 import '../germ-games.css';
+// Culture-dish colony pictures: one row of 96px cells per sheet, shared by every mount.
+const COLONY_CELL=96;const colonyPics=new Map<string,HTMLImageElement>();
+function colonySheet(name:string,repaint:()=>void){
+ let pic=colonyPics.get(name);if(!pic){pic=new Image();pic.decoding='async';pic.src=`assets/study/germ/colonies-${name}.webp`;colonyPics.set(name,pic);}
+ if(!pic.complete)pic.addEventListener('load',repaint,{once:true});return pic;
+}
 
 /** 2026-11-17: M3 자료 연구실 hands-on bacteria lab ([4과12-01]).
  * M3-1 zoom dial · M3-2 catch moving bacteria into shape jars · M3-3 swab, streak and culture · M3-4 compare exhibit. */
@@ -263,16 +269,23 @@ function cultureGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTM
  function finishStreak(id:string,pts:[number,number][]){paths.set(id,pts);r.assignments[`dish_${id}`]='streaked';loaded='';playEffect('snap');changed();paint();
   if(streaked(r).length>=CULTURE_GOAL&&!day)totoSay(root,{text:'접시가 준비됐어! 배양기 시간 손잡이를 밀어서 며칠 지나게 해 봐.',mood:'hint'});}
  // Colonies grow along the streak; the control dish stays clean.
+ // 2026-11-21: each colony is a cut-out picture of a real-looking colony (one 96px cell of assets/study/germ/colonies-*.webp).
+ // Until a picture has loaded the colony is drawn as a flat circle in its colour, and the dishes repaint when it arrives.
  const colonyColor:Record<string,string[]>={hand:['#f4ecd2','#e9d9a8'],soil:['#e8b56a','#f2d9a3','#c98c4a'],pond:['#f6e38a','#efe9c8'],knob:['#f7f3e3','#e7ddc0'],bread:['#f0d080','#efe4cf','#d7b06a']};
+ const colonySheets:Record<string,string[]>={hand:['cream'],knob:['cream'],soil:['soil'],pond:['pond'],bread:['soil','cream']};
  function drawDish(id:string,pts:[number,number][],growth:number){
   const {c}=dish(id),g=c.getContext('2d')!;g.clearRect(0,0,c.width,c.height);const W=c.width;
   if(pts.length>1&&growth<.15){g.strokeStyle='rgba(255,255,255,.75)';g.lineWidth=4;g.lineCap='round';g.beginPath();pts.forEach(([x,y],i)=>i?g.lineTo(x*W,y*W):g.moveTo(x*W,y*W));g.stroke();}
   if(id==='control'||growth<=0||pts.length<2)return;
   let seed=id.length*97+pts.length;const rand=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};
   const colors=colonyColor[id]||['#f2e6c4'];
+  const sheets=(colonySheets[id]||['cream']).map(name=>colonySheet(name,paintDishes));
   for(let i=0;i<pts.length-1;i++){const [x1,y1]=pts[i],[x2,y2]=pts[i+1];const n=Math.max(1,Math.round(Math.hypot(x2-x1,y2-y1)*30));
    for(let k=0;k<n;k++){const t=rand(),x=(x1+(x2-x1)*t+(rand()-.5)*.05)*W,y=(y1+(y2-y1)*t+(rand()-.5)*.05)*W,size=(2+rand()*6)*growth;if(rand()>growth*1.1)continue;
-    g.fillStyle=colors[Math.floor(rand()*colors.length)];g.strokeStyle='rgba(120,90,40,.35)';g.lineWidth=1;g.beginPath();g.arc(x,y,size,0,Math.PI*2);g.fill();g.stroke();}}
+    const color=colors[Math.floor(rand()*colors.length)],pick=rand()*sheets.length,pic=sheets[Math.floor(pick)];
+    if(pic.complete&&pic.naturalWidth){const cells=Math.floor(pic.naturalWidth/COLONY_CELL),cell=Math.floor((pick%1)*cells),d=size*2.2;
+     g.drawImage(pic,cell*COLONY_CELL,0,COLONY_CELL,COLONY_CELL,x-d/2,y-d/2,d,d);continue;}
+    g.fillStyle=color;g.strokeStyle='rgba(120,90,40,.35)';g.lineWidth=1;g.beginPath();g.arc(x,y,size,0,Math.PI*2);g.fill();g.stroke();}}
  }
  days.oninput=()=>{if(streaked(r).length<CULTURE_GOAL)return;day=Number(days.value);paintDishes();dayLabel.textContent=`${Math.floor(day)}일째`;
   if(day>=cultureDays&&r.assignments.days!==String(cultureDays)){r.assignments.days=String(cultureDays);playEffect('sparkle');changed();paint();totoSay(root,{text:'접시를 봐! 채집한 접시마다 세균 무리가 자랐어. 빈 접시는 어때?',mood:'cheer'});}};

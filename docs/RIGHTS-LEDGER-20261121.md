@@ -125,6 +125,7 @@
 | 48 | `places/workshop.webp` (1600×900, M5 BIO 작업실 배경) | Codex CLI 내장 이미지 도구(GPT 이미지), `gpt-imagegen` 스킬 `gpt-image.sh`, 참고 그림 `places/village.webp`·`places/fungi.webp`·`map/terrain.webp` 남서쪽 온실 공방 | 2026-11-21, 프롬프트 `docs/reviews/IMAGE-NEEDS-20261121.md` 「3-3a 만들기 기록」, 원본 `.tmp/score-images-20261121/workshop-gen1.png`(1672×941), 1회 생성 | ChatGPT 유료 요금제(사용자 확인 2026-11-21) | 위 문서·이 대화(Claude Code) 기록 | 확인됨 |
 | 49 | `study/bread-0.webp` (1024×576) | 생성 없음: 6번 줄 `study/bread-1.webp`에서 곰팡이 점만 옆 빵 속으로 덮은 파생본(sharp) | 2026-11-21, `.tmp/score-images-20261121/` 스크립트 | 6번 줄과 같음 | 6번 줄 | 확인됨(재료 따름) |
 | 50 | `study/leaf-0.webp` (1024×576) | 6번 줄 `study/leaf-1.webp` + Codex CLI GPT 이미지로 만든 구멍 없는 잎(참고 그림 `leaf-1`)에서 구멍 자리만 오려 붙인 합성 | 2026-11-21, 프롬프트 `IMAGE-NEEDS-20261121.md` 「3-3a 만들기 기록」, 원본 `.tmp/score-images-20261121/leaf-0-gen1.png`, 1회 생성, 합성 `leafcomp2.mjs` | ChatGPT 유료 요금제(사용자 확인 2026-11-21) | 위 문서 | 확인됨 |
+| 51 | `study/germ/colonies-{cream,soil,pond}.webp` (3장, 96px 칸 12개씩 한 줄, M3-3 배양 접시 집락) | Codex CLI 내장 이미지 도구(GPT 이미지), `gpt-imagegen` 스킬 `gpt-image.sh`, 참고 그림 `study/germ/petri.webp` | 2026-11-21, 프롬프트 `docs/reviews/IMAGE-NEEDS-20261121.md` 「M3-3 배양 접시 집락」, 원본 `.tmp/colonies-20261121/colonies-*.png`(1536×1024 투명), 장마다 1회 생성, 오려 내기 `.tmp/colonies-20261121/slice.mjs` | ChatGPT 유료 요금제(사용자 확인 2026-11-21) | 위 문서 | 확인됨 |
 
 ## 합계
 
