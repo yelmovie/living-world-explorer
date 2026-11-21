@@ -89,7 +89,7 @@ try{
   const task=await open('M5-1');
   await button(page,'자료 골라 연결하기').click();
   const dialog=page.getByRole('dialog');
-  for(const it of task.items.filter(i=>i.target)){await dialog.getByRole('button',{name:it.label,exact:true}).click();const labels={input:'재료 병에 담기',action:'발효기에 넣기',output:'만들 음식 고르기'};await dialog.getByRole('button',{name:labels[it.target],exact:true}).click();}
+  for(const it of task.items.filter(i=>i.target)){await dialog.getByRole('button',{name:it.label,exact:true}).click();const labels={input:'① 부을 것 칸에 놓기',action:'② 넣을 작은 생물 칸에 놓기',output:'③ 완성될 음식 칸에 놓기'};await dialog.getByRole('button',{name:labels[it.target],exact:true}).click();}
   await close();await inspectState('build-prediction');await button(page,'요구르트가 될 거예요').click();await inspectState('build-ready');
   await button(page,'발효기 켜기').click();await inspectState('build-running');
   await page.locator('.run-reflection[data-result="matches"]').waitFor();await inspectState('build-finished');

@@ -9,6 +9,8 @@
 .expedition-shell .inquiry-choice-group>.field-label{margin:0;color:var(--ink-strong);line-height:1.4}
 .expedition-shell .expedition-tools .choices{width:100%;min-width:0;align-items:stretch}
 .expedition-shell .expedition-tools .choices>.button{justify-content:flex-start;gap:9px;min-height:52px;padding:10px;text-align:left;line-height:1.4}
+/* 2026-11-21: answer buttons break between words (「요구르트가 / 될 거예요」, not 「요구르트 / 가 될」). */
+.expedition-shell .expedition-tools .choices>.button{word-break:keep-all}
 .expedition-shell .inquiry-choice-label{min-width:0;flex:1}
 .expedition-shell .expedition-tools .choices>.button::before{content:'';display:block;flex:0 0 20px;width:20px;height:20px;align-self:center;border:2px solid var(--paper-line);border-radius:50%;background:var(--paper-face);box-sizing:border-box}
 .expedition-shell .expedition-tools .choices>.button[aria-pressed=true]::before{border-color:var(--stage-accent);background:var(--stage-accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='m4 10 4 4 8-8' fill='none' stroke='%23fffdf4' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/18px no-repeat}
@@ -239,3 +241,5 @@
  html:not(.large-text) #app>.expedition-shell[data-kind=sample] .expedition-work{grid-area:2/1/3/3}
  html:not(.large-text) #app>.expedition-shell[data-kind=sample] .expedition-panel{position:relative;z-index:2;align-self:start;justify-self:end;width:330px;height:auto;max-height:none}
 }
+/* 2026-11-21: prediction answers on the make-it screens sit side by side only when each gets about 9.5 letters; a narrow panel stacks them. */
+#app>.expedition-shell[data-kind=build] .expedition-tools .choices{grid-template-columns:repeat(auto-fit,minmax(min(100%,9.5em),1fr))}

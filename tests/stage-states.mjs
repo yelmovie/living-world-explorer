@@ -67,7 +67,7 @@ try{
  await open('M5-1');
  assert.ok(await button(page,'버튼으로 조작').evaluate(n=>{const r=n.getBoundingClientRect();return r.top>0&&r.bottom<innerHeight&&n.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));}),'large-label controls are visible before selecting a card');
  await button(page,'버튼으로 조작').click();const dialog=page.getByRole('dialog');
- for(const [card,target] of [['우유','재료 병에 담기'],['유산균 가루','발효기에 넣기'],['요구르트','만들 음식 고르기']]){await dialog.getByRole('button',{name:card,exact:true}).click();await dialog.getByRole('button',{name:target,exact:true}).click();}
+ for(const [card,target] of [['우유','① 부을 것 칸에 놓기'],['유산균 가루','② 넣을 작은 생물 칸에 놓기'],['요구르트','③ 완성될 음식 칸에 놓기']]){await dialog.getByRole('button',{name:card,exact:true}).click();await dialog.getByRole('button',{name:target,exact:true}).click();}
  await dialog.getByRole('button',{name:'닫기',exact:true}).click();assert.equal(await page.locator('.toast').count(),0,'assembly feedback must not cover the fermentation scene');await button(page,'요구르트가 될 거예요').click();await button(page,'발효기 켜기').click();
  await page.waitForTimeout(4450);await inspect('915-M5-1-fermenting');
  await page.locator('.run-reflection[data-result="matches"]').waitFor();await inspect('915-M5-1-result');

@@ -34,6 +34,8 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
  const blocked=()=>disposed||document.hidden||!!document.querySelector('dialog[open]');
  // Scene colours follow the DOM tokens (styles.css stage layer), so one token edit restyles both.
  const css=(name:string,fallback:number)=>{const v=getComputedStyle(host).getPropertyValue(name).trim();return /^#[0-9a-f]{6}$/i.test(v)?parseInt(v.slice(1),16):fallback;};
+ const YOGURT_SLOTS:Record<string,string>={input:'① 부을 것',action:'② 넣을 작은 생물',output:'③ 완성될 음식'};
+ const YOGURT_WHY:Record<string,string>={milk:'우유를 ① 칸에 부었어요. 우유에는 유산균이 이용할 당이 들어 있어요.',water:'물을 ① 칸에 부었어요. 물로도 요구르트가 될지 예상해 봐요.',lactic:'유산균 가루를 ② 칸에 넣었어요. 이 가루에는 살아 있는 유산균이 들어 있어요.',yogurt:'③ 칸에 요구르트를 놓았어요. 이제 따뜻하게 두면 어떻게 될지 예상해요.'};
  const tone={accent:css('--stage-accent',0x557a3f),soft:css('--stage-soft',0xe4edd5),paper:css('--paper-face',0xfffaf0),line:css('--paper-line',0xe6d8bc),brass:css('--brass-soft',0xecd08f),pick:0xd39a3f,shade:0x22312a,ink:'#1f3f31'};
  const LENS_HOLE=.3;// hole radius / width of ui/microscope-frame.webp (scripts/ui-props.mjs)
  class Inquiry extends Phaser.Scene{
@@ -271,6 +273,7 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
    }
   }
   paintBuild(){
+   if(task.id==='M5-1'){this.paintYogurt();return;}
    const yogurt=task.id==='M5-1';
    const Y=(v:number)=>this.y(v);
    const resetFaces:(()=>void)[]=[];const slots=task.targets.map((t,i)=>({id:t.id,x:185+i*295,y:Y(200)}));const g=this.add.graphics();
@@ -322,9 +325,57 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
    if(!record.runResult){const filled=task.targets.every(t=>!!record.assignments[t.id]);if(!yogurt||!filled||armed)this.caption(480,Y(322),armed?'이제 위쪽에서 놓을 곳을 눌러요':yogurt?'아래에서 골라 작업대에 놓아요':'아래에서 카드 한 장을 골라요',22);}
    if(record.runResult){const ok=record.runResult==='supported';this.caption(480,Y(315),yogurt?(ok?'완성! 우유가 걸쭉하고 새콤해졌어요':'다시 살펴보기 · 재료와 만들 음식을 확인해요'):ok?`${task.caseName} 사례로 연결됐어요`:'흐름이 멈췄어요 · 연결과 자료를 다시 봐요',23,ok?'#286341':'#995131',850);}
   }
+  /** 2026-11-21 M5-1 as a recipe children can read at a glance: [① 부을 것] + [② 넣을 작은 생물] → 발효기(따뜻하게) → [③ 될 음식].
+   *  Each card has one home slot (water shares slot ① with milk, so the milk-or-water test stays). Tapping a card puts it there. */
+  paintYogurt(){
+   const Y=(v:number)=>this.y(v);
+   const order=['input','action','output'];const next=order.find(id=>!record.assignments[id]);
+   const slots=[{id:'input',x:150,q:'① 무엇을 부을까?',empty:'우유 또는 물'},{id:'action',x:415,q:'② 무엇을 넣을까?',empty:'작은 생물'},{id:'output',x:822,q:'③ 무엇이 될까?',empty:'완성될 음식'}];
+   this.card(480,Y(172),916,Y(258),{fill:0xfff5db,stroke:0xb28e51,radius:26,alpha:.97});
+   const g=this.add.graphics();
+   const on1=!!record.assignments.input&&!!record.assignments.action,on2=on1&&!!record.assignments.output;
+   this.text(282,Y(192),'+',56,on1?tone.ink:'#9a8a6a');
+   const arrow=(x1:number,x2:number,lit:boolean)=>{const c=lit?tone.accent:tone.line,ay=Y(192);g.lineStyle(6,c,1).lineBetween(x1,ay,x2-14,ay);g.fillStyle(c,1).fillTriangle(x2,ay,x2-18,ay-11,x2-18,ay+11);};
+   arrow(520,548,on1);arrow(688,716,on2);
+   this.drawYogurtMaker(618,Y(166),150,Y(116));
+   this.caption(618,Y(254),'따뜻하게 두기',22,tone.ink,230);
+   slots.forEach(s=>{const it=task.items.find(item=>item.id===record.assignments[s.id]);const isNext=next===s.id;
+    this.caption(s.x,Y(66),s.q,26,tone.ink,220);
+    if(it){
+     this.card(s.x,Y(192),200,Y(186),{fill:tone.paper,stroke:tone.accent,width:3});
+     this.art(s.x,Y(148),180,Y(80),artKey(it)||'question',{time:artTime(artKey(it),it.detail,it.id),fit:'contain'});
+     this.text(s.x,Y(244),it.label,28,tone.ink,186);
+    }else{
+     this.card(s.x,Y(192),200,Y(186),{fill:tone.soft,stroke:isNext?tone.pick:tone.accent,width:isNext?5:2,alpha:isNext?.95:.6});
+     const guide=this.add.graphics();guide.lineStyle(2,tone.accent,isNext?.5:.25).strokeRoundedRect(s.x-88,Y(108),176,Y(168),12);
+     this.text(s.x,Y(192),s.empty,28,isNext?tone.ink:'#6b6a5c',170);
+     if(isNext){const tag=this.caption(s.x,Y(124),'여기!',22,tone.ink,120);if(!reduced)this.tweens.add({targets:tag,y:'-=6',duration:520,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});}
+    }
+    const zone=this.add.zone(s.x,Y(192),210,Y(186)).setRectangleDropZone(210,Y(186)).setInteractive({useHandCursor:true});
+    zone.setData('target',s.id);
+    zone.on('pointerdown',()=>{if(this.pauseGuard())return;if(armed)this.place(armed,s.id);else hooks.feedback('아래 카드를 누르면 알맞은 칸에 들어가요.');});
+   });
+   const ch=Y(174);
+   task.items.forEach((it,i)=>{const x=132+i*233,y=Y(431);const used=Object.values(record.assignments).includes(it.id);
+    const box=this.add.container(x,y);const face=this.add.graphics();
+    this.cardShape(face,0,0,210,ch,{stroke:used?tone.accent:tone.line,width:used?3:2});
+    box.add(face);
+    box.add(this.art(0,Y(-45),188,Y(64),artKey(it)||'question',{time:artTime(artKey(it),it.detail,it.id),fit:'contain'}));
+    box.add(this.text(0,Y(39),used?`✓ ${it.label}`:it.label,28,tone.ink,194));
+    if(used)box.setAlpha(.55);
+    box.setSize(210,ch).setInteractive({useHandCursor:true});
+    this.input.setDraggable(box);
+    let dragged=false;
+    box.on('pointerdown',()=>{if(this.pauseGuard())return;dragged=false;hooks.open(it.id);});
+    box.on('dragstart',()=>{dragged=true;});
+    box.on('pointerup',()=>{if(this.pauseGuard()||dragged)return;this.place(it.id,it.target||'input');});
+    box.on('drag',(_p:Phaser.Input.Pointer,px:number,py:number)=>{if(this.pauseGuard())return;box.setPosition(px,py).setDepth(10);});
+    box.on('drop',(_p:Phaser.Input.Pointer,zone:Phaser.GameObjects.Zone)=>this.place(it.id,String(zone.getData('target'))));
+    box.on('dragend',()=>{if(box.active)box.setPosition(x,y).setDepth(0);});});
+   if(!record.runResult)this.caption(480,Y(322),next==='input'?'아래에서 ① 칸에 부을 것을 눌러요':next==='action'?'아래에서 ② 우유에 넣을 작은 생물을 눌러요':next==='output'?'아래에서 ③ 무엇이 될지 눌러요':'오른쪽에서 어떻게 될지 예상해요',22);
+   else{const ok=record.runResult==='supported';this.caption(480,Y(322),ok?'완성! 우유가 걸쭉하고 새콤해졌어요':'다시 살펴보기 · 무엇을 부었는지 확인해요',23,ok?tone.ink:'#7a4b16');}
+  }
   place(id:string,target:string){
-   // Milk or water can go straight into the machine as the liquid ingredient.
-   if(task.id==='M5-1'&&target==='action'&&(id==='milk'||id==='water'))target='input';
    if(!this.pauseGuard())assignCard(id,target);
   }
   drawYogurtMaker(x:number,y:number,w:number,h:number){
@@ -409,10 +460,14 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
  function assignCard(id:string,target:string){
   if(disposed||simulating||document.hidden)return false;
   const item=task.items.find(it=>it.id===id);if(!item||!task.targets.some(t=>t.id===target))return false;
+  // 2026-11-21 M5-1: a card always goes to its own recipe slot; water shares slot ① with milk.
+  const home=task.id==='M5-1'?item.target||'input':target;
+  if(home!==target)hooks.feedback(`‘${item.label}’ 카드는 ${YOGURT_SLOTS[home]} 칸에 들어가요. 그 칸에 놓았어요.`);
+  target=home;
   if(!record.opened.includes(id))hooks.open(id);
   const changed=applyCard(task,record,id,target);
   armed='';hooks.assigned(id,target);
-  if(changed){playEffect('snap');hooks.changed();}
+  if(changed){playEffect('snap');hooks.changed();if(task.id==='M5-1'&&YOGURT_WHY[id])hooks.feedback(YOGURT_WHY[id]);}
   refresh();
   return changed;
  }

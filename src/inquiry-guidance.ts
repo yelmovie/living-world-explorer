@@ -45,9 +45,9 @@ export function guidance(task:InquiryTask,r:InquiryRecord,selectedCard=''){
     '아래 카드 한 장을 누른 뒤 위쪽에서 어울리는 칸을 눌러요.'):!r.assignments.edge1||!r.assignments.edge2?'설계도의 빈 자리를 채우면 흐름이 이어져요.':!r.prediction?'나의 예상에서 실행 결과를 먼저 골라요.':!r.runResult?'설계 가동을 눌러 흐름을 시험해요.':!r.reflection?
     '예상과 실제 결과가 같은지 비교해요.':action;
   if(task.id==='M5-1'){
-   if(card)action=`‘${card.label}’의 역할을 생각하고, 어울리는 칸을 눌러요.`;
-   else if(r.runResult==='stopped')action='이번 조합을 살펴보고 재료나 만들 음식을 바꿔 봐요.';
-   else if(done<3)action=!r.assignments.input?'우유와 물 중 하나를 골라 재료 병에 담아요.':!r.assignments.action?'발효기에 함께 넣을 것을 골라요.':'완성하고 싶은 음식을 골라 오른쪽에 놓아요.';
+   if(card)action=`‘${card.label}’의 역할을 생각해요. 카드를 누르면 알맞은 칸에 들어가요.`;
+   else if(r.runResult==='stopped')action='무엇을 부었는지 살펴보고, ① 칸의 재료를 바꿔 다시 해 봐요.';
+   else if(done<3)action=!r.assignments.input?'① 발효기에 부을 것을 골라요. 우유와 물 중 하나예요.':!r.assignments.action?'② 우유를 요구르트로 바꿀 작은 생물을 골라요.':'③ 무엇이 만들어질지 골라요.';
    else if(!r.prediction)action='따뜻하게 두면 어떻게 될지 예상해요.';
    else if(!r.runResult)action='‘발효기 켜기’를 눌러 변화를 살펴봐요.';
    else if(!r.reflection)action='내 예상과 실제 결과를 비교해요.';

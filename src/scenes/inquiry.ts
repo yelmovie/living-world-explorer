@@ -98,7 +98,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
  ctx.cleanup(()=>{if(running){const run=r.runs.at(-1);if(run?.status==='running')run.status='interrupted';ctx.save();}});
  let view:ReturnType<typeof import('../renderers/inquiry2d').mountInquiry>|undefined;
  const yogurt=task.id==='M5-1';
- const putLabel=(t:{id:string;label:string})=>yogurt?({input:'재료 병에 담기',action:'발효기에 넣기',output:'만들 음식 고르기'}[t.id]||t.label):t.label+'에 연결';
+ const putLabel=(t:{id:string;label:string})=>yogurt?({input:'① 부을 것 칸에 놓기',action:'② 넣을 작은 생물 칸에 놓기',output:'③ 완성될 음식 칸에 놓기'}[t.id]||t.label):t.label+'에 연결';
  let selectedCard='',demoStep=-1,editingClaim=false,editingAction=false;
  let demoButton:HTMLButtonElement|undefined,recordButton:HTMLButtonElement|undefined;
  const showMeter=(done:number,total:number)=>{
@@ -169,8 +169,9 @@ export function inquiryScene(ctx:Context,stage:Stage){
  void scene().then(async mount=>{await document.fonts.ready;
  if(disposed)return;
  view=mount(host,task,r,{assigned:()=>{selectedCard='';
- sourcePreview.hidden=true;
- sourcePreview.replaceChildren();
+ // 2026-11-21 M5-1: a tapped card goes straight to its slot, so its description stays to be read.
+ if(!yogurt){sourcePreview.hidden=true;
+ sourcePreview.replaceChildren();}
  updateStatus();},changed:()=>{save();
  controls();},open:source,feedback:info,tick:t=>{liveTime=t;
  const input=liveSlider?.isConnected?liveSlider.querySelector('input'):null;
