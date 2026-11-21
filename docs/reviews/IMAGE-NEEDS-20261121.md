@@ -35,3 +35,11 @@
 - ~~(가) 4장, (나) 3장, (다) 0장 — 모두 7장.~~ (2026-11-21 아침)
 - **2026-11-21 09:25 뒤: (가) 0장, (나) 3장, (다) 0장 — 모두 3장.** (가)는 사용자 확인으로 권리 문제가 풀려 새로 그리지 않는다. (나) 3장은 권리가 아니라 화풍·해상도 문제라 그대로 남는다.
 - (가)를 그리기 전에 사용자에게 먼저 물어볼 것: 4장의 생성 기록을 가지고 있는지(권리 장부 「사용자가 줘야 하는 자료」 23번 줄). 기록이 있으면 장부에 연결만 하고 다시 그리지 않는다.
+
+## 3-3a 만들기 기록 (2026-11-21) — 3장 모두 처리: 나1 새로 그림(1회), 나2 코드로 풂(0회), 나3 생성+합성(1회)
+
+| # | 푼 방법 | 프롬프트·방법 | 참고 그림 | 지킬 것 / 넣지 않을 것 |
+|---|---|---|---|---|
+| 나2 `study/bread-0.webp` | **코드로 풂(생성 0회)**: 1~3번과 같은 빵인 `bread-1.webp`(1024×576)에서 가운데 곰팡이 점(약 80×72px)만 바로 아래 빵 속(78px 아래)으로 부드럽게 덮어 「처음」 장면을 만듦 | `.tmp/score-images-20261121/`의 node·sharp 스크립트(타원 가장자리 30% 페더) | `study/bread-1.webp` | 빵 모양·크기·위치·질감이 1~3번과 픽셀까지 같음 / 곰팡이 없음 |
+| 나3 `study/leaf-0.webp` | GPT 이미지(Codex CLI, `gpt-imagegen`)로 구멍 없는 잎을 만든 뒤, **구멍 자리만** 오려 `leaf-1.webp`에 붙임(나머지는 1번 장면 그대로) | 「Edit the attached image. It shows one dry brown oak leaf lying on a plain cream background, 16:9 landscape. Return the exact same picture: identical leaf outline, identical position and size … The only change: the leaf is completely intact … fill every hole and missing patch in the leaf blade with matching leaf tissue and continue the veins naturally … No text」 | `study/leaf-1.webp` | 잎 테두리·잎맥·색·위치가 1~3번과 같음 / 글자·워터마크 없음 |
+| 나1 `places/workshop.webp` | GPT 이미지(Codex CLI)로 새로 그림 | 「Wide 16:9 background illustration for a children's science game: the interior of a sunlit bio workshop inside a wooden-framed glass greenhouse … warm wood workbenches along the left and right walls with glass fermentation jars, a yogurt maker, a small brick bread oven and a wooden compost crate, hanging vines and potted plants, large glass windows with soft green trees outside, warm golden afternoon light. Keep the centre of the floor open and calm (a UI panel covers it). Match the painterly anime game-background style, palette and lighting of the reference images exactly. No people, no characters, no text, no letters, no logos, no screens, no neon」 | `places/village.webp`, `places/fungi.webp`(화풍), `map/terrain.webp` 남서쪽 온실 공방(건물 모양) | 다른 구역과 같은 따뜻한 나무·식물·햇빛 톤, 가운데는 조용히 / 글자·로고·사람·네온 없음 |

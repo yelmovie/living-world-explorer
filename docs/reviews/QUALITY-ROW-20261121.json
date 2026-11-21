@@ -1,7 +1,7 @@
 {
  "no": "08",
  "name": "생명 코드 연구소",
- "appCommit": "e27b0e3",
+ "appCommit": "eb485fa",
  "measuredAt": "2026-11-21T09:59+09:00",
  "score": {
   "total": 92,
@@ -69,5 +69,5 @@
   "backButtonStaysInApp": true,
   "certificatePrintsOnePage": true
  },
- "notes": "운영 측정(1280×800, 대표 활동 M1-1·M2-3·M5-1 가운데 값, 놀이 영역은 .expedition-work). firstScreenKB는 서비스워커 없이 첫 화면까지 받은 양. stepsPerActivityMedian은 화면 단계 안내 목록 기준, wrongAnswerLevels·rewardEffects·transitionEffects는 코드와 완주 화면 기준(오답 문구·이유·토토 힌트·다시 고르기 / 배지 알림·성취 카드·복구 연출·인증서 / 이야기 영상·장면 전환·지도 복구). offlineRevisit는 test:offline(11-20 D11 PASS) 기준. backButtonStaysInApp: 3-2a(e27b0e3)에서 앱 안 앞 화면으로 바꾸고 운영에서 확인."
+ "notes": "운영 측정(1280×800, 대표 활동 M1-1·M2-3·M5-1 가운데 값, 놀이 영역은 .expedition-work). firstScreenKB는 서비스워커 없이 첫 화면까지 받은 양. stepsPerActivityMedian은 화면 단계 안내 목록 기준, wrongAnswerLevels·rewardEffects·transitionEffects는 코드와 완주 화면 기준(오답 문구·이유·토토 힌트·다시 고르기 / 배지 알림·성취 카드·복구 연출·인증서 / 이야기 영상·장면 전환·지도 복구). offlineRevisit는 test:offline(11-20 D11 PASS) 기준. backButtonStaysInApp: 3-2a(e27b0e3)에서 앱 안 앞 화면으로 바꾸고 운영에서 확인. 3-3a(eb485fa): M5 배경·M4 첫 장면 2장 교체, 놀이 영역 값 그대로."
 }
