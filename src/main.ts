@@ -52,7 +52,26 @@ function warmNextMap(dialog:HTMLDialogElement){
 function showStorageWarning(){if(needsStorageWarning(storageMessage)&&storageMessage!==shownStorageWarning){shownStorageWarning=storageMessage;modal('기록 저장을 확인해 주세요',[paragraph(storageMessage),paragraph('이 창을 닫기 전에 선생님께 알려 주세요. 설정에서도 저장 상태를 확인할 수 있어요.')]);}}
 function persist(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>void save(state).then(showStorageWarning),120);}
 function allowed(route:string){const a=active(state);if(state.settings.admin||['main','nature-map'].includes(route))return true;const i=stages.findIndex(s=>s.entry===route||s.exit===route);if(i>=0)return (i===0||validEvidence(a,stages[i-1].id,false))&&(route===stages[i].entry||validEvidence(a,stages[i].id,false)||completedTasks(a.inquiry,stages[i].id).length>=2);return canEnter(a,route,false);}
-function go(route:string){if(!routes.includes(route))route='main';if(!allowed(route)){notice('먼저 앞선 발견 기록을 완성해요.');route='nature-map';}const a=active(state);a.route=route;if(activityRoutes.includes(route))a.resumeRoute=route;history.replaceState(state.settings.admin?{teacherPreview:true}:null,'',`#/${route}`);persist();render();app.scrollTop=0;}
+function go(route:string){if(!routes.includes(route))route='main';if(!allowed(route)){notice('먼저 앞선 발견 기록을 완성해요.');route='nature-map';}const a=active(state);a.route=route;if(activityRoutes.includes(route))a.resumeRoute=route;record(route);persist();render();app.scrollTop=0;}
+// 2026-11-21 B13: browser back walks back inside the app (activity → map → home) instead of leaving it; back on home leaves as usual.
+// History keeps at most two entries of ours: the home entry, and one "inside" entry while away from home.
+let leavingInside=false;
+const entry=(inside:boolean)=>({...(state.settings.admin?{teacherPreview:true}:{}),...(inside?{inside:true}:{home:true})});
+function record(route:string){const inside=history.state?.inside===true;
+ if(route==='main'){if(inside){leavingInside=true;history.back();}else history.replaceState(entry(false),'','#/main');}
+ else if(inside)history.replaceState(entry(true),'',`#/${route}`);
+ else{history.replaceState(entry(false),'','#/main');history.pushState(entry(true),'',`#/${route}`);}}
+window.addEventListener('popstate',()=>{if(!state)return;
+ if(leavingInside){leavingInside=false;history.replaceState(entry(false),'','#/main');return;}
+ // Forward onto our inside entry: show the screen its address names.
+ if(history.state?.inside){const r=location.hash.replace('#/','');if(r!==active(state).route)go(r);return;}
+ // A typed or linked #address also fires popstate; hashchange handles it.
+ if(!history.state?.home)return;
+ const route=active(state).route;
+ // An open window or card layer closes first (like Esc) and the screen stays.
+ const open=[...document.querySelectorAll<HTMLDialogElement>('dialog[open]')].pop();
+ if(open||document.querySelector('.rc-layer')){open?.close();if(route!=='main')history.pushState(entry(true),'',`#/${route}`);return;}
+ if(route!=='main')go(back[route]||'nature-map');});
 let dialogueStage:Stage|null=null;
 let pendingMapReveal:{attemptId:string;index:number;ready:boolean}|undefined;
 function complete(stage:Stage){
@@ -361,7 +380,7 @@ function render(){if(!state)return;cleanups.forEach(f=>f());cleanups=[];app.repl
  const handlers:Record<string,(ctx:Context)=>void>={main,'nature-map':map,'final-report':report,'core-restoration':core,results};for(const s of stages){handlers[s.entry]=c=>inquiryScene(c,s.id);handlers[s.exit]=c=>inquiryScene(c,s.id);}
  try{(handlers[a.route]||main)(ctx);}catch(e){console.error(e);host.replaceChildren(heading('기록을 지키고 있어요.'),paragraph('지도로 돌아가 탐구를 다시 열어주세요.'),button('지도로',()=>go('nature-map'),'primary'));}
 }
-window.addEventListener('hashchange',()=>{if(state)go(location.hash.replace('#/',''));});window.addEventListener('pagehide',()=>{clearTimeout(saveTimer);if(state)void save(state);});document.addEventListener('visibilitychange',()=>{if(document.hidden&&state){clearTimeout(saveTimer);void save(state);}});
+window.addEventListener('hashchange',()=>{const route=location.hash.replace('#/','');if(state&&route!==active(state).route)go(route);});window.addEventListener('pagehide',()=>{clearTimeout(saveTimer);if(state)void save(state);});document.addEventListener('visibilitychange',()=>{if(document.hidden&&state){clearTimeout(saveTimer);void save(state);}});
 // Keep the offline pack out of the home and intro requests. Start it after the first usable activity.
 if(import.meta.env.PROD&&'serviceWorker' in navigator)app.addEventListener('activity-ready',()=>{
  const prepare=()=>void navigator.serviceWorker.register('./sw.js').catch(()=>{});
