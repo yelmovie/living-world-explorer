@@ -34,8 +34,6 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
  const blocked=()=>disposed||document.hidden||!!document.querySelector('dialog[open]');
  // Scene colours follow the DOM tokens (styles.css stage layer), so one token edit restyles both.
  const css=(name:string,fallback:number)=>{const v=getComputedStyle(host).getPropertyValue(name).trim();return /^#[0-9a-f]{6}$/i.test(v)?parseInt(v.slice(1),16):fallback;};
- const YOGURT_SLOTS:Record<string,string>={input:'① 부을 것',action:'② 넣을 작은 생물',output:'③ 완성될 음식'};
- const YOGURT_WHY:Record<string,string>={milk:'우유를 ① 칸에 부었어요. 우유에는 유산균이 이용할 당이 들어 있어요.',water:'물을 ① 칸에 부었어요. 물로도 요구르트가 될지 예상해 봐요.',lactic:'유산균 가루를 ② 칸에 넣었어요. 이 가루에는 살아 있는 유산균이 들어 있어요.',yogurt:'③ 칸에 요구르트를 놓았어요. 이제 따뜻하게 두면 어떻게 될지 예상해요.'};
  const tone={accent:css('--stage-accent',0x557a3f),soft:css('--stage-soft',0xe4edd5),paper:css('--paper-face',0xfffaf0),line:css('--paper-line',0xe6d8bc),brass:css('--brass-soft',0xecd08f),pick:0xd39a3f,shade:0x22312a,ink:'#1f3f31'};
  const LENS_HOLE=.3;// hole radius / width of ui/microscope-frame.webp (scripts/ui-props.mjs)
  class Inquiry extends Phaser.Scene{
@@ -52,7 +50,7 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
   if(asset.frames)asset.frames.forEach((src,i)=>this.load.image(`art-${art}-${i}`,src));else this.load.image(`art-${art}`,asset.src);}
    if(task.kind==='track')for(let i=0;i<=LIVE_STEPS;i++)this.load.image(`live-paramecium-${i}`,`assets/study/live/paramecium-${String(i).padStart(2,'0')}.webp`);
    // Decorative props are optional: a missing prop falls back to the drawn card, never blocks the activity.
-   const props=['tape',...task.kind==='microscope'?['microscope-frame',...(view?['hand-lens']:[])]:[],...task.id==='M5-1'?['yogurt-maker']:[],...task.kind==='sample'?['dropper','slide','slide-drop','water-drop']:[]];
+   const props=['tape',...task.kind==='microscope'?['microscope-frame',...(view?['hand-lens']:[])]:[],...task.kind==='sample'?['dropper','slide','slide-drop','water-drop']:[]];
    for(const p of props)this.load.image(`ui-${p}`,`assets/ui/${p==='slide'?'slide-flat':p}.webp`);}
   create(){scene=this;this.tweens.timeScale=playbackRate;this.input.dragDistanceThreshold=12;if(this.failed){hooks.ready(false);return;}refresh=()=>this.paint();this.paint();hooks.ready(true);}
   wipe(){this.tweens.killAll();this.trackSurface=undefined;this.trackElapsed=0;this.children.removeAll(true);for(const name of this.textures.getTextureKeys())if(name.startsWith('plate-'))this.textures.remove(name);}
@@ -273,21 +271,16 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
    }
   }
   paintBuild(){
-   if(task.id==='M5-1'){this.paintYogurt();return;}
-   const yogurt=task.id==='M5-1';
    const Y=(v:number)=>this.y(v);
    const resetFaces:(()=>void)[]=[];const slots=task.targets.map((t,i)=>({id:t.id,x:185+i*295,y:Y(200)}));const g=this.add.graphics();
-   this.card(480,Y(178),916,Y(274),{fill:yogurt?0xfff5db:tone.paper,stroke:yogurt?0xb28e51:tone.line,radius:26,alpha:.97});
+   this.card(480,Y(178),916,Y(274),{fill:tone.paper,stroke:tone.line,radius:26,alpha:.97});
    for(let i=0;i<2;i++){const linked=record.assignments[`edge${i+1}`]==='linked',color=linked?tone.accent:tone.line;
    g.lineStyle(6,color,1);
    const ay=Y(200);
    g.lineBetween(slots[i].x+117,ay,slots[i+1].x-120,ay);
    g.fillStyle(color,1).fillTriangle(slots[i+1].x-112,ay,slots[i+1].x-129,ay-10,slots[i+1].x-129,ay+10);}
    slots.forEach((s,i)=>{const it=task.items.find(item=>item.id===record.assignments[s.id]);
-    if(yogurt&&s.id==='action'){
-     this.drawYogurtMaker(s.x,Y(166),245,Y(150));
-     this.caption(s.x,Y(274),it?it.label:'여기에 넣기',28,tone.ink,224);
-    }else if(it){
+    if(it){
      this.card(s.x,s.y,230,Y(205),{fill:tone.paper,stroke:tone.accent,width:3});
      this.art(s.x,Y(152),206,Y(88),artKey(it)||'question',{time:artTime(artKey(it),it.detail,it.id),fit:'contain'});
      this.text(s.x,Y(254),it.label,28,tone.ink,210);
@@ -295,9 +288,9 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
     else{
      this.card(s.x,s.y,230,Y(205),{fill:tone.soft,stroke:tone.accent,alpha:.82});
      const guide=this.add.graphics();guide.lineStyle(2,tone.accent,.35).strokeRoundedRect(s.x-101,Y(111),202,Y(178),12);
-     this.text(s.x,s.y,yogurt?(s.id==='input'?'병에 담기':'목표 음식 놓기'):'여기에 놓아요',28,tone.ink,190);
+     this.text(s.x,s.y,'여기에 놓아요',28,tone.ink,190);
     }
-    this.caption(s.x,Y(68),`${i+1} · ${yogurt&&s.id==='action'?'발효기':task.targets[i].label}`,28,tone.ink,235);
+    this.caption(s.x,Y(68),`${i+1} · ${task.targets[i].label}`,28,tone.ink,235);
     const zone=this.add.zone(s.x,s.y,240,Y(190)).setRectangleDropZone(240,Y(190)).setInteractive({useHandCursor:true});
     zone.setData('target',s.id);
     zone.on('pointerdown',()=>{if(this.pauseGuard())return;
@@ -322,92 +315,15 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
    box.setPosition(x,y).setDepth(10);});
    box.on('drop',(_p:Phaser.Input.Pointer,zone:Phaser.GameObjects.Zone)=>this.place(it.id,String(zone.getData('target'))));
    box.on('dragend',()=>{if(box.active)box.setPosition(x,y).setDepth(0);});});
-   if(!record.runResult){const filled=task.targets.every(t=>!!record.assignments[t.id]);if(!yogurt||!filled||armed)this.caption(480,Y(322),armed?'이제 위쪽에서 놓을 곳을 눌러요':yogurt?'아래에서 골라 작업대에 놓아요':'아래에서 카드 한 장을 골라요',22);}
-   if(record.runResult){const ok=record.runResult==='supported';this.caption(480,Y(315),yogurt?(ok?'완성! 우유가 걸쭉하고 새콤해졌어요':'다시 살펴보기 · 재료와 만들 음식을 확인해요'):ok?`${task.caseName} 사례로 연결됐어요`:'흐름이 멈췄어요 · 연결과 자료를 다시 봐요',23,ok?'#286341':'#995131',850);}
-  }
-  /** 2026-11-21 M5-1 as a recipe children can read at a glance: [① 부을 것] + [② 넣을 작은 생물] → 발효기(따뜻하게) → [③ 될 음식].
-   *  Each card has one home slot (water shares slot ① with milk, so the milk-or-water test stays). Tapping a card puts it there. */
-  paintYogurt(){
-   const Y=(v:number)=>this.y(v);
-   const order=['input','action','output'];const next=order.find(id=>!record.assignments[id]);
-   const slots=[{id:'input',x:150,q:'① 무엇을 부을까?',empty:'우유 또는 물'},{id:'action',x:415,q:'② 무엇을 넣을까?',empty:'작은 생물'},{id:'output',x:822,q:'③ 무엇이 될까?',empty:'완성될 음식'}];
-   this.card(480,Y(172),916,Y(258),{fill:0xfff5db,stroke:0xb28e51,radius:26,alpha:.97});
-   const g=this.add.graphics();
-   const on1=!!record.assignments.input&&!!record.assignments.action,on2=on1&&!!record.assignments.output;
-   this.text(282,Y(192),'+',56,on1?tone.ink:'#9a8a6a');
-   const arrow=(x1:number,x2:number,lit:boolean)=>{const c=lit?tone.accent:tone.line,ay=Y(192);g.lineStyle(6,c,1).lineBetween(x1,ay,x2-14,ay);g.fillStyle(c,1).fillTriangle(x2,ay,x2-18,ay-11,x2-18,ay+11);};
-   arrow(520,548,on1);arrow(688,716,on2);
-   this.drawYogurtMaker(618,Y(166),150,Y(116));
-   this.caption(618,Y(254),'따뜻하게 두기',22,tone.ink,230);
-   slots.forEach(s=>{const it=task.items.find(item=>item.id===record.assignments[s.id]);const isNext=next===s.id;
-    this.caption(s.x,Y(66),s.q,26,tone.ink,220);
-    if(it){
-     this.card(s.x,Y(192),200,Y(186),{fill:tone.paper,stroke:tone.accent,width:3});
-     this.art(s.x,Y(148),180,Y(80),artKey(it)||'question',{time:artTime(artKey(it),it.detail,it.id),fit:'contain'});
-     this.text(s.x,Y(244),it.label,28,tone.ink,186);
-    }else{
-     this.card(s.x,Y(192),200,Y(186),{fill:tone.soft,stroke:isNext?tone.pick:tone.accent,width:isNext?5:2,alpha:isNext?.95:.6});
-     const guide=this.add.graphics();guide.lineStyle(2,tone.accent,isNext?.5:.25).strokeRoundedRect(s.x-88,Y(108),176,Y(168),12);
-     this.text(s.x,Y(192),s.empty,28,isNext?tone.ink:'#6b6a5c',170);
-     if(isNext){const tag=this.caption(s.x,Y(124),'여기!',22,tone.ink,120);if(!reduced)this.tweens.add({targets:tag,y:'-=6',duration:520,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});}
-    }
-    const zone=this.add.zone(s.x,Y(192),210,Y(186)).setRectangleDropZone(210,Y(186)).setInteractive({useHandCursor:true});
-    zone.setData('target',s.id);
-    zone.on('pointerdown',()=>{if(this.pauseGuard())return;if(armed)this.place(armed,s.id);else hooks.feedback('아래 카드를 누르면 알맞은 칸에 들어가요.');});
-   });
-   const ch=Y(174);
-   task.items.forEach((it,i)=>{const x=132+i*233,y=Y(431);const used=Object.values(record.assignments).includes(it.id);
-    const box=this.add.container(x,y);const face=this.add.graphics();
-    this.cardShape(face,0,0,210,ch,{stroke:used?tone.accent:tone.line,width:used?3:2});
-    box.add(face);
-    box.add(this.art(0,Y(-45),188,Y(64),artKey(it)||'question',{time:artTime(artKey(it),it.detail,it.id),fit:'contain'}));
-    box.add(this.text(0,Y(39),used?`✓ ${it.label}`:it.label,28,tone.ink,194));
-    if(used)box.setAlpha(.55);
-    box.setSize(210,ch).setInteractive({useHandCursor:true});
-    this.input.setDraggable(box);
-    let dragged=false;
-    box.on('pointerdown',()=>{if(this.pauseGuard())return;dragged=false;hooks.open(it.id);});
-    box.on('dragstart',()=>{dragged=true;});
-    box.on('pointerup',()=>{if(this.pauseGuard()||dragged)return;this.place(it.id,it.target||'input');});
-    box.on('drag',(_p:Phaser.Input.Pointer,px:number,py:number)=>{if(this.pauseGuard())return;box.setPosition(px,py).setDepth(10);});
-    box.on('drop',(_p:Phaser.Input.Pointer,zone:Phaser.GameObjects.Zone)=>this.place(it.id,String(zone.getData('target'))));
-    box.on('dragend',()=>{if(box.active)box.setPosition(x,y).setDepth(0);});});
-   if(!record.runResult)this.caption(480,Y(322),next==='input'?'아래에서 ① 칸에 부을 것을 눌러요':next==='action'?'아래에서 ② 우유에 넣을 작은 생물을 눌러요':next==='output'?'아래에서 ③ 무엇이 될지 눌러요':'오른쪽에서 어떻게 될지 예상해요',22);
-   else{const ok=record.runResult==='supported';this.caption(480,Y(322),ok?'완성! 우유가 걸쭉하고 새콤해졌어요':'다시 살펴보기 · 무엇을 부었는지 확인해요',23,ok?tone.ink:'#7a4b16');}
+   if(!record.runResult)this.caption(480,Y(322),armed?'이제 위쪽에서 놓을 곳을 눌러요':'아래에서 카드 한 장을 골라요',22);
+   if(record.runResult){const ok=record.runResult==='supported';this.caption(480,Y(315),ok?`${task.caseName} 사례로 연결됐어요`:'흐름이 멈췄어요 · 연결과 자료를 다시 봐요',23,ok?'#286341':'#995131',850);}
   }
   place(id:string,target:string){
    if(!this.pauseGuard())assignCard(id,target);
   }
-  drawYogurtMaker(x:number,y:number,w:number,h:number){
-   if(!this.textures.exists('ui-yogurt-maker')){this.plate(x,y,w,h,'요구르트 발효기');return;}
-   const pic=this.add.image(x,y,'ui-yogurt-maker');pic.setScale(Math.min(w/pic.width,h/pic.height));
-  }
-  ferment(valid:boolean,finish:()=>void){
-   this.wipe();
-   const Y=(v:number)=>this.y(v);
-   this.card(480,Y(265),860,Y(454),{fill:0xfff5db,stroke:0xb28e51,radius:32});
-   this.caption(480,Y(85),'발효기 관찰 · 시간을 빠르게 돌려 봐요',26);
-   this.drawYogurtMaker(401,Y(256),416,Y(265));
-   const ingredient=task.items.find(it=>it.id===record.assignments.input);
-   const container=this.art(165,Y(218),100,Y(75),ingredient?artKey(ingredient)||'milk':'milk',{fit:'contain'});
-   const dial=this.add.circle(750,Y(165),42,0xfff6da).setStrokeStyle(6,0xaa8150);
-   for(let i=0;i<12;i++){const a=i*Math.PI/6;this.add.circle(dial.x+Math.sin(a)*32,dial.y-Math.cos(a)*32,2.5,0x775735);}
-   const hand=this.add.rectangle(dial.x,dial.y,5,28,0x745238).setOrigin(.5,1);
-   if(valid){
-    const result=this.art(750,Y(325),190,Y(124),'yogurt',{fit:'contain'}).setAlpha(0);
-    const label=this.text(750,Y(241),'완성!',26,tone.ink).setAlpha(0);
-    this.tweens.add({targets:[result,label],delay:3850,alpha:1,y:'-=18',duration:650,ease:'Sine.easeOut'});
-   }
-   const line=this.text(480,Y(432),'고른 재료를 발효기에 넣어요.',27,tone.ink,790);
-   this.tweens.add({targets:container,x:388,y:Y(250),alpha:0,duration:750,ease:'Sine.easeIn'});
-   this.tweens.add({targets:hand,angle:valid?660:100,duration:valid?6000:2300,ease:'Linear',onUpdate:t=>{
-    line.setText(!valid?'재료와 만들 음식이 잘 맞는지 살펴봐요.':t.progress<.25?'발효기가 우유를 따뜻하게 유지해요.':t.progress<.67?'유산균이 우유 속 당을 이용해 젖산을 만들어요.':'시간이 지나면 우유가 걸쭉하고 새콤해져요.');
-   },onComplete:()=>{simulating=false;if(!disposed)finish();}});
-  }
   animateRun(valid:boolean,finish:()=>void){
    if(simulating||disposed)return;simulating=true;
    if(reduced){simulating=false;finish();return;}
-   if(task.id==='M5-1'){this.ferment(valid,finish);return;}
    const signal=this.add.circle(185,this.y(200),18,0xffde7a).setStrokeStyle(4,0x547b51).setDepth(30);
    const end=valid?775:!record.assignments.edge1||record.assignments.input!==task.items.find(i=>i.target==='input')?.id?310:605;
    this.tweens.add({targets:signal,x:end,duration:1400,ease:'Sine.easeInOut',onComplete:()=>{simulating=false;signal.destroy();if(!disposed)finish();}});
@@ -460,14 +376,10 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
  function assignCard(id:string,target:string){
   if(disposed||simulating||document.hidden)return false;
   const item=task.items.find(it=>it.id===id);if(!item||!task.targets.some(t=>t.id===target))return false;
-  // 2026-11-21 M5-1: a card always goes to its own recipe slot; water shares slot ① with milk.
-  const home=task.id==='M5-1'?item.target||'input':target;
-  if(home!==target)hooks.feedback(`‘${item.label}’ 카드는 ${YOGURT_SLOTS[home]} 칸에 들어가요. 그 칸에 놓았어요.`);
-  target=home;
   if(!record.opened.includes(id))hooks.open(id);
   const changed=applyCard(task,record,id,target);
   armed='';hooks.assigned(id,target);
-  if(changed){playEffect('snap');hooks.changed();if(task.id==='M5-1'&&YOGURT_WHY[id])hooks.feedback(YOGURT_WHY[id]);}
+  if(changed){playEffect('snap');hooks.changed();}
   refresh();
   return changed;
  }

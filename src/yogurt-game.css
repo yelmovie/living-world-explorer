@@ -27,6 +27,7 @@
 @media(max-height:480px){.build-card.yogurt-card>img,.yogurt-empty-spoon{max-height:40px;height:40px}.yogurt-hand{padding:8px;gap:6px}.build-card.yogurt-card{padding:5px;gap:3px}.yogurt-group-title{font-size:15px}.build-game.is-yogurt .build-stage{grid-template-columns:minmax(210px,1fr) minmax(0,1.5fr) minmax(170px,.8fr)}.yogurt-chips .yogurt-chip{font-size:15px;padding:3px 10px}}
 @media(max-width:659px){
  .build-game.is-yogurt .build-stage{grid-template-columns:1fr}
- .yogurt-hand{flex-direction:column}.yogurt-choices{grid-template-columns:1fr 1fr}
- .build-card.yogurt-card>img,.yogurt-empty-spoon{max-height:52px;height:52px}
+ .yogurt-hand{flex-direction:row;padding:6px;gap:6px}.yogurt-group{flex:1;min-width:0}.yogurt-group-title{font-size:14px}
+ .yogurt-choices{grid-template-columns:1fr 1fr;gap:4px}.build-card.yogurt-card{padding:4px;gap:2px}.build-card.yogurt-card>strong{font-size:14px}
+ .build-card.yogurt-card>img,.yogurt-empty-spoon{max-height:40px;height:40px}
 }

@@ -64,13 +64,10 @@ try{
  const readout=page.getByRole('slider',{name:'전후 겹쳐 보기',exact:true}).locator('xpath=../..').locator('output');
  assert.equal(await readout.innerText(),'20');await button(page,'전후 겹쳐 보기 늘리기').click();assert.equal(await readout.innerText(),'25');
  await inspect('915-M4-1-comparison');
- await open('M5-1');
- assert.ok(await button(page,'버튼으로 조작').evaluate(n=>{const r=n.getBoundingClientRect();return r.top>0&&r.bottom<innerHeight&&n.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));}),'large-label controls are visible before selecting a card');
- await button(page,'버튼으로 조작').click();const dialog=page.getByRole('dialog');
- for(const [card,target] of [['우유','① 부을 것 칸에 놓기'],['유산균 가루','② 넣을 작은 생물 칸에 놓기'],['요구르트','③ 완성될 음식 칸에 놓기']]){await dialog.getByRole('button',{name:card,exact:true}).click();await dialog.getByRole('button',{name:target,exact:true}).click();}
- await dialog.getByRole('button',{name:'닫기',exact:true}).click();assert.equal(await page.locator('.toast').count(),0,'assembly feedback must not cover the fermentation scene');await button(page,'요구르트가 될 거예요').click();await button(page,'발효기 켜기').click();
- await page.waitForTimeout(4450);await inspect('915-M5-1-fermenting');
- await page.locator('.run-reflection[data-result="matches"]').waitFor();await inspect('915-M5-1-result');
+ // 2026-11-22 M5-1 is a small experiment: pick, predict, hold the fermenter.
+ await open('M5-1');await page.locator('.yogurt-card[data-link-item="milk"]').click();await page.locator('.yogurt-card[data-link-item="lactic"]').click();await page.locator('[data-prediction="supported"]').click();
+ const act=page.locator('.build-action');await act.scrollIntoViewIfNeeded();const hb=await act.boundingBox();await page.mouse.move(hb.x+hb.width/2,hb.y+hb.height/2);await page.mouse.down();await page.waitForTimeout(1200);await inspect('915-M5-1-fermenting');await page.waitForTimeout(1700);await page.mouse.up();
+ await page.locator('.build-verdict').waitFor();await inspect('915-M5-1-result');
  await open('M3-4');await button(page,'모든 세균이 해로울 것 같아요').click();
  for(const name of ['새 자료: 요구르트 만들기','새 자료: 상한 우유']){await button(page,name).click();}
  await page.locator('html').evaluate(n=>n.classList.add('large-text'));

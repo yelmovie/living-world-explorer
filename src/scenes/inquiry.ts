@@ -97,8 +97,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
  panelBody.append(sourcePreview,tools);side.append(status,playback,panelBody);
  ctx.cleanup(()=>{if(running){const run=r.runs.at(-1);if(run?.status==='running')run.status='interrupted';ctx.save();}});
  let view:ReturnType<typeof import('../renderers/inquiry2d').mountInquiry>|undefined;
- const yogurt=task.id==='M5-1';
- const putLabel=(t:{id:string;label:string})=>yogurt?({input:'① 부을 것 칸에 놓기',action:'② 넣을 작은 생물 칸에 놓기',output:'③ 완성될 음식 칸에 놓기'}[t.id]||t.label):t.label+'에 연결';
+ const putLabel=(t:{id:string;label:string})=>t.label+'에 연결';
  let selectedCard='',demoStep=-1,editingClaim=false,editingAction=false;
  let demoButton:HTMLButtonElement|undefined,recordButton:HTMLButtonElement|undefined;
  const showMeter=(done:number,total:number)=>{
@@ -114,7 +113,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
   status.hidden=(linking||task.kind==='review')&&!sourcePreview.hidden;
   counter.textContent=g.ready?(task.kind==='review'?(r.assignments.decision==='revise'?'✓ 생각 수정 · 기록 준비':'✓ 생각 유지 · 기록 준비'):'✓ 기록 준비 완료'):`${g.done} / ${g.total}`;
   showMeter(g.done,g.total);
-  const instruction=editingClaim?'두 자료를 떠올리며 내 주장을 다시 골라요.':editingAction?'고른 사례에 쓰인 생물의 작용을 다시 골라요.':running?(yogurt?'시계가 도는 동안 재료가 어떻게 달라지는지 살펴봐요.':'설계도에서 작용이 어느 칸까지 이어지는지 살펴봐요.'):g.action;
+  const instruction=editingClaim?'두 자료를 떠올리며 내 주장을 다시 골라요.':editingAction?'고른 사례에 쓰인 생물의 작용을 다시 골라요.':running?'설계도에서 작용이 어느 칸까지 이어지는지 살펴봐요.':g.action;
   if(action.textContent!==instruction)action.textContent=instruction;
   if(sourceNext.textContent!==g.action)sourceNext.textContent=g.action;
   status.classList.toggle('ready',g.ready);ctx.host.classList.toggle('record-ready',g.ready);
@@ -169,9 +168,8 @@ export function inquiryScene(ctx:Context,stage:Stage){
  void scene().then(async mount=>{await document.fonts.ready;
  if(disposed)return;
  view=mount(host,task,r,{assigned:()=>{selectedCard='';
- // 2026-11-21 M5-1: a tapped card goes straight to its slot, so its description stays to be read.
- if(!yogurt){sourcePreview.hidden=true;
- sourcePreview.replaceChildren();}
+ sourcePreview.hidden=true;
+ sourcePreview.replaceChildren();
  updateStatus();},changed:()=>{save();
  controls();},open:source,feedback:info,tick:t=>{liveTime=t;
  const input=liveSlider?.isConnected?liveSlider.querySelector('input'):null;
@@ -259,7 +257,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
    if(!r.assignments.site)tools.append(choices([{id:'edge',label:'물가 가까이'},{id:'plant',label:'물풀 가까이'}],'',v=>{r.assignments.site=v;r.sequence=0;paint();controls();}));
    else if(r.sequence<3)tools.append(button(r.sequence===2?'한 방울 옮기기':'한 방울 채집',()=>{r.sequence=r.sequence<2?2:3;paint();controls();playEffect(r.sequence===3?'pipette-drop':'water');},'primary'));
   }else if(task.kind==='build'){
-   const yes=yogurt?'요구르트가 될 거예요':'사례처럼 이어질 것 같아요',no=yogurt?'요구르트가 안 될 거예요':'중간에 멈출 것 같아요';
+   const yes='사례처럼 이어질 것 같아요',no='중간에 멈출 것 같아요';
    const filled=task.targets.every(t=>!!r.assignments[t.id]);
    if(!running)tools.append(button('자료 골라 연결하기',()=>alternative()));
    if(!filled){updateStatus();return;}
@@ -268,8 +266,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
    if(run)tools.append(button('새 예상으로 다시 실험',()=>{invalidateRun(r);save();controls();view?.refresh();}));
    else if(!running&&!r.prediction)tools.append(paragraph('나의 예상','field-label'),choices([{id:'supported',label:yes},{id:'stopped',label:no}],r.prediction,v=>{r.prediction=v;save();controls();}));
    if(!run&&r.prediction&&!running)tools.append(button('예상 바꾸기',()=>{r.prediction='';save();controls();},'text-button'));
-   if(!run)playback.prepend(button(yogurt?(running?'발효기를 지켜봐요…':'발효기 켜기'):(running?'흐름을 시험하고 있어요…':'설계 가동'),()=>{if(running)return;
-   if(yogurt&&r.assignments.output!=='yogurt')return info('오늘 만들 음식은 요구르트예요. 오른쪽 칸에 요구르트를 놓아 봐요.');
+   if(!run)playback.prepend(button(running?'흐름을 시험하고 있어요…':'설계 가동',()=>{if(running)return;
    if(!r.prediction)return info('가동하기 전에 어떤 결과일지 예상해요.');
    const valid=designCorrect(task,r),attempt=startRun(r);
    running=true;
@@ -285,7 +282,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
    save();
    view?.refresh();
    playEffect(valid?'success':'retry');
-   info(valid?(yogurt?'걸쭉한 요구르트가 됐어요!':'설계가 끝까지 이어졌어요!'):task.feedback,valid?'success':'retry');
+   info(valid?'설계가 끝까지 이어졌어요!':task.feedback,valid?'success':'retry');
    controls();};
    view?.animateRun(valid,finish);},'primary observation-play run-play',running||!r.prediction||!task.targets.every(t=>r.assignments[t.id])));
    if(run){const same=run.reflection==='matches';const verdict=paragraph(same?'내 예상과 같았어요!':'내 예상과 달랐어요. 결과를 보고 생각을 고쳤어요.','run-reflection');verdict.dataset.result=run.reflection;tools.append(verdict);}
