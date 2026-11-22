@@ -96,3 +96,8 @@ wrangler pages deploy dist --project-name living-world-explorer --branch main
 - 실기기·수업 대기 4점: 40분 수업(B16), iPad 가장자리 제스처(C19), 저사양 태블릿(D10), 애니메이션 속성(D13).
 - 교사 검수: [`TEACHER-REVIEW-20261121.md`](TEACHER-REVIEW-20261121.md)가 교사 확인 전입니다.
 - 위 점수는 11-21 기준이고 이후 그림·문구 변경(M3-3·M4·M5)은 새로 재지 않았습니다.
+
+## 운영 대조 기록 (2026-11-22 12:56)
+
+- 조율 세션이 운영 주소의 `index`와 스크립트·스타일 파일 25개를 저장소 `origin/main`과 대조했습니다. 결과는 모두 일치입니다(불일치 0).
+- 위 본문에 「운영 반영 확인 필요」로 적힌 칸은 이 대조로 확인된 것입니다. 이후 앱을 다시 배포하면 `_scratch/final-recheck-20261120/prodcmp.sh 08`로 다시 대조합니다.
