@@ -340,7 +340,7 @@ function map(ctx:Context){
  const clearStage=dialogueStage;dialogueStage=null;
  let cardWon=false;
  const encounters=mountMapEncounters({
-  requiredFoes:5,host:camera,clearStage:()=>clearStage,stages:foesOn?mapVillainStages.filter((_,i)=>done[i]):[],progress:ctx.attempt.mapHits,
+  requiredFoes:0,host:camera,clearStage:()=>clearStage,stages:foesOn?mapVillainStages.filter((_,i)=>done[i]):[],progress:ctx.attempt.mapHits,
   onSave:patch=>{const won=wonRewardCards(ctx.attempt.mapHits,patch);if(won.length)cardWon=true;ctx.attempt.mapHits={...ctx.attempt.mapHits,...patch};refreshEncounterStatus();void save(state).then(showStorageWarning);won.forEach(awardCard);},
   blocked:()=>disposed||mode!=='follow'||guided>=0||ctx.host.dataset.mapReady!=='true'||rewardCardDue(),
   reduced,art:{left:'assets/map-encounter/map-villain-poses-left.webp',frames:6,nativeFacing:1},palette:'#bd84ff',reach:102,contact:24,
