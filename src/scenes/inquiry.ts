@@ -55,7 +55,7 @@ box.append(b,talk);
 return box;}
 export function inquiryScene(ctx:Context,stage:Stage){
  const progress=ctx.attempt.inquiry;const list=tasksFor(stage);let index=progress.current[stage]??0;index=Math.max(0,Math.min(3,index));const task=list[index];const r=progress.records[task.id]??=prepareInquiry(task);let disposed=false;ctx.cleanup(()=>disposed=true);
- const linking=['collect','connect','sort'].includes(task.kind),quiz=linking&&task.id!=='M1-4',lapse=task.kind==='timeline'&&['M4-1','M4-2'].includes(task.id),scope=['M1-2','M1-3'].includes(task.id),brew=['M5-2','M5-3'].includes(task.id),germ=isGermTask(task),board=quiz||lapse||scope||brew||germ;
+ const linking=['collect','connect','sort'].includes(task.kind),quiz=linking&&task.id!=='M1-4',lapse=task.kind==='timeline'&&['M4-1','M4-2'].includes(task.id),scope=['M1-2','M1-3'].includes(task.id),brew=['M5-1','M5-2','M5-3'].includes(task.id),germ=isGermTask(task),board=quiz||lapse||scope||brew||germ;
  ctx.host.classList.add('expedition-shell',`stage-${stage}`);
  ctx.host.classList.toggle('link-task',linking&&!quiz);
  ctx.host.classList.toggle('quiz-task',board);
@@ -162,7 +162,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
  // DOM quizzes and observations load their own small renderers.
  const scene=():Promise<typeof import('../renderers/inquiry2d').mountInquiry>=>task.kind==='summary'?
    import('../renderers/pond-summary').then(m=>(host,_task,_record,hooks)=>m.mountPondSummary(host,progress.records,hooks)):germ?import('../renderers/germ-games').then(m=>m.mountGermGame):scope?
-   import('../renderers/scope-games').then(m=>m.mountScopeGame):brew?import('../renderers/build-games').then(m=>m.mountBuildGame):task.kind==='microscope'?
+   import('../renderers/scope-games').then(m=>m.mountScopeGame):brew?(task.id==='M5-1'?import('../renderers/yogurt-game').then(m=>m.mountYogurtGame):import('../renderers/build-games').then(m=>m.mountBuildGame)):task.kind==='microscope'?
    import('../renderers/simple-microscope').then(m=>m.mountMicroscope):task.id==='M1-4'?import('../renderers/fungi-sort').then(m=>m.mountFungiSort):['M4-3','M4-4'].includes(task.id)?
    import('../renderers/choice-games').then(m=>m.mountChoiceGame):lapse?import('../renderers/timeline-games').then(m=>m.mountTimelineGame):quiz?
    import('../renderers/quiz-board').then(m=>m.mountQuizBoard):import('../renderers/inquiry2d').then(m=>m.mountInquiry);

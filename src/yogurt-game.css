@@ -1,0 +1,32 @@
+/* 2026-11-22: M5-1 yogurt experiment (src/renderers/yogurt-game.ts). Shares the build-game frame with M5-2/M5-3. */
+.build-game.is-yogurt .build-stage{grid-template-columns:minmax(250px,1.05fr) minmax(0,1.7fr) minmax(220px,.9fr)}
+.yogurt-hand{gap:14px;justify-content:center;align-self:center;padding:14px;border-radius:22px;background:var(--stone-6-a94);border:3px solid var(--ochre-131);box-shadow:0 10px 22px var(--amber-699-a15)}
+.yogurt-group{display:flex;flex-direction:column;gap:6px;flex:none}
+.yogurt-group-title{font-size:clamp(17px,1.5vw,20px);font-weight:800;color:var(--forest-654)}
+.yogurt-choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;min-height:0}
+.build-card.yogurt-card{display:grid;grid-template-rows:auto auto;height:auto;max-height:none;cursor:pointer;touch-action:manipulation;min-height:44px;box-shadow:0 4px 0 var(--ochre-169)}
+.build-card.yogurt-card>img{height:84px;max-height:84px;object-fit:cover;background:var(--white)}
+.build-card.yogurt-card>img[src*=water-glass],.build-card.yogurt-card>img[src*=starter]{object-fit:contain}
+.yogurt-card.is-placed{transform:translateY(-3px)}
+.yogurt-empty-spoon{display:block;width:100%;height:84px;border-radius:12px;background:var(--white);position:relative}
+.yogurt-empty-spoon::after{content:'';position:absolute;left:50%;top:50%;width:46%;aspect-ratio:1;transform:translate(-50%,-50%);border:4px dashed #c9b88d;border-radius:50%}
+.yogurt-cup{background:#f6efdc;cursor:default}
+.yogurt-cup .yogurt-liquid{object-fit:cover}
+.yogurt-cup .yogurt-liquid.is-glass{object-fit:contain;padding:14% 30% 10% 10%;box-sizing:border-box}
+.yogurt-cup-empty{position:absolute;left:34%;top:52%;transform:translate(-50%,-50%);width:38%;aspect-ratio:1;display:grid;place-items:center;border:4px dashed #c9b88d;border-radius:24px;color:var(--stone-478);font-weight:800;font-size:clamp(16px,1.4vw,19px);text-align:center;word-break:keep-all;padding:8px;box-sizing:border-box}
+.yogurt-cup .yogurt-maker{width:34%;max-width:210px;right:8px;bottom:6px}
+.build-game.is-yogurt.is-running .yogurt-maker{filter:drop-shadow(0 0 14px #ffc36a) drop-shadow(0 6px 8px #0005)}
+.yogurt-chips{position:absolute;left:12px;right:12px;top:12px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;pointer-events:none}
+.yogurt-chips .yogurt-chip{position:static;transform:none}
+.yogurt-outcome{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);padding:8px 20px;border-radius:999px;font-weight:800;font-size:clamp(18px,1.7vw,22px);white-space:nowrap;background:#fffdf6f0;border:3px solid var(--ochre-131)}
+.yogurt-outcome:empty{display:none}
+.yogurt-outcome[data-result=supported]{border-color:var(--moss-429);color:var(--forest-514);animation:build-pop .4s cubic-bezier(.3,1.6,.5,1)}
+.yogurt-wait{margin:0;font-size:17px;font-weight:700;color:var(--stone-478);word-break:keep-all}
+@media(prefers-reduced-motion:reduce){.yogurt-outcome{animation:none}}
+@media(max-height:640px){.build-card.yogurt-card>img,.yogurt-empty-spoon{max-height:60px;height:60px}.yogurt-hand{padding:10px}.yogurt-hand{gap:8px}.yogurt-choices{gap:6px}}
+@media(max-height:480px){.build-card.yogurt-card>img,.yogurt-empty-spoon{max-height:40px;height:40px}.yogurt-hand{padding:8px;gap:6px}.build-card.yogurt-card{padding:5px;gap:3px}.yogurt-group-title{font-size:15px}.build-game.is-yogurt .build-stage{grid-template-columns:minmax(210px,1fr) minmax(0,1.5fr) minmax(170px,.8fr)}.yogurt-chips .yogurt-chip{font-size:15px;padding:3px 10px}}
+@media(max-width:659px){
+ .build-game.is-yogurt .build-stage{grid-template-columns:1fr}
+ .yogurt-hand{flex-direction:column}.yogurt-choices{grid-template-columns:1fr 1fr}
+ .build-card.yogurt-card>img,.yogurt-empty-spoon{max-height:52px;height:52px}
+}
