@@ -150,3 +150,7 @@ SOFTWARE.
 - 새로 만든 것: 모아 의뢰 3줄과 결과 1줄(`story-*`, `results-1`), 두리 M3 3줄, 토토 힌트 102줄(`voice/toto/`), 렌즈 대사 25줄(`voice/lens/`), 인트로·엔딩 영상 내레이션 13줄, 개념 영상 5편 내레이션 20줄. 모두 ElevenLabs eleven_v4, Creator 유료 요금제(2026-11-18 충전) 생성이다.
 - 생성 ID, 받아쓰기, 길이, 해시와 영상 속 위치는 `public/assets/audio/voice/elevenlabs-voices-20261118.json`. 같은 날 앞서 로컬 Momo로 녹음한 모아 인트로·의뢰 음성과 두리 M3 음성은 이 녹음으로 바뀌었다.
 - 추가(같은 날): 발견 카드 요약 20줄·과학 낱말 설명 14줄(모아, `voice/moa/`), 토토 지도 안내 7줄(`voice/toto/toto-map-*`), 인트로 제목 카드 1줄. 같은 기록 파일에 들어 있다.
+
+## 2026-11-22 인증서 테두리
+
+`public/assets/ui/certificate-frame-20261122.webp`(158866바이트,1800×1273)는 Codex 기본 이미지 생성 도구로 만든 현미경·균사/버섯·배양접시·짚신벌레 테두리입니다. 원본과 프롬프트는 `assets/source/certificate-20261122/`에 보관합니다. 권리 장부 IMG-CERT-08.
