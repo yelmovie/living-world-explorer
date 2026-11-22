@@ -8,6 +8,8 @@ import {needsStorageWarning} from './storage-status';
 import './styles.css';
 import './styles-screens.css';
 import './styles-finish.css';
+import './certificate.css';
+import {openCertificate} from './certificate';
 import {active,makeAttempt,stageIds,validEvidence,type Stage,type State} from './model';
 import {load,save,storageMessage,restoredFromPreview,clearResearchCaptures} from './storage';
 import {routes,activityRoutes,stages,back} from './content';
@@ -192,7 +194,7 @@ function settings(showTeacherTools=false){
  void clearResearchCaptures().then(()=>save(state));
  go('main');},showStory:story,showIntro:()=>showFilm('intro',state.settings),showEnding:()=>{go('results');
  showFilm('final',state.settings);},printCertificate:()=>{go('results');
- requestAnimationFrame(()=>window.print());},loadExample:examples},showTeacherTools);
+ requestAnimationFrame(()=>openCertificate(state));},loadExample:examples},showTeacherTools);
 }
 function records(){const a=active(state);
 const cards=stages.map((s,i)=>{const card=el('section','record-summary');

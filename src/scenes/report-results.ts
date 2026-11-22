@@ -4,7 +4,8 @@ import {el,button,heading,paragraph,modal,notice,type Context} from '../ui';
 import {core} from './solution';
 import {inquiryEvidenceView} from './inquiry-evidence';
 import {inquiryTasks,tasksFor} from '../curriculum';
-import {downloadCard,completionDate,creditLine} from '../export';
+import {downloadCard} from '../export';
+import {openCertificate} from '../certificate';
 import {stageBadge,habits,habitEarned,canDoLines} from '../experience';
 import {playEffect,playNarration,stopNarration} from '../audio';
 import {acceptedRecord} from '../inquiry-records';
@@ -117,13 +118,11 @@ ctx.save();};
 const noteLabel=el('label','field-label','친구에게 전할 발견');
 noteLabel.htmlFor=note.id;
 card.append(titleLabel,title,paragraph(choice?`소개할 사례: ${choice.label}\n${choice.detail}`:'내가 만든 연구 기록을 친구에게 소개해요.','result-case'),noteLabel,note);
- const canDo=el('div','can-do');const canDoText=paragraph('','can-do-lines');const certificate=el('section','print-certificate');
+ const canDo=el('div','can-do');const canDoText=paragraph('','can-do-lines');
  const drawCertificate=()=>{const lines=canDoLines(a);
  canDoText.textContent=lines.length?lines.join('\n'):'인증서에 넣을 "나는 이제 … 할 수 있어요" 문장을 골라요.';
  canDoText.classList.toggle('empty',!lines.length);
- certificate.replaceChildren(heading('생명 코드 연구소 탐구 인증서'),paragraph('관찰 · 비교 · 근거 조사 · 생활 영향 · 활용 설계'),paragraph(a.cardTitle),...lines.map(line=>paragraph(line,'certificate-can')),
-   paragraph(a.cardNote),paragraph(`20개 탐구 활동과 다섯 연구 패킷을 완성했어요. 탐구 습관 배지 ${stageIds.filter(id=>habitEarned(a,id)).length}/5`),
-   paragraph(`완료한 날 ${completionDate(a)}`,'certificate-date'),paragraph(creditLine(),'certificate-credit'));};
+ };
  const pickCanDo=()=>{const chosen=new Set(a.canDo||[]);
  const list=el('div','can-do-choices');
  stages.forEach((s,i)=>{const b=button(habits[i].can,()=>{if(chosen.has(s.id))chosen.delete(s.id);else chosen.add(s.id);
@@ -149,9 +148,10 @@ card.append(titleLabel,title,paragraph(choice?`소개할 사례: ${choice.label}
  canDo.append(el('span','field-label','나는 이제 이런 것을 할 수 있어요'),canDoText,button('할 수 있게 된 것 고르기',pickCanDo));
  card.append(canDo);
  drawCertificate();
+ const certificateButton=button('인증서 보기',()=>openCertificate(ctx.state),'secondary',!a.activated);certificateButton.dataset.openCertificate='';
  const row=el('div','hero-actions');
- row.append(button('내 카드 저장',()=>void downloadCard(ctx.state).then(()=>playEffect('success'),()=>notice('카드를 다시 저장해 주세요.')),'primary'),button('인증서 인쇄 / PDF 저장',()=>window.print(),'secondary',!a.activated),button('발견 도감',main.records));
+ row.append(button('내 카드 저장',()=>void downloadCard(ctx.state).then(()=>playEffect('success'),()=>notice('카드를 다시 저장해 주세요.')),'primary'),certificateButton,button('발견 도감',main.records));
  card.append(row);
  layout.append(celebration,card);
  ctx.host.append(layout);
- if(a.activated)ctx.host.append(certificate);}
+}
