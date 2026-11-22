@@ -1,6 +1,6 @@
 import {storageMessage} from './storage';
 import {active,makeAttempt,type State} from './model';
-import {el,button,paragraph,notice} from './ui';
+import {el,button,paragraph,notice,keepBracketWords} from './ui';
 import {settingsContent as copy} from './settingsContent';
 import {syncAudio,playEffect} from './audio';
 import {inquiryReferences,referenceText} from './inquiry-sources';
@@ -23,7 +23,7 @@ function details(title: string, content: Node[]) {
   group.append(el('summary','',title),body);
   return group;
 }
-function textRows(rows: string[]) {return rows.map(row => paragraph(row));}
+function textRows(rows: string[]) {return rows.map(row => keepBracketWords(paragraph(row)));}
 function showDialog(dialog: HTMLDialogElement, previous: HTMLElement | null) {
   dialog.addEventListener('close',() => {dialog.remove();previous?.focus();},{once:true});
   document.body.append(dialog);dialog.showModal();

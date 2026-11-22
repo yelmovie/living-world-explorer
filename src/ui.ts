@@ -1,4 +1,17 @@
 export function el<K extends keyof HTMLElementTagNameMap>(tag:K,cls='',text=''):HTMLElementTagNameMap[K]{const n=document.createElement(tag);n.className=cls;if(text)n.textContent=text;return n;}
+/** 2026-11-22 line breaks: keep a word like "엔딩테마)은" or "실(균사)로" on one line (no break between the closing bracket and its particle).
+ * Display only, for guide text that is not a voice line or voice key; the words themselves are unchanged. */
+export function keepBracketWords<T extends HTMLElement>(node:T):T{
+ const walker=document.createTreeWalker(node,NodeFilter.SHOW_TEXT),texts:Text[]=[];
+ for(let n=walker.nextNode();n;n=walker.nextNode())texts.push(n as Text);
+ const word=/\S*[)\]」』”’][가-힣]\S*/;
+ for(const text of texts){
+  if(!word.test(text.data))continue;
+  const parts=text.data.split(/(\S*[)\]」』”’][가-힣]\S*)/).filter(Boolean);
+  text.replaceWith(...parts.map(part=>{if(!word.test(part))return document.createTextNode(part);const span=document.createElement('span');span.className='keep-word';span.textContent=part;return span;}));
+ }
+ return node;
+}
 export function button(text:string,fn:()=>void,cls='secondary',disabled=false){const b=el('button',`button ${cls}`,text);b.type='button';b.disabled=disabled;b.onclick=fn;return b;}
 export function heading(text:string){return el('h2','',text);}
 export function paragraph(text:string,cls=''){return el('p',cls,text);}

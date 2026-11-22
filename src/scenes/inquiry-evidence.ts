@@ -1,4 +1,4 @@
-import {el,button,paragraph,modal} from '../ui';
+import {el,button,paragraph,modal,keepBracketWords} from '../ui';
 import {tasksFor} from '../curriculum';
 import {voiceDialog} from '../audio';
 import type {Evidence} from '../model';
@@ -33,7 +33,7 @@ export function inquiryEvidenceView(evidence:Evidence|undefined,compact=false){
   for(const [id,label] of Object.entries(labels))if(record.assignments[id])row.append(paragraph(`${label} → ${record.assignments[id]==='supported'?'자료로 설명할 수 있어요':'설명을 다시 살펴봐요'}`));
   box.append(row);
   continue;}
-  if(compact){row.append(el('strong','',task.title),emphasizeScience(paragraph(task.success)));
+  if(compact){row.append(el('strong','',task.title),keepBracketWords(emphasizeScience(paragraph(task.success))));
   if(task.kind==='build'){const run=currentRun(record);
   row.append(paragraph(`실행 당시 예상: ${(run?.prediction||record.prediction)==='supported'?'이어짐':'멈춤'} / 결과: ${(run?.result||record.runResult)==='supported'?'이어짐':'멈춤'}`));}
   box.append(row);
@@ -69,7 +69,7 @@ export function inquiryEvidenceView(evidence:Evidence|undefined,compact=false){
    preview.append(picture);
    row.append(preview);
   }else if(art){const image=el('img');image.src=art.src;image.alt=art.label;row.append(image);}
-  row.append(el('strong','',task.title),emphasizeScience(paragraph(task.success)));if(task.terms?.length)row.append(termChips(task.terms));const model=modelButton(task.id,'3D로 보기');if(model)row.append(model);
+  row.append(el('strong','',task.title),keepBracketWords(emphasizeScience(paragraph(task.success))));if(task.terms?.length)row.append(termChips(task.terms));const model=modelButton(task.id,'3D로 보기');if(model)row.append(model);
   const beforeDetails=row.children.length;
   if(isGermTask(task))row.append(...germSummary(task,record).map(line=>paragraph(line)));
   else if(task.kind==='microscope')row.append(paragraph(`내 관찰 사진 · 초점 ${record.focus} · 특징을 확대해 살펴봤어요`));
