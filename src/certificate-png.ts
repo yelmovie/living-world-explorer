@@ -50,10 +50,16 @@ export async function drawCertificate(paper: HTMLElement): Promise<HTMLCanvasEle
     const el = n.parentElement!; const cs = getComputedStyle(el); if (cs.display === 'none' || cs.visibility === 'hidden') continue;
     ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${parseFloat(cs.fontSize) * scale}px ${cs.fontFamily}`; ctx.fillStyle = cs.color; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
     const spacing = parseFloat(cs.letterSpacing) || 0;
+    const outline = parseFloat(cs.getPropertyValue('-webkit-text-stroke-width')) || 0;
+    if (outline) { ctx.lineWidth = outline * scale; ctx.strokeStyle = cs.getPropertyValue('-webkit-text-stroke-color') || cs.color; }
+    const drawText = (text:string,x:number,y:number,maxWidth?:number) => {
+      if (outline) { if (maxWidth === undefined) ctx.strokeText(text,x,y); else ctx.strokeText(text,x,y,maxWidth); }
+      if (maxWidth === undefined) ctx.fillText(text,x,y); else ctx.fillText(text,x,y,maxWidth);
+    };
     for (const line of lines(n)) {
       const y = Y(line.rect.top + line.rect.height / 2);
-      if (spacing) { let x = X(line.rect.left); for (const ch of line.text) { ctx.fillText(ch, x, y); x += ctx.measureText(ch).width + spacing * scale; } }
-      else ctx.fillText(line.text, X(line.rect.left), y, line.rect.width * scale + 2);
+      if (spacing) { let x = X(line.rect.left); for (const ch of line.text) { drawText(ch, x, y); x += ctx.measureText(ch).width + spacing * scale; } }
+      else drawText(line.text, X(line.rect.left), y, line.rect.width * scale + 2);
     }
   }
   return canvas;
