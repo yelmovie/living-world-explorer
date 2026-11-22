@@ -101,3 +101,4 @@ wrangler pages deploy dist --project-name living-world-explorer --branch main
 
 - 조율 세션이 운영 주소의 `index`와 스크립트·스타일 파일 25개를 저장소 `origin/main`과 대조했습니다. 결과는 모두 일치입니다(불일치 0).
 - 위 본문에 「운영 반영 확인 필요」로 적힌 칸은 이 대조로 확인된 것입니다. 이후 앱을 다시 배포하면 `_scratch/final-recheck-20261120/prodcmp.sh 08`로 다시 대조합니다.
+- 2026-11-22 파이널 영상 한 번 정리(`_shared/FINALE-ONCE-20261122.md` 08번): 지도 `requiredFoes` 5 → 0으로 마지막 악당 뒤에는 성취 카드만, 파이널 영상은 코어 가동 완료 때 한 번. 앱 커밋 `328e37f`를 Pages `1735b79f`로 배포, `cmp.sh` 메인 번들·index MATCH, 운영에서 헤드리스 시나리오 1·2·3(영상 0·1·합계 1회) 통과.
