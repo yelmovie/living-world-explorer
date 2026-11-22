@@ -9,7 +9,7 @@
 | 이름 | 생명 코드 연구소 (패키지 이름 `life-code-lab` 0.1.0) |
 | 운영 주소 | https://living-world-explorer.pages.dev |
 | 저장소 | https://github.com/yelmovie/living-world-explorer (`main`) |
-| 현재 앱 커밋 | `7d434ef` (2026-11-22, M5 효모 3D 모형 교체) |
+| 현재 앱 커밋 | `d606876` (2026-11-22, 인증서 최신 수정). Pages bd970ad6, 공식 운영 파일 SHA-256 일치 |
 | 대상 | 초등 4학년 과학, 5개 연구소 · 탐구 20개 |
 
 ## 2. 폴더 구조
@@ -56,7 +56,7 @@ wrangler pages deploy dist --project-name living-world-explorer --branch main
 - 영상 탐색(Range) 처리: `functions/assets/{concepts,film,study}/[[path]].js`가 `worker/media-range.js`를 불러 영상(mp4)에 206 조각으로 응답합니다.
 - `public/_headers`가 `sw.js`와 `manifest.webmanifest`를 `no-cache`로 내보냅니다.
 - 배포 뒤 HTML·실행 번들·그림·영상의 실제 응답을 로컬 빌드와 대조합니다.
-- 기록상 마지막으로 운영과 대조한 배포는 Pages `b7cc236b`(앱 `cfd21ca`)입니다. 그 뒤 앱 커밋 일곱 개(`2112054`부터 `7d434ef`까지)가 운영에 반영됐는지는 이번 작업에서 확인하지 않았습니다.
+- 최신 앱 `d606876`은 기존 Pages `bd970ad6`에 반영되어 있습니다. 공식 운영 주소의 index·메인 JS·CSS를 현재 빌드와 SHA-256으로 다시 대조해 모두 일치했습니다.
 
 ## 5. 다른 호스팅으로 옮길 때 챙길 것
 
@@ -102,3 +102,9 @@ wrangler pages deploy dist --project-name living-world-explorer --branch main
 - 조율 세션이 운영 주소의 `index`와 스크립트·스타일 파일 25개를 저장소 `origin/main`과 대조했습니다. 결과는 모두 일치입니다(불일치 0).
 - 위 본문에 「운영 반영 확인 필요」로 적힌 칸은 이 대조로 확인된 것입니다. 이후 앱을 다시 배포하면 `_scratch/final-recheck-20261120/prodcmp.sh 08`로 다시 대조합니다.
 - 2026-11-22 파이널 영상 한 번 정리(`_shared/FINALE-ONCE-20261122.md` 08번): 지도 `requiredFoes` 5 → 0으로 마지막 악당 뒤에는 성취 카드만, 파이널 영상은 코어 가동 완료 때 한 번. 앱 커밋 `328e37f`를 Pages `1735b79f`로 배포, `cmp.sh` 메인 번들·index MATCH, 운영에서 헤드리스 시나리오 1·2·3(영상 0·1·합계 1회) 통과.
+
+## 최신 인증서 운영 마무리 (2026-11-22)
+
+- 앱 `d606876`: A4 가로 인증서, 학교·학년·반·번호·이름 손기입 빈칸, 인쇄 / PDF 및 PNG 저장. 진행·성취 숫자 요약은 없고 제목을 굵게 표시합니다. 이름을 화면에서 입력하거나 전송하지 않습니다.
+- 공식 운영 주소 https://living-world-explorer.pages.dev/ 의 index·실제 JS/CSS SHA-256이 최신 빌드와 일치합니다. Pages bd970ad6를 유지했고, 이번에는 납품 문서의 버전과 안내만 갱신했습니다.
+- 세 화면 크기·PDF 한 쪽·2400px PNG 확인은 기존 인증서 완료 기록을 유지합니다. 실기기·실물 인쇄·수업 검수와 권리 증빙 대기는 완료로 바꾸지 않았습니다.
