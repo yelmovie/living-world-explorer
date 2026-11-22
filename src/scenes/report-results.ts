@@ -4,7 +4,7 @@ import {el,button,heading,paragraph,modal,notice,type Context} from '../ui';
 import {core} from './solution';
 import {inquiryEvidenceView} from './inquiry-evidence';
 import {inquiryTasks,tasksFor} from '../curriculum';
-import {downloadCard} from '../export';
+import {downloadCard,completionDate,creditLine} from '../export';
 import {stageBadge,habits,habitEarned,canDoLines} from '../experience';
 import {playEffect,playNarration,stopNarration} from '../audio';
 import {acceptedRecord} from '../inquiry-records';
@@ -122,7 +122,8 @@ card.append(titleLabel,title,paragraph(choice?`소개할 사례: ${choice.label}
  canDoText.textContent=lines.length?lines.join('\n'):'인증서에 넣을 "나는 이제 … 할 수 있어요" 문장을 골라요.';
  canDoText.classList.toggle('empty',!lines.length);
  certificate.replaceChildren(heading('생명 코드 연구소 탐구 인증서'),paragraph('관찰 · 비교 · 근거 조사 · 생활 영향 · 활용 설계'),paragraph(a.cardTitle),...lines.map(line=>paragraph(line,'certificate-can')),
-   paragraph(a.cardNote),paragraph(`20개 탐구 활동과 다섯 연구 패킷을 완성했어요. 탐구 습관 배지 ${stageIds.filter(id=>habitEarned(a,id)).length}/5`));};
+   paragraph(a.cardNote),paragraph(`20개 탐구 활동과 다섯 연구 패킷을 완성했어요. 탐구 습관 배지 ${stageIds.filter(id=>habitEarned(a,id)).length}/5`),
+   paragraph(`완료한 날 ${completionDate(a)}`,'certificate-date'),paragraph(creditLine(),'certificate-credit'));};
  const pickCanDo=()=>{const chosen=new Set(a.canDo||[]);
  const list=el('div','can-do-choices');
  stages.forEach((s,i)=>{const b=button(habits[i].can,()=>{if(chosen.has(s.id))chosen.delete(s.id);else chosen.add(s.id);
@@ -149,7 +150,7 @@ card.append(titleLabel,title,paragraph(choice?`소개할 사례: ${choice.label}
  card.append(canDo);
  drawCertificate();
  const row=el('div','hero-actions');
- row.append(button('내 카드 저장',()=>void downloadCard(ctx.state).then(()=>playEffect('success'),()=>notice('카드를 다시 저장해 주세요.')),'primary'),button('인증서 인쇄',()=>window.print(),'secondary',!a.activated),button('발견 도감',main.records));
+ row.append(button('내 카드 저장',()=>void downloadCard(ctx.state).then(()=>playEffect('success'),()=>notice('카드를 다시 저장해 주세요.')),'primary'),button('인증서 인쇄 / PDF 저장',()=>window.print(),'secondary',!a.activated),button('발견 도감',main.records));
  card.append(row);
  layout.append(celebration,card);
  ctx.host.append(layout);

@@ -1,9 +1,17 @@
-import {active,type State,stageIds} from './model';
+import {active,type Attempt,type State,stageIds} from './model';
+import {settingsContent} from './settingsContent';
 import {inquiryTasks} from './curriculum';
 import {artFor,artKey,artTime} from './artAssets';
 import {acceptedRecord} from './inquiry-records';
 
 /** Export the selected case from the learner or the isolated classroom preview. */
+/** 2026-11-22 certificate rule: the day the learner last completed an activity, written 2026. 11. 22. */
+export function completionDate(a:Attempt){
+ const stamps=[...Object.values(a.inquiry?.records||{}).map(r=>r?.completedAt),...Object.values(a.evidence).flatMap(e=>[e?.updated,e?.created])].filter((t):t is string=>!!t).map(t=>new Date(t)).filter(d=>!isNaN(+d));
+ const d=stamps.length?new Date(Math.max(...stamps.map(Number))):new Date();
+ return `${d.getFullYear()}. ${d.getMonth()+1}. ${d.getDate()}.`;
+}
+export const creditLine=()=>settingsContent.producer;
 export function cardContent(s:State){
  const a=active(s),record=acceptedRecord(a,'M5-4');
  const task=inquiryTasks.find(t=>t.id==='M5-4')!;
@@ -49,7 +57,7 @@ export async function downloadCard(s:State){
  lines(g,String(i+1)+'. '+(e?.summary?.replace('세균의 작용을 활용하는 방법을 소개했어요.','생물의 작용을 활용하는 방법을 소개했어요.')||'아직 완성하지 않은 연구 기록이에요.'),100,612+i*40,1400,30,1);});
  g.fillStyle='#315f46';g.font='29px "NanumSquareNeo", sans-serif';g.fillText('친구에게 전하고 싶은 발견',84,835);
  g.fillStyle='#213f30';g.font='28px NanumSquareNeo, sans-serif';lines(g,content.note||'우리 생활 속 생물의 작용을 친구에게 소개해요.',84,881,1432,37,2);
- g.fillStyle='#6c735b';g.font='20px NanumSquareNeo, sans-serif';g.fillText(s.settings.admin?'수업 시연용 소개 카드 · 학생의 원래 기록과 별도로 만들었어요.':'관찰·조사한 설명 모형을 바탕으로 만든 나의 생명과학 소개 카드',84,950);
+ g.fillStyle='#6c735b';g.font='20px NanumSquareNeo, sans-serif';g.textAlign='right';g.fillText(`${completionDate(a)} · ${creditLine()}`,1516,950);g.textAlign='left';g.fillText(s.settings.admin?'수업 시연용 소개 카드 · 학생의 원래 기록과 별도로 만들었어요.':'관찰·조사한 설명 모형을 바탕으로 만든 나의 생명과학 소개 카드',84,950);
  const blob=await new Promise<Blob>((resolve,reject)=>c.toBlob(b=>b?resolve(b):reject(new Error('PNG 생성 실패')),'image/png'));
  const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='생명코드-소개카드.png';link.click();setTimeout(()=>URL.revokeObjectURL(url),30000);
 }

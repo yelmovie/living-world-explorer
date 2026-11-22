@@ -471,6 +471,10 @@
 
   .print-certificate h2{font-size:32px}
 
+  .print-certificate .certificate-date{font-weight:700}
+
+  .print-certificate .certificate-credit{font-size:12px;color:#555}
+
   @page{size:A4;margin:15mm}
 
   .toolbar,.app-status,.preview-banner{display:none!important}
