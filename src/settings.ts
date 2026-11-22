@@ -53,12 +53,12 @@ export function openSettings(state: State, hooks: SettingsHooks, showTeacherTool
     row.append(el('span','',label),control);return row;
   };
   const soundRows=el('div','science-settings-audio');body.append(soundRows);
-  // Two columns: each switch sits next to its own volume slider (effects, music), the character voice switch below.
+  // Two columns: each switch sits next to its own volume slider (music, then effects), the character voice switch below. 2026-11-22: music first, same order as the other science34 apps.
   const effectVolumeRow=el('label','field settings-volume-row');const effectVolumeLabel=el('div','settings-sound-row');effectVolumeLabel.append(el('span','',copy.sound.effectVolume),effectValue);effectVolumeRow.append(effectVolumeLabel,effectVolume);
   const volumeRow=el('label','field settings-volume-row');const volumeLabel=el('div','settings-sound-row');volumeLabel.append(el('span','',copy.sound.volume),value);volumeRow.append(volumeLabel,volume);
   soundRows.append(el('h3','science-settings-label','소리'),
-    switchRow(copy.sound.effects,()=>prefs.sound,on=>{prefs.sound=on;effectVolume.disabled=!on;}),effectVolumeRow,
     switchRow(copy.sound.music,()=>prefs.bgm,on=>{prefs.bgm=on;volume.disabled=!on;}),volumeRow,
+    switchRow(copy.sound.effects,()=>prefs.sound,on=>{prefs.sound=on;effectVolume.disabled=!on;}),effectVolumeRow,
     switchRow(copy.sound.voice,()=>prefs.voice,on=>prefs.voice=on));
 
   const actions=el('div','science-settings-actions');body.append(actions);
