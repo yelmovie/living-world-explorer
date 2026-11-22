@@ -101,3 +101,11 @@
 - 그대로(보고만): 위 괄호 뒤 끊김 3곳(음성 대사), 좁은 버튼·칸의 두 낱말 이름, M3-4 문장 완성(오탐), M5-1 제목(이미 balance), 결과 카드 이름표 줄(의도된 `\n`), 설정 목록 가운뎃점 사이 끊김, 학생 입력 글(캔버스 소개 문장·저장 카드 PNG).
 - 점검: `test:browser` PASS(되돌리기 전 빌드, 되돌린 `ui.ts`는 그 전과 같은 코드), `npm test` 193 PASS, 빌드 PASS, 운영 대사 타자 줄 바뀜 0.
 - 미확인: 실물 태블릿·전자칠판.
+
+## 보고만 받은 것 정리 (2026-11-22, 공통 지침 12절)
+
+- **음성 키 확인(코드)**: 화면 글로 음성을 찾는 건 토토 힌트·악당 대사뿐(`narration-recordings.ts` 머리말, `playVoiceLine` 호출 3곳 모두 데이터 글을 넘김). 발견 대사 음성은 `discovery-M1-3` 같은 id로 찾는다. 설정 저작권 안내(`settingsContent.ts` credits)와 최종 보고 앨범 글(`inquiry-evidence.ts`의 `task.success`)은 음성 키가 아니고 그 화면에서 음성도 나오지 않음 → 고침. M1-3 현미경 화면의 「곰팡이 몸은 가는 실(균사)로…」는 모아 발견 음성(`discovery-M1-3`)과 같은 대사 글 → 손대지 않음.
+- **고친 것(`9a08996`)**: `src/ui.ts` `keepBracketWords()` — 화면에 그릴 때만 닫는 괄호·따옴표 바로 뒤에 조사가 붙은 낱말(「엔딩테마)은」「실(균사)로」)을 `.keep-word { white-space: nowrap }` 스팬으로 감쌈(문구 그대로). 적용: 설정 안내 줄(`settings.ts` `textRows`), 최종 보고·앨범 발견 요약(`inquiry-evidence.ts` 2곳). 전: 설정 「…엔딩테마) / 은」(1920), 앨범 「…실(균사) / 로 된 몸과」(1280·1024) → 후 0.
+- **악당 말풍선 측정 확인**: 실제 악당 요소(`.map-encounter-foe`)는 `aria-hidden="true"`라 `measure.js`가 건너뛰지만, 9·10절 측정은 같은 클래스·실제 스타일로 `aria-hidden` 없는 시험 층을 따로 만들어 쟀으므로 유효(30줄). 보정 `.map-encounter-say, .map-encounter-clear { text-wrap: balance }`는 `origin/main` `src/korean-linebreak.css`와 운영 CSS에 있음.
+- 남은 것(그대로): 설정 목록 가운뎃점 사이 끊김 「지도·성취 카드· / 발소리」「균류· / 원생생물」, 1024 탭 「생명과학 / 작업실」, M1-3 음성 대사의 「실(균사) / 로」.
+- 운영: https://2341fb75.living-world-explorer.pages.dev(커밋 `9a08996`), `cmp.sh` `assets/index-CYWKbilj.js` `a0e3a187a70fd8d8`·`assets/index-T8keP3nT.css` `9d9c967b8584d1b0`·index MATCH. 운영 다시 측정 결과 위 「남은 것」만. `npm test` 193 PASS, 빌드 PASS.
