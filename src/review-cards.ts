@@ -33,31 +33,38 @@ const discoveries:Record<string,[string,string]>={
  'M5-3':['낙엽과 퇴비','분해 작용을 생활에 이용해요'],
  'M5-4':['내 소개 카드','사례와 생물의 작용을 연결해요']
 };
+function openReviewRecord(title:string,evidence:Evidence,taskId?:string){
+ const album=inquiryEvidenceView(evidence,false,taskId);
+ const dialog=modal(title,[album]);
+ dialog.classList.add('review-record-dialog');
+ if(taskId)dialog.classList.add('is-single');
+ const header=el('header','review-record-head');
+ const close=dialog.querySelector<HTMLButtonElement>('.modal-close')!;
+ header.append(dialog.querySelector('h2')!,close);
+ dialog.prepend(header);
+ close.focus({preventScroll:true});
+}
 /** Compact review uses the submitted snapshot; full observations remain one tap away. */
 export function discoveryCards(evidence:Evidence|undefined,stage:Stage){
  const grid=el('div','discovery-review-grid');
  grid.dataset.recordVersion=evidence?.updated||evidence?.created||'';
- if(!evidence){grid.append(paragraph('지도에서 이 연구소를 탐험해요.'));return grid;}
+ if(!evidence){grid.append(paragraph('지도에서 이 연구소를 탐험해요.','review-empty'));return grid;}
  if(evidence.validationVersion!==2||!evidence.inquiry){
   grid.classList.add('is-legacy');
-  const card=button('',()=>modal('이전 탐구에서 남긴 기록',[inquiryEvidenceView(evidence)]),'discovery-review-card');
+  const card=button('',()=>openReviewRecord('이전 탐구에서 남긴 기록',evidence),'discovery-review-card');
   const art=artFor(reviewIdeas[stage].art)!,pictures=el('div','discovery-review-pictures'),image=el('img');image.src=art.src;image.alt=art.label;pictures.append(image);
-  card.append(pictures,el('strong','','이전 탐구 기록'),el('span','discovery-review-idea','저장한 기록을 그대로 펼쳐 봐요.'),el('span','discovery-review-open','내 기록 보기 ›'));grid.append(card);return grid;
+  card.append(pictures,el('strong','','이전 탐구 기록'));grid.append(card);return grid;
  }
 
  for(const task of tasksFor(stage)){
   const record=evidence.inquiry?.records[task.id];
   const [title,idea]=discoveries[task.id]||[task.title,reviewIdeas[stage].idea];
-  const card=button('',()=>{
-   const album=inquiryEvidenceView(evidence),tiles=[...album.querySelectorAll('.album-tile')];
-   tiles.forEach((tile,i)=>{if(i!==task.order-1)tile.remove();});
-   const dialog=modal(title+' · 내 발견 기록',[album]);dialog.classList.add('review-record-dialog');
-  },'discovery-review-card',!record?.completedAt);
+  const card=button('',()=>openReviewRecord(title,evidence,task.id),'discovery-review-card',!record?.completedAt);
   card.setAttribute('aria-label',title+' · 내 기록 크게 보기');
   const pictures=el('div','discovery-review-pictures');
   const arts=taskArt(task,record);if(!arts.length)arts.push(artFor(reviewIdeas[stage].art)!);
   for(const art of arts.slice(0,2)){const img=el('img');img.src=art.src;img.alt=art.label;img.draggable=false;pictures.append(img);}
-  card.append(pictures,el('strong','',title),el('span','discovery-review-idea',idea),el('span','discovery-review-open','내 기록 보기 ›'));
+  card.append(pictures,el('strong','',title),el('span','discovery-review-idea',idea));
   grid.append(card);
  }
  return grid;

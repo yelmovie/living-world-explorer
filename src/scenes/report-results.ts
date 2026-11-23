@@ -19,9 +19,9 @@ export function report(ctx:Context){const a=ctx.attempt;
 const head=el('div','activity-heading');
 head.append(heading('다섯 연구소의 발견'));
 ctx.host.append(head);
-const grid=el('div','workspace');
-const work=el('section','workbench');
-const side=el('aside','tool-panel');
+const grid=el('div','report-workspace');
+const work=el('section','report-shelf');
+const side=el('aside','report-guide');
 grid.append(work,side);
 ctx.host.append(grid);
 const tabs=el('div','report-tabs');
@@ -36,7 +36,7 @@ ctx.host.insertBefore(tabs,grid);
  return b;}));
  work.scrollTop=0;
  work.replaceChildren(discoveryCards(a.evidence[id],id));
-  if(ctx.state.settings.admin&&!hasRecord(id))work.append(paragraph('아직 시연 기록이 없어요. 교사용 도구에서 예시를 불러오거나 지도에서 이 연구소를 탐험해요.'),button('교사용 도구 열기',()=>main.settings(true),'secondary'));
+  if(ctx.state.settings.admin&&!hasRecord(id))work.append(paragraph('교사용 도구에서 시연 기록을 불러올 수 있어요.','review-empty'),button('교사용 도구 열기',()=>main.settings(true),'secondary'));
  };show(stageIds.find(id=>hasRecord(id))||'M1');
  const presentation=()=>{
   const form=el('div','presentation-form');
@@ -68,7 +68,7 @@ ctx.host.insertBefore(tabs,grid);
  };
  const gathered=stageIds.filter(id=>hasRecord(id)).length;
  const reportStatus=paragraph(`발견 ${gathered} / 5`,'report-status');
- const mentor=el('img','report-mentor');mentor.src='assets/characters/moa-review-20261123.webp';mentor.alt='어린 연구원 모아';side.append(reportStatus,mentor,paragraph('그림을 눌러 내 발견을 떠올려요.','report-invite'),button('생활 사건 발표',presentation,'secondary',!hasRecord('M4')));
+ const mentor=el('img','report-mentor');mentor.src='assets/characters/moa-review-20261123.webp';mentor.alt='어린 연구원 모아';side.append(reportStatus,mentor,button('생활 사건 발표',presentation,'secondary',!hasRecord('M4')));
  const f=el('div','action-bar');f.append(button('발견을 코어에 연결',()=>ctx.go('core-restoration'),'primary',!stageIds.every(id=>hasRecord(id)&&a.report.includes(id))));ctx.host.append(f);
 }
 /** Moa's line plays once per visit of the session, not on every re-render. */

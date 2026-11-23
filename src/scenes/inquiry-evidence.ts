@@ -19,13 +19,14 @@ export function termChips(terms:string[]){
  }
  return row;
 }
-export function inquiryEvidenceView(evidence:Evidence|undefined,compact=false){
+export function inquiryEvidenceView(evidence:Evidence|undefined,compact=false,taskId?:string){
  const box=el('div','evidence-view research-album');
  if(!evidence){box.append(paragraph('이 연구소에서 네 가지 발견을 마치면 연구 기록이 생겨요.'));return box;}
  if(!evidence.inquiry){box.append(paragraph('이전 버전의 연구 기록이에요. 새 탐구에서 발견 기록을 더 만들 수 있어요.'));return box;}
  box.dataset.recordVersion=evidence.updated||evidence.created;
- const stamp=paragraph(evidence.validationVersion===2?'내가 제출한 발견 기록':'이전 기준으로 완료한 기록 · 원본을 보존했어요. 재탐구를 제출하면 해당 기록이 갱신돼요.','record-version');box.append(stamp);
+ if(!taskId)box.append(paragraph(evidence.validationVersion===2?'내가 제출한 발견 기록':'이전 기준으로 완료한 기록 · 원본을 보존했어요. 재탐구를 제출하면 해당 기록이 갱신돼요.','record-version'));
  for(const task of tasksFor(evidence.stage)){
+  if(taskId&&task.id!==taskId)continue;
   const record=evidence.inquiry.records[task.id];if(!record?.completedAt)continue;
   const row=el('div','album-tile');const selected=task.items.find(it=>it.id===record.assignments.case);
   if(task.kind==='review'&&!record.assignments.initial){row.append(el('strong','','이전 활동: 세균 주장의 근거 연결'),paragraph('이전 활동은 주장 연결로 완료했어요. 당시의 처음 생각은 별도로 기록하지 않았어요.'));
@@ -69,7 +70,8 @@ export function inquiryEvidenceView(evidence:Evidence|undefined,compact=false){
    preview.append(picture);
    row.append(preview);
   }else if(art){const image=el('img');image.src=art.src;image.alt=art.label;row.append(image);}
-  row.append(el('strong','',task.title),keepBracketWords(emphasizeScience(paragraph(task.success))));if(task.terms?.length)row.append(termChips(task.terms));const model=modelButton(task.id,'3D로 보기');if(model)row.append(model);
+  if(!taskId)row.append(el('strong','',task.title));
+  row.append(keepBracketWords(emphasizeScience(paragraph(task.success))));if(task.terms?.length)row.append(termChips(task.terms));const model=modelButton(task.id,'3D로 보기');if(model)row.append(model);
   const beforeDetails=row.children.length;
   if(isGermTask(task))row.append(...germSummary(task,record).map(line=>paragraph(line)));
   else if(task.kind==='microscope')row.append(paragraph(`내 관찰 사진 · 초점 ${record.focus} · 특징을 확대해 살펴봤어요`));
