@@ -42,7 +42,7 @@ export function mountScopeGame(host:HTMLElement,task:InquiryTask,record:InquiryR
   const right=spill(n.offsetLeft+n.offsetWidth,-half);if(right<=0)return;
   n.classList.add('is-flip');const left=spill(n.offsetLeft-n.offsetWidth,half);if(left>right)n.classList.remove('is-flip');};
  const miss=(x:number,y:number)=>{const b=box();const m=el('span','scope-miss','✕');m.style.left=(x-b.left)/b.width*100+'%';m.style.top=(y-b.top)/b.height*100+'%';marks.append(m);later(()=>m.remove(),700);};
- const capture=(say:string)=>{record.level=2;record.focus=65;record.light=65;record.zoom=1;record.capture=true;hooks.changed();flash.classList.add('on');playEffect('capture');later(()=>flash.classList.remove('on'),500);totoSay(root,{text:say,mood:'cheer'});paint();};
+ const capture=(say:string)=>{if(disposed||record.capture)return;record.level=2;record.focus=65;record.light=65;record.zoom=1;record.capture=true;hooks.changed();flash.classList.add('on');playEffect('capture');later(()=>flash.classList.remove('on'),500);totoSay(root,{text:say,mood:'cheer'});paint();};
  const progress=(steps:[string,boolean][])=>{const list=el('ol','scope-steps');steps.forEach(([t,done],i)=>{const li=el('li',done?'done':steps.findIndex(s=>!s[1])===i?'now':'');li.append(el('span','scope-step-n',done?'✓':String(i+1)),el('span','',t));list.append(li);});return list;};
  let paint:()=>void;
 
@@ -65,7 +65,7 @@ export function mountScopeGame(host:HTMLElement,task:InquiryTask,record:InquiryR
    lens.classList.toggle('is-on',on||found);clearTimeout(dwell);
    if(on&&!found)dwell=setTimeout(markFound,dragging?450:0);};
   // 2026-11-18: finding the gills no longer jumps on by itself; a button moves to the microscope when the child is ready.
-  const markFound=()=>{if(disposed||found)return;found=true;playEffect('focus');totoSay(root,{text:'찾았다! 갓 아래 줄무늬를 주름이라고 해. 「현미경으로 보기」를 눌러 더 크게 보자!',mood:'cheer'});paint();};
+  const markFound=()=>{if(disposed||found)return;found=true;playEffect('focus');totoSay(root,{text:'찾았다! 이 버섯 모형의 갓 아래 줄무늬를 주름이라고 해. 「현미경으로 보기」를 눌러 더 크게 보자!',mood:'cheer'});paint();};
   const toMicroscope=()=>{if(disposed||record.level>=2)return;playEffect('click');lensView.classList.add('zoom-out');later(()=>{record.level=2;record.focus=65;record.light=65;hooks.changed();paint();},prefersStill()?0:900);};
   const prefersStill=()=>document.documentElement.classList.contains('reduced')||matchMedia('(prefers-reduced-motion: reduce)').matches;
   let dragging=false;
@@ -82,10 +82,10 @@ export function mountScopeGame(host:HTMLElement,task:InquiryTask,record:InquiryR
   paint=()=>{
    const phase=record.capture?'done':record.level>=2?'spores':'lens';root.dataset.phase=phase;root.classList.toggle('is-found',found&&phase==='lens');
    stage.replaceChildren(phase==='lens'?lensView:eye,panel);
-   tip.textContent=phase==='lens'?(found?'✅ 주름을 찾았어요! 「현미경으로 보기」를 눌러요':'🔍 돋보기를 끌어 갓 아래를 살펴봐요'):phase==='spores'?`✨ 주름에 붙은 작은 알갱이(포자)를 콕 눌러 잡아요 · ${Math.min(3,record.marks.length)} / 3`:'👉 「발견 기록하기」를 눌러 기록을 남겨요';
+   tip.textContent=phase==='lens'?(found?'✅ 주름을 찾았어요! 「현미경으로 보기」를 눌러요':'🔍 돋보기를 끌어 갓 아래를 살펴봐요'):phase==='spores'?`✨ 작은 알갱이(포자)를 누르거나 관찰 확인 버튼으로 기록해요 · ${Math.min(3,record.marks.length)} / 3`:'👉 「발견 기록하기」를 눌러 기록을 남겨요';
    if(phase!=='lens'){marks.replaceChildren();record.marks.forEach(m=>pin(m,'scope-spore','✨'));}
-   panel.replaceChildren(progress([['돋보기로 주름 찾기',found||record.level>=2],['현미경으로 포자 3개 잡기',record.capture],['관찰 사진 남기기',record.capture]]),...phase==='lens'&&found?
-     [button('현미경으로 보기 ▶',toMicroscope,'primary scope-next')]:[],...phase==='done'?[el('p','scope-fact','주름에 붙은 아주 작은 알갱이가 포자예요. 포자가 알맞은 곳에 닿으면 새 버섯이 자랄 수 있어요.')]:[]);
+   panel.replaceChildren(progress([['돋보기로 주름 찾기',found||record.level>=2],['현미경으로 포자 관찰하기',record.capture],['관찰 사진 남기기',record.capture]]),...phase==='lens'&&found?
+     [button('현미경으로 보기 ▶',toMicroscope,'primary scope-next')]:[],...phase==='spores'?[el('p','scope-fact','주름 가장자리에 붙은 작은 알갱이(포자)를 살펴봐요.'),button('작은 알갱이(포자)를 확인했어요',()=>capture('이 버섯 모형의 주름에 붙은 작은 알갱이가 포자야. 관찰 사진을 남겼어.'),'primary spore-observe')]:[],...phase==='done'?[el('p','scope-fact','주름에 붙은 아주 작은 알갱이가 포자예요. 포자가 알맞은 곳에 닿으면 새 버섯이 자랄 수 있어요.')]:[]);
    if(phase==='lens')requestAnimationFrame(()=>placeLens(lp));
   };
   void Promise.all([photo,pic,handle,frame].map(i=>i.decode())).then(()=>{if(disposed)return;root.inert=false;paint();hooks.ready(true);},()=>{if(!disposed)hooks.ready(false);});

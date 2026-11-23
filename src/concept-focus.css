@@ -49,3 +49,13 @@
  .concept-dialog .concept-focus strong{padding:1px 7px}
  .concept-dialog .concept-caption{font-size:17px;padding:5px 10px}
 }
+
+/* Reserve a row below the video controls for the fixed-example notice, including narrow and fallback views. */
+.concept-body:has(>.concept-example){display:grid;grid-template-rows:60px auto auto minmax(0,1fr);gap:8px;padding:0 16px 16px;box-sizing:border-box}
+.concept-example{grid-row:2;position:relative;z-index:3;justify-self:center;margin:0;padding:8px 16px;border-radius:12px;background:#fff8dfed;color:#213f30;font-size:clamp(14px,1.7vw,22px);line-height:1.4;text-align:center;word-break:keep-all;pointer-events:none}
+.concept-body:has(>.concept-example) .concept-focus{grid-row:3;position:relative;top:auto;left:auto;transform:none;justify-self:center;max-width:100%;box-sizing:border-box}
+.concept-body:has(>.concept-example) .concept-fallback{grid-row:4;position:relative;inset:auto;min-height:0;max-height:100%;box-sizing:border-box}
+@media(max-height:520px),(max-width:900px){
+ .concept-body:has(>.concept-example){grid-template-rows:54px auto auto minmax(0,1fr);gap:6px;padding:0 8px 8px}
+ .concept-example{font-size:14px;padding:4px 8px}
+}

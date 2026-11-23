@@ -5,8 +5,8 @@ import type {InquiryTask,InquiryRecord} from './inquiry-model';
 export const GERM_KINDS=['zoom','catch','culture','exhibit'] as const;
 export const isGermTask=(task:Pick<InquiryTask,'kind'>)=>(GERM_KINDS as readonly string[]).includes(task.kind);
 
-/** M3-1: magnification steps of the zoom dial. Bacteria first show up at ×1000. */
-export const zoomSteps=[{power:'1',label:'맨눈',note:'유리판 위 물 한 방울. 맨눈으로는 아무것도 안 보여요.'},{power:'10',label:'돋보기',note:'10배로 키워도 물방울 속은 맑기만 해요.'},{power:'100',label:'현미경 100배',note:'짚신벌레가 보여요! 하지만 세균은 아직 너무 작아요.'},{power:'1000',label:'현미경 1000배',note:'짚신벌레의 가장자리 옆에 아주 작은 세균들이 보여요.'}] as const;
+/** M3-1: magnification steps of the zoom dial. This teaching model reveals bacteria at ×1000; real visibility also depends on the specimen, contrast and resolution. */
+export const zoomSteps=[{power:'1',label:'맨눈',note:'유리판 위 물 한 방울. 맨눈으로는 아무것도 안 보여요.'},{power:'10',label:'돋보기',note:'10배로 키워도 물방울 속은 맑기만 해요.'},{power:'100',label:'현미경 100배',note:'이 모형에서는 짚신벌레가 보여요. 세균을 더 크게 살펴봐요.'},{power:'1000',label:'현미경 1000배',note:'이 모형의 세균이 보여요. 실제 관찰은 표본과 현미경 상태에 따라 달라요.'}] as const;
 export const zoomGuesses=['10','100','1000'] as const;
 
 /** M3-2: the shapes a learner sorts into specimen jars, and which jar each sprite belongs to. */
@@ -49,7 +49,7 @@ export function germGuidance(task:InquiryTask,r:InquiryRecord){const {steps}=ger
 /** Record lines for the research album. Records from before the redesign keep a short note. */
 export function germSummary(task:InquiryTask,r:InquiryRecord):string[]{
  const a=r.assignments;if(a.germ!=='1')return ['이전 버전 활동으로 완료한 기록이에요.'];
- if(task.kind==='zoom')return [`처음 예상: ${a.guess}배 · 세균이 보인 배율: 1000배`,a.guess==='1000'?'예상이 맞았어요.':'예상보다 더 크게 확대해야 보였어요.'];
+ if(task.kind==='zoom')return [`처음 예상: ${a.guess}배 · 이 모형에서 살펴본 시야: 1000배`,a.guess==='1000'?'예상이 맞았어요.':'예상과 다른 시야에서 세균을 찾았어요.'];
  if(task.kind==='catch')return [germShapes.map(s=>`${s.label} ${jarCount(r,s.id)}마리`).join(' · '),a.tail==='yes'?'꼬리(편모)가 있는 막대 모양 세균도 찾았어요.':''].filter(Boolean);
  if(task.kind==='culture'){const names=culturePlaces.filter(p=>streaked(r).includes(p.id)).map(p=>p.label);return [`채집한 곳: ${names.join(', ')}`,'채집한 모든 접시에서 세균 무리가 자랐고, 아무것도 묻히지 않은 접시는 깨끗했어요.'];}
  if(task.kind==='exhibit')return ['큰 것부터: 버섯 → 짚신벌레 → 세균','세균은 짚신벌레보다 훨씬 작고, 공·막대·나선처럼 여러 모양이 있으며, 흙·물·손처럼 여러 곳에 살아요.'];

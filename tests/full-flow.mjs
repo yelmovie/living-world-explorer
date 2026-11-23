@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {launchBrowser,waitForScene,button,navigate,teacherTools,readSaved,waitSaved,setRange,skipFilm,linkCard,linkTarget} from './browser.mjs';
 import {playGerm} from './germ-play.mjs';
+import {yogurtRegressions} from './yogurt-regression.mjs';
 import {inquiryTasks,stageRoutes,names} from './curriculum.mjs';
 const base=process.env.APP_URL||'http://127.0.0.1:5176';
 const browser=await launchBrowser();const context=await browser.newContext({viewport:{width:1280,height:800},hasTouch:true,...(process.env.RESUME_FLOW?{storageState:'.tmp/learner20-state.json'}:{})});const page=await context.newPage();page.setDefaultTimeout(15000);
@@ -24,7 +25,7 @@ async function playBoard(task){
  if(task.stage==='M3'){await playGerm(page,task.id);return true;}
  if(['M4-4'].includes(task.id)){for(let i=0;i<task.items.length;i++){const id=await page.locator('.choice-card').getAttribute('data-link-item');const item=task.items.find(it=>it.id===id);await linkTarget(page,item.target).tap();await page.waitForFunction(id=>{const c=document.querySelector('.choice-card');return !c||c.hidden||c.dataset.linkItem!==id;},id,{timeout:5000});await page.waitForTimeout(250);}return true;}
  if(task.id==='M4-1'||task.id==='M4-2'){if(task.id==='M4-1'){await btn('▶ 빨리 감기').click();await page.waitForTimeout(3600);}else{await btn('◀ 처음 더 보기').click();await btn('나중 더 보기 ▶').click();}const b=await page.locator('.timeline-layer').first().boundingBox();const [x,y]=changes[task.organism];await page.touchscreen.tap(b.x+b.width*x,b.y+b.height*y);await page.locator('.timeline-note').waitFor();return true;}
- if(task.id==='M5-1'){await linkCard(page,'milk').tap();await linkCard(page,'lactic').tap();await page.locator('[data-prediction="supported"]').tap();const act=page.locator('.build-action');await act.scrollIntoViewIfNeeded();const b=await act.boundingBox();await page.mouse.move(b.x+b.width/2,b.y+b.height/2);await page.mouse.down();await page.waitForTimeout(2900);await page.mouse.up();await page.locator('.build-verdict').waitFor();return true;}
+ if(task.id==='M5-1'){await linkCard(page,'milk').tap();await linkCard(page,'lactic').tap();await page.locator('[data-prediction="supported"]').tap();await page.locator('.build-action').tap();await page.waitForFunction(()=>document.querySelector('.is-yogurt')?.dataset.phase==='done');return true;}
  if(task.id==='M5-2'||task.id==='M5-3'){const right=task.items.find(it=>it.target==='action');await linkCard(page,right.id).tap();await page.locator('.build-vessel').tap();await page.locator('[data-prediction="supported"]').tap();const act=page.locator('.build-action');await act.scrollIntoViewIfNeeded();
   if(task.id==='M5-2'){const b=await act.boundingBox();await page.mouse.move(b.x+b.width/2,b.y+b.height/2);await page.mouse.down();await page.waitForTimeout(2900);await page.mouse.up();}else for(let i=0;i<5;i++){await act.click();await page.waitForTimeout(120);}
   await page.locator('.build-verdict').waitFor();return true;}
@@ -104,7 +105,8 @@ async function completeTask(task,replay=false){
   assert.equal(await page.locator('.link-board').count(),0);await btn('정리 마치기').click();
  }else{
  // 2026-11-16: a finished activity opens its record by itself; the button is the fallback.
- if(['collect','connect','sort','microscope','timeline','track','sample'].includes(task.kind)||['M5-1','M5-2','M5-3'].includes(task.id)||task.stage==='M3')await page.locator('.discovery-dialog').waitFor({timeout:9000}).catch(()=>btn('발견 기록하기').click());else await btn('발견 기록하기').click();
+ if(task.kind==='track'){await page.waitForTimeout(2200);assert.equal(await page.locator('.discovery-dialog').count(),0,'comparison waits for the learner to record it');await btn('발견 기록하기').click();}
+ else if(['collect','connect','sort','microscope','timeline','sample'].includes(task.kind)||['M5-1','M5-2','M5-3'].includes(task.id)||task.stage==='M3')await page.locator('.discovery-dialog').waitFor({timeout:9000}).catch(()=>btn('발견 기록하기').click());else await btn('발견 기록하기').click();
  await page.locator('.discovery-dialog').waitFor();
  assert.match(await page.locator('.discovery-dialog .pip-label').innerText(),new RegExp(`발견 도장 ${task.order} / 4`));
  await btn(task.order===4?'연구소 복구하기':'다음 발견으로').click();
@@ -144,6 +146,7 @@ try{
  assert.match(await page.locator('.quiz-feedback').innerText(),/다시 골라/);
  for(let stage=1;stage<=5;stage++){
   if(stage>1)await navigate(page,base,stageRoutes[stage-1][0]);
+  if(stage===5){await mkdir('.tmp/p8-review',{recursive:true});await page.locator('.inquiry-loading').waitFor({state:'detached'});await waitSaved(page,s=>!!s.learner.evidence.M4);const state=await context.storageState({indexedDB:true});await writeFile('.tmp/p8-review/student-before-M5.json',JSON.stringify(state));if(!process.env.SKIP_YOGURT_REGRESSIONS)await yogurtRegressions(browser,base,state);}
   for(const task of inquiryTasks.filter(t=>t.stage==='M'+stage))await completeTask(task);
  }
  await context.storageState({path:'.tmp/learner20-state.json',indexedDB:true});}else checks.push(...inquiryTasks.map(t=>t.id));

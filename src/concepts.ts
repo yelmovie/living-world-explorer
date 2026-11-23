@@ -59,6 +59,11 @@ export function showConcept(stage:Stage,settings:{sound:boolean;voice?:boolean;r
  video.onerror=()=>{video.hidden=true;fallback.hidden=false;caption.hidden=true;steps.forEach(b=>b.disabled=true);};
  const actions=el('div','concept-actions');
  actions.append(button('처음부터 보기',()=>{video.currentTime=0;update();void video.play().catch(()=>{});}),button(onContinue?'복구 보상 받기':'탐구로 돌아가기',()=>dialog.close(),'primary'));
+ if(stage==='M3'){
+  const example=paragraph('별도 예시 영상 · 흙과 이(치아) 표본이에요. 이번에 고른 배양 접시의 결과와는 다른 예시예요.','concept-example');
+  example.id='concept-m3-example';video.setAttribute('aria-describedby',example.id);video.setAttribute('aria-label',`${concept.title} · 흙과 이(치아) 표본을 살펴보는 별도 예시 · ${duration}초 개념 영상`);
+  body.append(example);
+ }
  body.append(video,fallback,focus,chapters,caption,actions);
  const dialog=modal(concept.title,[body],{showClose:false});dialog.classList.add('concept-dialog');
  const hidden=()=>{if(document.hidden)video.pause();};document.addEventListener('visibilitychange',hidden);

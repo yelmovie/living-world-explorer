@@ -5,7 +5,7 @@ import {inquiryArt} from './artAssets';
 export type ModelKey='mushroom'|'bread-mold'|'yeast';
 /** view: starting tilt/turn in radians, so each model opens on the side worth looking at. */
 export const models:Record<ModelKey,{src:string;title:string;note:string;fallback:string;view?:[number,number]}>={
- mushroom:{src:'assets/models/mushroom.glb',title:'버섯 3D 모형',note:'‘아래에서 보기’를 누르고 갓 아래 주름을 확대해 봐요.',fallback:'mushroom'},
+ mushroom:{src:'assets/models/mushroom.glb',title:'버섯 3D 모형',note:'이 버섯 모형에서는 갓 아래 주름을 볼 수 있어요. ‘아래에서 보기’를 눌러 확대해 봐요.',fallback:'mushroom'},
  'bread-mold':{src:'assets/models/bread-mold.glb',title:'빵 곰팡이 3D 모형',note:'가는 실(균사)과 끝의 둥근 부분(포자가 든 주머니)을 찾아봐요. 실제보다 아주 크게 키운 설명용 모형이에요.',fallback:'mold'},
  yeast:{src:'assets/models/yeast.glb',title:'효모 3D 모형',note:'옆에 작은 혹이 붙어 자라는 모습을 볼 수 있어요. 실제보다 아주 크게 키운 설명용 모형이에요.',fallback:'yeast'}
 };

@@ -84,3 +84,8 @@
 }
 /* Short landscape phones hide the step card while observing; the microscope button still shows once the gills are found. */
 @media(max-height:480px){.scope-game.is-found[data-phase=lens] .scope-panel{display:flex;flex:none;width:auto;padding:8px}.scope-game.is-found .scope-next{min-height:48px;font-size:18px}}
+/* The spore observation alternative must stay reachable when the short-landscape step card is hidden. */
+@media(max-height:480px){
+ .scope-game.is-mushroom[data-phase=spores] .scope-panel{display:flex;flex:0 0 230px;flex-direction:column}
+ .spore-observe{min-height:48px;font-size:16px}
+}

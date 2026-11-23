@@ -58,7 +58,7 @@ function zoomGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTMLEl
  const power=el('b','zoom-power'),note=el('p','zoom-note'),spark=el('span','zoom-spark','✨');spark.hidden=true;
  view.append(lensRing,eyepiece,spark,lens,power);
  const panel=el('div','zoom-panel');
- const ask=el('div','zoom-ask');ask.append(el('strong','','몇 배로 확대하면 세균이 보일까?'));
+ const ask=el('div','zoom-ask');ask.append(el('strong','','이 모형에서 몇 배 시야에 세균이 나타날까?'));
  const guesses=el('div','zoom-guesses');
  const guessButtons=zoomGuesses.map(g=>{const b=button(`${g}배`,()=>{if(r.assignments.found==='yes')return;r.assignments.guess=g;playEffect('click');changed();paint();},'secondary zoom-guess');b.dataset.guess=g;guesses.append(b);return b;});
  ask.append(guesses);
@@ -80,7 +80,9 @@ function zoomGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTMLEl
   });
   eyepiece.style.opacity=String(smooth(z,1.45,2));lensRing.style.opacity=String(smooth(z,.45,1)*(1-smooth(z,1.4,1.8)));
   view.dataset.level=String(Math.round(z));
-  power.textContent=`×${Math.round(10**z).toLocaleString()}`;dial.value=String(z);
+  const shownPower=Math.round(10**z).toLocaleString();
+  power.textContent=`×${shownPower}`;dial.value=String(z);
+  dial.setAttribute('aria-valuetext',`${shownPower}배 · 학습 모형`);view.setAttribute('aria-label',`물 한 방울 관찰 창 · ${shownPower}배 · 학습 모형`);
   const near=clamp(Math.round(z),0,3);lens.textContent=zoomSteps[near].label;
   note.textContent=Math.abs(z-near)<.12?zoomSteps[near].note:'초점을 맞추는 중…';
  }
@@ -107,6 +109,7 @@ function zoomGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTMLEl
   const dt=Math.min(.05,(now-last)/1000);last=now;
   if(Math.abs(goal-z)>.002)set(z+(goal-z)*Math.min(1,dt*4.2)+Math.sign(goal-z)*Math.min(Math.abs(goal-z),dt*.35));
   else if(z!==goal)set(goal);
+  if(Math.abs(goal-z)<.002&&z!==goal)set(goal);
   if(!reduced&&z>2.3)jiggle(dt);
   raf=disposed||(Math.abs(goal-z)<.002&&(reduced||z<=2.3))?0:requestAnimationFrame(tick);
  }
@@ -135,7 +138,7 @@ function zoomGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTMLEl
   hit.n.classList.add('is-found');view.classList.remove('show-hint');clearTimeout(hintTimer);
   spark.hidden=false;spark.style.left=`${hit.cx*100}%`;spark.style.top=`${hit.cy*100}%`;
   r.assignments.found='yes';r.assignments.reach='3';playEffect('success');
-  totoSay(root,{text:r.assignments.guess==='1000'?'예상이 딱 맞았어! 세균은 1000배쯤 확대해야 보여.':`${r.assignments.guess}배로는 안 보였지? 세균은 1000배쯤 확대해야 보일 만큼 작아!`,mood:'cheer'});
+  totoSay(root,{text:(r.assignments.guess==='1000'?'예상과 같았어! ':'예상과 달랐구나. ')+'이 모형에서는 1000배 시야로 세균을 살펴봐. 실제 관찰은 표본과 현미경 상태에 따라 달라.',mood:'cheer'});
   changed();paint();
  };
  view.onclick=e=>tap(e.clientX,e.clientY);
@@ -304,7 +307,7 @@ function cultureGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTM
   if(c.id!=='many'){r.misses++;
   changed();
   playEffect('retry');
-  totoSay(root,{text:c.id==='soil'?'흙 말고 다른 접시에도 세균 무리가 자랐는지 다시 봐!':'깨끗해 보이던 손과 문손잡이 접시에도 무리가 자랐어!',mood:'hint'});
+  totoSay(root,{text:`이번에 고른 ${streaked(r).map(placeLabel).join('·')} 접시를 빈 접시와 비교해 봐. ${c.id==='soil'?'흙 이외의 접시에도 무리가 있니?':'눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?'}`,mood:'hint'});
   return;}
   r.assignments.conclusion='many';
   playEffect('success');
@@ -369,8 +372,8 @@ function exhibitGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTM
   window.addEventListener('pointerup',end,{signal:stop.signal});window.addEventListener('pointercancel',end,{signal:stop.signal});
  }
  function put(id:string,i:number){order=order.map(o=>o===id?'':o);order[i]=id;picked='';playEffect('snap');
-  if(order.every(Boolean)){if(order.join(',')===exhibitOrder.join(',')){playEffect('success');totoSay(root,{text:'완벽한 전시야! 세균은 1000배로 확대해야 보일 만큼 가장 작아.',mood:'cheer'});}
-   else{r.misses++;playEffect('retry');totoSay(root,{text:'어느 생물이 가장 큰 배율에서야 보였는지 떠올려 봐! 많이 확대해야 보일수록 작은 거야.',mood:'hint'});slots.forEach(s=>{s.classList.remove('is-wrong');void s.offsetWidth;s.classList.add('is-wrong');});}}
+  if(order.every(Boolean)){if(order.join(',')===exhibitOrder.join(',')){playEffect('success');totoSay(root,{text:'완벽한 전시야! 이번 모형에서 본 세균은 짚신벌레보다 훨씬 작아.',mood:'cheer'});}
+   else{r.misses++;playEffect('retry');totoSay(root,{text:'어느 생물이 가장 큰 배율에서야 보였는지 떠올려 봐! 많이 확대해야 보일수록 작은 거야.',mood:'hint'});slots.forEach(s=>{s.classList.remove('is-wrong');void s.offsetWidth;s.classList.toggle('is-wrong',order[Number(s.dataset.slot)]!==exhibitOrder[Number(s.dataset.slot)]);});order=order.map((id,i)=>id===exhibitOrder[i]?id:'');}}
   save();paint();}
  function save(){r.assignments.order=order.join(',');changed();}
  function paint(){
@@ -391,7 +394,7 @@ function exhibitGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTM
     r.assignments[`blank_${blank.id}`]=o.id;
     if(o.id!==blank.answer){r.misses++;
     playEffect('retry');
-    totoSay(root,{text:blank.id==='size'?'1000배로 확대해야 보였던 걸 떠올려 봐!':blank.id==='shape'?'표본병 세 개를 떠올려 봐!':'배양 접시 여러 개에서 무리가 자랐던 걸 떠올려 봐!',mood:'hint'});}else playEffect('snap');
+    totoSay(root,{text:blank.id==='size'?'이번 모형에서 짚신벌레와 세균의 크기를 비교한 걸 떠올려 봐!':blank.id==='shape'?'표본병 세 개를 떠올려 봐!':'배양 접시 여러 개에서 무리가 자랐던 걸 떠올려 봐!',mood:'hint'});}else playEffect('snap');
     changed();
     paint();},'secondary sentence-option');
     b.dataset.blank=blank.id;

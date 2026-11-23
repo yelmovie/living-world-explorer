@@ -20,7 +20,7 @@ export const residents:Record<Stage,Resident> = {
     work:'물가의 작은 전시대를 닦고 있어. 친구들이 같은 짚신벌레의 두 순간을 비교해 볼 수 있게!'},
   M3:{art:'duri',name:'두리',role:'부엉이 현미경지기',feet:[989,443],
     welcome:'현미경 다이얼이 다시 돌아가! 눈에 안 보인다고 없는 게 아니라는 걸 네가 보여 줬어.',
-    question:'세균은 어떻게 찾았어?',memory:'세균은 짚신벌레보다도 훨씬 작아서 1000배쯤 확대해야 보여. 공·막대·나선 모양이 있고, 흙·물·손·문손잡이처럼 거의 모든 곳에 살아.',
+    question:'세균은 어떻게 찾았어?',memory:'이 모형에서는 세균을 1000배 시야로 살펴봤어. 실제 관찰은 표본과 현미경 상태에 따라 달라. 세균은 짚신벌레보다 훨씬 작고 여러 모양과 사는 곳이 있어.',
     work:'친구들이 손이나 흙을 가져오면 같이 배양 접시를 들여다봐. “여기에도 산다고?” 하고 다들 깜짝 놀라지!'},
   M4:{art:'bamtol',name:'밤톨',role:'고슴도치 정원사',feet:[748,604],
     welcome:'마을 정원에 다시 불이 들어왔어! 네가 살펴본 그 낙엽 자리로 나도 돌아왔지.',
@@ -45,7 +45,8 @@ function memory(stage:Stage, attempt:Attempt):[string,string]{
     if(selected==='yogurt')return ['요구르트 카드였지! 유산균의 도움으로 우유를 요구르트로 만든다는 네 설명을 이웃들에게도 들려줄게.','M5-memory-yogurt'];
     if(selected==='leaf')return ['낙엽 분해 카드였지! 낙엽을 분해하는 생물의 도움으로 퇴비를 만들 수 있다는 이야기를 정원에도 전할게.','M5-memory-leaf'];
   }
-  return [residents[stage].memory,stage+'-memory'];
+  // Revised M3 wording waits for a matching recording; never play the old magnification claim.
+  return [residents[stage].memory,stage==='M3'?'':stage+'-memory'];
 }
 
 export function residentImage(stage:Stage, className:string){

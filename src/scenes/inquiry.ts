@@ -82,7 +82,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
  let running=false,ready=false;
  // 2026-11-16: finishing an activity opens its discovery record by itself; the footer button stays for revisits.
  let trackPlay=false,liveTime:number|undefined,liveSlider:HTMLElement|undefined;
- const autoRecord=['collect','connect','sort','microscope','timeline','track','sample'].includes(task.kind)||brew||germ;let wasReady=guidance(task,r).ready,autoTimer:ReturnType<typeof setTimeout>|undefined;ctx.cleanup(()=>clearTimeout(autoTimer));
+ const autoRecord=['collect','connect','sort','microscope','timeline','sample'].includes(task.kind)||brew||germ;let wasReady=guidance(task,r).ready,autoTimer:ReturnType<typeof setTimeout>|undefined;ctx.cleanup(()=>clearTimeout(autoTimer));
  const loading=el('div','inquiry-loading','관찰 이미지를 준비하고 있어요…');loading.setAttribute('role','status');work.append(loading);
  const status=el('div','inquiry-status');const counter=el('strong','inquiry-counter');
  const action=paragraph('','next-instruction');action.setAttribute('aria-live','polite');
@@ -114,7 +114,8 @@ export function inquiryScene(ctx:Context,stage:Stage){
   counter.textContent=g.ready?(task.kind==='review'?(r.assignments.decision==='revise'?'✓ 생각 수정 · 기록 준비':'✓ 생각 유지 · 기록 준비'):'✓ 기록 준비 완료'):`${g.done} / ${g.total}`;
   showMeter(g.done,g.total);
   const instruction=editingClaim?'두 자료를 떠올리며 내 주장을 다시 골라요.':editingAction?'고른 사례에 쓰인 생물의 작용을 다시 골라요.':running?'설계도에서 작용이 어느 칸까지 이어지는지 살펴봐요.':g.action;
-  if(action.textContent!==instruction)action.textContent=instruction;
+  const shownInstruction=task.kind==='track'&&trackPlay&&r.level<2&&!validTrackPair(r)?'▶ 짚신벌레가 움직이는 중이에요. 멈추거나 A·B를 고정해 비교해요.':instruction;
+  if(action.textContent!==shownInstruction)action.textContent=shownInstruction;
   if(sourceNext.textContent!==g.action)sourceNext.textContent=g.action;
   status.classList.toggle('ready',g.ready);ctx.host.classList.toggle('record-ready',g.ready);
   if(autoRecord&&g.ready&&!wasReady&&!r.completedAt&&ready){clearTimeout(autoTimer);autoTimer=setTimeout(()=>{if(!disposed&&demoStep<0&&!running&&guidance(task,r).ready&&!document.querySelector('dialog[open]'))next.click();},task.kind==='timeline'?4500:scope||brew||germ?3200:1700);}
@@ -229,7 +230,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
     // 2026-11-18: the clip plays by itself; 「멈추기」, the time handle or a valid B stops it at the moment on screen.
     const moment=()=>Math.round(trackPlay&&liveTime!==undefined?liveTime:r.time);
     const halt=()=>{if(!trackPlay)return;r.time=moment();trackPlay=false;liveTime=undefined;view?.setPlaying(false);toggle.textContent='▶ 움직임 보기';};
-    const toggle=button(trackPlay?'⏸ 멈추기':'▶ 움직임 보기',()=>{if(trackPlay){halt();view?.setPreview(true);paint();controls();}else{trackPlay=true;view?.setPlaying(true);toggle.textContent='⏸ 멈추기';}},'secondary');
+    const toggle=button(trackPlay?'⏸ 멈추기':'▶ 움직임 보기',()=>{if(trackPlay){halt();view?.setPreview(true);paint();controls();}else{trackPlay=true;view?.setPlaying(true);toggle.textContent='⏸ 멈추기';updateStatus();}},'secondary');
     const time=slider('관찰 시점',0,10,1,moment(),v=>{halt();r.time=v;view?.setPreview(true);paint();});
     liveSlider=time;
     tools.append(button('눈으로 보기',nakedWater),toggle,time,

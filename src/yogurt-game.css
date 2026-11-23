@@ -31,3 +31,18 @@
  .yogurt-choices{grid-template-columns:1fr 1fr;gap:4px}.build-card.yogurt-card{padding:4px;gap:2px}.build-card.yogurt-card>strong{font-size:14px}
  .build-card.yogurt-card>img,.yogurt-empty-spoon{max-height:40px;height:40px}
 }
+
+.yogurt-model-note{margin:0;font-size:14px;line-height:1.4;color:var(--stone-478);word-break:keep-all}
+/* Result/retry is a separate phase; keep the action reachable while retaining the selected prediction in the record. */
+.is-yogurt:is([data-phase=running],[data-phase=done],[data-phase=retry]) .build-predictions{display:none}
+.is-yogurt .build-panel{max-height:100%;min-height:0;box-sizing:border-box;overflow-y:auto}
+.is-yogurt .build-panel>.button{flex-shrink:0}
+@media(max-height:480px){
+ .is-yogurt .build-panel{gap:4px}
+ .is-yogurt .build-panel .button{min-height:44px;padding:4px 6px;font-size:16px;line-height:1.2}
+ .is-yogurt .build-action img{width:28px;height:28px}
+ .is-yogurt .build-predictions{gap:4px;flex-shrink:0}
+ .is-yogurt .build-panel>.button:not(.build-action){order:-1;min-height:48px}
+ .is-yogurt .build-verdict{min-height:0;overflow-y:auto;font-size:14px;line-height:1.35;padding:6px 8px}
+ .is-yogurt .yogurt-model-note{flex-shrink:0;font-size:12px;line-height:1.3}
+}
