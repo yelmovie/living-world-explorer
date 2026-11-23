@@ -41,3 +41,7 @@ dialog.modal.certificate-dialog .cert-paper.cert-reduced,dialog.modal.certificat
  dialog.modal.certificate-dialog>:not(.cert-paper){display:none!important}
  dialog.modal.certificate-dialog .cert-stamp{animation:none!important}
 }
+
+/* 2026-11-23: a wax seal sits between date and issuer without covering the credit. */
+dialog.modal.certificate-dialog .cert-paper[data-cert-wax-paper] .cert-bottom{top:75.4%;height:14.3%;left:20%;right:20%}
+dialog.modal.certificate-dialog .cert-paper[data-cert-wax-paper] .cert-credit{top:90.6%}

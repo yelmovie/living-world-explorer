@@ -170,3 +170,9 @@
 | ID | 자료 | 제작·출처 | 생성 기록 | 판정 |
 |---|---|---|---|---|
 | IMG-CERT-08 | `public/assets/ui/certificate-frame-20261122.webp`(1800×1273,158866바이트), 원본 `assets/source/certificate-20261122/certificate-frame.png` | Codex 기본 이미지 생성 도구(GPT 이미지),프로젝트 자체 생성,2026-11-22 | `assets/source/certificate-20261122/PROMPT-08.txt`;생성1회. 현미경·균류와 균사·배양접시·짚신벌레를 외곽에,중앙 빈 종이,글자·로고 없음. | 확인됨(사용자 그림 제작 도구 지시와 이번 생성 기록) |
+
+
+## 2026-11-23 인증서 촛농 봉인
+
+- `public/assets/ui/certificate-wax-seal-20261123.webp`: 사용자가 2026-11-23 이 작업에 직접 첨부한 촛농 봉인 PNG를 투명도 그대로 768px WebP로 최적화한 배포본. 원본은 외장 작업 폴더 `_scratch/certificate-wax-20261123/assets/user-wax-seal-reference.png`에 보존. AI 생성 이미지로 표기하지 않음.
+- 금빛 인증 문구는 기존 글꼴로 화면·인쇄·PNG에 얹고, 목재 손잡이/금속 도장 모션은 CSS로 구현. 기존 `map-finish.mp3` 효과음을 기존 음소거·효과음 크기 설정에 따라 1회 재사용.

@@ -1,3 +1,5 @@
+import {mountCertificateWax} from './certificate-wax.js';
+import {playEffect} from './audio';
 import {active,type State} from './model';
 import {completionDate,creditLine} from './export';
 import {canDoLines} from './experience';
@@ -23,4 +25,5 @@ export function openCertificate(state:State){
  const dialog=modal('생명 코드 연구소 탐구 인증서',[paper,note,actions],{showClose:false});
  dialog.classList.add('certificate-dialog');
  actions.append(print,png,button('닫기',()=>dialog.close(),'secondary'));
+ mountCertificateWax(paper,{label:'생명 코드\n탐구 인증',reduced:reducedMotion(state.settings.reduced),onImpact:()=>playEffect('map-finish')});
 }
