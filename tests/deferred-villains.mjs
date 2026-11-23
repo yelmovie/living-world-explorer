@@ -9,6 +9,14 @@ try{for(const [width,height] of (process.env.DEFERRED_SIZES?JSON.parse(process.e
   await navigate(page,base,'nature-map');await page.waitForFunction(()=>document.querySelector('main')?.dataset.mapReady==='true'||document.querySelector('[data-map-ready="true"]'));const initial=(await readSaved(page)).learner;assert.equal(Object.keys(initial.evidence).length,5);assert.equal(Object.values(initial.mapHits||{}).filter(n=>n===3).length,0);assert.equal(await page.locator('.rc-slot.is-filled').count(),0);
   const places=['버섯숲 표본실','연못 관찰소','자료 연구실','생활마을','BIO 작업실'];
   const seek=async i=>{await page.getByRole('button',{name:'남은 악당 찾기',exact:true}).click();await page.locator('.map-foe-choices').getByRole('button',{name:new RegExp(places[i])}).click();await page.waitForFunction(()=>document.querySelector('.map-find-foe')?.getAttribute('aria-busy')==='false',undefined,{timeout:18000});await page.waitForFunction(()=>document.querySelector('.map-encounter-attack')?.getAttribute('aria-disabled')==='false');};
+  if(!reduced){
+   // Tapping a legal road replaces the automatic trip and must also clear its UI state.
+   await page.getByRole('button',{name:'남은 악당 찾기',exact:true}).click();await page.locator('.map-foe-choices button').nth(1).click();
+   await page.waitForFunction(()=>document.querySelector('.map-find-foe')?.getAttribute('aria-busy')==='true');
+   const roadTap=await page.evaluate(()=>{const canvas=document.querySelector('.map-host canvas'),r=canvas.getBoundingClientRect();for(const [x,y] of [[640,505],[820,455],[445,465],[947,335],[440,535],[350,350],[430,245]]){const px=r.x+x/1280*r.width,py=r.y+y/720*r.height;if(px>20&&py>80&&px<innerWidth-20&&py<innerHeight-70&&document.elementFromPoint(px,py)===canvas)return{x:px,y:py};}return null;});
+   assert.ok(roadTap,'a legal road tap is visible');await page.mouse.click(roadTap.x,roadTap.y);
+   await page.waitForFunction(()=>document.querySelector('.map-find-foe')?.getAttribute('aria-busy')==='false');
+  }
   await seek(1);await page.keyboard.down('ArrowLeft');await page.waitForTimeout(2000);await page.keyboard.up('ArrowLeft');assert.match(await page.locator('.map-encounter-status').innerText(),/이쪽 길은 막혀요/);assert.equal(await page.locator('dialog[open]').count(),0);assert.equal(await page.locator('#app').getAttribute('inert'),null);await page.screenshot({path:`${out}/map-blocked-guide-${width}.png`});
   for(const [n,i] of [0,4,2,1,3].entries()){
    await seek(i);const attack=page.locator('.map-encounter-attack');

@@ -464,7 +464,7 @@ function map(ctx:Context){
  if(auto){enter(i);
  return;}
  selected=i;
- arrival.append(button(`${place(i)} 들어가기`,()=>enter(i),'primary'));},reducedMotion(state.settings.reduced),frame,clearSelection,()=>mode==='follow',()=>{
+ arrival.append(button(`${place(i)} 들어가기`,()=>enter(i),'primary'));},reducedMotion(state.settings.reduced),frame,cancelTravel,()=>mode==='follow',()=>{
   clearMapTimers();
   if(mapRecovery.contains(document.activeElement))nextButton.focus({preventScroll:true});
   mapRecovery.hidden=true;
