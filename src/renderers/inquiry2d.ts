@@ -141,12 +141,12 @@ export function mountInquiry(host:HTMLElement,task:InquiryTask,learner:InquiryRe
     for(let i=0;i<2;i++){
      const x=260+i*440;
      this.drawSpecimen(x,265+mid,410,340,kind,record.pins[i],i===1);
-     this.caption(x,65+mid,`${i===0?'A · 이전':'B · 이후'} ${isTimeline?'관찰 '+(record.pins[i]+1):'시점 '+record.pins[i]}`,28,tone.ink,370);
+     this.caption(x,65+mid,isTrack?(i===0?'처음 사진':'나중 사진'):`${i===0?'이전':'이후'} · 관찰 ${record.pins[i]+1}`,28,tone.ink,370);
     }
     if(isTimeline)this.caption(700,455+mid,'달라진 곳을 눌러요',28,tone.ink,370);
    }
    else{this.drawSpecimen(480,isTimeline?255:270+mid,isTimeline?730:Math.min(880,720+(H-HEIGHT)*1.6),isTimeline?390:435+(H-HEIGHT),kind,isTrack&&play&&!beforeDemo?liveClock:record.time,task.kind==='microscope');
-   if(preview&&!play&&(isTimeline||isTrack))this.caption(480,30,isTimeline?'지금 고른 모습 · 관찰 '+(record.time+1):'지금 고른 순간 · 시점 '+Math.round(record.time),22);}
+   if(preview&&!play&&(isTimeline||isTrack))this.caption(480,30,isTimeline?'지금 고른 모습 · 관찰 '+(record.time+1):'지금 보고 있는 모습',22);}
    if(isTrack&&(!comparing||reveal===undefined))this.caption(480,H-26,'같은 시야 · 같은 짚신벌레의 위치를 비교해요',20,'#3e6651',850);
    if(isTimeline&&(!comparing||reveal===undefined)){const g=this.add.graphics();
    g.lineStyle(6,tone.line,1).lineBetween(235,505,725,505);

@@ -176,3 +176,13 @@
 
 - `public/assets/ui/certificate-wax-seal-20261123.webp`: 사용자가 2026-11-23 이 작업에 직접 첨부한 촛농 봉인 PNG를 투명도 그대로 768px WebP로 최적화한 배포본. 원본은 외장 작업 폴더 `_scratch/certificate-wax-20261123/assets/user-wax-seal-reference.png`에 보존. AI 생성 이미지로 표기하지 않음.
 - 금빛 인증 문구는 기존 글꼴로 화면·인쇄·PNG에 얹고, 목재 손잡이/금속 도장 모션은 CSS로 구현. 기존 `map-finish.mp3` 효과음을 기존 음소거·효과음 크기 설정에 따라 1회 재사용.
+
+
+## 2026-11-23 · 그림 복습·음성 보완 추가분
+
+|파일|출처·권한 근거|기록|
+|---|---|---|
+|`characters/moa-review-20261123.webp`, `ui/core-gem-20261123.webp`|사용자의 새 그림 요청으로 현재 세션의 Codex 내장 OpenAI image_gen에서 직접 생성. 기존 모아 에셋을 인물 참조로 사용. 모델 세부 버전은 미제공.|`assets/generated/ui-review-20261123.json`에 요약·참조·SHA256. 새 외부 사진 전재 없음.|
+|추가 음성42개(모아2·두리1·토토39)|기존 ElevenLabs 유료 Flow 및 기존 Mina·Taek·Aria voice ID. 2026-11-18 Creator 상업 이용 근거 유지. 기존 크레딧만 사용.|`assets/generated/voice-review-20261123.json`. 사람 청취 검증은 완료로 표시하지 않음.|
+
+공통 인증서 커밋 `662ccac`의 사용자 제공 촛농 이미지와 권리 기록을 그대로 유지했다. 새 생성 촛농 후보, 원음 묶음, ASR 모델·환경, 사적 QA 결과는 `public/`·운영 빌드에 넣지 않는다.

@@ -6,7 +6,7 @@ import {isGermTask} from './germ-lab';
 export function prepareInquiry(task:InquiryTask):InquiryRecord{
  const r=emptyRecord();
  if(task.kind==='microscope'){r.level=task.id==='M1-2'?1:2;r.focus=45;r.light=65;}
- if(task.kind==='track'){r.pins=[0];r.time=5;}
+ if(task.kind==='track'){r.pins=[];r.time=0;}
  if(task.kind==='timeline'){r.pins=[0];r.time=3;}
  if(isGermTask(task))r.assignments.germ='1';
  if(task.kind==='build'&&task.order>1){

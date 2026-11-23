@@ -31,7 +31,7 @@ export function guidance(task:InquiryTask,r:InquiryRecord,selectedCard=''){
  }else if(task.kind==='track'){
   const cilia=r.v===2,paired=r.pins.length===2&&Number.isFinite(r.pins[0])&&Number.isFinite(r.pins[1])&&Math.abs(r.pins[1]-r.pins[0])>=3;
   total=cilia?3:2;done=Number(Number.isFinite(r.pins[0]))+Number(cilia?paired:!issues.length)+Number(cilia&&!issues.length);
-  action=!Number.isFinite(r.pins[0])?'‘관찰 시점’을 움직인 뒤 A 고정을 눌러요.':!paired?(Math.abs(r.time-r.pins[0])>=3?'B 고정을 눌러 두 순간을 나란히 비교해요.':'‘관찰 시점’을 A에서 3칸 이상 옮긴 뒤 B 고정을 눌러요.'):issues.length&&cilia?(r.level<2?'두 순간의 위치를 비교하고 현미경으로 더 가까이 봐요.':'확대된 몸 둘레를 살펴보고 가는 털이 보이는 곳을 눌러 표시해요.'):action;
+  action=!Number.isFinite(r.pins[0])?'‘처음 사진 찍기’를 눌러 첫 모습을 남겨요.':!paired?(Math.abs(r.time-r.pins[0])>=3?'‘나중 사진 찍기’를 눌러 두 사진을 비교해요.':'움직임을 보거나 ‘움직인 모습 보기’를 누른 뒤 나중 사진을 찍어요.'):issues.length&&cilia?(r.level<2?'두 순간의 위치를 비교하고 현미경으로 더 가까이 봐요.':'확대된 몸 둘레를 살펴보고 가는 털이 보이는 곳을 눌러 표시해요.'):action;
  }else if(task.kind==='timeline'){
   const marked=r.marks.length>0&&r.marks.every(p=>markValid(task,r,p));
   total=3;done=Number(validTimelinePair(r))+Number(marked)+Number(r.opened.includes('process'));

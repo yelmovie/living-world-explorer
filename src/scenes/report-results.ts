@@ -1,3 +1,5 @@
+import {discoveryCards,reviewIdeas} from '../review-cards';
+import '../review-cards.css';
 import {stageIds,validEvidence,type Stage} from '../model';
 import {stages} from '../content';
 import {el,button,heading,paragraph,modal,notice,type Context} from '../ui';
@@ -15,7 +17,7 @@ let main:{settings:(showTeacherTools?:boolean)=>void;records:()=>void};
 export function bindMainScreens(hooks:typeof main){main=hooks;}
 export function report(ctx:Context){const a=ctx.attempt;
 const head=el('div','activity-heading');
-head.append(heading('우리의 발견을 모아 소개해요'));
+head.append(heading('다섯 연구소의 발견'));
 ctx.host.append(head);
 const grid=el('div','workspace');
 const work=el('section','workbench');
@@ -28,12 +30,12 @@ ctx.host.insertBefore(tabs,grid);
  const hasRecord=(id:Stage)=>validEvidence(a,id,ctx.state.settings.admin);
  // 2026-11-15: every restored lab's record counts as presented when the report opens. The five "이 기록 확인" taps repeated the core ports.
  const unread=stageIds.filter(id=>hasRecord(id)&&!a.report.includes(id));if(unread.length){a.report.push(...unread);ctx.save();}
- const show=(id:Stage)=>{tabs.replaceChildren(...stages.map((s,i)=>{const b=button(s.title,()=>show(s.id),id===s.id?'selected':'secondary');
+ const show=(id:Stage)=>{tabs.replaceChildren(...stages.map((s,i)=>{const b=button(reviewIdeas[s.id].title,()=>show(s.id),id===s.id?'selected':'secondary');
  b.prepend(stageBadge(i));
  b.setAttribute('aria-pressed',String(id===s.id));
  return b;}));
  work.scrollTop=0;
- work.replaceChildren(inquiryEvidenceView(a.evidence[id]));
+ work.replaceChildren(discoveryCards(a.evidence[id],id));
   if(ctx.state.settings.admin&&!hasRecord(id))work.append(paragraph('아직 시연 기록이 없어요. 교사용 도구에서 예시를 불러오거나 지도에서 이 연구소를 탐험해요.'),button('교사용 도구 열기',()=>main.settings(true),'secondary'));
  };show(stageIds.find(id=>hasRecord(id))||'M1');
  const presentation=()=>{
@@ -65,8 +67,8 @@ ctx.host.insertBefore(tabs,grid);
   },'primary'),album]);
  };
  const gathered=stageIds.filter(id=>hasRecord(id)).length;
- const reportStatus=paragraph(gathered===5?'다섯 연구소의 발견이 모였어요. 위에서 연구소를 눌러 다시 읽어 보고, 코어에 연결해요.':`발견 ${gathered}/5 · 지도에서 남은 연구소를 탐험해요.`,'report-status');
- const mentor=el('img','report-mentor');mentor.src='assets/characters/moa-portrait.webp';mentor.alt='모아 연구원';side.append(reportStatus,mentor,heading('내 말로 소개해요'),paragraph('관찰한 것 / 그렇게 생각한 근거 / 우리 생활과의 연결'),button('생활 사건 발표',presentation,'secondary',!hasRecord('M4')));
+ const reportStatus=paragraph(`발견 ${gathered} / 5`,'report-status');
+ const mentor=el('img','report-mentor');mentor.src='assets/characters/moa-review-20261123.webp';mentor.alt='어린 연구원 모아';side.append(reportStatus,mentor,paragraph('그림을 눌러 내 발견을 떠올려요.','report-invite'),button('생활 사건 발표',presentation,'secondary',!hasRecord('M4')));
  const f=el('div','action-bar');f.append(button('발견을 코어에 연결',()=>ctx.go('core-restoration'),'primary',!stageIds.every(id=>hasRecord(id)&&a.report.includes(id))));ctx.host.append(f);
 }
 /** Moa's line plays once per visit of the session, not on every re-render. */

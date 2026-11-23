@@ -1,0 +1,1169 @@
+{
+  "provider": "ElevenLabs",
+  "model": "eleven_v4",
+  "generatedDate": "2026-11-23",
+  "timezone": "Asia/Seoul",
+  "flowId": "oNKFrBe73nDEyZ7Mo0sP",
+  "flowUrl": "https://elevenlabs.io/app/flows/oNKFrBe73nDEyZ7Mo0sP",
+  "speakers": {
+    "moa": {
+      "name": "Mina",
+      "voiceId": "mV7RnCYPcw47zFjyhuhw"
+    },
+    "toto": {
+      "name": "Aria",
+      "voiceId": "O2KReOFLpoR65nz6C9Se"
+    },
+    "duri": {
+      "name": "Taek",
+      "voiceId": "rCm09Tf1yMYbOyCRLDyB"
+    }
+  },
+  "realPersonVoiceClone": false,
+  "commercialBasis": "Existing paid ElevenLabs workflow; Creator payment and commercial use documented 2026-11-18. Used existing credits, no new subscription or purchase. See assets/CREDITS.md.",
+  "method": "Existing authenticated Flow UI. Character batches separated with [pause], split by local Whisper turbo word timestamps. Two-pass FFmpeg loudnorm target I=-16, TP=-1.8, LRA=11; mono 44.1kHz MP3 128kbps. Source take hashes and offsets retained.",
+  "review": {
+    "automatedOnly": true,
+    "physicalTablet": false,
+    "humanSpeakerListening": false,
+    "asr": "faster-whisper 1.2.1 / turbo CPU int8, Korean; unprompted source and independent trimmed MP3 recognition. Punctuation/spacing ignored, 1000 equals 천; minimum similarity .94. Raw logs remain local.",
+    "asrIssue": "Long repeated culture batch omitted one 11-second span in ASR; the span was independently transcribed and word alignment repaired without changing audio. Taek and one short Toto line were regenerated before approval.",
+    "earshot": "42 clips measured: no clipped samples. Comparisons to 3 original references per character. Toto and Duri fit; Moa CLAP typicality is an outlier despite same verified voice ID. CLAP is not speaker identity or human listening; Moa listening review remains."
+  },
+  "lines": [
+    {
+      "id": "discovery-M1-2",
+      "src": "assets/audio/voice/moa/discovery-M1-2-20261123.mp3",
+      "text": "이 버섯 모형에서는 갓 아래 주름을 볼 수 있어요. 이 버섯은 주름에서 아주 작은 알갱이, 포자를 만들어요. 포자가 알맞은 곳에 닿으면 새 버섯이 자랄 수 있어요.",
+      "speaker": "moa",
+      "duration": 12.199184,
+      "sha256": "13f2f6afb03651428581ae56d3f711c6fc75b9fef3fbb1a26a08bfec044653a1",
+      "take": "moa-take1",
+      "takeSha256": "f33741f199af6d6381d197cbf6d1fba956e91b52a18700db404d5368f35952cf",
+      "start": 0,
+      "end": 12.15,
+      "asrText": " 이 버섯 모형에서는 갓 아래 주름을 볼 수 있어요. 이 버섯은 주름에서 아주 작은 알갱이, 포자를 만들어요. 포자가 알맞은 곳에 닿으면 새 버섯이 자랄 수 있어요.",
+      "similarity": 1.0,
+      "voiceId": "mV7RnCYPcw47zFjyhuhw",
+      "trimmedAsr": {
+        "id": "discovery-M1-2",
+        "text": " 이 버섯 모형에서는 갓 알의 주름을 볼 수 있어요. 이 버섯은 주름에서 아주 작은 알갱이, 포자를 만들어요. 포자가 알맞은 곳에 닿으면 새 버섯이 자랄 수 있어요.",
+        "similarity": 0.967741935483871,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.6,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 12.15
+      }
+    },
+    {
+      "id": "discovery-M3-1",
+      "src": "assets/audio/voice/moa/discovery-M3-1-20261123.mp3",
+      "text": "세균은 짚신벌레보다 훨씬 작아요. 이 모형에서는 1000배 시야로 살펴봤어요. 실제 관찰은 표본과 현미경 상태에 따라 달라요.",
+      "speaker": "moa",
+      "duration": 10.213878,
+      "sha256": "6868de02edb8ab1d72e721df6c4b2e872a9cab62636ffcaf55efef358ae69a3e",
+      "take": "moa-take1",
+      "takeSha256": "f33741f199af6d6381d197cbf6d1fba956e91b52a18700db404d5368f35952cf",
+      "start": 13.345,
+      "end": 23.51,
+      "asrText": " 세균은 집신벌레보다 훨씬 작아요. 이 모형에서는 1000배 시야로 살펴봤어요. 실제 관찰은 표본과 현미경 상태에 따라 달라요.",
+      "similarity": 0.9795918367346939,
+      "voiceId": "mV7RnCYPcw47zFjyhuhw",
+      "trimmedAsr": {
+        "id": "discovery-M3-1",
+        "text": " 세균은 짚신벌레보다 훨씬 작아요. 이 모형에서는 1000배 시야로 살펴봤어요. 실제 관찰은 표본과 현미경 상태에 따라 달라요.",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.5,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 10.165
+      }
+    },
+    {
+      "id": "M3-memory",
+      "src": "assets/audio/voice/M3-memory-20261123.mp3",
+      "text": "이 모형에서는 세균을 1000배 시야로 살펴봤어. 실제 관찰은 표본과 현미경 상태에 따라 달라. 세균은 짚신벌레보다 훨씬 작고 여러 모양과 사는 곳이 있어.",
+      "speaker": "duri",
+      "duration": 12.120816,
+      "sha256": "dd132e188173ca58059e02abb13ee96867d71007287b2d9b476c2fb658a4ee11",
+      "take": "duri-take2",
+      "takeSha256": "a0d6d1da0a78517e9bf6004dfe920359d735c52ee2b8b97a9b71790a1a0b9419",
+      "start": 0,
+      "end": 12.09,
+      "asrText": " 이 모형에서는 세균을 1000배 시야로 살펴봤어. 실제 관찰은 표본과 현미경 상태에 따라 달라. 세균은 집신벌레보다 훨씬 작고 여러 모양과 사는 곳이 있어.",
+      "similarity": 0.9833333333333333,
+      "voiceId": "rCm09Tf1yMYbOyCRLDyB",
+      "trimmedAsr": {
+        "id": "M3-memory",
+        "text": " 이 모형에서는 세균을 1000배 시야로 살펴봤어. 실제 관찰은 표본과 현미경 상태에 따라 달라. 세균은 집신벌레보다 훨씬 작고 여러 모양과 사는 곳이 있어.",
+        "similarity": 0.9833333333333333,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.9,
+        "true_peak_dbtp": -2.0,
+        "clipped_samples": 0,
+        "duration": 12.09
+      }
+    },
+    {
+      "id": "toto-review-01",
+      "src": "assets/audio/voice/toto/toto-review-01.mp3",
+      "text": "찾았다! 이 버섯 모형의 갓 아래 줄무늬를 주름이라고 해. 「현미경으로 보기」를 눌러 더 크게 보자!",
+      "speaker": "toto",
+      "duration": 7.47102,
+      "sha256": "4deb54f63e597d9e6446b0c61ec9b0fa42d874070f2df5fe2771781b3c26da7b",
+      "take": "toto-static-take1",
+      "takeSha256": "3b599362f9069424cf4bdbc02e862929432681067f4206739f26a607ed720cbe",
+      "start": 0,
+      "end": 7.43,
+      "asrText": " 찾았다! 이 버섯 모형의 갓 아래 줄무늬를 주름이라고 해. 현미경으로 보기를 눌러 더 크게 보자.",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-review-01",
+        "text": " 찾았다! 이 버섯 모형의 갓 아래 줄무늬를 주름이라고 해. 현미경으로 보기를 눌러 더 크게 보자.",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.5,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 7.43
+      }
+    },
+    {
+      "id": "toto-review-02",
+      "src": "assets/audio/voice/toto/toto-review-02.mp3",
+      "text": "이 버섯 모형의 주름에 붙은 작은 알갱이가 포자야. 관찰 사진을 남겼어.",
+      "speaker": "toto",
+      "duration": 6.086531,
+      "sha256": "9fe6f5497e317d949c04489b48aca460d881fdbd1c2966121af9c03adaa5b31e",
+      "take": "toto-static-take1",
+      "takeSha256": "3b599362f9069424cf4bdbc02e862929432681067f4206739f26a607ed720cbe",
+      "start": 8.235,
+      "end": 14.27,
+      "asrText": " 이 버섯 모형의 주름에 붙은 작은 알갱이가 포자야. 관찰 사진을 남겼어.",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-review-02",
+        "text": " 이 버섯 모형의 주름에 붙은 작은 알갱이가 포자야. 관찰 사진을 남겼어.",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.4,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 6.035
+      }
+    },
+    {
+      "id": "toto-review-03",
+      "src": "assets/audio/voice/toto/toto-review-03.mp3",
+      "text": "맞아! 이번에 본 버섯은 주름에서, 곰팡이는 동그란 주머니에서 포자를 만들어 퍼져요.",
+      "speaker": "toto",
+      "duration": 7.079184,
+      "sha256": "a877db4b58d41013133d229874e6e9584c2b2c60e755660b6619ee109cf3dc9c",
+      "take": "toto-static-take1",
+      "takeSha256": "3b599362f9069424cf4bdbc02e862929432681067f4206739f26a607ed720cbe",
+      "start": 14.565,
+      "end": 21.61,
+      "asrText": " 맞아! 이번에 본 버섯은 주름에서 곰팡이는 동그란 주머니에서 포자를 만들어 퍼져요.",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-review-03",
+        "text": " 맞아! 이번에 본 버섯은 주름에서 곰팡이는 동그란 주머니에서 포자를 만들어 퍼져요.",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.7,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 7.045
+      }
+    },
+    {
+      "id": "toto-review-04",
+      "src": "assets/audio/voice/toto/toto-review-04.mp3",
+      "text": "예상과 같았어! 이 모형에서는 1000배 시야로 세균을 살펴봐. 실제 관찰은 표본과 현미경 상태에 따라 달라.",
+      "speaker": "toto",
+      "duration": 8.829388,
+      "sha256": "e312edf493aa7abd340eed69177203358f7d084c5f380952beabe132cd1dbb81",
+      "take": "toto-static-take1",
+      "takeSha256": "3b599362f9069424cf4bdbc02e862929432681067f4206739f26a607ed720cbe",
+      "start": 21.745,
+      "end": 30.53,
+      "asrText": " 예상과 같았어! 이 모형에서는 천배 시야로 세균을 살펴봐. 실제 관찰은 표본과 현미경 상태에 따라 달라.",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-review-04",
+        "text": " 예상과 같았어. 이 모형에서는 1000배 시야로 세균을 살펴봐. 실제 관찰은 표본과 현미경 상태에 따라 달라.",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.8,
+        "true_peak_dbtp": -2.1,
+        "clipped_samples": 0,
+        "duration": 8.785
+      }
+    },
+    {
+      "id": "toto-review-05",
+      "src": "assets/audio/voice/toto/toto-review-05.mp3",
+      "text": "예상과 달랐구나. 이 모형에서는 1000배 시야로 세균을 살펴봐. 실제 관찰은 표본과 현미경 상태에 따라 달라.",
+      "speaker": "toto",
+      "duration": 9.195102,
+      "sha256": "57ab485d5cad1bf41c955204554a65e94dd4f0060e117ca464a2added5eb7bc8",
+      "take": "toto-static-take1",
+      "takeSha256": "3b599362f9069424cf4bdbc02e862929432681067f4206739f26a607ed720cbe",
+      "start": 30.645,
+      "end": 39.81,
+      "asrText": " 예상과 달랐구나. 이 모형에서는 천배 시야로 세균을 살펴봐. 실제 관찰은 표본과 현미경 상태에 따라 달라.",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-review-05",
+        "text": " 예상과 달랐구나. 이 모형에서는 1000배 시야로 세균을 살펴봐. 실제 관찰은 표본과 현미경 상태에 따라 달라.",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.5,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 9.165
+      }
+    },
+    {
+      "id": "toto-review-06",
+      "src": "assets/audio/voice/toto/toto-review-06.mp3",
+      "text": "완벽한 전시야! 이번 모형에서 본 세균은 짚신벌레보다 훨씬 작아.",
+      "speaker": "toto",
+      "duration": 5.694694,
+      "sha256": "c27782d74a8ca0dfdbc028b1ac03898e883af45c288513b54a46f4195bdc03ab",
+      "take": "toto-static-take1",
+      "takeSha256": "3b599362f9069424cf4bdbc02e862929432681067f4206739f26a607ed720cbe",
+      "start": 40.025,
+      "end": 45.69,
+      "asrText": " 완벽한 전시야! 이번 모형에서 본 세균은 집신벌레보다 훨씬 작아.",
+      "similarity": 0.9615384615384616,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-review-06",
+        "text": " 완벽한 전시야. 이번 모형에서 본 세균은 집신벌레보다 훨씬 작아.",
+        "similarity": 0.9615384615384616,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.7,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 5.665
+      }
+    },
+    {
+      "id": "toto-review-07",
+      "src": "assets/audio/voice/toto/toto-review-07.mp3",
+      "text": "이번 모형에서 짚신벌레와 세균의 크기를 비교한 걸 떠올려 봐!",
+      "speaker": "toto",
+      "duration": 4.649796,
+      "sha256": "ba95508c7bc60a62e95fdfa286485934842ba3c0640cb0a41b19c107db3501b6",
+      "take": "toto-single-take2",
+      "takeSha256": "c886714baad4faf602a218a74f4f81963a12a9ca0c8a10a90b6daff3e3411c89",
+      "start": 0,
+      "end": 4.61,
+      "asrText": " 이번 모형에서 집신벌레와 세균의 크기를 비교한 걸 떠올려봐.",
+      "similarity": 0.96,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-review-07",
+        "text": " 이번 모형에서 집신벌레와 세균의 크기를 비교한 걸 떠올려봐.",
+        "similarity": 0.96,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.4,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 4.61
+      }
+    },
+    {
+      "id": "toto-culture-01",
+      "src": "assets/audio/voice/toto/toto-culture-01.mp3",
+      "text": "이번에 고른 손바닥·화분 흙·연못 물 접시를 빈 접시와 비교해 봐. 흙 이외의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 8.437551,
+      "sha256": "8d6b91def4569d7da7523da268a89223ee2043e368891ff7a9ec8491fe60fee3",
+      "take": "culture-1-take1",
+      "takeSha256": "a4cb79766fa9171f3380b20011d73f8954d49aa4ab9dfd41d77f1eb567891a6e",
+      "start": 0,
+      "end": 8.41,
+      "asrText": " 이번에 고른 손바닥, 화분 흙, 면몬물 접시를 빈 접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+      "similarity": 0.9473684210526315,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-01",
+        "text": " 이번에 고른 손바닥, 화분 흙, 연못물 접시를 빈 접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.5,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 8.41
+      }
+    },
+    {
+      "id": "toto-culture-02",
+      "src": "assets/audio/voice/toto/toto-culture-02.mp3",
+      "text": "이번에 고른 손바닥·화분 흙·연못 물 접시를 빈 접시와 비교해 봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 9.560816,
+      "sha256": "8f5e1b8cdee170f99598e8dee101380aee6738582512c13dfd827d39d0c9fbd9",
+      "take": "culture-1-take1",
+      "takeSha256": "a4cb79766fa9171f3380b20011d73f8954d49aa4ab9dfd41d77f1eb567891a6e",
+      "start": 9.725,
+      "end": 19.25,
+      "asrText": " 이번에 고른 손바닥, 화분 흙, 면몬물 접시를 빈 접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "similarity": 0.9545454545454546,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-02",
+        "text": " 이번에 고른 손바닥, 화분흙, 연못물 접시를 빈접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.6,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 9.525
+      }
+    },
+    {
+      "id": "toto-culture-03",
+      "src": "assets/audio/voice/toto/toto-culture-03.mp3",
+      "text": "이번에 고른 손바닥·화분 흙·문손잡이 접시를 빈 접시와 비교해 봐. 흙 이외의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 8.85551,
+      "sha256": "269c3f9d2982597ec9a325d515465aef2d25e2f07ba6084b72600d28c8dee45e",
+      "take": "culture-1-take1",
+      "takeSha256": "a4cb79766fa9171f3380b20011d73f8954d49aa4ab9dfd41d77f1eb567891a6e",
+      "start": 20.485,
+      "end": 29.29,
+      "asrText": " 이번에 고른 손바닥, 화분 흙, 문손잡이 접시를 빈 접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-03",
+        "text": " 이번에 고른 손바닥, 화분 흙, 문손잡이 접시를 빈접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.5,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 8.805
+      }
+    },
+    {
+      "id": "toto-culture-04",
+      "src": "assets/audio/voice/toto/toto-culture-04.mp3",
+      "text": "이번에 고른 손바닥·화분 흙·문손잡이 접시를 빈 접시와 비교해 봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 9.926531,
+      "sha256": "36120a90d8d4ed7e81804945a233d2cf4c422727f6d62a8773d64c5a47efbf57",
+      "take": "culture-1-take1",
+      "takeSha256": "a4cb79766fa9171f3380b20011d73f8954d49aa4ab9dfd41d77f1eb567891a6e",
+      "start": 30.205,
+      "end": 40.09,
+      "asrText": " 이번에 고른 손바닥, 화분 흙, 문손잡이 접시를 빈 접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-04",
+        "text": " 이번에 고른 손바닥, 화분 흙, 문손잡이 접시를 빈 접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.6,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 9.885
+      }
+    },
+    {
+      "id": "toto-culture-05",
+      "src": "assets/audio/voice/toto/toto-culture-05.mp3",
+      "text": "이번에 고른 손바닥·화분 흙·먹다 남은 빵 접시를 빈 접시와 비교해 봐. 흙 이외의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 8.907755,
+      "sha256": "104522ff1d0249815096c281afb0c0ad86770aac71902a214ee8e4462482fb02",
+      "take": "culture-1-take1",
+      "takeSha256": "a4cb79766fa9171f3380b20011d73f8954d49aa4ab9dfd41d77f1eb567891a6e",
+      "start": 41.365,
+      "end": 50.24,
+      "asrText": " 이번에 고른 손바닥, 화분 흙, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-05",
+        "text": " 이번에 고른 손바닥, 화분 흙, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.5,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 8.875
+      }
+    },
+    {
+      "id": "toto-culture-06",
+      "src": "assets/audio/voice/toto/toto-culture-06.mp3",
+      "text": "이번에 고른 손바닥·화분 흙·먹다 남은 빵 접시를 빈 접시와 비교해 봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 11.206531,
+      "sha256": "7f10ed98e1a867837218539555fe72dbecade5fcbb09ec5b720c224b7fa89ce2",
+      "take": "culture-1-take1",
+      "takeSha256": "a4cb79766fa9171f3380b20011d73f8954d49aa4ab9dfd41d77f1eb567891a6e",
+      "start": 50.24,
+      "end": 61.41,
+      "asrText": " 이번에 고른 손바닥, 화분 흙, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-06",
+        "text": " 이번에 고른 손바닥, 화분 흙, 먹다 남은 빵 접시를 빈 접시와 비교해봐 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.6,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 11.17
+      }
+    },
+    {
+      "id": "toto-culture-07",
+      "src": "assets/audio/voice/toto/toto-culture-07.mp3",
+      "text": "이번에 고른 손바닥·연못 물·문손잡이 접시를 빈 접시와 비교해 봐. 흙 이외의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 8.803265,
+      "sha256": "18e0e278e22299de9e069f1c150ab4ad712597fb8c663a09a015f7b4692bb917",
+      "take": "culture-1-take1",
+      "takeSha256": "a4cb79766fa9171f3380b20011d73f8954d49aa4ab9dfd41d77f1eb567891a6e",
+      "start": 62.645,
+      "end": 71.41,
+      "asrText": " 이번에 고른 손바닥, 연못물, 문손잡이 접시를 빈 접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-07",
+        "text": " 이번에 고른 손바닥, 연못물, 문손잡이 접시를 빈접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.5,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 8.765
+      }
+    },
+    {
+      "id": "toto-culture-08",
+      "src": "assets/audio/voice/toto/toto-culture-08.mp3",
+      "text": "이번에 고른 손바닥·연못 물·문손잡이 접시를 빈 접시와 비교해 봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 10.004898,
+      "sha256": "31a698228571097d5d5cf2437e5363b53d24b3ae365cc1711c86d8184e556205",
+      "take": "culture-1-take1",
+      "takeSha256": "a4cb79766fa9171f3380b20011d73f8954d49aa4ab9dfd41d77f1eb567891a6e",
+      "start": 72.165,
+      "end": 82.13,
+      "asrText": " 이번에 고른 손바닥, 연못물, 문손잡이 접시를 빈 접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-08",
+        "text": " 이번에 고른 손바닥, 연못물, 문손잡이 접시를 빈 접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.6,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 9.965
+      }
+    },
+    {
+      "id": "toto-culture-09",
+      "src": "assets/audio/voice/toto/toto-culture-09.mp3",
+      "text": "이번에 고른 손바닥·연못 물·먹다 남은 빵 접시를 빈 접시와 비교해 봐. 흙 이외의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 8.829388,
+      "sha256": "720eac23dcd2b7e8e2233d362079d39636c53807bfe8c58c4d8b91ec25bd20b0",
+      "take": "culture-2-take1",
+      "takeSha256": "884b3df5f3b57f83766545451d615ab314e6c7144cff2545ff5469de21e51678",
+      "start": 0,
+      "end": 8.79,
+      "asrText": " 이번에 고른 손바닥, 연못물, 먹다 남은 빵접시를 빈접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-09",
+        "text": " 이번에 고른 손바닥, 연못물, 먹다 남은 빵접시를 빈접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.6,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 8.79
+      }
+    },
+    {
+      "id": "toto-culture-10",
+      "src": "assets/audio/voice/toto/toto-culture-10.mp3",
+      "text": "이번에 고른 손바닥·연못 물·먹다 남은 빵 접시를 빈 접시와 비교해 봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 9.769796,
+      "sha256": "ee9598faf24eddc6abc628aee970544d25b4948e01da15350360518c193f8032",
+      "take": "culture-2-take1",
+      "takeSha256": "884b3df5f3b57f83766545451d615ab314e6c7144cff2545ff5469de21e51678",
+      "start": 10.155,
+      "end": 19.89,
+      "asrText": " 이번에 고른 손바닥, 연못물, 먹다 남은 빵접시를 빈접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-10",
+        "text": " 이번에 고른 손바닥, 연못 물, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.7,
+        "true_peak_dbtp": -2.1,
+        "clipped_samples": 0,
+        "duration": 9.735
+      }
+    },
+    {
+      "id": "toto-culture-11",
+      "src": "assets/audio/voice/toto/toto-culture-11.mp3",
+      "text": "이번에 고른 손바닥·문손잡이·먹다 남은 빵 접시를 빈 접시와 비교해 봐. 흙 이외의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 9.639184,
+      "sha256": "657e3e31929f0e3019ee4064f29e1e31dccb7d56d04709be22ce47b510f36cd2",
+      "take": "culture-2-take1",
+      "takeSha256": "884b3df5f3b57f83766545451d615ab314e6c7144cff2545ff5469de21e51678",
+      "start": 20.765,
+      "end": 30.37,
+      "asrText": " 이번에 고른 손바닥, 문손잡이, 먹다 남은 빵접시를 빈접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-11",
+        "text": " 이번에 고른 손바닥, 문손잡이, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.6,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 9.605
+      }
+    },
+    {
+      "id": "toto-culture-12",
+      "src": "assets/audio/voice/toto/toto-culture-12.mp3",
+      "text": "이번에 고른 손바닥·문손잡이·먹다 남은 빵 접시를 빈 접시와 비교해 봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 9.874286,
+      "sha256": "e746155710c7cf0608807cb2e64b5d79af408d7aa7bf97a957f911ff4da74dad",
+      "take": "culture-2-take1",
+      "takeSha256": "884b3df5f3b57f83766545451d615ab314e6c7144cff2545ff5469de21e51678",
+      "start": 31.545,
+      "end": 41.39,
+      "asrText": " 이번에 고른 손바닥, 문손잡이, 먹다 남은 빵접시를 빈접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-12",
+        "text": " 이번에 고른 손바닥, 문손잡이, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.7,
+        "true_peak_dbtp": -2.1,
+        "clipped_samples": 0,
+        "duration": 9.845
+      }
+    },
+    {
+      "id": "toto-culture-13",
+      "src": "assets/audio/voice/toto/toto-culture-13.mp3",
+      "text": "이번에 고른 화분 흙·연못 물·문손잡이 접시를 빈 접시와 비교해 봐. 흙 이외의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 8.933878,
+      "sha256": "f9dd05041e2305175ef532438a9b93b78df3390e0812e31e9b3f6fc7950ebbf7",
+      "take": "culture-2-take1",
+      "takeSha256": "884b3df5f3b57f83766545451d615ab314e6c7144cff2545ff5469de21e51678",
+      "start": 42.725,
+      "end": 51.62,
+      "asrText": " 이번에 고른 화분 흙, 연못물, 문손잡이 접시를 빈접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-13",
+        "text": " 이번에 고른 화분 흙, 연못 물, 문손잡이 접시를 빈 접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.6,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 8.895
+      }
+    },
+    {
+      "id": "toto-culture-14",
+      "src": "assets/audio/voice/toto/toto-culture-14.mp3",
+      "text": "이번에 고른 화분 흙·연못 물·문손잡이 접시를 빈 접시와 비교해 봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 10.971429,
+      "sha256": "4553b60cf3bfe899d62ff8fc8034b98a1f49111462933b252c489dbbba3f9faa",
+      "take": "culture-2-take1",
+      "takeSha256": "884b3df5f3b57f83766545451d615ab314e6c7144cff2545ff5469de21e51678",
+      "start": 51.625,
+      "end": 62.57,
+      "asrText": " 이번에 고른 화분 흙 연못 물 문 손잡이 접시를 빈 접시와 비교해 봐 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-14",
+        "text": " 이번에 고른 화분 흙 연못 물 문 손잡이 접시를 빈 접시와 비교해 봐 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.6,
+        "true_peak_dbtp": -2.1,
+        "clipped_samples": 0,
+        "duration": 10.945
+      }
+    },
+    {
+      "id": "toto-culture-15",
+      "src": "assets/audio/voice/toto/toto-culture-15.mp3",
+      "text": "이번에 고른 화분 흙·연못 물·먹다 남은 빵 접시를 빈 접시와 비교해 봐. 흙 이외의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 9.795918,
+      "sha256": "0c330adc522b04489ab6eb391621053181fdacec973053b6b23ea4eebfe60bae",
+      "take": "culture-2-take1",
+      "takeSha256": "884b3df5f3b57f83766545451d615ab314e6c7144cff2545ff5469de21e51678",
+      "start": 63.205,
+      "end": 72.97,
+      "asrText": " 이번에 고른 화분 흙, 연못물, 먹다 남은 빵접시를 빈접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-15",
+        "text": " 이번에 고른 화분 흙, 연못 물, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.6,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 9.765
+      }
+    },
+    {
+      "id": "toto-culture-16",
+      "src": "assets/audio/voice/toto/toto-culture-16.mp3",
+      "text": "이번에 고른 화분 흙·연못 물·먹다 남은 빵 접시를 빈 접시와 비교해 봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 10.475102,
+      "sha256": "12c7772a466297bba25045ec41a702be976ce3c223f8c3c0c47dc7e7a8b0ad27",
+      "take": "culture-2-take1",
+      "takeSha256": "884b3df5f3b57f83766545451d615ab314e6c7144cff2545ff5469de21e51678",
+      "start": 73.645,
+      "end": 84.07,
+      "asrText": " 이번에 고른 화분 흙, 연못물, 먹다 남은 빵접시를 빈접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-16",
+        "text": " 이번에 고른 화분 흙, 연못 물, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.7,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 10.425
+      }
+    },
+    {
+      "id": "toto-culture-17",
+      "src": "assets/audio/voice/toto/toto-culture-17.mp3",
+      "text": "이번에 고른 화분 흙·문손잡이·먹다 남은 빵 접시를 빈 접시와 비교해 봐. 흙 이외의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 8.881633,
+      "sha256": "89cb60c2e50406214b93005abeb7d558c7cc8d71ace6b9ef5538454e4c027c20",
+      "take": "culture-3-take1",
+      "takeSha256": "c51038467ce961dd38c704dfbbcf22b84c51f8ccd30e42ac805977317928b0a6",
+      "start": 0,
+      "end": 8.85,
+      "asrText": " 이번에 고른 화분 흙, 문손잡이, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-17",
+        "text": " 이번에 고른 화분 흙, 문손잡이, 먹다 남은 빵접시를 빈접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.6,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 8.85
+      }
+    },
+    {
+      "id": "toto-culture-18",
+      "src": "assets/audio/voice/toto/toto-culture-18.mp3",
+      "text": "이번에 고른 화분 흙·문손잡이·먹다 남은 빵 접시를 빈 접시와 비교해 봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 9.978776,
+      "sha256": "865ae88b7d9466a3d2bdbd33932d93c1fd647f126be954b666190df6a28f821b",
+      "take": "culture-3-take1",
+      "takeSha256": "c51038467ce961dd38c704dfbbcf22b84c51f8ccd30e42ac805977317928b0a6",
+      "start": 9.645,
+      "end": 19.59,
+      "asrText": " 이번에 고른 화분 흙, 문손잡이, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-18",
+        "text": " 이번에 고른 화분 흙, 문손잡이, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.6,
+        "true_peak_dbtp": -2.0,
+        "clipped_samples": 0,
+        "duration": 9.945
+      }
+    },
+    {
+      "id": "toto-culture-19",
+      "src": "assets/audio/voice/toto/toto-culture-19.mp3",
+      "text": "이번에 고른 연못 물·문손잡이·먹다 남은 빵 접시를 빈 접시와 비교해 봐. 흙 이외의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 9.142857,
+      "sha256": "24ddc276651138aeea2eb3ee1ee18d9aa8b0815063381f8f441e9ef7125ca997",
+      "take": "culture-3-take1",
+      "takeSha256": "c51038467ce961dd38c704dfbbcf22b84c51f8ccd30e42ac805977317928b0a6",
+      "start": 19.905,
+      "end": 29.02,
+      "asrText": " 이번에 고른 연못물, 문손잡이, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-19",
+        "text": " 이번에 고른 연못물, 문손잡이, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.5,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 9.115
+      }
+    },
+    {
+      "id": "toto-culture-20",
+      "src": "assets/audio/voice/toto/toto-culture-20.mp3",
+      "text": "이번에 고른 연못 물·문손잡이·먹다 남은 빵 접시를 빈 접시와 비교해 봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 10.44898,
+      "sha256": "79eecd4b09d1aaad0fce47b3ccafec5a56af6bfab619eaffb221215c9767303f",
+      "take": "culture-3-take1",
+      "takeSha256": "c51038467ce961dd38c704dfbbcf22b84c51f8ccd30e42ac805977317928b0a6",
+      "start": 29.02,
+      "end": 39.43,
+      "asrText": " 이번에 고른 연못물, 문손잡이, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-20",
+        "text": " 이번에 고른 연못물, 문손잡이, 먹다 남은 빵접시를 빈접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.6,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 10.41
+      }
+    },
+    {
+      "id": "toto-culture-21",
+      "src": "assets/audio/voice/toto/toto-culture-21.mp3",
+      "text": "이번에 고른 손바닥·화분 흙·연못 물·문손잡이 접시를 빈 접시와 비교해 봐. 흙 이외의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 10.109388,
+      "sha256": "a4eae51a17de6ef5b1f36fa5b23cd70c27ccecb2de385e826b85511451345492",
+      "take": "culture-3-take1",
+      "takeSha256": "c51038467ce961dd38c704dfbbcf22b84c51f8ccd30e42ac805977317928b0a6",
+      "start": 39.565,
+      "end": 49.63,
+      "asrText": " 이번에 고른 손바닥, 화분 흙, 연못물, 문손잡이 접시를 빈 접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-21",
+        "text": " 이번에 고른 손바닥, 화분 흙, 연못 물, 문손잡이 접시를 빈 접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.5,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 10.065
+      }
+    },
+    {
+      "id": "toto-culture-22",
+      "src": "assets/audio/voice/toto/toto-culture-22.mp3",
+      "text": "이번에 고른 손바닥·화분 흙·연못 물·문손잡이 접시를 빈 접시와 비교해 봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 10.684082,
+      "sha256": "bc1737364ae2803bb0523239e66759eb7f997ecda2e1b02aa242c39c82114479",
+      "take": "culture-3-take1",
+      "takeSha256": "c51038467ce961dd38c704dfbbcf22b84c51f8ccd30e42ac805977317928b0a6",
+      "start": 49.825,
+      "end": 60.47,
+      "asrText": " 이번에 고른 손바닥, 화분 흙, 연못물, 문손잡이 접시를 빈 접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-22",
+        "text": " 이번에 고른 손바닥, 화분 흙, 연못 물, 문손잡이 접시를 빈 접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.6,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 10.645
+      }
+    },
+    {
+      "id": "toto-culture-23",
+      "src": "assets/audio/voice/toto/toto-culture-23.mp3",
+      "text": "이번에 고른 손바닥·화분 흙·연못 물·먹다 남은 빵 접시를 빈 접시와 비교해 봐. 흙 이외의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 10.213878,
+      "sha256": "f4da623b5b7a73ce6794fc41fdd9939cb83d706246d0454943e93c03bfade657",
+      "take": "culture-3-take1",
+      "takeSha256": "c51038467ce961dd38c704dfbbcf22b84c51f8ccd30e42ac805977317928b0a6",
+      "start": 60.605,
+      "end": 70.79,
+      "asrText": " 이번에 고른 손바닥, 화분 흙, 연못물, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-23",
+        "text": " 이번에 고른 손바닥, 화분 흙, 연못 물, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.6,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 10.185
+      }
+    },
+    {
+      "id": "toto-culture-24",
+      "src": "assets/audio/voice/toto/toto-culture-24.mp3",
+      "text": "이번에 고른 손바닥·화분 흙·연못 물·먹다 남은 빵 접시를 빈 접시와 비교해 봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 10.553469,
+      "sha256": "5e5cff1e885eb605d4a19accd17e030171aec217f3ad7fbb00d3429737e43560",
+      "take": "culture-3-take1",
+      "takeSha256": "c51038467ce961dd38c704dfbbcf22b84c51f8ccd30e42ac805977317928b0a6",
+      "start": 71.345,
+      "end": 81.87,
+      "asrText": " 이번에 고른 손바닥, 화분 흙, 연못물, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-24",
+        "text": " 이번에 고른 손바닥, 화분 흙, 연못 물, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.6,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 10.525
+      }
+    },
+    {
+      "id": "toto-culture-25",
+      "src": "assets/audio/voice/toto/toto-culture-25.mp3",
+      "text": "이번에 고른 손바닥·화분 흙·문손잡이·먹다 남은 빵 접시를 빈 접시와 비교해 봐. 흙 이외의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 10.004898,
+      "sha256": "7def4e077fcc4f7090d7ec04c859fcbb28f899ce7a8034c1dc512c36196bfeaf",
+      "take": "culture-4-take1",
+      "takeSha256": "9cad542dc071707a9ad05660faca5180b5dd69d0be3f15927887a1aabb4bc14f",
+      "start": 0,
+      "end": 9.97,
+      "asrText": " 이번에 고른 손바닥, 화분 흙, 문손잡이, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-25",
+        "text": " 이번에 고른 손바닥, 화분 흙, 문손잡이, 먹다 남은 빵접시를 빈접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.5,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 9.97
+      }
+    },
+    {
+      "id": "toto-culture-26",
+      "src": "assets/audio/voice/toto/toto-culture-26.mp3",
+      "text": "이번에 고른 손바닥·화분 흙·문손잡이·먹다 남은 빵 접시를 빈 접시와 비교해 봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 11.41551,
+      "sha256": "8b5082e38a65273247b71be60ef3f6fff898dce2987923cf233ba0fe37e6932b",
+      "take": "culture-4-take1",
+      "takeSha256": "9cad542dc071707a9ad05660faca5180b5dd69d0be3f15927887a1aabb4bc14f",
+      "start": 10.845,
+      "end": 22.21,
+      "asrText": " 이번에 고른 손바닥, 화분 흙, 문손잡이, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-26",
+        "text": " 이번에 고른 손바닥, 화분 흙, 문손잡이, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.6,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 11.365
+      }
+    },
+    {
+      "id": "toto-culture-27",
+      "src": "assets/audio/voice/toto/toto-culture-27.mp3",
+      "text": "이번에 고른 손바닥·연못 물·문손잡이·먹다 남은 빵 접시를 빈 접시와 비교해 봐. 흙 이외의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 10.814694,
+      "sha256": "3f5433e457e51638eed31373d3b2b17c0307a6667c7051e1f310b36d44f3d5f2",
+      "take": "culture-4-take1",
+      "takeSha256": "9cad542dc071707a9ad05660faca5180b5dd69d0be3f15927887a1aabb4bc14f",
+      "start": 23.025,
+      "end": 33.79,
+      "asrText": " 이번에 고른 손바닥, 연못 물, 문손잡이, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-27",
+        "text": " 이번에 고른 손바닥, 연못물, 문손잡이, 먹다 남은 빵접시를 빈접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.5,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 10.765
+      }
+    },
+    {
+      "id": "toto-culture-28",
+      "src": "assets/audio/voice/toto/toto-culture-28.mp3",
+      "text": "이번에 고른 손바닥·연못 물·문손잡이·먹다 남은 빵 접시를 빈 접시와 비교해 봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 11.049796,
+      "sha256": "63da26810914a1ccf471599e74d1276669822e286e11aa514979b006aa03ff31",
+      "take": "culture-4-take1",
+      "takeSha256": "9cad542dc071707a9ad05660faca5180b5dd69d0be3f15927887a1aabb4bc14f",
+      "start": 34.995,
+      "end": 46.01,
+      "asrText": " 이번에 고른 손바닥, 연못 물, 문손잡이, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-28",
+        "text": " 이번에 고른 손바닥, 연못물, 문손잡이, 먹다 남은 빵접시를 빈접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.6,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 11.015
+      }
+    },
+    {
+      "id": "toto-culture-29",
+      "src": "assets/audio/voice/toto/toto-culture-29.mp3",
+      "text": "이번에 고른 화분 흙·연못 물·문손잡이·먹다 남은 빵 접시를 빈 접시와 비교해 봐. 흙 이외의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 10.840816,
+      "sha256": "dc402f2251df2b83d46e291a38751cbe7c0807077d97daf3c676acd79a437307",
+      "take": "culture-4-take1",
+      "takeSha256": "9cad542dc071707a9ad05660faca5180b5dd69d0be3f15927887a1aabb4bc14f",
+      "start": 46.825,
+      "end": 57.63,
+      "asrText": " 이번에 고른 화분 흙, 연못 물, 문손잡이, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-29",
+        "text": " 이번에 고른 화분 흙, 연못 물, 문손잡이, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.5,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 10.805
+      }
+    },
+    {
+      "id": "toto-culture-30",
+      "src": "assets/audio/voice/toto/toto-culture-30.mp3",
+      "text": "이번에 고른 화분 흙·연못 물·문손잡이·먹다 남은 빵 접시를 빈 접시와 비교해 봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 11.075918,
+      "sha256": "253e02b50c17da1ea7b5bb9879c5b5a864e374fc495b3440f44eea1c3d242658",
+      "take": "culture-4-take1",
+      "takeSha256": "9cad542dc071707a9ad05660faca5180b5dd69d0be3f15927887a1aabb4bc14f",
+      "start": 58.875,
+      "end": 69.91,
+      "asrText": " 이번에 고른 화분 흙, 연못 물, 문손잡이, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-30",
+        "text": " 이번에 고른 화분 흙, 연못 물, 문 손잡이, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.7,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 11.035
+      }
+    },
+    {
+      "id": "toto-culture-31",
+      "src": "assets/audio/voice/toto/toto-culture-31.mp3",
+      "text": "이번에 고른 손바닥·화분 흙·연못 물·문손잡이·먹다 남은 빵 접시를 빈 접시와 비교해 봐. 흙 이외의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 11.755102,
+      "sha256": "f035edb9b32c8313022fd984520645687a8d5f0440d1b8bcab4c4c3a7b13df39",
+      "take": "culture-4-take1",
+      "takeSha256": "9cad542dc071707a9ad05660faca5180b5dd69d0be3f15927887a1aabb4bc14f",
+      "start": 70.785,
+      "end": 82.49,
+      "asrText": " 이번에 고른 손바닥, 화분 흙, 연못 물, 문손잡이, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-31",
+        "text": " 이번에 고른 손바닥, 화분 흙, 연못물, 문손잡이, 먹다 남은 빵접시를 빈접시와 비교해봐. 흙 이외의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.5,
+        "true_peak_dbtp": -2.2,
+        "clipped_samples": 0,
+        "duration": 11.705
+      }
+    },
+    {
+      "id": "toto-culture-32",
+      "src": "assets/audio/voice/toto/toto-culture-32.mp3",
+      "text": "이번에 고른 손바닥·화분 흙·연못 물·문손잡이·먹다 남은 빵 접시를 빈 접시와 비교해 봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "speaker": "toto",
+      "duration": 12.042449,
+      "sha256": "1b45c6ed368d596840891ee86a66394cbcd639d3efd8846f5b9128be9e0674b2",
+      "take": "culture-4-take1",
+      "takeSha256": "9cad542dc071707a9ad05660faca5180b5dd69d0be3f15927887a1aabb4bc14f",
+      "start": 83.745,
+      "end": 95.75,
+      "asrText": " 이번에 고른 손바닥, 화분 흙, 연못 물, 문손잡이, 먹다 남은 빵 접시를 빈 접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+      "similarity": 1.0,
+      "voiceId": "O2KReOFLpoR65nz6C9Se",
+      "trimmedAsr": {
+        "id": "toto-culture-32",
+        "text": " 이번에 고른 손바닥, 화분흙, 연못물, 문손잡이, 먹다 남은 빵접시를 빈접시와 비교해봐. 눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?",
+        "similarity": 1.0,
+        "pass": true
+      },
+      "measurements": {
+        "lufs": -13.6,
+        "true_peak_dbtp": -2.1,
+        "clipped_samples": 0,
+        "duration": 12.005
+      }
+    }
+  ]
+}

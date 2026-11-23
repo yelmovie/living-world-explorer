@@ -35,7 +35,7 @@ export async function playGerm(page,id,{wrong=false}={}){
  }
  if(id==='M3-3'){
   for(const place of ['hand','soil','pond']){
-   await rub(page,page.locator(`.culture-place[data-place=${place}]`));await page.waitForTimeout(150);
+   await page.locator(`.culture-place[data-place=${place}]`).click();await page.locator('.culture-detail:not([hidden])').waitFor();const photo=page.locator('.culture-detail-photo'),pb=await photo.boundingBox();await rub(page,photo,{dx:Math.min(70,pb.width*.28),times:12});await page.waitForTimeout(150);
    if(wrong&&place==='hand'){const d=page.locator('.culture-dish[data-dish=hand]');const [x,y]=await centre(d);await page.mouse.move(x,y);await page.mouse.down();await page.mouse.move(x+10,y,{steps:2});await page.mouse.up();hints.push(await toto(page));}
    await rub(page,page.locator(`.culture-dish[data-dish=${place}]`),{dx:45,times:8});await page.waitForTimeout(150);
   }

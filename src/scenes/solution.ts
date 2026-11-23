@@ -1,3 +1,6 @@
+import {reviewIdeas,coreDiscovery} from '../review-cards';
+import {artFor} from '../artAssets';
+import '../review-cards.css';
 import {reducedMotion,el,button,heading,paragraph,modal,type Context} from '../ui';
 import {layout,footer} from './observe';
 import {stages} from '../content';
@@ -11,7 +14,7 @@ import '../core-figure.css';
 
 export function core(ctx:Context){
  const a=ctx.attempt;
- const {work,side}=layout(ctx,'마지막 임무','내 연구 기록으로 코어를 복구해요.');
+ const {work,side}=layout(ctx,'발견으로 코어를 깨워요','그림 카드를 눌러 다섯 발견을 연결해요.');
  work.classList.add('core-workbench');side.classList.add('core-controls');
  let running=false,stopped=false,finished=false,raf=0;
  const reduce=reducedMotion(ctx.state.settings.reduced);
@@ -28,10 +31,11 @@ export function core(ctx:Context){
   const control=button('',()=>put(i),'secondary core-port core-channel');
   control.dataset.channel=String(i+1);control.setAttribute('aria-label',s.title+' 포트');
   const number=el('span','core-port-number',String(i+1));number.setAttribute('aria-hidden','true');
-  const label=el('span','core-port-label',s.title);
+  const label=el('span','core-port-label',reviewIdeas[s.id].title);
+  const picture=el('img','core-port-picture');picture.src=artFor(reviewIdeas[s.id].art)!.src;picture.alt='';
   const state=el('span','core-port-state');state.id=`core-port-state-${i+1}`;
   control.setAttribute('aria-describedby',state.id);
-  control.append(number,stageBadge(i),label,state);sockets.append(control);
+  control.append(number,picture,label,state);sockets.append(control);
   return {control,state};
  });
  const review=el('details','core-records');
@@ -42,7 +46,8 @@ export function core(ctx:Context){
   more.prepend(stageBadge(i));records.append(more);
  });
  review.append(records);
- side.append(status,sockets,review);
+ const insight=el('div','core-insight');insight.setAttribute('role','status');insight.hidden=true;
+ work.append(insight);side.append(status,sockets,review);
  const activateButton=button('코어 가동',()=>activate(),'primary',true);
  activateButton.setAttribute('aria-describedby','core-link-help');
  message.id='core-link-help';
@@ -51,8 +56,8 @@ export function core(ctx:Context){
 
  function update(fresh=-1){
   const linked=connections(),total=linked.filter(Boolean).length,ready=total===stageIds.length;
-  count.textContent=`${total} / ${stageIds.length}개 연결`;
-  message.textContent=ready?(a.activated?'코어를 복구했어요. 다시 가동해 볼 수 있어요.':'다 모았어요! ‘코어 가동’을 눌러요.'):stageIds.some((_,i)=>!eligible(i))?'보고서에서 읽지 않은 기록을 먼저 확인해요.':'연구 기록을 눌러 연결해요.';
+  count.textContent=`${total} / ${stageIds.length} 연결`;
+  message.textContent=ready?(a.activated?'코어를 복구했어요. 다시 가동해 볼 수 있어요.':'다 모았어요! ‘코어 가동’을 눌러요.'):stageIds.some((_,i)=>!eligible(i))?'보고서에서 읽지 않은 기록을 먼저 확인해요.':'그림을 눌러 연결해요.';
   ports.forEach(({control,state},i)=>{
    const done=linked[i],available=eligible(i);
    control.disabled=done||!available;
@@ -68,13 +73,13 @@ export function core(ctx:Context){
   if(stopped||running||!eligible(i)||a.ports.includes(id))return;
   const pressed=ports[i].control;
   const keepFocus=pressed===document.activeElement&&pressed.matches(':focus-visible');
-  a.ports.push(id);update(i);ctx.save();playEffect('snap');
+  a.ports.push(id);update(i);insight.hidden=false;insight.replaceChildren(el('strong','',reviewIdeas[id].title+' 연결!'),el('span','',reviewIdeas[id].idea));ctx.save();playEffect('snap');
   if(keepFocus)(ports.find(p=>!p.control.disabled)?.control||activateButton).focus();
  }
  function activate(){
   const linked=connections();
   if(stopped||running||finished||!linked.every(Boolean))return;
-  running=true;playEffect('core-wake');figure.show(linked,'running');
+  running=true;insight.hidden=true;playEffect('core-wake');figure.show(linked,'running');
   const finish=()=>{
    if(stopped||finished)return;
    finished=true;cancelAnimationFrame(raf);a.activated=true;ctx.save();ctx.go('results');showFilm('final',ctx.state.settings);
@@ -92,7 +97,7 @@ export function core(ctx:Context){
    const index=Math.min(4,Math.floor(elapsed/1000));
    if(index!==shown){
     shown=index;figure.show(linked,'running',index);
-    record.replaceChildren(el('span','core-link-count',`${index+1} / 5 · 발견이 전해져요`),heading(stages[index].title),evidenceView(a.evidence[stageIds[index]],true));
+    record.replaceChildren(el('span','core-link-count',`${index+1} / 5 · 발견의 빛`),coreDiscovery(stageIds[index]));
     side.scrollTop=0;
    }
    if(elapsed>=(reduce?1:5000)){finish();return;}

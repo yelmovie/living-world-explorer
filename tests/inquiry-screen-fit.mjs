@@ -77,7 +77,7 @@ try{
   const started=Date.now();await button(page,'자동재생').click();
   await button(page,'직접 해보기').waitFor({state:'hidden'});assert.ok(Date.now()-started<6500,'2x speed applies to observation timers');
   const sampled=(await waitSaved(page)).preview.inquiry.records['M2-1'];assert.equal(sampled.sequence,3);assert.equal(sampled.assignments.site,'edge');assert.equal(sampled.completedAt,undefined);await inspectState('sampling-ready');
-  await open('M2-3');await page.getByRole('button',{name:/^B 고정/}).click();await inspectState('track-comparison');
+  await open('M2-3');await page.getByRole('button',{name:'처음 사진 찍기',exact:true}).click();await page.getByRole('button',{name:'움직인 모습 보기',exact:true}).click();await page.getByRole('button',{name:'나중 사진 찍기',exact:true}).click();await inspectState('track-comparison');
   await button(page,'현미경으로 움직임의 비밀 찾기').click();await inspectState('track-cilia');
   // 2026-11-16: M4-1 is a time-lapse; the research note appears beside the picture after a correct mark.
   await open('M4-1');await button(page,'▶ 빨리 감기').click();await page.waitForTimeout(3600);await inspectState('timeline-lapse');

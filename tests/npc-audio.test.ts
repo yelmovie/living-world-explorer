@@ -62,10 +62,21 @@ it('등록되지 않은 대사는 요청하지 않고 이전 인사를 멈춘다
  expect(greeting.pause).toHaveBeenCalled();expect(clips).toHaveLength(1);
 });
 
-it('every generated narration ID uses a shipped file',async()=>{const a=await import('../src/audio');a.syncAudio({sound:true});expect(Object.keys(narrationRecordings)).toHaveLength(192);for(const[id,line]of Object.entries(narrationRecordings)){expect(a.playNarration(id)).toBe(true);expect(clips.at(-1)!.src).toBe(line.src);expect(shippedRecordings).toHaveProperty('../public/'+line.src);}});
+it('every generated narration ID uses a shipped file',async()=>{const a=await import('../src/audio');a.syncAudio({sound:true});expect(Object.keys(narrationRecordings)).toHaveLength(231);for(const[id,line]of Object.entries(narrationRecordings)){expect(a.playNarration(id)).toBe(true);expect(clips.at(-1)!.src).toBe(line.src);expect(shippedRecordings).toHaveProperty('../public/'+line.src);}});
 // 2026-11-18: Toto reads every task hint aloud, and each character keeps one voice file set.
 it('every task hint and villain line has a Toto or Lens recording',async()=>{const {inquiryTasks}=await import('../src/curriculum');const {mapVillainStages}=await import('../src/map-villain-content');const texts=new Set(Object.values(narrationRecordings).map(r=>r.text));for(const t of inquiryTasks)for(const h of t.hints??[])expect(texts.has(h),t.id+' '+h).toBe(true);for(const s of mapVillainStages)for(const line of [...s.lines,...s.hit,s.finish])expect(texts.has(line),line).toBe(true);expect(new Set(Object.values(narrationRecordings).filter(r=>r.speaker==='toto').map(r=>r.src.split('/').slice(0,-1).join('/'))).size).toBe(1);});
-it('revised science summaries avoid stale audio; unchanged summaries, terms and map guide are voiced',async()=>{const {inquiryTasks}=await import('../src/curriculum');const {scienceTerms}=await import('../src/science-terms');const texts=new Set(Object.values(narrationRecordings).map(r=>r.text));for(const t of inquiryTasks){if(['M1-2','M3-1'].includes(t.id)){expect(texts.has(t.success),t.id+' revised wording must not use an old recording').toBe(false);expect((await import('../src/audio')).voiceLineSeconds(t.success)).toBe(0);}else expect(texts.has(t.success),t.id).toBe(true);}for(const [term,text] of Object.entries(scienceTerms))expect(texts.has(text),term).toBe(true);expect(texts.has('연구소를 복구하면 이웃이 돌아와요. 악당을 만나면 가까이에서 공격 버튼이나 J·스페이스바를 눌러요.')).toBe(true);});
+it('all science summaries, terms and map guidance have matching recordings',async()=>{const {inquiryTasks}=await import('../src/curriculum');const {scienceTerms}=await import('../src/science-terms');const texts=new Set(Object.values(narrationRecordings).map(r=>r.text));for(const t of inquiryTasks)expect(texts.has(t.success),t.id).toBe(true);for(const [term,text] of Object.entries(scienceTerms))expect(texts.has(text),term).toBe(true);expect(texts.has('연구소를 복구하면 이웃이 돌아와요. 악당을 만나면 가까이에서 공격 버튼이나 J·스페이스바를 눌러요.')).toBe(true);});
+it('all 32 culture mistake hints use the actual specimens and a matching Toto recording',async()=>{
+ const {culturePlaces,CULTURE_GOAL,cultureWrongHint}=await import('../src/germ-lab');const {emptyRecord}=await import('../src/inquiry-model');const a=await import('../src/audio');a.syncAudio({sound:true});const seen=new Set<string>();
+ for(let mask=0;mask<2**culturePlaces.length;mask++){
+  const chosen=culturePlaces.filter((_,i)=>mask&(1<<i));if(chosen.length<CULTURE_GOAL)continue;
+  const r=emptyRecord();for(const p of chosen)r.assignments['dish_'+p.id]='streaked';const before=JSON.stringify(r);
+  for(const conclusion of ['soil','dirty']){const text=cultureWrongHint(r,conclusion);seen.add(text);for(const p of chosen)expect(text).toContain(p.label);for(const p of culturePlaces.filter(p=>!chosen.includes(p)))expect(text).not.toContain(p.label);
+   const voice=Object.values(narrationRecordings).find(v=>v.text===text);expect(voice?.speaker).toBe('toto');expect(a.playVoiceLine(text)).toBe(true);expect(clips.at(-1)?.src).toBe(voice?.src);
+  }expect(JSON.stringify(r)).toBe(before);
+ }expect(seen.size).toBe(32);
+});
+
 describe('지도 전투음과 악당 대사',()=>{
  it('악당 대사가 나오는 동안에도 휘두르기·명중·퇴장 소리가 80% 이상으로 재생된다',async()=>{
   const gains:{gain:{value:number};connect:ReturnType<typeof vi.fn>}[]=[],sources:{start:ReturnType<typeof vi.fn>;stop:ReturnType<typeof vi.fn>;level?:unknown}[]=[];

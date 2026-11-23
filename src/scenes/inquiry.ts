@@ -81,7 +81,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
  ctx.host.append(grid);
  let running=false,ready=false;
  // 2026-11-16: finishing an activity opens its discovery record by itself; the footer button stays for revisits.
- let trackPlay=false,liveTime:number|undefined,liveSlider:HTMLElement|undefined;
+ let trackPlay=false,liveTime:number|undefined,trackCapture:HTMLButtonElement|undefined;
  const autoRecord=['collect','connect','sort','microscope','timeline','sample'].includes(task.kind)||brew||germ;let wasReady=guidance(task,r).ready,autoTimer:ReturnType<typeof setTimeout>|undefined;ctx.cleanup(()=>clearTimeout(autoTimer));
  const loading=el('div','inquiry-loading','관찰 이미지를 준비하고 있어요…');loading.setAttribute('role','status');work.append(loading);
  const status=el('div','inquiry-status');const counter=el('strong','inquiry-counter');
@@ -114,7 +114,9 @@ export function inquiryScene(ctx:Context,stage:Stage){
   counter.textContent=g.ready?(task.kind==='review'?(r.assignments.decision==='revise'?'✓ 생각 수정 · 기록 준비':'✓ 생각 유지 · 기록 준비'):'✓ 기록 준비 완료'):`${g.done} / ${g.total}`;
   showMeter(g.done,g.total);
   const instruction=editingClaim?'두 자료를 떠올리며 내 주장을 다시 골라요.':editingAction?'고른 사례에 쓰인 생물의 작용을 다시 골라요.':running?'설계도에서 작용이 어느 칸까지 이어지는지 살펴봐요.':g.action;
-  const shownInstruction=task.kind==='track'&&trackPlay&&r.level<2&&!validTrackPair(r)?'▶ 짚신벌레가 움직이는 중이에요. 멈추거나 A·B를 고정해 비교해요.':instruction;
+  const moved=task.kind==='track'&&Number.isFinite(r.pins[0])&&Math.abs(Math.round(trackPlay&&liveTime!==undefined?liveTime:r.time)-r.pins[0])>=3;
+  if(trackCapture?.isConnected)trackCapture.disabled=!moved;
+  const shownInstruction=task.kind==='track'&&trackPlay&&r.level<2&&!validTrackPair(r)?(moved?'위치가 달라졌어요. ‘나중 사진 찍기’를 눌러요.':'▶ 짚신벌레가 움직이는 중이에요. 처음 사진과 비교하며 살펴봐요.'):instruction;
   if(action.textContent!==shownInstruction)action.textContent=shownInstruction;
   if(sourceNext.textContent!==g.action)sourceNext.textContent=g.action;
   status.classList.toggle('ready',g.ready);ctx.host.classList.toggle('record-ready',g.ready);
@@ -173,14 +175,12 @@ export function inquiryScene(ctx:Context,stage:Stage){
  sourcePreview.replaceChildren();
  updateStatus();},changed:()=>{save();
  controls();},open:source,feedback:info,tick:t=>{liveTime=t;
- const input=liveSlider?.isConnected?liveSlider.querySelector('input'):null;
- if(input&&trackPlay){input.value=String(Math.round(t));
- updateReadouts();}},ready:(ok)=>{
+ if(trackPlay)updateStatus();},ready:(ok)=>{
   if(disposed)return;
   ready=ok;if(demoButton)demoButton.disabled=!ok;tools.inert=!ok||demoStep>=0;next.disabled=!ok||demoStep>=0;updateStatus();
   if(ok){loading.remove();ctx.host.dispatchEvent(new Event('activity-ready',{bubbles:true}));
    // 2026-11-18: M2-3 opens with the paramecium clip already swimming.
-   if(task.kind==='track'&&!trackPlay&&!reducedMotion(ctx.state.settings.reduced)&&r.level<2&&!validTrackPair(r)){trackPlay=true;controls();}}
+   if(task.kind==='track'&&Number.isFinite(r.pins[0])&&!trackPlay&&!reducedMotion(ctx.state.settings.reduced)&&r.level<2&&!validTrackPair(r)){trackPlay=true;controls();}}
   else{loading.replaceChildren(paragraph('관찰 이미지를 준비하지 못했어요. 연결을 확인하고 다시 열어요.'),button('이미지 다시 준비',ctx.render));}
  }},reducedMotion(ctx.state.settings.reduced));ctx.cleanup(view.dispose);}).catch(()=>{loading.replaceChildren(paragraph('장면을 열지 못했어요.'),button('다시 열기',ctx.render));});
  const nakedWater=()=>{
@@ -189,7 +189,7 @@ export function inquiryScene(ctx:Context,stage:Stage){
   const decor=mountScopeDecor(box,'water');decor.show('eye');
   modal('눈으로 본 연못물',[box,paragraph('눈으로는 물방울이 보여요. 짚신벌레는 현미경으로 살펴봐요.')]);
  };
- const drawControls=()=>{tools.replaceChildren();playback.querySelector('.run-play')?.remove();
+ const drawControls=()=>{trackCapture=undefined;tools.replaceChildren();playback.querySelector('.run-play')?.remove();
   tools.dataset.phase=task.kind==='review'?(!r.assignments.initial?'initial':!task.items.every(it=>r.opened.includes(it.id))?'sources':!r.assignments.claim||editingClaim?'claim':'evidence'):task.kind;
   if(task.kind==='microscope'){
    if(!r.capture){
@@ -226,19 +226,24 @@ export function inquiryScene(ctx:Context,stage:Stage){
    // 2026-11-17: the question gives way to the count once a mark is placed; undo appears only when there is something to undo.
    tools.append(found?paragraph(`현미경 · 몸 둘레 표시 ${found}곳`):choice,...r.marks.length?[button('표시 되돌리기',()=>{r.marks.pop();paint();controls();},'secondary')]:[],button('움직임 다시 보기',()=>{r.level=0;paint();controls();}));
   }else if(task.kind==='track'){
-   if(!validTrackPair(r)){
-    // 2026-11-18: the clip plays by itself; 「멈추기」, the time handle or a valid B stops it at the moment on screen.
-    const moment=()=>Math.round(trackPlay&&liveTime!==undefined?liveTime:r.time);
-    const halt=()=>{if(!trackPlay)return;r.time=moment();trackPlay=false;liveTime=undefined;view?.setPlaying(false);toggle.textContent='▶ 움직임 보기';};
-    const toggle=button(trackPlay?'⏸ 멈추기':'▶ 움직임 보기',()=>{if(trackPlay){halt();view?.setPreview(true);paint();controls();}else{trackPlay=true;view?.setPlaying(true);toggle.textContent='⏸ 멈추기';updateStatus();}},'secondary');
-    const time=slider('관찰 시점',0,10,1,moment(),v=>{halt();r.time=v;view?.setPreview(true);paint();});
-    liveSlider=time;
-    tools.append(button('눈으로 보기',nakedWater),toggle,time,
-     button(`A 고정${r.pins[0]===undefined?'':` · ${r.pins[0]}`}`,()=>{r.pins=[moment()];if(!trackPlay)view?.setPreview(true);paint();controls();playEffect('capture');}),
-     button(`B 고정${r.pins[1]===undefined?'':` · ${r.pins[1]}`}`,()=>{const at=moment();if(!Number.isFinite(r.pins[0])||Math.abs(at-r.pins[0])<3)return info('A에서 3칸 이상 떨어진 순간을 골라요.');halt();r.time=at;r.pins[1]=at;view?.setPreview(false);paint();controls();playEffect('capture');}));
+   const photos=el('div','track-photos');photos.setAttribute('aria-label','내가 찍은 짚신벌레 사진');
+   for(let i=0;i<2;i++){const card=el('figure','track-photo'),caption=el('figcaption','',i===0?'처음 사진':'나중 사진');const at=r.pins[i];
+    if(Number.isFinite(at)){const picture=el('img');picture.src=`assets/study/live/paramecium-${String(Math.max(0,Math.min(20,Math.round(at*2)))).padStart(2,'0')}.webp`;picture.alt=(i===0?'처음':'나중')+'에 찍은 같은 짚신벌레의 위치';card.append(picture);card.classList.add('is-taken');}
+    else card.append(el('span','track-photo-empty',i===0?'① 처음 모습':'② 움직인 뒤'));
+    card.append(caption);photos.append(card);
+   }tools.append(photos);
+   const moment=()=>Math.round(trackPlay&&liveTime!==undefined?liveTime:r.time);
+   const halt=()=>{if(trackPlay){r.time=moment();trackPlay=false;liveTime=undefined;view?.setPlaying(false);}};
+   if(!Number.isFinite(r.pins[0])){
+    tools.append(button('처음 사진 찍기',()=>{const at=moment();halt();r.pins=[at];r.time=at;trackPlay=!reducedMotion(ctx.state.settings.reduced);paint();controls();if(trackPlay)view?.setPlaying(true);playEffect('capture');},'primary'));
+   }else if(!validTrackPair(r)){
+    const toggle=button(trackPlay?'잠깐 멈추기':'움직임 보기',()=>{if(trackPlay){halt();view?.setPreview(true);paint();controls();}else{trackPlay=true;view?.setPlaying(true);controls();updateStatus();}},'secondary');
+    const advance=button('움직인 모습 보기',()=>{halt();const first=r.pins[0];r.time=first<=5?first+5:first-5;view?.setPreview(true);paint();controls();playEffect('page-turn');},'secondary');
+    trackCapture=button('나중 사진 찍기',()=>{const at=moment();if(Math.abs(at-r.pins[0])<3)return info('움직인 모습 보기를 누른 뒤 나중 사진을 찍어요.');halt();r.time=at;r.pins[1]=at;view?.setPreview(false);paint();controls();playEffect('capture');},'primary',Math.abs(moment()-r.pins[0])<3);
+    tools.append(toggle,advance,trackCapture);
    }else{
-    tools.append(slider('두 시점 겹쳐 보기',0,100,5,50,v=>view?.setReveal(v/100)));
-    if(r.v===2)tools.append(button('현미경으로 움직임의 비밀 찾기',()=>{r.level=2;paint();controls();playEffect('capture');},'primary'));
+    tools.append(paragraph('두 사진에서 위치가 달라졌나요?','track-compare-question'));
+    if(r.v===2)tools.append(button('현미경으로 움직임의 비밀 찾기',()=>{halt();r.level=2;paint();controls();playEffect('capture');},'primary'));
    }
   }else if(task.kind==='timeline'){
    if(!validTimelinePair(r))tools.append(slider('관찰 순서',0,3,1,r.time,v=>{r.time=v;view?.setPreview(true);paint();}),

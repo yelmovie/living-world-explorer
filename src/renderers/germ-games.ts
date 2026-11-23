@@ -4,7 +4,8 @@ import {artFor} from '../artAssets';
 import {el,button} from '../ui';
 import {playEffect} from '../audio';
 import {totoSay} from '../toto-hint';
-import {zoomSteps,zoomGuesses,zoomReach,germShapes,bugKinds,JAR_GOAL,jarCount,culturePlaces,CULTURE_GOAL,cultureDays,streaked,exhibitOrder,exhibitBlanks,germGuidance} from '../germ-lab';
+import {catchGame} from './germ-catch';
+import {zoomSteps,zoomGuesses,zoomReach,germShapes,bugKinds,JAR_GOAL,jarCount,culturePlaces,CULTURE_GOAL,cultureDays,streaked,cultureWrongHint,exhibitOrder,exhibitBlanks,germGuidance} from '../germ-lab';
 // Board layout (full-width stage, no side panel) lives with the quiz board styles.
 import '../quiz-board.css';
 import '../germ-games.css';
@@ -147,74 +148,6 @@ function zoomGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTMLEl
  return {refresh:paint,dispose:()=>{disposed=true;cancelAnimationFrame(raf);clearTimeout(hintTimer);}};
 }
 
-/** M3-2: drag (or tap, then tap a jar) moving bacteria into the jar of the same shape. */
-function catchGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTMLElement):Game{
- const field=el('div','catch-field');field.setAttribute('aria-label','움직이는 세균이 보이는 현미경 시야');
- const jars=el('div','catch-jars');
- const jarNodes=new Map<string,{b:HTMLButtonElement;count:HTMLElement;inside:HTMLElement}>();
- for(const s of germShapes){const b=el('button','catch-jar');
- b.type='button';
- b.dataset.jar=s.id;
- const glass=el('span','jar-glass'),insideBox=el('span','jar-inside'),count=el('b','jar-count');
- glass.append(insideBox);
- b.append(el('span','jar-lid'),glass,el('strong','',`${s.label}`),count);
- b.onclick=()=>{if(picked)drop(picked,s.id);};
- jars.append(b);
- jarNodes.set(s.id,{b,count,inside:insideBox});}
- stage.append(field,jars);
- type Bug={kind:typeof bugKinds[number];n:HTMLButtonElement;x:number;y:number;vx:number;vy:number;a:number;t:number;held:boolean};
- const bugs:Bug[]=[];let picked:Bug|undefined,raf=0,last=0,disposed=false;
- const spriteSrc=(k:string)=>`assets/study/germ/bug-${k}.webp`;
- const labels:Record<string,string>={round:'동그란 세균',chain:'동그란 알갱이가 이어진 세균',rod:'길쭉한 세균',tail:'꼬리 달린 길쭉한 세균',spiral:'꼬불꼬불한 세균'};
- const speed:Record<string,number>={round:.012,chain:.012,rod:.03,tail:.07,spiral:.04};
- function spawn(kind=bugKinds[Math.floor(Math.random()*bugKinds.length)]){
-  const n=el('button','catch-bug');n.type='button';n.dataset.bug=kind.id;n.setAttribute('aria-label',labels[kind.id]);n.append(img(spriteSrc(kind.id)));
-  const a=Math.random()*Math.PI*2,b:Bug={kind,n,x:.12+Math.random()*.76,y:.15+Math.random()*.7,vx:Math.cos(a)*speed[kind.id],vy:Math.sin(a)*speed[kind.id],a,t:Math.random()*10,held:false};
-  n.onclick=()=>{if(n.dataset.dragged)return;select(picked===b?undefined:b);};
-  n.onpointerdown=e=>grab(e,b);
-  field.append(n);bugs.push(b);place(b);return b;
- }
- function place(b:Bug){b.n.style.left=`${b.x*100}%`;b.n.style.top=`${b.y*100}%`;b.n.style.transform=`translate(-50%,-50%) rotate(${b.a}rad)`;}
- function select(b?:Bug){picked=b;bugs.forEach(o=>{o.n.classList.toggle('is-picked',o===b);o.n.setAttribute('aria-pressed',String(o===b));});jars.classList.toggle('is-armed',!!b);if(b)playEffect('click');}
- function grab(e:PointerEvent,b:Bug){
-  if(e.button!==0)return;const sx=e.clientX,sy=e.clientY;let moved=false;const stop=new AbortController();
-  window.addEventListener('pointermove',m=>{if(m.pointerId!==e.pointerId)return;if(!moved&&Math.hypot(m.clientX-sx,m.clientY-sy)<8)return;if(!moved){moved=true;b.held=true;select(b);}const f=field.getBoundingClientRect();
-   // The bug can leave the field toward the jars while held.
-   b.x=(m.clientX-f.left)/f.width;b.y=(m.clientY-f.top)/f.height;b.n.style.zIndex='5';place(b);jarNodes.forEach(j=>j.b.classList.toggle('is-over',inside(m.clientX,m.clientY,j.b)));},{signal:stop.signal});
-  const end=(u:PointerEvent)=>{if(u.pointerId!==e.pointerId)return;stop.abort();jarNodes.forEach(j=>j.b.classList.remove('is-over'));if(!moved)return;b.held=false;b.n.style.zIndex='';b.n.dataset.dragged='1';setTimeout(()=>delete b.n.dataset.dragged,300);
-   const hit=[...jarNodes].find(([,j])=>inside(u.clientX,u.clientY,j.b));if(hit&&u.type==='pointerup')drop(b,hit[0]);else{b.x=clamp(b.x,.06,.94);b.y=clamp(b.y,.08,.92);place(b);}};
-  window.addEventListener('pointerup',end,{signal:stop.signal});window.addEventListener('pointercancel',end,{signal:stop.signal});
- }
- function drop(b:Bug,jar:string){
-  const j=jarNodes.get(jar)!;select();
-  if(b.kind.jar!==jar){
-   r.misses++;changed();playEffect('retry');j.b.classList.remove('is-wrong');void j.b.offsetWidth;j.b.classList.add('is-wrong');b.x=.5;b.y=.5;place(b);
-   totoSay(root,{text:b.kind.id==='chain'?'동그란 알갱이가 줄줄이 이어져 있어도 하나하나는 공 모양이야!':b.kind.id==='tail'?'꼬리가 달려 있어도 몸은 길쭉한 막대 모양이야.':b.kind.id==='spiral'?'꼬불꼬불 꼬여 있지? 나선 모양 병을 찾아봐!':`이 세균의 몸 모양을 다시 봐! ${germShapes.find(s=>s.id===b.kind.jar)!.label}이야.`,mood:'hint'});return;
-  }
-  bugs.splice(bugs.indexOf(b),1);b.n.remove();
-  r.assignments[`jar_${jar}`]=String(jarCount(r,jar)+1);
-  if(b.kind.id==='tail'&&r.assignments.tail!=='yes'){r.assignments.tail='yes';totoSay(root,{text:'꼬리 달린 세균 발견! 이 꼬리(편모)를 흔들며 움직여. 몸은 막대 모양이야.',mood:'cheer'});}
-  else if(germShapes.every(s=>jarCount(r,s.id)>=JAR_GOAL))totoSay(root,{text:'세 표본병이 다 찼어! 세균은 공·막대·나선처럼 여러 모양이야.',mood:'cheer'});
-  playEffect('snap');changed();paintJars();spawn(b.kind.jar===jar&&jarCount(r,jar)>=JAR_GOAL?nextNeeded():b.kind);
- }
- const nextNeeded=()=>{const need=germShapes.find(s=>jarCount(r,s.id)<JAR_GOAL);const pool=bugKinds.filter(k=>!need||k.jar===need.id);return pool[Math.floor(Math.random()*pool.length)];};
- function paintJars(){for(const s of germShapes){const j=jarNodes.get(s.id)!,n=jarCount(r,s.id);j.count.textContent=`${Math.min(n,JAR_GOAL)} / ${JAR_GOAL}`;j.b.classList.toggle('is-full',n>=JAR_GOAL);j.b.setAttribute('aria-label',`${s.label} 표본병 ${n}마리`);
-  if(j.inside.childElementCount!==Math.min(n,6)){j.inside.replaceChildren(...Array.from({length:Math.min(n,6)},(_,i)=>img(spriteSrc(s.id==='round'?(i%2?'chain':'round'):s.id==='rod'?(i===1&&r.assignments.tail==='yes'?'tail':'rod'):'spiral'),'jar-bug')));}}}
- for(const k of ['round','chain','round','rod','tail','rod','spiral','spiral'])spawn(bugKinds.find(b=>b.id===k)!);
- const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches||document.documentElement.classList.contains('reduced');
- const tick=(now:number)=>{if(disposed)return;const dt=Math.min(.05,(now-(last||now))/1000);last=now;
-  for(const b of bugs){if(b.held||b===picked)continue;b.t+=dt;
-   if(b.kind.id==='round'||b.kind.id==='chain'){b.vx+=(Math.random()-.5)*.02*dt;b.vy+=(Math.random()-.5)*.02*dt;}
-   if(b.kind.id==='spiral')b.a+=Math.sin(b.t*3)*dt*.8;
-   if(b.kind.id==='rod'||b.kind.id==='tail')b.a=Math.atan2(b.vy,b.vx);
-   b.x+=b.vx*dt*(reduce?.3:1);b.y+=b.vy*dt*(reduce?.3:1);
-   if(b.x<.07||b.x>.93){b.vx*=-1;b.x=clamp(b.x,.07,.93);}if(b.y<.1||b.y>.9){b.vy*=-1;b.y=clamp(b.y,.1,.9);}
-   place(b);}
-  raf=requestAnimationFrame(tick);};
- raf=requestAnimationFrame(tick);paintJars();
- return {refresh:paintJars,dispose:()=>{disposed=true;cancelAnimationFrame(raf);}};
-}
-
 /** M3-3: rub a swab on a place, streak it on a dish, then let the incubator run and compare with the clean control dish. */
 function cultureGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTMLElement):Game{
  const places=el('div','culture-places');const rack=el('div','culture-rack');const bench=el('div','culture-bench');
@@ -224,53 +157,65 @@ function cultureGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTM
  const safety=el('p','culture-safety','실제 배양 접시는 뚜껑을 열지 않고 선생님이 처리해요.');
  bench.append(rack,incubator,verdict,safety);stage.append(places,bench);
  const swab=img('assets/study/germ/swab.webp','culture-swab');swab.hidden=true;stage.append(swab);
- let loaded='';let day=Number(r.assignments.days)||0;const paths=new Map<string,[number,number][]>();
+ const status=el('p','culture-status','그림을 눌러 크게 보고, 면봉으로 문질러요.');status.setAttribute('role','status');status.setAttribute('aria-live','polite');bench.prepend(status);
+ const detail=el('div','culture-detail');detail.hidden=true;detail.tabIndex=-1;detail.setAttribute('role','group');
+ const detailPhoto=el('div','culture-detail-photo'),detailImage=img('','culture-detail-image');detailPhoto.append(detailImage);
+ const detailName=el('strong','culture-detail-name'),detailHelp=el('span','culture-detail-help','그림 위를 쓱쓱 문질러요'),meter=el('div','culture-rub-meter'),meterFill=el('span'),meterLabel=el('b','culture-rub-label','0%');meter.append(meterFill,meterLabel);meter.setAttribute('role','progressbar');meter.setAttribute('aria-label','면봉 채집 진행');meter.setAttribute('aria-valuemin','0');meter.setAttribute('aria-valuemax','100');
+ const close=button('×',()=>closeDetail(true),'culture-detail-close');close.setAttribute('aria-label','확대 그림 닫기');
+ const collect=button('눌러서 면봉에 묻히기',()=>{if(focused)pick(focused);},'culture-collect');
+ detail.append(detailPhoto,detailName,detailHelp,meter,collect,close);places.append(detail);
+ let loaded='',focused='',ignoreCardClick='',ignoreDishClick='',activeCancel:(()=>void)|undefined,disposed=false;
+ let day=Number(r.assignments.days)||0;const paths=new Map<string,[number,number][]>(),rubProgress=new Map<string,number>(),life=new AbortController();
  const dishes=new Map<string,{n:HTMLButtonElement;c:HTMLCanvasElement}>();
  const placeLabel=(id:string)=>id==='control'?'빈 접시':culturePlaces.find(p=>p.id===id)!.label;
+ function closeDetail(refocus=false){activeCancel?.();const id=focused;focused='';detail.hidden=true;if(refocus&&id)places.querySelector<HTMLButtonElement>(`[data-place="${id}"]`)?.focus({preventScroll:true});}
+ function openDetail(id:string){if(locked()||r.assignments[`dish_${id}`])return;focused=id;const p=culturePlaces.find(p=>p.id===id)!;detailImage.src=artFor(p.art)!.src;detailImage.alt=p.label;detailName.textContent=p.label;detail.setAttribute('aria-label',`${p.label} 확대 그림에서 면봉으로 채집하기`);detail.hidden=false;paintRub(id);detail.focus({preventScroll:true});}
+ detail.onkeydown=e=>{if(e.key==='Escape'){e.stopPropagation();closeDetail(true);}};
+ detailPhoto.onpointerdown=e=>{if(focused)rub(e,focused,detailPhoto);};
  function dish(id:string){
   if(dishes.has(id))return dishes.get(id)!;
   const n=el('button','culture-dish');n.type='button';n.dataset.dish=id;const c=el('canvas','dish-canvas') as HTMLCanvasElement;c.width=c.height=240;
-  n.append(img('assets/study/germ/petri.webp','dish-glass'),c,el('span','dish-label',placeLabel(id)));rack.append(n);
-  const d={n,c};dishes.set(id,d);
+  n.append(img('assets/study/germ/petri.webp','dish-glass'),c,el('span','dish-label',placeLabel(id)));rack.append(n);const d={n,c};dishes.set(id,d);
   if(id!=='control')n.onpointerdown=e=>streak(e,id);
-  n.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&id!=='control'&&r.assignments[`dish_${id}`]==='loaded'){e.preventDefault();finishStreak(id,zigzag());}};
+  n.onclick=()=>{if(ignoreDishClick===id){ignoreDishClick='';return;}if(!locked()&&r.assignments[`dish_${id}`]==='loaded')finishStreak(id,zigzag());};
+  n.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&id!=='control'&&!locked()&&r.assignments[`dish_${id}`]==='loaded'){e.preventDefault();finishStreak(id,zigzag());}};
   return d;
  }
  const zigzag=():[number,number][]=>Array.from({length:9},(_,i)=>[.22+i*.07,i%2?.36:.66]);
- // A swab picks up a place by rubbing over its picture.
  for(const p of culturePlaces){
-  const card=el('button','culture-place');card.type='button';card.dataset.place=p.id;card.append(img(artFor(p.art)!.src,'',p.label),el('strong','',p.label),el('span','place-check','✓'));
-  card.onpointerdown=e=>rub(e,p.id,card);
-  card.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')){e.preventDefault();pick(p.id);}};
-  places.append(card);
+  const card=el('button','culture-place');card.type='button';card.dataset.place=p.id;
+  const picture=el('span','culture-place-picture');picture.append(img(artFor(p.art)!.src,'',p.label));card.append(picture,el('strong','',p.label),el('span','place-check','✓'));
+  card.onpointerdown=e=>rub(e,p.id,picture);
+  card.onclick=()=>{if(ignoreCardClick===p.id){ignoreCardClick='';return;}openDetail(p.id);};
+  card.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(p.id);}};places.insertBefore(card,detail);
  }
  function locked(){return day>0||!!r.assignments.conclusion;}
- function rub(e:PointerEvent,id:string,card:HTMLElement){
-  if(e.button!==0||locked()||r.assignments[`dish_${id}`])return;let distance=0,lx=e.clientX,ly=e.clientY;const stop=new AbortController();swab.hidden=false;moveSwab(e.clientX,e.clientY);card.classList.add('is-rubbing');card.setPointerCapture?.(e.pointerId);
-  window.addEventListener('pointermove',m=>{if(m.pointerId!==e.pointerId)return;
-  distance+=Math.hypot(m.clientX-lx,m.clientY-ly);
-  lx=m.clientX;
-  ly=m.clientY;
-  moveSwab(m.clientX,m.clientY);
-  card.style.setProperty('--rub',String(clamp(distance/140,0,1)));
-  if(distance>=140){stop.abort();
-  done();}},{signal:stop.signal});
-  const done=()=>{swab.hidden=true;card.classList.remove('is-rubbing');card.style.removeProperty('--rub');pick(id);};
-  const end=(u:PointerEvent)=>{if(u.pointerId!==e.pointerId)return;stop.abort();swab.hidden=true;card.classList.remove('is-rubbing');card.style.removeProperty('--rub');if(distance<140&&!r.assignments[`dish_${id}`])totoSay(root,{text:'면봉으로 그림 위를 쓱쓱 여러 번 문질러 봐!',mood:'hint'});};
+ function paintRub(id:string){const value=clamp(rubProgress.get(id)||0,0,1),card=places.querySelector<HTMLElement>(`[data-place="${id}"]`);card?.style.setProperty('--rub',String(value));if(focused===id){meterFill.style.width=`${value*100}%`;meterLabel.textContent=`${Math.round(value*100)}%`;meter.setAttribute('aria-valuenow',String(Math.round(value*100)));}}
+ function rub(e:PointerEvent,id:string,area:HTMLElement){
+  if(e.button!==0||locked()||r.assignments[`dish_${id}`]||activeCancel||disposed)return;
+  const stop=new AbortController(),card=places.querySelector<HTMLElement>(`[data-place="${id}"]`)!;let lx=e.clientX,ly=e.clientY,moved=false;ignoreCardClick='';swab.hidden=false;moveSwab(lx,ly);card.classList.add('is-rubbing');area.setPointerCapture?.(e.pointerId);
+  const clean=()=>{stop.abort();activeCancel=undefined;swab.hidden=true;card.classList.remove('is-rubbing');if(area.hasPointerCapture?.(e.pointerId))area.releasePointerCapture(e.pointerId);};activeCancel=clean;
+  window.addEventListener('pointermove',m=>{if(m.pointerId!==e.pointerId)return;const distance=Math.hypot(m.clientX-lx,m.clientY-ly);moved ||= distance>3;moveSwab(m.clientX,m.clientY);
+   if(inside(lx,ly,area)&&inside(m.clientX,m.clientY,area)){const target=clamp(area.getBoundingClientRect().width*.9,80,160);rubProgress.set(id,clamp((rubProgress.get(id)||0)+distance/target,0,1));paintRub(id);}
+   lx=m.clientX;ly=m.clientY;if((rubProgress.get(id)||0)>=1){ignoreCardClick=id;clean();pick(id);}
+  },{signal:stop.signal});
+  const end=(u:PointerEvent)=>{if(u.pointerId!==e.pointerId)return;clean();if(moved){ignoreCardClick=id;status.textContent=`${placeLabel(id)} 채집 ${Math.round((rubProgress.get(id)||0)*100)}%. 이어서 문질러도 돼요.`;}};
   window.addEventListener('pointerup',end,{signal:stop.signal});window.addEventListener('pointercancel',end,{signal:stop.signal});
  }
- function moveSwab(x:number,y:number){const s=stage.getBoundingClientRect();swab.style.left=`${x-s.left}px`;swab.style.top=`${y-s.top}px`;}
- function pick(id:string){if(locked()||r.assignments[`dish_${id}`])return;loaded=id;r.assignments[`dish_${id}`]='loaded';playEffect('water');changed();paint();dish(id).n.focus({preventScroll:true});}
+ function moveSwab(x:number,y:number){const s=stage.getBoundingClientRect();swab.style.left=`${(x-s.left)*stage.clientWidth/s.width}px`;swab.style.top=`${(y-s.top)*stage.clientHeight/s.height}px`;}
+ function pick(id:string){if(locked()||r.assignments[`dish_${id}`]||disposed)return;activeCancel?.();closeDetail();loaded=id;rubProgress.set(id,1);paintRub(id);r.assignments[`dish_${id}`]='loaded';playEffect('water');changed();paint();status.textContent=`${placeLabel(id)} 면봉이 준비됐어요! 이름이 같은 접시에 문지르거나 접시를 눌러요.`;dish(id).n.focus({preventScroll:true});}
  function streak(e:PointerEvent,id:string){
-  if(e.button!==0||r.assignments[`dish_${id}`]!=='loaded')return;const d=dish(id),b=d.c.getBoundingClientRect(),pts:[number,number][]=[];let length=0;const stop=new AbortController();d.n.setPointerCapture?.(e.pointerId);
-  const add=(x:number,y:number)=>{const p:[number,number]=[clamp((x-b.left)/b.width,.12,.88),clamp((y-b.top)/b.height,.12,.88)];const q=pts.at(-1);if(q)length+=Math.hypot((p[0]-q[0])*b.width,(p[1]-q[1])*b.height);pts.push(p);drawDish(id,pts,0);};
-  add(e.clientX,e.clientY);
-  window.addEventListener('pointermove',m=>{if(m.pointerId===e.pointerId)add(m.clientX,m.clientY);},{signal:stop.signal});
-  const end=(u:PointerEvent)=>{if(u.pointerId!==e.pointerId)return;stop.abort();if(length>=150)finishStreak(id,pts);else{drawDish(id,[],0);totoSay(root,{text:'접시 위에 지그재그로 길게 그려야 해. 다시 그려 볼까?',mood:'hint'});}};
+  if(e.button!==0||locked()||r.assignments[`dish_${id}`]!=='loaded'||activeCancel||disposed)return;
+  const d=dish(id),b=d.c.getBoundingClientRect(),pts:[number,number][]=[...(paths.get(id)||[])],stop=new AbortController();let length=0,moved=false;ignoreDishClick='';d.n.setPointerCapture?.(e.pointerId);swab.hidden=false;moveSwab(e.clientX,e.clientY);
+  const add=(x:number,y:number)=>{const nx=(x-b.left)/b.width,ny=(y-b.top)/b.height;if(Math.hypot(nx-.5,ny-.5)>.4)return;const p:[number,number]=[nx,ny],q=pts.at(-1);if(q)length+=Math.hypot((p[0]-q[0])*b.width,(p[1]-q[1])*b.height);pts.push(p);if(pts.length>200)pts.splice(1,1);paths.set(id,pts);drawDish(id,pts,0);};
+  add(e.clientX,e.clientY);const clean=()=>{stop.abort();activeCancel=undefined;swab.hidden=true;if(d.n.hasPointerCapture?.(e.pointerId))d.n.releasePointerCapture(e.pointerId);};activeCancel=clean;
+  window.addEventListener('pointermove',m=>{if(m.pointerId===e.pointerId){moved=true;moveSwab(m.clientX,m.clientY);add(m.clientX,m.clientY);}},{signal:stop.signal});
+  const end=(u:PointerEvent)=>{if(u.pointerId!==e.pointerId)return;clean();if(moved)ignoreDishClick=id;if(u.type==='pointerup'&&length>=clamp(b.width,70,150))finishStreak(id,pts);else if(moved)status.textContent=`${placeLabel(id)} 접시에 선을 이어 그리거나 접시를 눌러 마무리해요.`;};
   window.addEventListener('pointerup',end,{signal:stop.signal});window.addEventListener('pointercancel',end,{signal:stop.signal});
  }
- function finishStreak(id:string,pts:[number,number][]){paths.set(id,pts);r.assignments[`dish_${id}`]='streaked';loaded='';playEffect('snap');changed();paint();
+ function finishStreak(id:string,pts:[number,number][]){if(disposed||locked()||r.assignments[`dish_${id}`]!=='loaded')return;activeCancel?.();paths.set(id,pts);r.assignments[`dish_${id}`]='streaked';loaded='';playEffect('snap');changed();paint();status.textContent=streaked(r).length>=CULTURE_GOAL?'접시가 준비됐어요. 배양기 시간 손잡이를 끝까지 밀어요.':`${placeLabel(id)} 접시 준비 완료! 다른 그림에서도 채집해요.`;
   if(streaked(r).length>=CULTURE_GOAL&&!day)totoSay(root,{text:'접시가 준비됐어! 배양기 시간 손잡이를 밀어서 며칠 지나게 해 봐.',mood:'hint'});}
+ window.addEventListener('blur',()=>activeCancel?.(),{signal:life.signal});document.addEventListener('visibilitychange',()=>{if(document.hidden)activeCancel?.();},{signal:life.signal});
  // Colonies grow along the streak; the control dish stays clean.
  // 2026-11-21: each colony is a cut-out picture of a real-looking colony (one 96px cell of assets/study/germ/colonies-*.webp).
  // Until a picture has loaded the colony is drawn as a flat circle in its colour, and the dishes repaint when it arrives.
@@ -290,14 +235,13 @@ function cultureGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTM
      g.drawImage(pic,cell*COLONY_CELL,0,COLONY_CELL,COLONY_CELL,x-d/2,y-d/2,d,d);continue;}
     g.fillStyle=color;g.strokeStyle='rgba(120,90,40,.35)';g.lineWidth=1;g.beginPath();g.arc(x,y,size,0,Math.PI*2);g.fill();g.stroke();}}
  }
- days.oninput=()=>{if(streaked(r).length<CULTURE_GOAL)return;day=Number(days.value);paintDishes();dayLabel.textContent=`${Math.floor(day)}일째`;
-  if(day>=cultureDays&&r.assignments.days!==String(cultureDays)){r.assignments.days=String(cultureDays);playEffect('sparkle');changed();paint();totoSay(root,{text:'접시를 봐! 채집한 접시마다 세균 무리가 자랐어. 빈 접시는 어때?',mood:'cheer'});}};
+ days.oninput=()=>{if(streaked(r).length<CULTURE_GOAL)return;const wasComplete=Number(r.assignments.days)>=cultureDays;day=Number(days.value);if(day>0&&!detail.hidden)closeDetail();r.assignments.days=String(day);paintDishes();dayLabel.textContent=`${Math.floor(day)}일째`;changed();if(day>=cultureDays&&!wasComplete){playEffect('sparkle');paint();status.textContent='채집한 접시와 빈 접시를 비교해요.';totoSay(root,{text:'접시를 봐! 채집한 접시마다 세균 무리가 자랐어. 빈 접시는 어때?',mood:'cheer'});}};
  function paintDishes(){for(const id of dishes.keys()){if(id==='control'){drawDish(id,[],0);continue;}const state=r.assignments[`dish_${id}`];if(state==='streaked'){const pts=paths.get(id)||zigzag();paths.set(id,pts);drawDish(id,pts,clamp(day/cultureDays,0,1));}}}
  const conclusions=[{id:'many',label:'세균은 손·흙·물·물건처럼 여러 곳에 살아요'},{id:'soil',label:'세균은 흙에만 살아요'},{id:'dirty',label:'눈에 더러워 보이는 곳에만 살아요'}];
  function paint(){
   dish('control');for(const p of culturePlaces)if(r.assignments[`dish_${p.id}`])dish(p.id);
-  for(const card of places.querySelectorAll<HTMLButtonElement>('.culture-place')){const id=card.dataset.place!;const st=r.assignments[`dish_${id}`];card.classList.toggle('is-sampled',!!st);card.disabled=locked()&&!st;card.setAttribute('aria-label',`${placeLabel(id)} ${st?'채집함':'면봉으로 문지르기'}`);}
-  for(const [id,{n}] of dishes){const st=r.assignments[`dish_${id}`];n.classList.toggle('is-armed',st==='loaded');n.setAttribute('aria-label',`${placeLabel(id)} 배양 접시${st==='loaded'?' · 지그재그로 그리기':''}`);}
+  for(const card of places.querySelectorAll<HTMLButtonElement>('.culture-place')){const id=card.dataset.place!;const st=r.assignments[`dish_${id}`];card.classList.toggle('is-sampled',!!st);card.disabled=locked()&&!st;card.setAttribute('aria-label',`${placeLabel(id)} ${st?'채집함':'확대해서 면봉으로 문지르기 · Enter로 채집'}`);}
+  for(const [id,{n}] of dishes){const st=r.assignments[`dish_${id}`];n.classList.toggle('is-armed',st==='loaded');n.setAttribute('aria-label',`${placeLabel(id)} 배양 접시${st==='loaded'?' · 문지르거나 눌러서 바르기':''}`);}
   const ready=streaked(r).length>=CULTURE_GOAL;incubator.classList.toggle('is-locked',!ready);days.disabled=!ready||!!r.assignments.conclusion;
   if(r.assignments.days===String(cultureDays))day=cultureDays;days.value=String(day);dayLabel.textContent=ready?`${Math.floor(day)}일째`:`${streaked(r).length} / ${CULTURE_GOAL} 접시 준비`;
   verdict.replaceChildren();
@@ -307,7 +251,7 @@ function cultureGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTM
   if(c.id!=='many'){r.misses++;
   changed();
   playEffect('retry');
-  totoSay(root,{text:`이번에 고른 ${streaked(r).map(placeLabel).join('·')} 접시를 빈 접시와 비교해 봐. ${c.id==='soil'?'흙 이외의 접시에도 무리가 있니?':'눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?'}`,mood:'hint'});
+  totoSay(root,{text:cultureWrongHint(r,c.id),mood:'hint'});
   return;}
   r.assignments.conclusion='many';
   playEffect('success');
@@ -321,7 +265,7 @@ function cultureGame(stage:HTMLElement,r:InquiryRecord,changed:()=>void,root:HTM
   paintDishes();
  }
  paint();
- return {refresh:paint};
+ return {refresh:paint,dispose:()=>{disposed=true;activeCancel?.();life.abort();swab.remove();}};
 }
 
 /** M3-4: order the three specimens biggest first, then finish a sentence about bacteria. */

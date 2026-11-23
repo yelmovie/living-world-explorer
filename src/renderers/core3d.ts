@@ -78,7 +78,8 @@ export function mountCore3d(host:HTMLElement,labels:HTMLElement[],reduce:boolean
  });
  model.ports.forEach(port=>include(projected.copy(port.number).add(new Vector3(0,-.14,0))));
  let width=0,height=0,raf=0,lastDraw=-Infinity,disposed=false;
- let backdrop:Texture|undefined;
+ let backdrop:Texture|undefined,gemTexture:Texture|undefined;
+ let illustratedGem:Sprite|undefined;
  let lastPower:CoreVisualState['power']='waiting',started=0,pulse=0,fresh=-1;
  let state:CoreVisualState={linked:[],power:'waiting',active:-1,fresh:-1};
  function size(){
@@ -109,6 +110,7 @@ export function mountCore3d(host:HTMLElement,labels:HTMLElement[],reduce:boolean
   const charge=charged?state.power==='powered'||reduce?1:1-Math.exp(-elapsed*2.5):state.power==='ready'?.33:0;
   model.gem.emissiveIntensity=.013+.11*charge;
   model.crystalEnergy.value=charge;
+  if(illustratedGem)illustratedGem.position.y=1.99+(!reduce&&charged?.04*Math.sin(elapsed*1.8):0);
   model.glass.uniforms.energy.value=charge;
   model.pollen.uniforms.energy.value=.6*charge;
   radiance.material.opacity=charge*.47;
@@ -144,7 +146,7 @@ export function mountCore3d(host:HTMLElement,labels:HTMLElement[],reduce:boolean
   const geometries=new Set<BufferGeometry>(),materials=new Set<Material>();
   model.body.traverse(obj=>{if(obj instanceof Mesh||obj instanceof Points){geometries.add(obj.geometry);materials.add(obj.material);}});
   geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());
-  model.textures.forEach(t=>t.dispose());backdrop?.dispose();floor.dispose();radiance.dispose();
+  model.textures.forEach(t=>t.dispose());backdrop?.dispose();gemTexture?.dispose();if(illustratedGem)(illustratedGem.material as SpriteMaterial).dispose();floor.dispose();radiance.dispose();
   environment.dispose();renderer.dispose();if(!context.isContextLost())renderer.forceContextLoss();canvas.remove();
  }
  canvas.className='core-live-canvas';canvas.setAttribute('aria-hidden','true');
@@ -153,6 +155,13 @@ export function mountCore3d(host:HTMLElement,labels:HTMLElement[],reduce:boolean
  canvas.addEventListener('webglcontextlost',lost);
  document.addEventListener('visibilitychange',visibility);
  size();
+ new TextureLoader().load('assets/ui/core-gem-20261123.webp',texture=>{
+  if(disposed){texture.dispose();return;}
+  gemTexture=texture;texture.colorSpace=SRGBColorSpace;
+  const material=new SpriteMaterial({map:texture,transparent:true,depthWrite:false,toneMapped:false});
+  illustratedGem=new Sprite(material);illustratedGem.position.copy(model.crystal.position);illustratedGem.position.y=1.99;illustratedGem.scale.set(1.10,2.10,1);
+  model.crystal.visible=false;model.body.add(illustratedGem);host.dataset.gem='illustrated';requestDraw();
+ });
  // Use the existing conservatory art in the transmission pass so emerald facets refract the room.
  new TextureLoader().load('assets/places/core.webp',texture=>{
   if(disposed){texture.dispose();return;}

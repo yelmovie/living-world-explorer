@@ -33,6 +33,7 @@ try{
  await button(page,'발견을 코어에 연결').click();
  await page.locator(`.core-figure-stage[data-renderer=${live?'three':'image'}]`).waitFor();
  await page.waitForFunction(()=>[...document.querySelectorAll('.core-figure img')].every(n=>n.complete&&n.naturalWidth));
+ if(live)await page.locator('.core-live[data-gem=illustrated]').waitFor();
 
  for(const [width,height] of [[1280,800],[1920,1080],[1024,768],[915,412],[830,515],[375,812]]){
   await page.setViewportSize({width,height});

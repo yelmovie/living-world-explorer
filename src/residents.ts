@@ -45,8 +45,8 @@ function memory(stage:Stage, attempt:Attempt):[string,string]{
     if(selected==='yogurt')return ['요구르트 카드였지! 유산균의 도움으로 우유를 요구르트로 만든다는 네 설명을 이웃들에게도 들려줄게.','M5-memory-yogurt'];
     if(selected==='leaf')return ['낙엽 분해 카드였지! 낙엽을 분해하는 생물의 도움으로 퇴비를 만들 수 있다는 이야기를 정원에도 전할게.','M5-memory-leaf'];
   }
-  // Revised M3 wording waits for a matching recording; never play the old magnification claim.
-  return [residents[stage].memory,stage==='M3'?'':stage+'-memory'];
+  // Matching reviewed recordings keep resident text and audio aligned.
+  return [residents[stage].memory,stage+'-memory'];
 }
 
 export function residentImage(stage:Stage, className:string){

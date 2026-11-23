@@ -83,7 +83,7 @@ async function completeTask(task,replay=false){
   await setRange(page,'초점',65);await btn('관찰 사진 남기기').click();await btn('다시 관찰하기').waitFor();
  }
  if(task.kind==='sample'){await btn('물풀 가까이').click();for(const label of ['한 방울 채집','한 방울 옮기기'])await btn(label).click();}
- if(task.kind==='track'){await setRange(page,'관찰 시점',5);await page.getByRole('button',{name:/^B 고정/}).click();
+ if(task.kind==='track'){if(await page.getByRole('button',{name:'처음 사진 찍기',exact:true}).count())await page.getByRole('button',{name:'처음 사진 찍기',exact:true}).click();await page.getByRole('button',{name:'움직인 모습 보기',exact:true}).click();await page.getByRole('button',{name:'나중 사진 찍기',exact:true}).click();
   // A 440px-wide specimen fits inside the circular eyepiece without losing its cilia.
   await btn('현미경으로 움직임의 비밀 찾기').click();await btn('움직임 다시 보기').waitFor();
   await btn('몸 안쪽').click();assert.ok(await btn('발견 기록하기').isDisabled());
@@ -165,5 +165,6 @@ try{
   for(const task of inquiryTasks.filter(t=>t.stage==='M1'))await completeTask(task,true);
   assert.match(await page.locator('.toast').innerText(),/꼼꼼한 관찰자/);const after=(await readSaved(page)).learner;assert.equal(Object.keys(after.evidence).length,5);assert.equal(after.report.length,5);assert.equal(after.ports.length,5);assert.equal(after.activated,true);assert.equal(after.cardTitle,'내가 발견한 생물의 작용');
   await navigate(page,base,'results');assert.match(await page.locator('.habit-summary').innerText(),/5\/5/);checks.push('habit replay: M1 다시 도전 → badge, evidence kept');}
+ await context.storageState({path:'.tmp/ui-review/completed-student-state.json',indexedDB:true});
  assert.equal(errors.length,0,errors.join('; '));if(missingVoice.size)console.log('TOTO VOICE MISSING',missingVoice.size,[...missingVoice].join(' | '));await writeFile('.tmp/full-flow.json',JSON.stringify({status:'PASS',errors,completed:checks,taskCount:checks.length,rewards:10,restored:true,previewIsolation:true,png:download.suggestedFilename()},null,2));console.log('FULL FLOW PASS: 20 tasks; report; core; PNG; reload; preview isolation');
 }catch(error){process.exitCode=1;console.error('FLOW ERROR',error.stack);console.error('SAVED PREVIEW NOTE',(await readSaved(page))?.preview?.inquiry?.records?.['M5-4']?.note);console.error('INPUT',await page.getByLabel('내 소개 문장',{exact:true}).inputValue().catch(()=>''));await page.screenshot({timeout:10000,path:'.tmp/full-flow-failure.png'});console.error((await page.locator('body').innerText()).slice(0,5000));await writeFile('.tmp/full-flow.json',JSON.stringify({status:'FAIL',error:error.message,errors,completed:checks},null,2));}finally{await Promise.race([browser.close(),new Promise(resolve=>setTimeout(resolve,5000))]);process.exit(process.exitCode||0);}

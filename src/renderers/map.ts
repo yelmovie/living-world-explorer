@@ -7,17 +7,20 @@ import {advanceGait,footfall,walkCells,walkFrame,type Direction,type Gait,type S
 import {playStep,stopStep} from '../audio';
 import type {Point} from '../model';
 import type {MapReaction,MapReactions} from '../map-encounters.js';
-import {MAP_WIDTH,MAP_HEIGHT,mapSpawn,locations,pathSegments,pathGraph,destinationNodeIds,routeBetween,nearestRoadPoint,mapAssets} from '../mapData';
+import {MAP_WIDTH,MAP_HEIGHT,mapSpawn,locations,pathSegments,pathGraph,destinationNodeIds,routeBetween,routeToRoadPoint,nearestRoadPoint,mapAssets} from '../mapData';
 export {locations} from '../mapData';
 const MOA_STEP=19,TOTO_STEP=15;
 type Reveal={index:number;ready:()=>boolean;started:()=>void};
 
 /** The map is a ground-plane road network. DOM labels and the canvas share these coordinates. */
-export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onArrive:(index:number,point:Point)=>void,reduced:boolean,onMove?:(point:Point,companion:Point)=>void,onManual?:()=>void,canTap=()=>true,onReady?:()=>void,encounters?:(hero:Point,ally:Point)=>MapReactions,reveal?:Reveal){
+export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onArrive:(index:number,point:Point)=>void,reduced:boolean,onMove?:(point:Point,companion:Point)=>void,onManual?:()=>void,canTap=()=>true,onReady?:()=>void,encounters?:(hero:Point,ally:Point)=>MapReactions,reveal?:Reveal,onBlocked?:(direction:Direction)=>void){
  // A dialog or an achievement card (it makes the app inert) holds the map. Phaser listens on the window, so inert alone does not stop it.
  const held=()=>!!document.querySelector('dialog[open]')||!!host.closest('[inert]');
- let requested:number|undefined;let navigate:(index:number)=>void=()=>{};let walk:(direction:Direction)=>void=()=>{};let nudge:(direction:Direction)=>void=()=>{};let stop:()=>void=()=>{};let cancel:()=>void=()=>{};let disposed=false;
+ let pointDone:(()=>void)|undefined;let moveTo:(point:Point,done?:()=>void)=>void=()=>{};let requested:number|undefined;let navigate:(index:number)=>void=()=>{};let walk:(direction:Direction)=>void=()=>{};let nudge:(direction:Direction)=>void=()=>{};let stop:()=>void=()=>{};let cancel:()=>void=()=>{};let disposed=false;
  class Village extends Phaser.Scene{
+  private roadHint!:Phaser.GameObjects.Graphics;
+  private blockedFor=0;
+  private blockedNotified=false;
   private hero!:Phaser.GameObjects.Container;
   private friend!:Phaser.GameObjects.Container;
   private heroImage!:Phaser.GameObjects.Image;
@@ -69,6 +72,7 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
     }
    }
    if(!this.beforeReveal)reveal?.started();
+   this.roadHint=this.add.graphics().setDepth(30);
    const next=completed.findIndex(v=>!v);const current=locations[next<0?5:next];
    const ring=this.add.ellipse(current.x,current.y+2,74,24,0xf7cd69,.45).setStrokeStyle(3,0xffedb0,.9);if(!reduced)this.tweens.add({targets:ring,alpha:.55,scaleX:1.1,duration:1000,yoyo:true,repeat:2});
    const valid=Number.isFinite(position.x)&&Number.isFinite(position.y)&&position.x>=0&&position.y>=0&&position.x<=MAP_WIDTH&&position.y<=MAP_HEIGHT;
@@ -77,9 +81,10 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
    this.heroImage=this.add.image(0,0,'moa-down');this.styleSprite(this.heroImage,'moa-down',92);this.hero.add(this.heroImage);
    this.friend=this.add.container(spawn.x,Math.min(MAP_HEIGHT-18,spawn.y+34));this.friend.add(this.add.ellipse(0,-2,25,10,0x203e2f,.23));this.friendImage=this.add.image(0,0,'friend-down');this.styleSprite(this.friendImage,'friend-down',65);this.friend.add(this.friendImage);
    this.pathHistory=[{x:this.friend.x,y:this.friend.y},{...spawn}];locations.forEach((p,i)=>{if(Math.hypot(p.x-spawn.x,p.y-spawn.y)<24)this.insideDoors.add(i);});
-   navigate=(index:number)=>{if(!locations[index])return;
+   navigate=(index:number)=>{if(!locations[index])return;this.roadHint.clear();
    this.keys.clear();
    this.held=undefined;
+   pointDone=undefined;
    this.destination=index;
    if(reduced){const p=locations[index];
    this.hero.setPosition(p.x,p.y);
@@ -89,17 +94,22 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
    this.arrive();
    return;}
    this.route=routeBetween({x:this.hero.x,y:this.hero.y},destinationNodeIds[index]);};
-   walk=(direction:Direction)=>{this.route=[];this.destination=undefined;this.held=direction;};
+   moveTo=(target:Point,done?:()=>void)=>{
+    this.keys.clear();this.held=undefined;this.destination=undefined;pointDone=done;
+    const p=nearestRoadPoint(target);
+    if(reduced){this.hero.setPosition(p.x,p.y);this.friend.setPosition(p.x,p.y+30);this.pathHistory=[{x:p.x,y:p.y+30},p];this.route=[];this.syncCamera();const finish=pointDone;pointDone=undefined;finish?.();}
+    else {this.route=routeToRoadPoint({x:this.hero.x,y:this.hero.y},p);this.showRoadHint();}
+   };
+   walk=(direction:Direction)=>{this.roadHint.clear();pointDone=undefined;this.route=[];this.destination=undefined;this.held=direction;};
    stop=()=>{this.held=undefined;};
-   cancel=()=>{this.route=[];this.destination=undefined;this.keys.clear();this.held=undefined;};
-   nudge=(direction:Direction)=>{const start={x:this.hero.x,y:this.hero.y};const p=stepAlongRoad(start,MAP_VECTORS[direction],12,pathSegments);this.route=Math.hypot(p.x-start.x,p.y-start.y)>.01?[p]:[];this.destination=undefined;this.held=undefined;};
+   cancel=()=>{this.roadHint.clear();pointDone=undefined;this.route=[];this.destination=undefined;this.keys.clear();this.held=undefined;};
+   nudge=(direction:Direction)=>{this.roadHint.clear();const start={x:this.hero.x,y:this.hero.y};const p=stepAlongRoad(start,MAP_VECTORS[direction],12,pathSegments);this.route=Math.hypot(p.x-start.x,p.y-start.y)>.01?[p]:[];this.destination=undefined;this.held=undefined;};
    this.input.on('pointerup',(pointer:Phaser.Input.Pointer)=>{
     if(!canTap()||pointer.event?.target!==this.game.canvas||Math.hypot(pointer.upX-pointer.downX,pointer.upY-pointer.downY)>8||document.hidden||held())return;
     const tap={x:pointer.worldX,y:pointer.worldY};const index=locations.findIndex(p=>Math.hypot(tap.x-p.x,tap.y-p.y)<65);
     if(index>=0){onManual?.();navigate(index);return;}
     const target=nearestRoadPoint(tap);if(Math.hypot(target.x-tap.x,target.y-tap.y)>62)return;
-    const nearest=pathGraph.reduce((a,b)=>Math.hypot(target.x-a.point.x,target.y-a.point.y)<Math.hypot(target.x-b.point.x,target.y-b.point.y)?a:b);
-    onManual?.();this.keys.clear();this.held=undefined;this.destination=undefined;this.route=routeBetween({x:this.hero.x,y:this.hero.y},nearest.id);this.route.push(target);
+    onManual?.();moveTo(target);
    });
    this.input.keyboard?.on('keydown',(e:KeyboardEvent)=>{if(held()||e.ctrlKey||e.metaKey||e.altKey||(e.target instanceof HTMLElement&&(e.target.isContentEditable||e.target.closest('input,textarea,select'))))return;
    if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD'].includes(e.code)){e.preventDefault();
@@ -112,6 +122,13 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
    // game.destroy() emits 'destroy', not 'shutdown'; without it these two listeners kept every old map alive.
    const off=()=>{document.removeEventListener('visibilitychange',blur);window.removeEventListener('blur',blur);};this.events.once('shutdown',off);this.events.once('destroy',off);
    this.syncCamera();onReady?.();if(requested!==undefined)navigate(requested);
+  }
+  private showRoadHint(){
+   this.roadHint.clear();if(!this.route.length)return;
+   const points=[{x:this.hero.x,y:this.hero.y},...this.route];
+   for(let i=1;i<points.length;i++){const a=points[i-1],b=points[i],distance=Math.hypot(b.x-a.x,b.y-a.y);
+    for(let d=0;d<distance;d+=16){const t=d/(distance||1);this.roadHint.fillStyle(0xffef9e,.85).fillCircle(a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t,3);}
+   }
   }
   private restoration(index:number){
    const spot=locations[index];
@@ -189,7 +206,9 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
    const distance=Math.hypot(target.x-start.x,target.y-start.y);
    const amount=speed*seconds;
    if(distance<=amount){next=target;
-   this.route.shift();}else next={x:start.x+(target.x-start.x)/distance*amount,y:start.y+(target.y-start.y)/distance*amount};}
+   this.route.shift();if(pointDone)this.showRoadHint();}else next={x:start.x+(target.x-start.x)/distance*amount,y:start.y+(target.y-start.y)/distance*amount};}
+   if((dx||dy)&&next&&Math.hypot(next.x-start.x,next.y-start.y)<.01){this.blockedFor+=seconds;if(this.blockedFor>.45&&!this.blockedNotified){this.blockedNotified=true;onBlocked?.(dx<0?'left':dx>0?'right':dy<0?'up':'down');}}
+   else {this.blockedFor=0;this.blockedNotified=false;}
    const mx=(next?.x??start.x)-start.x,my=(next?.y??start.y)-start.y,moving=Math.hypot(mx,my)>.01;
    advanceGait(this.heroGait,mx,my,MOA_STEP);
    // Footsteps follow the hero only while the position really changes (keys, a held arrow or a tapped route alike).
@@ -210,6 +229,8 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
    if(moving||friendMoved)this.syncCamera();
    this.hero.setDepth(this.hero.y+100);this.friend.setDepth(this.friend.y+100);
    const reactions=encounters?.(this.hero,this.friend);this.drawWalker(this.heroImage,this.heroGait,moving,reactions?.hero);this.drawWalker(this.friendImage,this.friendGait,friendMoved,reactions?.ally,true);
+   if(!this.route.length)this.roadHint.clear();
+   if(pointDone&&!this.route.length){const finish=pointDone;pointDone=undefined;finish();if(disposed)return;}
    if(this.destination!==undefined&&!this.route.length){this.arrive();if(disposed)return;}
    locations.forEach((p,index)=>{const inside=Math.hypot(p.x-this.hero.x,p.y-this.hero.y)<20;
    if(inside&&!this.insideDoors.has(index)&&(dx||dy)&&moving){this.insideDoors.add(index);
@@ -221,7 +242,7 @@ export function mountMap(host:HTMLElement,position:Point,completed:boolean[],onA
  const game=new Phaser.Game({type:Phaser.CANVAS,parent:host,width:MAP_WIDTH,height:MAP_HEIGHT,backgroundColor:'#9daf83',pixelArt:true,antialias:false,scene:Village,scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},audio:{noAudio:true},banner:false});const release=releasable(game);
  // Resize the canvas and touch coordinates in the same frame as the DOM map markers.
  const resize=()=>{if(game.scale.canvas&&game.scale.getParentBounds())game.scale.refresh();};
- return {resize,bounds:()=>game.scale.updateBounds(),move:(index:number)=>{requested=index;
+ return {resize,moveTo:(point:Point,done?:()=>void)=>{requested=undefined;moveTo(point,done);},bounds:()=>game.scale.updateBounds(),move:(index:number)=>{requested=index;
  navigate(index);},walk:(direction:Direction)=>walk(direction),nudge:(direction:Direction)=>nudge(direction),stop:()=>stop(),cancel:()=>{requested=undefined;
  cancel();},dispose:()=>{disposed=true;
  stopStep();

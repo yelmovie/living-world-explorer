@@ -66,3 +66,17 @@ export function routeBetween(start:Point,targetId:string):Point[]{
  const ids=[targetId];while(previous.has(ids[0]))ids.unshift(previous.get(ids[0])!);
  const points=ids.map(id=>({...pathGraph.find(n=>n.id===id)!.point}));if(Math.hypot(points[0].x-origin.x,points[0].y-origin.y)>.01)points.unshift(origin);return points;
 }
+
+/** Route to an actual point on a road, without jumping across another branch. */
+export function routeToRoadPoint(start:Point,target:Point):Point[]{
+ const dest=nearestRoadPoint(target),origin=nearestRoadPoint(start);
+ const near=(a:Point,b:Point)=>Math.hypot(a.x-b.x,a.y-b.y)<.01;
+ const contains=(p:Point,a:Point,b:Point)=>Math.abs(Math.hypot(p.x-a.x,p.y-a.y)+Math.hypot(p.x-b.x,p.y-b.y)-Math.hypot(a.x-b.x,a.y-b.y))<.01;
+ const edge=pathSegments.find(([a,b])=>contains(dest,a,b))!;
+ if(contains(origin,...edge))return near(origin,dest)?[]:[origin,dest];
+ const length=(route:Point[])=>route.reduce((sum,p,i)=>sum+(i?Math.hypot(p.x-route[i-1].x,p.y-route[i-1].y):0),0);
+ return edge.map(end=>{
+  const node=pathGraph.find(n=>near(n.point,end))!;
+  return [...routeBetween(origin,node.id),dest];
+ }).sort((a,b)=>length(a)-length(b))[0];
+}

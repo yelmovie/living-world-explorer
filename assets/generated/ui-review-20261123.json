@@ -1,0 +1,32 @@
+{
+  "assets": [
+    {
+      "path": "public/assets/characters/moa-review-20261123.webp",
+      "provider": "OpenAI image_gen (Codex built-in image generation)",
+      "model": "not exposed by tool",
+      "generatedDate": "2026-11-23",
+      "brief": "기존 모아의 둥근 얼굴·안경·옆 묶은 머리·잎 머리핀·탐험 조끼를 유지한 어린 주인공. 복습을 안내하는 손짓, 투명 배경.",
+      "references": [
+        "public/assets/characters/moa-full.webp",
+        "public/assets/characters/moa-dialogue.webp"
+      ],
+      "sha256": "0458d8429a95df9b4c835d7b9d7ff9f7b4640f6f65454bef5aaaf499ff809ce3",
+      "bytes": 131920,
+      "processing": "transparent PNG generated in this session, trimmed and encoded as WebP q90 alpha100 with existing Sharp 0.34.4",
+      "authorization": "User explicitly requested a child Moa redraw and jewel artwork for project 8. No third-party photo copied."
+    },
+    {
+      "path": "public/assets/ui/core-gem-20261123.webp",
+      "provider": "OpenAI image_gen (Codex built-in image generation)",
+      "model": "not exposed by tool",
+      "generatedDate": "2026-11-23",
+      "brief": "투명한 에메랄드 보석 덩어리. 세밀한 밝은 면과 내부 금빛 식물 무늬. 기존 코어 장치에 얹는 독립 투명 그림.",
+      "references": [],
+      "sha256": "62899b08f5e9ef1f820f8dbfffc411c299d1ebe25ce4838ff6e7d35295ef7b0f",
+      "bytes": 225398,
+      "processing": "transparent PNG generated in this session, trimmed and encoded as WebP q90 alpha100 with existing Sharp 0.34.4",
+      "authorization": "User explicitly requested a child Moa redraw and jewel artwork for project 8. No third-party photo copied."
+    }
+  ],
+  "unused": "A separate generated wax illustration remains private QA only. The app uses the user-provided shared certificate seal from commit 662ccac."
+}

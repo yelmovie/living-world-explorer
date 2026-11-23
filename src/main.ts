@@ -286,7 +286,8 @@ function map(ctx:Context){
  ctx.cleanup(clearMapTimers);
  const setGuided=(i:number)=>{guided=i;nextButton.setAttribute('aria-busy',String(i>=0));nextButton.setAttribute('aria-disabled',String(i>=0));};
  const clearSelection=()=>{selected=-1;setGuided(-1);arrival.replaceChildren();overlay.querySelectorAll('.map-node').forEach((b,j)=>b.classList.toggle('current',j===next));};
- const cancelTravel=()=>{if(selected>=0||guided>=0){m?.cancel();clearSelection();}};
+ let seekingFoe=false;
+ const cancelTravel=()=>{if(selected>=0||guided>=0||seekingFoe){m?.cancel();seekingFoe=false;clearSelection();refreshEncounterStatus();}};
  const cancelGuidedByKey=(e:KeyboardEvent)=>{if(mapKeyDirection(e)&&!e.ctrlKey&&!e.altKey&&!e.metaKey&&!e.isComposing&&!document.querySelector('dialog[open]')&&!app.inert&&!(e.target instanceof HTMLElement&&(e.target.isContentEditable||e.target.closest('input,textarea,select')))){cancelTravel();
  if(mode!=='follow')setMode('follow',false);}};
  document.addEventListener('keydown',cancelGuidedByKey,true);ctx.cleanup(()=>document.removeEventListener('keydown',cancelGuidedByKey,true));
@@ -318,9 +319,19 @@ function map(ctx:Context){
  };
  const tools=el('div','map-view-tools');tools.setAttribute('role','group');tools.setAttribute('aria-label','지도 보기와 공격');
  const encounterStatus=el('span','map-encounter-status');
+ const findFoe=button('남은 악당 찾기',()=>{
+  const choices=el('div','map-foe-choices');
+  for(const [i,id] of stageIds.entries()){if(!done[i]||(ctx.attempt.mapHits?.[id]??0)>=3)continue;
+   const pick=button('',()=>{dialog.close();cancelTravel();setMode('follow');seekingFoe=true;findFoe.setAttribute('aria-busy','true');encounterStatus.textContent='연구소를 돌아 악당에게 가고 있어요.';
+    m?.moveTo(mapVillainStages[i],()=>{if(disposed)return;seekingFoe=false;findFoe.setAttribute('aria-busy','false');ctx.attempt.mapPosition={...position};persist();refreshEncounterStatus();camera.focus({preventScroll:true});});
+   },'secondary');const img=el('img');img.src=`assets/reward-cards/thumb-${i+1}-${id}.webp`;img.alt='';pick.append(img,el('strong','',stages[i].place),el('span','',`${3-(ctx.attempt.mapHits?.[id]??0)}번 공격 남음`));choices.append(pick);
+  }
+  const dialog=modal('남은 악당에게 가요',[paragraph('그림을 고르면 길을 따라 찾아가요.'),choices]);
+ },'secondary map-find-foe');findFoe.hidden=true;findFoe.disabled=true;
  const foesOn=state.settings.villains&&!state.settings.admin;
  const refreshEncounterStatus=()=>{
   const remaining=stageIds.filter((id,i)=>done[i]&&(ctx.attempt.mapHits?.[id]??0)<3).length;
+  findFoe.hidden=!foesOn||remaining===0;findFoe.setAttribute('aria-busy',String(seekingFoe));
   encounterStatus.textContent=state.settings.admin?'교사 시연 · 악당 없음':!foesOn?'악당 표시 꺼짐':remaining?`악당 ${remaining}명 · 가까이서 공격`:done.some(Boolean)?'복구한 곳의 악당을 모두 물리쳤어요':'연구소 복구 후 악당 등장';
  };
  refreshEncounterStatus();
@@ -367,7 +378,7 @@ function map(ctx:Context){
  hand.setAttribute('data-map-hand','');
  const overview=iconButton('expand','지도 전체 보기',()=>{cancelTravel();setMode(mode==='overview'?returnView?.mode??'follow':'overview');},'map-view-icon');
  for(const b of [hand,overview]){b.querySelector('span')?.remove();b.setAttribute('aria-pressed','false');tools.append(b);}
- destination.prepend(encounterStatus,tools);
+ destination.prepend(encounterStatus,tools,findFoe);
  camera.tabIndex=0;camera.setAttribute('aria-label','탐험 지도. 끌어서 둘러보거나 방향키로 걸을 수 있어요.');camera.style.touchAction='none';
  let grab:{id:number;x:number;y:number;start:typeof pan}|undefined;
  const gestures=new AbortController();ctx.cleanup(()=>{gestures.abort();cancelAnimationFrame(followFrame);});
@@ -457,8 +468,8 @@ function map(ctx:Context){
   clearMapTimers();
   if(mapRecovery.contains(document.activeElement))nextButton.focus({preventScroll:true});
   mapRecovery.hidden=true;
-  ctx.host.dataset.mapReady='true';
- },encounterFrame,reveal&&{index:reveal.index,ready:()=>reveal.ready,started:()=>{if(pendingMapReveal===reveal)pendingMapReveal=undefined;}});ctx.cleanup(m.dispose);if(selected>=0)m.move(selected);}).catch(()=>{
+  ctx.host.dataset.mapReady='true';findFoe.disabled=false;
+ },encounterFrame,reveal&&{index:reveal.index,ready:()=>reveal.ready,started:()=>{if(pendingMapReveal===reveal)pendingMapReveal=undefined;}},()=>{encounterStatus.textContent=foesOn&&stageIds.some((id,i)=>done[i]&&(ctx.attempt.mapHits?.[id]??0)<3)?'이쪽 길은 막혀요. 남은 악당 찾기를 눌러요.':'이쪽 길은 막혀요. 아래 길로 돌아가요.';});ctx.cleanup(m.dispose);if(selected>=0)m.move(selected);}).catch(()=>{
   if(disposed)return;
   clearMapTimers();clearSelection();
   for(const control of [destination,camera,directions])control.inert=true;

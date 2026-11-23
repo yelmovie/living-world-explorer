@@ -34,7 +34,8 @@ export function coreFigure(reduced:boolean){
   lamp.append(el('span','core-lamp-dot'),el('span','core-lamp-number',String(i+1)));
   return lamp;
  });
- frame.append(art,powered,aura,...lamps);
+ const gem=el('img','core-figure-image-gem');gem.src='assets/ui/core-gem-20261123.webp';gem.alt='';gem.draggable=false;gem.onerror=()=>gem.hidden=true;
+ frame.append(art,powered,gem,aura,...lamps);
  const fallback=el('p','core-figure-fallback','코어 그림을 불러오지 못했어요. 기록 연결 버튼은 사용할 수 있어요.');
  fallback.hidden=true;
  art.onerror=()=>{frame.hidden=true;fallback.hidden=false;};

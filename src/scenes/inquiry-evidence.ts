@@ -73,7 +73,7 @@ export function inquiryEvidenceView(evidence:Evidence|undefined,compact=false){
   const beforeDetails=row.children.length;
   if(isGermTask(task))row.append(...germSummary(task,record).map(line=>paragraph(line)));
   else if(task.kind==='microscope')row.append(paragraph(`내 관찰 사진 · 초점 ${record.focus} · 특징을 확대해 살펴봤어요`));
-  else if(task.kind==='track')row.append(paragraph(`같은 시야의 두 순간 · A ${record.pins[0]} → B ${record.pins[1]} · 그림은 B의 위치예요.${record.marks.length?` 현미경에서 몸 둘레의 섬모 ${record.marks.length}곳을 찾았어요.`:''}`));
+  else if(task.kind==='track')row.append(paragraph(`같은 짚신벌레의 처음 사진과 나중 사진을 비교했어요. 그림은 나중에 찍은 위치예요.${record.marks.length?` 현미경에서 몸 둘레의 섬모 ${record.marks.length}곳을 찾았어요.`:''}`));
   else if(task.kind==='timeline')row.append(paragraph(`이전 관찰 ${record.pins[0]+1} → 이후 관찰 ${record.pins[1]+1} · 그림은 이후 모습과 내 표시 ${record.marks.length}곳이에요.`));
   else if(task.kind==='sample')row.append(paragraph(`${record.assignments.site==='plant'?'물풀 가까이':'물가 가까이'}에서 채집 · ${record.sequence===3?'한 방울 표본 준비 완료':'준비 순서 '+record.sequence}`));
   else if(task.kind==='build'){

@@ -29,7 +29,7 @@ export function mountPondSummary(host:HTMLElement,records:Record<string,InquiryR
   const image=new Image();image.src='assets/study/paramecium.webp';
   for(const [index,time] of pins.entries()){
    const moment=el('figure'),imageCanvas=canvas(304,171);
-   const label=`${['A','B'][index]} · 시점 ${time}`;
+   const label=index===0?'처음 사진':'나중 사진';
    imageCanvas.setAttribute('aria-label',label+'의 짚신벌레 위치');
    moment.append(imageCanvas,el('figcaption','',label));moments.append(moment);
    const render=()=>{
@@ -44,7 +44,7 @@ export function mountPondSummary(host:HTMLElement,records:Record<string,InquiryR
    paragraph(protozoan?.marks?.length?'위치가 달라졌고, 확대했을 때 몸 둘레에서 가는 털(섬모)을 찾았어요.':'같은 짚신벌레의 위치를 두 시점에서 비교했어요.'));
  }else second.append(picture('assets/study/paramecium.webp','몸 둘레에 가는 섬모가 있는 짚신벌레 관찰 모형'),
   el('strong','pond-summary-status','참고 그림 · 두 시점 기록 없음'),
-  paragraph('다른 두 순간을 고정하면 움직인 위치를 여기서 비교할 수 있어요.'));
+  paragraph('처음과 나중 사진을 찍으면 움직인 위치를 여기서 비교할 수 있어요.'));
  root.append(reading,panels,paragraph('관찰 모형 · 실제 현미경 사진은 아니에요.','pond-summary-caption'));
  host.append(root);
  queueMicrotask(()=>{if(root.isConnected)hooks.ready(true);});

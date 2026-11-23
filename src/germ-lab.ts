@@ -31,7 +31,24 @@ const count=(r:InquiryRecord,key:string)=>Number(r.assignments[key])||0;
 /** Highest zoom step reached (0–3). Kept in assignments: record.level is the microscope step and is capped at 2 on load. */
 export const zoomReach=(r:InquiryRecord)=>count(r,'reach');
 export const jarCount=(r:InquiryRecord,jar:string)=>count(r,`jar_${jar}`);
+/** Keep the actual collected picture; old count-only records get a representative picture. */
+export function jarSpecimens(r:InquiryRecord,jar:string):string[]{
+ const n=Math.min(JAR_GOAL,jarCount(r,jar));
+ const saved=(r.assignments[`specimens_${jar}`]||'').split(',').filter(id=>bugKinds.some(k=>k.id===id&&k.jar===jar));
+ return Array.from({length:n},(_,i)=>saved[i]||(jar==='round'?'round':jar==='rod'&&i===1&&r.assignments.tail==='yes'?'tail':jar==='rod'?'rod':'spiral'));
+}
+export function addJarSpecimen(r:InquiryRecord,kind:string):boolean{
+ const bug=bugKinds.find(k=>k.id===kind);if(!bug||jarCount(r,bug.jar)>=JAR_GOAL)return false;
+ const specimens=jarSpecimens(r,bug.jar);specimens.push(bug.id);r.assignments[`jar_${bug.jar}`]=String(specimens.length);r.assignments[`specimens_${bug.jar}`]=specimens.join(',');if(bug.id==='tail')r.assignments.tail='yes';return true;
+}
+
 export const streaked=(r:InquiryRecord)=>culturePlaces.filter(p=>r.assignments[`dish_${p.id}`]==='streaked').map(p=>p.id);
+
+/** Match the spoken hint to the specimens the learner actually cultured. */
+export function cultureWrongHint(r:InquiryRecord,conclusion:string):string{
+ const names=culturePlaces.filter(p=>streaked(r).includes(p.id)).map(p=>p.label).join('·');
+ return `이번에 고른 ${names} 접시를 빈 접시와 비교해 봐. ${conclusion==='soil'?'흙 이외의 접시에도 무리가 있니?':'눈에 깨끗해 보였던 곳의 접시에도 무리가 있니?'}`;
+}
 
 /** Steps for the status meter; `issues` lists what is still missing. */
 export function germProgress(task:InquiryTask,r:InquiryRecord):{steps:[boolean,string][]}{

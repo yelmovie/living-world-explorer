@@ -1,5 +1,5 @@
 import {describe,it,expect} from 'vitest';
-import {MAP_WIDTH,MAP_HEIGHT,mapSpawn,locations,pathGraph,pathSegments,destinationNodeIds,nearestRoadPoint,routeBetween} from '../src/mapData';
+import {MAP_WIDTH,MAP_HEIGHT,mapSpawn,locations,pathGraph,pathSegments,destinationNodeIds,nearestRoadPoint,routeBetween,routeToRoadPoint} from '../src/mapData';
 
 const near=(a:{x:number;y:number},b:{x:number;y:number},epsilon=.01)=>Math.hypot(a.x-b.x,a.y-b.y)<epsilon;
 const isRoadPoint=(p:{x:number;y:number})=>near(p,nearestRoadPoint(p));
@@ -42,6 +42,14 @@ describe('마을 지도의 실제 길과 도착',()=>{
    expect(blocked.some(r=>p.x>r.x&&p.x<r.x+r.w&&p.y>r.y&&p.y<r.y+r.h)).toBe(false);
   }
  });
+ it('여울 옆 막힌 윗길에서도 늦게 남은 모든 악당에게 연결된 도로로 돌아간다',()=>{
+  const origin={x:818,y:235};
+  for(const target of [{x:505,y:228},{x:864,y:271},{x:970,y:370},{x:805,y:459},{x:442,y:505}]){
+   const route=routeToRoadPoint(origin,target),leg=[origin,...route];expect(route.length).toBeGreaterThan(0);expect(near(route.at(-1)!,nearestRoadPoint(target))).toBe(true);
+   for(let i=1;i<leg.length;i++)for(let n=0;n<=20;n++){const a=leg[i-1],b=leg[i],t=n/20;expect(isRoadPoint({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t})).toBe(true);}
+  }
+ });
+ it('같은 도로 안의 임의 지점은 끝점까지 갔다 돌아오지 않는다',()=>{const a={x:640,y:620},b={x:640,y:550};expect(routeToRoadPoint(a,b)).toEqual([a,b]);});
  it('도로 연결은 양방향이고 없는 목적지는 안전하게 거절한다',()=>{
   for(const node of pathGraph)for(const id of node.neighbors)expect(pathGraph.find(n=>n.id===id)?.neighbors).toContain(node.id);
   expect(routeBetween(mapSpawn,'unknown')).toEqual([]);

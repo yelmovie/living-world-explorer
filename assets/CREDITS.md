@@ -154,3 +154,10 @@ SOFTWARE.
 ## 2026-11-22 인증서 테두리
 
 `public/assets/ui/certificate-frame-20261122.webp`(158866바이트,1800×1273)는 Codex 기본 이미지 생성 도구로 만든 현미경·균사/버섯·배양접시·짚신벌레 테두리입니다. 원본과 프롬프트는 `assets/source/certificate-20261122/`에 보관합니다. 권리 장부 IMG-CERT-08.
+
+
+## 2026-11-23 · 관찰 조작과 그림 복습 보완
+
+- 모아 복습 그림 `characters/moa-review-20261123.webp`, 코어 보석 `ui/core-gem-20261123.webp`: 사용자의 직접 수정 요청에 따라 Codex 내장 OpenAI image_gen으로 생성. 모아는 프로젝트의 기존 `moa-full.webp`·`moa-dialogue.webp`를 참조했다. 도구에서 모델 세부 버전은 제공하지 않았다. 투명 원본을 기존 Sharp로 최적화했다. 생성 요약과 해시는 `assets/generated/ui-review-20261123.json`에 보관한다.
+- 음성 42개: 기존 ElevenLabs Flow `oNKFrBe73nDEyZ7Mo0sP`, eleven_v4, 모아 Mina·토토 Aria·두리 Taek의 기존 voice ID 사용. 2026-11-18 Creator 유료 작업·상업 이용 근거를 이어 사용했고 신규 구독·결제는 하지 않았다. 인물 복제 음성이 아니다. 원본 녹음은 보존하고 수정 대사 세 개는 새 파일명으로 연결했다. 출처·대사·오프셋·해시·자동 검사 내역은 배포 폴더 밖 `assets/generated/voice-review-20261123.json`에 보관한다.
+- 인증서: 최신 main `662ccac`의 사용자 제공 붉은 촛농 이미지와 공통 모듈을 보존한다. 별도로 생성한 촛농 후보는 앱과 배포 패키지에 넣지 않았다.

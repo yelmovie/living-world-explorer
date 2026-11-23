@@ -4,7 +4,7 @@ import {emptyRecord,recoverInquiry} from '../src/inquiry-model';
 import {taskIssues} from '../src/inquiry-evaluate';
 import {prepareInquiry} from '../src/inquiry-preparation';
 import {guidance} from '../src/inquiry-guidance';
-import {germExample,germSummary,isGermTask,JAR_GOAL} from '../src/germ-lab';
+import {germExample,germSummary,isGermTask,JAR_GOAL,jarSpecimens,addJarSpecimen} from '../src/germ-lab';
 import {makeAttempt} from '../src/model';
 import {restoreAttempt} from '../src/storage';
 
@@ -24,6 +24,8 @@ describe('M3 자료 연구실 세균 실험',()=>{
   const r=done(catchTask);expect(taskIssues(catchTask,r)).toEqual([]);
   r.assignments.jar_spiral=String(JAR_GOAL-1);expect(taskIssues(catchTask,r)).toHaveLength(1);expect(guidance(catchTask,r)).toMatchObject({done:2,total:3,ready:false});
  });
+ it('실제로 잡은 모양을 보존하고 가득 찬 표본병의 중복 입력은 저장하지 않는다',()=>{const r=prepareInquiry(catchTask);expect(addJarSpecimen(r,'chain')).toBe(true);expect(jarSpecimens(r,'round')).toEqual(['chain']);expect(addJarSpecimen(r,'round')).toBe(true);const saved=structuredClone(r);expect(addJarSpecimen(r,'chain')).toBe(false);expect(r).toEqual(saved);expect(addJarSpecimen(r,'tail')).toBe(true);expect(jarSpecimens(r,'rod')).toEqual(['tail']);expect(addJarSpecimen(r,'unknown')).toBe(false);const loaded=recoverInquiry({version:1,current:{},rewards:[],records:{'M3-2':r}}).records['M3-2'];expect(jarSpecimens(loaded,'round')).toEqual(['chain','round']);expect(jarSpecimens(loaded,'rod')).toEqual(['tail']);});
+ it('이전 개수만 저장한 기록도 두 그림으로 복원하고 다른 모양 저장값을 섞지 않는다',()=>{const r=prepareInquiry(catchTask);r.assignments={jar_round:'2',specimens_round:'spiral,chain',jar_rod:'2',tail:'yes'};expect(jarSpecimens(r,'round')).toEqual(['chain','round']);expect(jarSpecimens(r,'rod')).toEqual(['rod','tail']);});
  it('배양: 세 곳 이상 채집하고, 사흘을 키우고, 여러 곳에 산다고 정리한다',()=>{
   const r=done(culture);expect(taskIssues(culture,r)).toEqual([]);
   r.assignments.dish_pond='loaded';expect(taskIssues(culture,r).length).toBe(1);r.assignments.dish_pond='streaked';
