@@ -45,6 +45,7 @@
 | public/assets/map/terrain.webp | 2026-10-24 기본 image_gen, v2의 건물·보행 경로를 보존한 새 지도 | 현재 지도·로딩 중 풍경, 1280×720 |
 | public/assets/study/{pond,bacteria,bread-0,leaf-0,yogurt,soil,milk,yeast}.webp, places/core.webp | 2026-10-24 기본 image_gen으로 각각 생성, docs/ART_GENERATION_20261024.md, assets/generated/study-20261024.json | 학습용 설명 그림·채집 장면·복구 연출, 실제 현미경 사진 아님 |
 | public/assets/study/{deadwood,moldy-fruit,dough-before,dough-after,bread-1~3,leaf-1~3}.webp | 2026-10-25 기본 image_gen 생성·편집 10개. assets/generated/specimens-20261025.json에 전체 프롬프트와 파일별 기록 | 학습용 관찰 모형. 같은 식빵·낙엽·반죽의 전후 비교, 실제 실험 사진·측정 원자료 아님 |
+| public/assets/study/daphnia-pulex.webp | University of Washington Libraries, Freshwater and Marine Image Bank, [FMIB 43015](https://commons.wikimedia.org/wiki/File:FMIB_43015_Daphnia_pulex.jpeg), 퍼블릭 도메인. 1896년 도판에서 물벼룩을 잘라 WebP로 변환 | M4 물속 먹이 관계 카드의 형태 그림 |
 | public/assets/map/moa-{down,right,up,left}.webp | 2026-10-21 기본 image_gen 자체 생성 | 갈색 묶은 머리·안경·연구 조끼의 모아, 투명 2.5D 픽셀 캐릭터 |
 | public/assets/map/companion-{down,right,up,left}.webp | 2026-10-21 기본 image_gen 자체 생성 | 분홍 토끼 보조 캐릭터, 투명 2.5D 픽셀 캐릭터 |
 | public/assets/map/{moa,toto}-walk.webp | 2026-11-15 기존 지도 캐릭터를 참조해 기본 image_gen으로 새 보행 포즈 제작, `scripts/pack-map-walk.mjs`로 발 위치를 맞춰 WebP로 합성. 프롬프트와 원본 경로: `assets/generated/map-walk-20261115.json` | 캐릭터당 앞·옆·뒤 4프레임, 왼쪽으로 걸을 때 옆모습 반전 |
@@ -75,6 +76,7 @@
 - 교육부 2022 개정 과학과 교육과정: [4과12-01], [4과12-02], [4과12-03].
 - 대조 자료: 경기도교육청 교육과정 PDF, https://www.goe.go.kr/resource/goe/na/bbs_2675/2025/11/b05e123f-8c12-4929-9914-319dea9b2099.pdf .
 - 설명 참고 문헌(2026-10-25 리뷰 수정 때 읽고 연결, 본문·그림은 옮겨 싣지 않음): OpenStax Biology 2e(CC BY 4.0) 24.1 균류의 특징, 22.2 원핵생물의 구조, 23.3 원생생물의 무리 · FAO 발효유 자료 부록 VII(x4888e). 앱에서는 이름과 누리집(openstax.org, fao.org)을 링크 없이 글자로만 표시한다.
+- M4 물속 먹이 관계는 물벼룩(*Daphnia pulex*)이 짚신벌레(*Paramecium caudatum*)를 먹는 사례를 다룬다. [Tezuka, 1974](https://doi.org/10.1002/iroh.19740590105).
 - 게임 안의 서식지·움직임·생활 영향·생명과학 활용 사례는 학습용으로 구성한다. 실제 생물 관찰 자료의 출처·동일 표본 여부·시간 조건은 교과 검수 대상이다.
 
 ## 프로그램 허가문

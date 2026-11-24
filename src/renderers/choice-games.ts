@@ -21,6 +21,26 @@ const iconArt:Record<string,string>={place:'icon-place',other:'icon-unknown',hel
 function icon(id:string,cls='choice-icon'){const name=iconArt[id];if(!name)return el('i',cls,icons[id]||'');const img=el('img',cls);img.src=`assets/ui/game/${name}.webp`;img.alt='';img.draggable=false;return img;}
 const tones:Record<string,string>={evidence:'green',guess:'purple',place:'green',other:'grey',help:'green',problem:'orange'};
 
+function lampPicture(item:InquiryItem){
+ const prey=picture(item);
+ if(!item.feeding)return prey;
+
+ const {prey:preyName,eater:eaterName,eaterImage}=item.feeding;
+ const eater=el('img');
+ eater.src=eaterImage;
+ eater.alt='';
+ eater.draggable=false;
+ const visual=el('span','lamp-food-visual');
+ visual.setAttribute('aria-hidden','true');
+ const group=(name:string,image:HTMLElement)=>{
+  const part=el('span','lamp-food-organism');
+  part.append(image,el('span','lamp-food-name',name));
+  return part;
+ };
+ visual.append(group(preyName,prey),el('span','lamp-food-arrow','→'),group(eaterName,eater));
+ return visual;
+}
+
 export function mountChoiceGame(host:HTMLElement,task:InquiryTask,record:InquiryRecord,hooks:InquiryHooks):InquiryView{
  const mode=choiceGames[task.id]||'swipe';
  const items=task.items.filter(it=>record.v===2||it.since!==2);
@@ -38,7 +58,9 @@ export function mountChoiceGame(host:HTMLElement,task:InquiryTask,record:Inquiry
   assignCard(task,record,id,target);hooks.assigned(id,target);hooks.changed();
   const done=items.every(placed);playEffect(done?'success':'snap');
   const cheer=done?'다 풀었어! 발견 노트에 적어 두자.':'딩동댕! '+it.detail;
-  hooks.feedback(cheer,'success');totoSay(root,{text:cheer,mood:'cheer'});return true;
+  hooks.feedback(cheer,'success');
+  if(mode!=='lamp')totoSay(root,{text:cheer,mood:'cheer'});
+  return true;
  }
  /** Drag a clone of node with the pointer; onDrop gets the release point. A short press is left to the click handler. */
  function drag(e:PointerEvent,node:HTMLElement,onMove:(x:number,y:number)=>void,onDrop:(x:number,y:number)=>void){
@@ -143,15 +165,18 @@ export function mountChoiceGame(host:HTMLElement,task:InquiryTask,record:Inquiry
   let selected='';
   const drop=(id:string,target:string)=>{selected='';const zone=zones.find(z=>z.t.id===target)!;const ok=attempt(id,target);if(ok){zone.z.classList.remove('is-on');void zone.z.offsetWidth;zone.z.classList.add('is-on');}else{shake(zone.z);shake(cards.find(c=>c.it.id===id)!.b);}refresh();};
   const cards=items.map(it=>{
-   const b=el('button','lamp-card');b.type='button';b.dataset.linkItem=it.id;b.append(art(it),el('strong','',it.label),el('span','lamp-card-detail',it.detail),el('span','lamp-card-done','✓'));
+   const b=el('button',it.feeding?'lamp-card lamp-food-card':'lamp-card');b.type='button';b.dataset.linkItem=it.id;
+   if(it.feeding)b.setAttribute('aria-label',`${it.label}. ${it.detail}`);
+   const mark=el('span','lamp-card-done','✓');mark.setAttribute('aria-hidden','true');
+   b.append(lampPicture(it),el('strong','',it.label),el('span','lamp-card-detail',it.feeding?.caption||it.detail),mark);
    b.onpointerdown=e=>{if(placed(it))return;drag(e,b,(x,y)=>zones.forEach(z=>z.z.classList.toggle('is-over',x>=0&&inside(z.z,x,y))),(x,y)=>{zones.forEach(z=>z.z.classList.remove('is-over'));const z=zones.find(z=>inside(z.z,x,y));if(z)drop(it.id,z.t.id);});};
    b.onclick=()=>{if(b.dataset.dragged||blocked()||placed(it))return;selected=selected===it.id?'':it.id;if(selected){hooks.open(it.id);playEffect('click');}refresh();};
    hand.append(b);return {it,b};
   });
-  root.append(progress,el('p','choice-tip','작은 생물이 한 일이 도움을 주면 초록, 피해를 주면 빨간 신호등에 놓아요'),hand,lamps);
+  root.append(progress,el('p','choice-tip',task.instruction),hand,lamps);
   refresh=()=>{
    for(const {it,b} of cards){b.classList.toggle('is-placed',placed(it));b.classList.toggle('is-selected',selected===it.id);b.setAttribute('aria-pressed',String(selected===it.id));}
-   for(const {t,z,chips} of zones){const its=items.filter(it=>placed(it)&&it.target===t.id);z.classList.toggle('is-lit',its.length>0);if(chips.childElementCount!==its.length)chips.replaceChildren(...its.map(it=>el('span','lamp-chip',it.label)));}
+   for(const {t,z,chips} of zones){const its=items.filter(it=>placed(it)&&it.target===t.id);z.classList.toggle('is-lit',its.length>0);if(chips.childElementCount!==its.length)chips.replaceChildren(...its.map(it=>el('span','lamp-chip',it.feeding?.result||it.label)));}
    root.classList.toggle('is-armed',!!selected);root.classList.toggle('is-complete',items.every(placed));paintDots();
   };
   refresh();
